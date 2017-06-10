@@ -166,6 +166,9 @@ public:
 	void set_corner_radius_individual(const int radius_top_left, const int radius_top_right, const int radius_botton_right, const int radius_bottom_left);
 	int get_corner_radius_min() const;
 
+	void set_corner_radius(Corner p_corner, const int radius);
+	int get_corner_radius(Corner p_corner) const;
+
 	//EXPANDS
 	void set_expand_margin_size(Margin p_expand_margin, float p_size);
 	float get_expand_margin_size(Margin p_expand_margin) const;

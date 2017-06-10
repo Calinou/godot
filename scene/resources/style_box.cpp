@@ -365,6 +365,15 @@ int StyleBoxFlat::get_corner_radius_min() const {
 	return smallest;
 }
 
+void StyleBoxFlat::set_corner_radius(const Corner p_corner, const int radius) {
+
+	corner_radius[p_corner] = radius;
+	emit_changed();
+}
+int StyleBoxFlat::get_corner_radius(const Corner p_corner) const {
+	return corner_radius[p_corner];
+}
+
 void StyleBoxFlat::set_expand_margin_size(Margin p_expand_margin, float p_size) {
 
 	expand_margin[p_expand_margin] = p_size;
@@ -584,6 +593,9 @@ void StyleBoxFlat::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_corner_radius_individual", "radius_top_left", "radius_top_right", "radius_botton_right", "radius_bottom_left"), &StyleBoxFlat::set_corner_radius_individual);
 	ClassDB::bind_method(D_METHOD("set_corner_radius_all", "radius"), &StyleBoxFlat::set_corner_radius_all);
 
+	ClassDB::bind_method(D_METHOD("set_corner_radius", "corner", "radius"), &StyleBoxFlat::set_corner_radius);
+	ClassDB::bind_method(D_METHOD("get_corner_radius", "corner"), &StyleBoxFlat::get_corner_radius);
+
 	ClassDB::bind_method(D_METHOD("set_expand_margin", "margin", "size"), &StyleBoxFlat::set_expand_margin_size);
 	ClassDB::bind_method(D_METHOD("get_expand_margin", "margin"), &StyleBoxFlat::get_expand_margin_size);
 
@@ -607,6 +619,12 @@ void StyleBoxFlat::_bind_methods() {
 	ADD_PROPERTYI(PropertyInfo(Variant::COLOR, "border_color_bottom"), "set_border_color", "get_border_color", MARGIN_BOTTOM);
 
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "border_blend"), "set_border_blend", "get_border_blend");
+
+	ADD_GROUP("Corner Radius", "corner_radius_");
+	ADD_PROPERTYI(PropertyInfo(Variant::INT, "corner_radius_top_left", PROPERTY_HINT_RANGE, "0,1024,1"), "set_corner_radius", "get_corner_radius", CORNER_TOP_LEFT);
+	ADD_PROPERTYI(PropertyInfo(Variant::INT, "corner_radius_top_right", PROPERTY_HINT_RANGE, "0,1024,1"), "set_corner_radius", "get_corner_radius", CORNER_TOP_RIGHT);
+	ADD_PROPERTYI(PropertyInfo(Variant::INT, "corner_radius_bottom_right", PROPERTY_HINT_RANGE, "0,1024,1"), "set_corner_radius", "get_corner_radius", CORNER_BOTTOM_RIGHT);
+	ADD_PROPERTYI(PropertyInfo(Variant::INT, "corner_radius_bottom_left", PROPERTY_HINT_RANGE, "0,1024,1"), "set_corner_radius", "get_corner_radius", CORNER_BOTTOM_LEFT);
 
 	ADD_GROUP("Expand Margin", "expand_margin_");
 	ADD_PROPERTYI(PropertyInfo(Variant::REAL, "expand_margin_left", PROPERTY_HINT_RANGE, "0,2048,1"), "set_expand_margin", "get_expand_margin", MARGIN_LEFT);
