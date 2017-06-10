@@ -78,10 +78,14 @@ static Ref<StyleBoxFlat> change_border_color(Ref<StyleBoxFlat> p_style, Color p_
 
 static Ref<StyleBoxFlat> add_additional_border(Ref<StyleBoxFlat> p_style, int p_left, int p_top, int p_right, int p_bottom) {
 	Ref<StyleBoxFlat> style = p_style->duplicate();
-	style->_set_additional_border_size(MARGIN_LEFT, p_left * EDSCALE);
-	style->_set_additional_border_size(MARGIN_RIGHT, p_right * EDSCALE);
-	style->_set_additional_border_size(MARGIN_TOP, p_top * EDSCALE);
-	style->_set_additional_border_size(MARGIN_BOTTOM, p_bottom * EDSCALE);
+	style->set_border_width(MARGIN_LEFT, p_left * EDSCALE + style->get_border_width(MARGIN_LEFT));
+	style->set_border_width(MARGIN_RIGHT, p_right * EDSCALE + style->get_border_width(MARGIN_RIGHT));
+	style->set_border_width(MARGIN_TOP, p_top * EDSCALE + style->get_border_width(MARGIN_TOP));
+	style->set_border_width(MARGIN_BOTTOM, p_bottom * EDSCALE + style->get_border_width(MARGIN_BOTTOM));
+	style->set_expand_margin_size(MARGIN_LEFT, p_left * EDSCALE);
+	style->set_expand_margin_size(MARGIN_RIGHT, p_right * EDSCALE);
+	style->set_expand_margin_size(MARGIN_TOP, p_top * EDSCALE);
+	style->set_expand_margin_size(MARGIN_BOTTOM, p_bottom * EDSCALE);
 	return style;
 }
 
@@ -150,8 +154,8 @@ Ref<Theme> create_editor_theme() {
 
 	// Focus
 	Ref<StyleBoxFlat> focus_sbt = make_flat_stylebox(light_color_1, 4, 4, 4, 4);
-	focus_sbt->set_draw_center(false);
-	focus_sbt->set_border_size(1 * EDSCALE);
+	focus_sbt->set_filled(false);
+	focus_sbt->set_border_width_all(1 * EDSCALE);
 	focus_sbt = change_border_color(focus_sbt, light_color_2);
 	theme->set_stylebox("Focus", "EditorStyles", focus_sbt);
 
@@ -166,8 +170,9 @@ Ref<Theme> create_editor_theme() {
 	Ref<StyleBoxFlat> style_menu_hover_border = make_flat_stylebox(highlight_color, 4, 4, 4, 4);
 	Ref<StyleBoxFlat> style_menu_hover_bg = make_flat_stylebox(dark_color_2, 4, 4, 4, 4);
 
-	style_menu_hover_border->set_draw_center(false);
-	style_menu_hover_border->_set_additional_border_size(MARGIN_BOTTOM, 1 * EDSCALE);
+	style_menu_hover_border->set_filled(false);
+	style_menu_hover_border->set_border_width(MARGIN_BOTTOM, style_menu_hover_border->get_border_width(MARGIN_BOTTOM) + 1 * EDSCALE);
+	style_menu_hover_border->set_expand_margin_size(MARGIN_BOTTOM, 1 * EDSCALE);
 	theme->set_stylebox("normal", "MenuButton", style_menu);
 	theme->set_stylebox("hover", "MenuButton", style_menu);
 	theme->set_stylebox("pressed", "MenuButton", style_menu);
@@ -199,8 +204,8 @@ Ref<Theme> create_editor_theme() {
 
 	// Button
 	Ref<StyleBoxFlat> style_button = make_flat_stylebox(dark_color_1, 4, 4, 4, 4);
-	style_button->set_draw_center(true);
-	style_button->set_border_size(2 * EDSCALE);
+	style_button->set_filled(true);
+	style_button->set_border_width_all(2 * EDSCALE);
 	style_button->set_light_color(light_color_1);
 	style_button->set_dark_color(light_color_1);
 	style_button->set_border_blend(false);
@@ -217,10 +222,10 @@ Ref<Theme> create_editor_theme() {
 
 	// OptionButton
 	Ref<StyleBoxFlat> style_option_button = make_flat_stylebox(dark_color_1, 4, 4, 4, 4);
-	style_option_button->set_border_size(1 * EDSCALE);
+	style_option_button->set_border_width_all(1 * EDSCALE);
 	style_option_button->set_light_color(light_color_1);
 	style_option_button->set_dark_color(light_color_1);
-	style_option_button->_set_additional_border_size(MARGIN_RIGHT, -16 * EDSCALE);
+	style_option_button->set_border_width(MARGIN_RIGHT, style_option_button->get_border_width(MARGIN_RIGHT) + 16 * EDSCALE);
 	theme->set_stylebox("hover", "OptionButton", change_border_color(style_option_button, HIGHLIGHT_COLOR_LIGHT));
 	theme->set_stylebox("pressed", "OptionButton", change_border_color(style_option_button, highlight_color));
 	theme->set_stylebox("focus", "OptionButton", change_border_color(style_option_button, highlight_color));
@@ -230,7 +235,7 @@ Ref<Theme> create_editor_theme() {
 
 	// PopupMenu
 	Ref<StyleBoxFlat> style_popup_menu = make_flat_stylebox(dark_color_1, 8, 8, 8, 8);
-	style_popup_menu->set_border_size(2 * EDSCALE);
+	style_popup_menu->set_border_width_all(2 * EDSCALE);
 	style_popup_menu->set_light_color(light_color_1);
 	style_popup_menu->set_dark_color(light_color_1);
 	theme->set_stylebox("panel", "PopupMenu", style_popup_menu);
@@ -262,8 +267,8 @@ Ref<Theme> create_editor_theme() {
 	theme->set_stylebox("selected", "Tree", style_tree_selected);
 
 	Ref<StyleBoxFlat> style_tree_cursor = make_flat_stylebox(HIGHLIGHT_COLOR_DARK, 4, 4, 4, 4);
-	style_tree_cursor->set_draw_center(false);
-	style_tree_cursor->set_border_size(1 * EDSCALE);
+	style_tree_cursor->set_filled(false);
+	style_tree_cursor->set_border_width_all(1 * EDSCALE);
 	style_tree_cursor->set_light_color(light_color_1);
 	style_tree_cursor->set_dark_color(light_color_1);
 	Ref<StyleBoxFlat> style_tree_title = make_flat_stylebox(dark_color_3, 4, 4, 4, 4);
@@ -282,8 +287,8 @@ Ref<Theme> create_editor_theme() {
 
 	// ItemList
 	Ref<StyleBoxFlat> style_itemlist_cursor = make_flat_stylebox(highlight_color, 4, 4, 4, 4);
-	style_itemlist_cursor->set_draw_center(false);
-	style_itemlist_cursor->set_border_size(1 * EDSCALE);
+	style_itemlist_cursor->set_filled(false);
+	style_itemlist_cursor->set_border_width_all(1 * EDSCALE);
 	style_itemlist_cursor->set_light_color(light_color_1);
 	style_itemlist_cursor->set_dark_color(light_color_1);
 	theme->set_stylebox("cursor", "ItemList", style_itemlist_cursor);
@@ -296,7 +301,7 @@ Ref<Theme> create_editor_theme() {
 
 	Ref<StyleBoxFlat> style_tab_fg = make_flat_stylebox(base_color, 15, 5, 15, 5);
 	Ref<StyleBoxFlat> style_tab_bg = make_flat_stylebox(base_color, 15, 5, 15, 5);
-	style_tab_bg->set_draw_center(false);
+	style_tab_bg->set_filled(false);
 
 	// Tabs & TabContainer
 	theme->set_stylebox("tab_fg", "TabContainer", style_tab_fg);
@@ -314,19 +319,19 @@ Ref<Theme> create_editor_theme() {
 
 	Ref<StyleBoxFlat> style_tab_fg_debugger = make_flat_stylebox(dark_color_2, 10, 5, 10, 5);
 	Ref<StyleBoxFlat> style_tab_bg_debugger = make_flat_stylebox(dark_color_2, 10, 5, 10, 5);
-	style_tab_bg_debugger->set_draw_center(false);
+	style_tab_bg_debugger->set_filled(false);
 
 	theme->set_stylebox("DebuggerTabFG", "EditorStyles", style_tab_fg_debugger);
 	theme->set_stylebox("DebuggerTabBG", "EditorStyles", style_tab_bg_debugger);
 
 	// LineEdit
 	Ref<StyleBoxFlat> style_lineedit = make_flat_stylebox(dark_color_1, 4, 4, 4, 4);
-	style_lineedit->set_border_size(1 * EDSCALE);
+	style_lineedit->set_border_width_all(1 * EDSCALE);
 	style_lineedit = change_border_color(style_lineedit, light_color_1);
 	Ref<StyleBoxFlat> style_lineedit_disabled = style_lineedit->duplicate();
 	style_lineedit_disabled->set_bg_color(light_color_1);
 	Ref<StyleBoxFlat> style_lineedit_focus = change_border_color(style_lineedit, highlight_color);
-	style_lineedit_focus->set_draw_center(false);
+	style_lineedit_focus->set_filled(false);
 	theme->set_stylebox("normal", "LineEdit", style_lineedit);
 	theme->set_stylebox("focus", "LineEdit", style_lineedit_focus);
 	theme->set_stylebox("read_only", "LineEdit", style_lineedit_disabled);
@@ -354,11 +359,12 @@ Ref<Theme> create_editor_theme() {
 
 	// WindowDialog
 	Ref<StyleBoxFlat> style_window = make_flat_stylebox(dark_color_2, 4, 4, 4, 4);
-	style_window->set_border_size(2 * EDSCALE);
+	style_window->set_border_width_all(2 * EDSCALE);
 	style_window->set_border_blend(false);
 	style_window->set_light_color(light_color_2);
 	style_window->set_dark_color(light_color_2);
-	style_window->_set_additional_border_size(MARGIN_TOP, 24 * EDSCALE);
+	style_window->set_border_width(MARGIN_TOP, 26 * EDSCALE);
+	style_window->set_expand_margin_size(MARGIN_TOP, 24 * EDSCALE);
 	theme->set_stylebox("panel", "WindowDialog", style_window);
 
 	// HScrollBar
@@ -400,7 +406,7 @@ Ref<Theme> create_editor_theme() {
 
 	// TooltipPanel
 	Ref<StyleBoxFlat> style_tooltip = make_flat_stylebox(Color(1, 1, 1, 0.8), 8, 8, 8, 8);
-	style_tooltip->set_border_size(2 * EDSCALE);
+	style_tooltip->set_border_width_all(2 * EDSCALE);
 	style_tooltip->set_border_blend(false);
 	style_tooltip->set_light_color(Color(1, 1, 1, 0.9));
 	style_tooltip->set_dark_color(Color(1, 1, 1, 0.9));
@@ -419,25 +425,25 @@ Ref<Theme> create_editor_theme() {
 	// GraphNode
 	Ref<StyleBoxFlat> graphsb = make_flat_stylebox(Color(0, 0, 0, 0.3), 16, 24, 16, 5);
 	graphsb->set_border_blend(false);
-	graphsb->set_border_size(2);
+	graphsb->set_border_width_all(2);
 	graphsb->set_light_color(Color(1, 1, 1, 0.6));
 	graphsb->set_dark_color(Color(1, 1, 1, 0.6));
 	graphsb = add_additional_border(graphsb, 0, -22, 0, 0);
 	Ref<StyleBoxFlat> graphsbselected = make_flat_stylebox(Color(0, 0, 0, 0.4), 16, 24, 16, 5);
 	graphsbselected->set_border_blend(false);
-	graphsbselected->set_border_size(2);
+	graphsbselected->set_border_width_all(2);
 	graphsbselected->set_light_color(Color(1, 1, 1, 0.9));
 	graphsbselected->set_dark_color(Color(1, 1, 1, 0.9));
 	graphsbselected = add_additional_border(graphsbselected, 0, -22, 0, 0);
 	Ref<StyleBoxFlat> graphsbcomment = make_flat_stylebox(Color(0, 0, 0, 0.3), 16, 24, 16, 5);
 	graphsbcomment->set_border_blend(false);
-	graphsbcomment->set_border_size(1);
+	graphsbcomment->set_border_width_all(1);
 	graphsbcomment->set_light_color(Color(1, 1, 1, 0.6));
 	graphsbcomment->set_dark_color(Color(1, 1, 1, 0.6));
 	graphsbcomment = add_additional_border(graphsbcomment, 0, -22, 0, 0);
 	Ref<StyleBoxFlat> graphsbcommentselected = make_flat_stylebox(Color(0, 0, 0, 0.4), 16, 24, 16, 5);
 	graphsbcommentselected->set_border_blend(false);
-	graphsbcommentselected->set_border_size(1);
+	graphsbcommentselected->set_border_width_all(1);
 	graphsbcommentselected->set_light_color(Color(1, 1, 1, 0.9));
 	graphsbcommentselected->set_dark_color(Color(1, 1, 1, 0.9));
 	graphsbcommentselected = add_additional_border(graphsbcommentselected, 0, -22, 0, 0);

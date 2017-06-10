@@ -501,7 +501,7 @@ ScriptCreateDialog::ScriptCreateDialog() {
 	sb->set_light_color(Color(1, 1, 1, 0.05));
 	sb->set_dark_color(Color(1, 1, 1, 0.05));
 	sb->set_border_blend(false);
-	sb->set_border_size(1);
+	sb->set_border_width_all(1);
 	sb->set_default_margin(MARGIN_TOP, 10.0 * EDSCALE);
 	sb->set_default_margin(MARGIN_BOTTOM, 10.0 * EDSCALE);
 	sb->set_default_margin(MARGIN_LEFT, 10.0 * EDSCALE);
