@@ -392,6 +392,26 @@ bool StyleBoxFlat::is_filled() const {
 	return filled;
 }
 
+void StyleBoxFlat::set_shadow_color(const Color &p_color) {
+
+	shadow_color = p_color;
+	emit_changed();
+}
+Color StyleBoxFlat::get_shadow_color() const {
+
+	return shadow_color;
+}
+
+void StyleBoxFlat::set_shadow_size(const int &p_size) {
+
+	shadow_size = p_size;
+	emit_changed();
+}
+int StyleBoxFlat::get_shadow_size() const {
+
+	return shadow_size;
+}
+
 Size2 StyleBoxFlat::get_center_size() const {
 
 	return Size2();
@@ -509,6 +529,18 @@ void StyleBoxFlat::draw(RID p_canvas_item, const Rect2 &p_rect) const {
 	Vector<int> indices;
 	Vector<Color> colors;
 
+	//DRAW SHADOW
+	if (shadow_size > 0) {
+		int shadow_width[4] = { shadow_size, shadow_size, shadow_size, shadow_size };
+		Color shadow_colors[4] = { shadow_color, shadow_color, shadow_color, shadow_color };
+		Color shadow_colors_transparent[4];
+		for (int i = 0; i < 4; i++) {
+			shadow_colors_transparent[i] = Color(shadow_color.r, shadow_color.g, shadow_color.b, 0);
+		}
+		draw_ring(verts, indices, colors, style_rect, adapted_corner,
+				style_rect.grow(shadow_size), shadow_width, shadow_colors, shadow_colors_transparent, corner_detail);
+	}
+
 	//DRAW border
 	Color bg_color_array[4] = { bg_color, bg_color, bg_color, bg_color };
 	const Color *inner_color = ((blend_border) ? bg_color_array : border_color.read().ptr());
@@ -602,6 +634,12 @@ void StyleBoxFlat::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_filled", "filled"), &StyleBoxFlat::set_filled);
 	ClassDB::bind_method(D_METHOD("is_filled"), &StyleBoxFlat::is_filled);
 
+	ClassDB::bind_method(D_METHOD("set_shadow_color", "color"), &StyleBoxFlat::set_shadow_color);
+	ClassDB::bind_method(D_METHOD("get_shadow_color"), &StyleBoxFlat::get_shadow_color);
+
+	ClassDB::bind_method(D_METHOD("set_shadow_size", "size"), &StyleBoxFlat::set_shadow_size);
+	ClassDB::bind_method(D_METHOD("get_shadow_size"), &StyleBoxFlat::get_shadow_size);
+
 	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "bg_color"), "set_bg_color", "get_bg_color");
 
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "filled"), "set_filled", "is_filled");
@@ -631,11 +669,16 @@ void StyleBoxFlat::_bind_methods() {
 	ADD_PROPERTYI(PropertyInfo(Variant::REAL, "expand_margin_right", PROPERTY_HINT_RANGE, "0,2048,1"), "set_expand_margin", "get_expand_margin", MARGIN_RIGHT);
 	ADD_PROPERTYI(PropertyInfo(Variant::REAL, "expand_margin_top", PROPERTY_HINT_RANGE, "0,2048,1"), "set_expand_margin", "get_expand_margin", MARGIN_TOP);
 	ADD_PROPERTYI(PropertyInfo(Variant::REAL, "expand_margin_bottom", PROPERTY_HINT_RANGE, "0,2048,1"), "set_expand_margin", "get_expand_margin", MARGIN_BOTTOM);
+
+	ADD_GROUP("Shadow", "shadow_");
+	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "shadow_color"), "set_shadow_color", "get_shadow_color");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "shadow_size"), "set_shadow_size", "get_shadow_size");
 }
 
 StyleBoxFlat::StyleBoxFlat() {
 
 	bg_color = Color(0.6, 0.6, 0.6);
+	shadow_color = Color(0, 0, 0, 0.6);
 
 	border_color.append(Color(0.8, 0.8, 0.8));
 	border_color.append(Color(0.8, 0.8, 0.8));
@@ -645,7 +688,9 @@ StyleBoxFlat::StyleBoxFlat() {
 	blend_border = false;
 	filled = true;
 
+	shadow_size = 0;
 	corner_detail = 8;
+
 	border_width[0] = 0;
 	border_width[1] = 0;
 	border_width[2] = 0;

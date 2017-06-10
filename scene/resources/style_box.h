@@ -119,6 +119,7 @@ class StyleBoxFlat : public StyleBox {
 	GDCLASS(StyleBoxFlat, StyleBox);
 
 	Color bg_color;
+	Color shadow_color;
 	PoolVector<Color> border_color;
 
 	int border_width[4];
@@ -127,7 +128,9 @@ class StyleBoxFlat : public StyleBox {
 
 	bool filled;
 	bool blend_border;
+
 	int corner_detail;
+	int shadow_size;
 
 protected:
 	virtual float get_style_margin(Margin p_margin) const;
@@ -176,6 +179,13 @@ public:
 	//FILLED
 	void set_filled(bool p_draw);
 	bool is_filled() const;
+
+	//SHADOW
+	void set_shadow_color(const Color &p_color);
+	Color get_shadow_color() const;
+
+	void set_shadow_size(const int &p_size);
+	int get_shadow_size() const;
 
 	virtual Size2 get_center_size() const;
 
