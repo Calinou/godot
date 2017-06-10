@@ -128,9 +128,11 @@ class StyleBoxFlat : public StyleBox {
 
 	bool filled;
 	bool blend_border;
+	bool anti_aliased;
 
 	int corner_detail;
 	int shadow_size;
+	int aa_size;
 
 protected:
 	virtual float get_style_margin(Margin p_margin) const;
@@ -186,6 +188,13 @@ public:
 
 	void set_shadow_size(const int &p_size);
 	int get_shadow_size() const;
+
+	//ANTI_ALIASING
+	void set_anti_aliased(const bool &p_anit_aliasing);
+	bool is_anti_aliased() const;
+	//tempAA
+	void set_aa_size(const int &p_aa_size);
+	int get_aa_size() const;
 
 	virtual Size2 get_center_size() const;
 

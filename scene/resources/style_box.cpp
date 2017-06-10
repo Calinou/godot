@@ -412,6 +412,22 @@ int StyleBoxFlat::get_shadow_size() const {
 	return shadow_size;
 }
 
+void StyleBoxFlat::set_anti_aliased(const bool &p_anti_aliased) {
+	anti_aliased = p_anti_aliased;
+	emit_changed();
+}
+bool StyleBoxFlat::is_anti_aliased() const {
+	return anti_aliased;
+}
+
+void StyleBoxFlat::set_aa_size(const int &p_aa_size) {
+	aa_size = p_aa_size;
+	emit_changed();
+}
+int StyleBoxFlat::get_aa_size() const {
+	return aa_size;
+}
+
 Size2 StyleBoxFlat::get_center_size() const {
 
 	return Size2();
@@ -515,19 +531,29 @@ inline void draw_ring(Vector<Vector2> &verts, Vector<int> &indices, Vector<Color
 
 void StyleBoxFlat::draw(RID p_canvas_item, const Rect2 &p_rect) const {
 
-	//adapt borders (prevent weired overlapping/glitchy drawings)
+	//PREPARATIONS
+
+	bool rounded_corners = (corner_radius[0] > 0) || (corner_radius[1] > 0) || (corner_radius[2] > 0) || (corner_radius[3] > 0);
+	bool aa_on = rounded_corners && anti_aliased;
+
+	//adapt borders (prevent weired overlapping/glitchy drawings) TODO
 	int adapted_border[4] = { border_width[0], border_width[1], border_width[2], border_width[3] };
 
-	//adapt corners (prevent weired overlapping/glitchy drawings)
+	//adapt corners (prevent weired overlapping/glitchy drawings) TODO
 	int adapted_corner[4] = { corner_radius[0], corner_radius[1], corner_radius[2], corner_radius[3] };
 
-	VisualServer *vs = VisualServer::get_singleton();
-
 	Rect2 style_rect = p_rect.grow_individual(expand_margin[MARGIN_LEFT], expand_margin[MARGIN_TOP], expand_margin[MARGIN_RIGHT], expand_margin[MARGIN_BOTTOM]);
+	if (aa_on) {
+		style_rect = style_rect.grow(-((aa_size + 1) / 2));
+	}
 	Rect2 infill_rect = style_rect.grow_individual(-adapted_border[MARGIN_LEFT], -adapted_border[MARGIN_TOP], -adapted_border[MARGIN_RIGHT], -adapted_border[MARGIN_BOTTOM]);
+
 	Vector<Point2> verts;
 	Vector<int> indices;
 	Vector<Color> colors;
+
+	//DRAWING
+	VisualServer *vs = VisualServer::get_singleton();
 
 	//DRAW SHADOW
 	if (shadow_size > 0) {
@@ -565,6 +591,41 @@ void StyleBoxFlat::draw(RID p_canvas_item, const Rect2 &p_rect) const {
 			indices.push_back(temp_vert_offset + i);
 			indices.push_back(temp_vert_offset + added_vert_count - 2 - i);
 			indices.push_back(temp_vert_offset + added_vert_count - 4 - i);
+		}
+	}
+
+	if (aa_on) {
+
+		//HELPER ARRAYS
+		Color border_color_alpha[4];
+		for (int i = 0; i < 4; i++) {
+			Color c = border_color.read().ptr()[i];
+			border_color_alpha[i] = Color(c.r, c.g, c.b, 0);
+		}
+		Color alpha_bg = Color(bg_color.r, bg_color.g, bg_color.b, 0);
+		Color bg_color_array_alpha[4] = { alpha_bg, alpha_bg, alpha_bg, alpha_bg };
+
+		int aa_border_width[4] = { aa_size, aa_size, aa_size, aa_size };
+
+		if (filled) {
+			//INFILL AA
+			draw_ring(verts, indices, colors, style_rect, adapted_corner,
+					infill_rect.grow(aa_size), aa_border_width, bg_color_array, bg_color_array_alpha, corner_detail);
+		} else if (!(border_width[0] == 0 && border_width[1] == 0 && border_width[2] == 0 && border_width[3] == 0)) {
+			//DRAW INNER BORDER AA
+			for (int i = 0; i < 4; i++) {
+				aa_border_width[i] = ((border_width[i] == 0) ? 0 : aa_size);
+			}
+			draw_ring(verts, indices, colors, style_rect, adapted_corner,
+					infill_rect, aa_border_width, border_color_alpha, border_color.read().ptr(), corner_detail);
+		}
+		//DRAW OUTER BORDER AA
+		if (!(border_width[0] == 0 && border_width[1] == 0 && border_width[2] == 0 && border_width[3] == 0)) {
+			for (int i = 0; i < 4; i++) {
+				aa_border_width[i] = ((border_width[i] == 0) ? 0 : aa_size);
+			}
+			draw_ring(verts, indices, colors, style_rect, adapted_corner,
+					style_rect.grow(aa_size), aa_border_width, border_color.read().ptr(), border_color_alpha, corner_detail);
 		}
 	}
 
@@ -640,6 +701,12 @@ void StyleBoxFlat::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_shadow_size", "size"), &StyleBoxFlat::set_shadow_size);
 	ClassDB::bind_method(D_METHOD("get_shadow_size"), &StyleBoxFlat::get_shadow_size);
 
+	ClassDB::bind_method(D_METHOD("set_anti_aliased", "anti_aliased"), &StyleBoxFlat::set_anti_aliased);
+	ClassDB::bind_method(D_METHOD("is_anti_aliased"), &StyleBoxFlat::is_anti_aliased);
+
+	ClassDB::bind_method(D_METHOD("set_aa_size", "size"), &StyleBoxFlat::set_aa_size);
+	ClassDB::bind_method(D_METHOD("get_aa_size"), &StyleBoxFlat::get_aa_size);
+
 	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "bg_color"), "set_bg_color", "get_bg_color");
 
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "filled"), "set_filled", "is_filled");
@@ -673,6 +740,10 @@ void StyleBoxFlat::_bind_methods() {
 	ADD_GROUP("Shadow", "shadow_");
 	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "shadow_color"), "set_shadow_color", "get_shadow_color");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "shadow_size"), "set_shadow_size", "get_shadow_size");
+
+	ADD_GROUP("Anti Aliasing", "anti_aliasing_");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "anti_aliasing_on"), "set_anti_aliased", "is_anti_aliased");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "anti_aliasing_size", PROPERTY_HINT_RANGE, "1,5,1"), "set_aa_size", "get_aa_size");
 }
 
 StyleBoxFlat::StyleBoxFlat() {
@@ -687,9 +758,11 @@ StyleBoxFlat::StyleBoxFlat() {
 
 	blend_border = false;
 	filled = true;
+	anti_aliased = true;
 
 	shadow_size = 0;
 	corner_detail = 8;
+	aa_size = 1;
 
 	border_width[0] = 0;
 	border_width[1] = 0;
