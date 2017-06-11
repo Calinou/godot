@@ -28,6 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 #include "style_box.h"
+#include <limits.h>
 
 bool StyleBox::test_mask(const Point2 &p_point, const Rect2 &p_rect) const {
 
@@ -537,6 +538,30 @@ inline void draw_ring(Vector<Vector2> &verts, Vector<int> &indices, Vector<Color
 	}
 }
 
+inline void adapt_values(int p_index_a, int p_index_b, int *adapted_values, const int *p_values, const real_t p_width, const int p_max_a, const int p_max_b) {
+	adapted_values[p_index_a] = INT_MAX;
+	adapted_values[p_index_b] = INT_MAX;
+	if (p_values[p_index_a] + p_values[p_index_b] > p_width) {
+		float factor;
+		int newValue;
+
+		factor = (float)p_width / (float)(p_values[p_index_a] + p_values[p_index_b]);
+
+		newValue = (int)(p_values[p_index_a] * factor);
+		if (newValue < adapted_values[p_index_a]) {
+			adapted_values[p_index_a] = newValue;
+		}
+		newValue = (int)(p_values[p_index_b] * factor);
+		if (newValue < adapted_values[p_index_b]) {
+			adapted_values[p_index_b] = newValue;
+		}
+	} else {
+		adapted_values[p_index_a] = MIN(p_values[p_index_a], adapted_values[p_index_a]);
+		adapted_values[p_index_b] = MIN(p_values[p_index_b], adapted_values[p_index_b]);
+	}
+	adapted_values[p_index_a] = MIN(p_max_a, adapted_values[p_index_a]);
+	adapted_values[p_index_b] = MIN(p_max_b, adapted_values[p_index_b]);
+}
 void StyleBoxFlat::draw(RID p_canvas_item, const Rect2 &p_rect) const {
 
 	//PREPARATIONS
@@ -544,16 +569,25 @@ void StyleBoxFlat::draw(RID p_canvas_item, const Rect2 &p_rect) const {
 	bool rounded_corners = (corner_radius[0] > 0) || (corner_radius[1] > 0) || (corner_radius[2] > 0) || (corner_radius[3] > 0);
 	bool aa_on = rounded_corners && anti_aliased;
 
-	//adapt borders (prevent weired overlapping/glitchy drawings) TODO
-	int adapted_border[4] = { border_width[0], border_width[1], border_width[2], border_width[3] };
-
-	//adapt corners (prevent weired overlapping/glitchy drawings) TODO
-	int adapted_corner[4] = { corner_radius[0], corner_radius[1], corner_radius[2], corner_radius[3] };
-
 	Rect2 style_rect = p_rect.grow_individual(expand_margin[MARGIN_LEFT], expand_margin[MARGIN_TOP], expand_margin[MARGIN_RIGHT], expand_margin[MARGIN_BOTTOM]);
 	if (aa_on) {
 		style_rect = style_rect.grow(-((aa_size + 1) / 2));
 	}
+
+	//adapt borders (prevent weired overlapping/glitchy drawings)
+	int width = style_rect.size.width;
+	int height = style_rect.size.height;
+	int adapted_border[4];
+	adapt_values(MARGIN_TOP, MARGIN_BOTTOM, adapted_border, border_width, height, height, height);
+	adapt_values(MARGIN_LEFT, MARGIN_RIGHT, adapted_border, border_width, width, width, width);
+
+	//adapt corners (prevent weired overlapping/glitchy drawings)
+	int adapted_corner[4] = { INT32_MAX, INT32_MAX, INT32_MAX, INT32_MAX };
+	adapt_values(CORNER_TOP_LEFT, CORNER_TOP_RIGHT, adapted_corner, corner_radius, width, width - adapted_border[MARGIN_RIGHT], width - adapted_border[MARGIN_LEFT]);
+	adapt_values(CORNER_TOP_RIGHT, CORNER_BOTTOM_RIGHT, adapted_corner, corner_radius, height, height - adapted_border[MARGIN_BOTTOM], height - adapted_border[MARGIN_TOP]);
+	adapt_values(CORNER_BOTTOM_LEFT, CORNER_BOTTOM_RIGHT, adapted_corner, corner_radius, width, width - adapted_border[MARGIN_RIGHT], width - adapted_border[MARGIN_LEFT]);
+	adapt_values(CORNER_TOP_LEFT, CORNER_BOTTOM_LEFT, adapted_corner, corner_radius, height, height - adapted_border[MARGIN_BOTTOM], height - adapted_border[MARGIN_TOP]);
+
 	Rect2 infill_rect = style_rect.grow_individual(-adapted_border[MARGIN_LEFT], -adapted_border[MARGIN_TOP], -adapted_border[MARGIN_RIGHT], -adapted_border[MARGIN_BOTTOM]);
 
 	Vector<Point2> verts;
