@@ -3,7 +3,7 @@ shallow_clone: true
 
 install:
   - curl -fsSL -O http://prdownloads.sourceforge.net/scons/scons-local-2.5.1.zip
-  - 7z x scons-local-2.5.1.zip -o scons
+  - 7z x scons-local-2.5.1.zip -oscons
   - cinst pywin32
 
 build_script:
