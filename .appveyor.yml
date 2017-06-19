@@ -29,7 +29,7 @@ deploy:
   provider: GitHub
   auth_token:
     secure: vCMoPcriBlGoCDnJyJJ+81gsLCRUUdLziDo0CImVJEs6auvFxEHCC7oBTXqO8L/E
-  artifact: /bin\\*\.zip/
+  artifact: bin\godot-windows-x86_64.zip, bin\godot-windows-x86.zip
   draft: false
   prerelease: true
   force_update: true
