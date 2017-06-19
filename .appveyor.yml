@@ -29,8 +29,8 @@ deploy:
   api_key:
     secure: GJf+DF+dDdNyHsFP01JqBDaVUTI6jQ7VtDrDVp1S7vD94kT8/AbSOZSxIXyb7MBr
   subject: calinou
-  repo: generic
-  package: godot
+  repo: godot
+  package: editor
   version: version
   publish: true
   override: true
