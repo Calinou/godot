@@ -2,12 +2,13 @@ image: Visual Studio 2017
 shallow_clone: true
 
 init:
- - ps: Update-AppveyorBuild -Version "3.0.0-dev_$(Get-Date -format yyyy-MM-dd)_$($env:APPVEYOR_REPO_COMMIT.substring(0, 7))"
+ - ps: Update-AppveyorBuild -Version "$(Get-Date -format yyyy-MM-dd)_$($env:APPVEYOR_REPO_COMMIT.substring(0, 7))"
  - echo %APPVEYOR_REPO_COMMIT_TIMESTAMP%
 
 install:
   - curl -fsSL -O http://prdownloads.sourceforge.net/scons/scons-local-2.5.1.zip
   - 7z x scons-local-2.5.1.zip -oscons
+  - del /F scons-local-2.5.1.zip
 
 build_script:
   - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat" -arch=x64
@@ -29,7 +30,7 @@ deploy:
     username: godot
     password:
       secure: wPzpdQRz589GAsHPwAXMTgLsUrDB2+n2m2dKvV6Wihc=
-    folder: autobuild/{build}
+    folder: autobuild/$(version)
     application:
     active_mode: false
     debug: true
