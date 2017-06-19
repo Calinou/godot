@@ -1,6 +1,8 @@
-version: '3.0.0-dev-{build}'
 image: Visual Studio 2017
 shallow_clone: true
+
+init:
+ - ps: Update-AppveyorBuild -Version "3.0.0-dev-$(Get-Date -format yyyy-MM-dd)-$env:APPVEYOR_REPO_COMMIT"
 
 install:
   - curl -fsSL -O http://prdownloads.sourceforge.net/scons/scons-local-2.5.1.zip
@@ -13,24 +15,20 @@ build_script:
   - python scons/scons.py platform=windows tools=yes target=release_debug verbose=no warnings=no
 
 after_build:
-  - 7z a bin\godot-windows-x86_64.zip %APPVEYOR_BUILD_FOLDER%\bin\godot.windows.opt.tools.64.exe
-  - 7z a bin\godot-windows-x86.zip %APPVEYOR_BUILD_FOLDEr%\bin\godot.windows.opt.tools.32.exe
+  - 7z a godot-windows-x86_64-%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\bin\godot.windows.opt.tools.64.exe
+  - 7z a godot-windows-x86-%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\bin\godot.windows.opt.tools.32.exe
 
 artifacts:
-  - path: bin\godot-windows-x86_64.zip
-    name: Godot Engine Editor for Windows 64-bit
-
-  - path: bin\godot-windows-x86.zip
-    name: Godot Engine Editor for Windows 32-bit
+  - path: '*.zip'
 
 deploy:
-- provider: BinTray
-  username: calinou
-  api_key:
-    secure: GJf+DF+dDdNyHsFP01JqBDaVUTI6jQ7VtDrDVp1S7vD94kT8/AbSOZSxIXyb7MBr
-  subject: calinou
-  repo: godot
-  package: editor
-  version: version
-  publish: true
-  override: true
+  - provider: FTP
+    protocol: sftp
+    host: hugo.pro
+    username: godot
+    password:
+      secure: wPzpdQRz589GAsHPwAXMTgLsUrDB2+n2m2dKvV6Wihc=
+    folder: autobuild/{build}
+    application:
+    active_mode: false
+    debug: true
