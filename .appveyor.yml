@@ -6,6 +6,7 @@ init:
 
 install:
   - curl -fsSL -O http://prdownloads.sourceforge.net/scons/scons-local-2.5.1.zip
+  - cinst imagemagick.tool
   - 7z x scons-local-2.5.1.zip -oscons
   - del /F scons-local-2.5.1.zip
 
@@ -19,9 +20,21 @@ after_build:
   - mkdir %APPVEYOR_BUILD_VERSION%
   - 7z a %APPVEYOR_BUILD_VERSION%\godot-windows-x86_64-%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\bin\godot.windows.opt.tools.64.exe
   - 7z a %APPVEYOR_BUILD_VERSION%\godot-windows-x86-%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\bin\godot.windows.opt.tools.32.exe
+  - git clone https://github.com/tomuxmon/godot.msi
+  - cd godot.msi
+  - magick convert ..\icon.png -define icon:auto-resize=256,128,64,48,32,16 godot.ico
+  - copy /Y ..\bin\godot.windows.opt.tools.64.exe godot.exe
+  - candle godot.wxs -dexe_path=godot.exe -dversion=3.0.0.0
+  - light godot.wixobj
+  - move godot.msi ..\%APPVEYOR_BUILD_VERSION%\godot-windows-x86_64-%APPVEYOR_BUILD_VERSION%.msi
+  - copy /Y ..\bin\godot.windows.opt.tools.32.exe godot.exe
+  - candle godot.wxs -dexe_path=godot.exe -dversion=3.0.0.0
+  - light godot.wixobj
+  - move godot.msi ..\%APPVEYOR_BUILD_VERSION%\godot-windows-x86-%APPVEYOR_BUILD_VERSION%.msi
 
 artifacts:
   - path: '**\*.zip'
+  - path: '**\*.msi'
 
 deploy:
   - provider: FTP
