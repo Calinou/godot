@@ -24,12 +24,12 @@ after_build:
   - cd godot.msi
   - magick convert ..\icon.png -define icon:auto-resize=256,128,64,48,32,16 godot.ico
   - copy /Y ..\bin\godot.windows.opt.tools.64.exe godot.exe
-  - "%WIX%\bin\candle.exe" godot.wxs -dexe_path=godot.exe -dversion=3.0.0.0
-  - "%WIX%\bin\light.exe" godot.wixobj
+  - call "%WIX%\bin\candle.exe" godot.wxs -dexe_path=godot.exe -dversion=3.0.0.0
+  - call "%WIX%\bin\light.exe" godot.wixobj
   - move godot.msi ..\%APPVEYOR_BUILD_VERSION%\godot-windows-x86_64-%APPVEYOR_BUILD_VERSION%.msi
   - copy /Y ..\bin\godot.windows.opt.tools.32.exe godot.exe
-  - "%WIX%\bin\candle.exe" godot.wxs -dexe_path=godot.exe -dversion=3.0.0.0
-  - "%WIX%\bin\light.exe" godot.wixobj
+  - call "%WIX%\bin\candle.exe" godot.wxs -dexe_path=godot.exe -dversion=3.0.0.0
+  - call "%WIX%\bin\light.exe" godot.wixobj
   - move godot.msi ..\%APPVEYOR_BUILD_VERSION%\godot-windows-x86-%APPVEYOR_BUILD_VERSION%.msi
 
 artifacts:
