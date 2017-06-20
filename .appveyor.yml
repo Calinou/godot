@@ -17,11 +17,12 @@ build_script:
   - python scons/scons.py platform=windows tools=yes target=release_debug verbose=no warnings=no
 
 after_build:
-  - 7z a godot-windows-x86_64-%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\bin\godot.windows.opt.tools.64.exe
-  - 7z a godot-windows-x86-%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\bin\godot.windows.opt.tools.32.exe
+  - mkdir %APPVEYOR_BUILD_VERSION%
+  - 7z a %APPVEYOR_BUILD_VERSION%\godot-windows-x86_64-%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\bin\godot.windows.opt.tools.64.exe
+  - 7z a %APPVEYOR_BUILD_VERSION%\godot-windows-x86-%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\bin\godot.windows.opt.tools.32.exe
 
 artifacts:
-  - path: '*.zip'
+  - path: '**\*.zip'
 
 deploy:
   - provider: FTP
@@ -30,7 +31,7 @@ deploy:
     username: godot
     password:
       secure: wPzpdQRz589GAsHPwAXMTgLsUrDB2+n2m2dKvV6Wihc=
-    folder: autobuild/$(version)
+    folder: autobuild
     application:
     active_mode: false
     debug: true
