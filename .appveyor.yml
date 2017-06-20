@@ -35,3 +35,13 @@ deploy:
     application:
     active_mode: false
     debug: true
+
+  - provider: BinTray
+    username: calinou
+    api_key:
+      secure: GJf+DF+dDdNyHsFP01JqBDaVUTI6jQ7VtDrDVp1S7vD94kT8/AbSOZSxIXyb7MBr
+    subject: calinou
+    repo: godot
+    package: editor
+    publish: true
+    override: true
