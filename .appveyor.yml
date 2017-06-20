@@ -2,8 +2,7 @@ image: Visual Studio 2017
 shallow_clone: true
 
 init:
- - ps: Update-AppveyorBuild -Version "$(Get-Date -format yyyy-MM-dd)_$($env:APPVEYOR_REPO_COMMIT.substring(0, 7))"
- - echo %APPVEYOR_REPO_COMMIT_TIMESTAMP%
+ - ps: Update-AppveyorBuild -Version "$(Get-Date $env:APPVEYOR_REPO_COMMIT_TIMESTAMP -format yyyy-MM-dd).$($env:APPVEYOR_REPO_COMMIT.substring(0, 7))"
 
 install:
   - curl -fsSL -O http://prdownloads.sourceforge.net/scons/scons-local-2.5.1.zip
