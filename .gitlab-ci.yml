@@ -1,0 +1,56 @@
+---
+# The GitHub repository is mirrored to GitLab.com daily, where continuous builds
+# are performed and can be downloaded.
+#
+# https://gitlab.com/godotengine/godot
+# Pipelines URL: https://gitlab.com/godotengine/godot/pipelines
+
+stages:
+  - build
+  - package
+
+build:linux:
+  stage: build
+  image: ubuntu:trusty
+  before_script:
+    - apt-get update -y
+    - apt-get install -y build-essential scons pkg-config libx11-dev libxcursor-dev libxinerama-dev libgl1-mesa-dev libglu-dev libasound2-dev libpulse-dev libfreetype6-dev libssl-dev libudev-dev libxrandr-dev
+  script:
+    - scons platform=x11 tools=yes target=release_debug builtin_openssl=yes builtin_libpng=yes verbose=no warnings=no -j$(nproc)
+    - strip bin/godot.x11.opt.tools.64
+  artifacts:
+    when: on_success
+    expire_in: 2h
+    paths:
+      - bin/
+
+package:linux:
+  stage: package
+  image: ubuntu:trusty
+  dependencies:
+    - build:linux
+  before_script:
+    - apt-get update -y
+    - apt-get install -y wget libglib2.0-0
+  script:
+    - wget -q https://github.com/probonopd/AppImages/raw/master/functions.sh -O ./functions.sh
+    - . ./functions.sh
+    - mkdir -p Godot.AppDir/usr/bin/
+    - cp bin/godot.x11.opt.tools.64 Godot.AppDir/usr/bin/godot
+    - cp icon.png Godot.AppDir/godot.png
+    - cp misc/dist/appimage/godot.desktop Godot.AppDir/godot.desktop
+    - cd Godot.AppDir/
+    - copy_deps; copy_deps; copy_deps
+    - delete_blacklisted
+    - move_lib
+    - get_apprun
+    - cd ../
+    - wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
+    - chmod +x appimagetool
+    - ./appimagetool --appimage-extract
+    - ./squashfs-root/AppRun -n -v ./Godot.AppDir/ Godot-x86_64.AppImage
+  artifacts:
+    when: on_success
+    expire_in: 90 day
+    paths:
+      - Godot-x86_64.AppImage
