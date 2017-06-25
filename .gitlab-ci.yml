@@ -63,7 +63,7 @@ deploy:linux:
     - package:linux
   before_script:
     - apt-get update -y
-    - apt-get install -y wget ruby rpl
+    - apt-get install -y git wget ruby rpl
     - gem install dpl
   script:
     - wget -q https://gist.githubusercontent.com/Calinou/894db8a79d1b606f5c9d08d01ba2cbbf/raw/03be65ebac22c0ee514235a2fb0612c9a7897637/.bintray.json -O .bintray.json
