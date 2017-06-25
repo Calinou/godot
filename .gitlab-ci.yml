@@ -8,6 +8,7 @@
 stages:
   - build
   - package
+  - deploy
 
 build:linux:
   stage: build
@@ -54,3 +55,18 @@ package:linux:
     expire_in: 90 day
     paths:
       - Godot-x86_64.AppImage
+
+deploy:linux:
+  stage: deploy
+  image: ubuntu:trusty
+  dependencies:
+    - package:linux
+  before_script:
+    - apt-get update -y
+    - apt-get install -y wget ruby rpl
+    - gem install dpl
+  script:
+    - wget -q https://gist.githubusercontent.com/Calinou/894db8a79d1b606f5c9d08d01ba2cbbf/raw/03be65ebac22c0ee514235a2fb0612c9a7897637/.bintray.json -O .bintray.json
+    - rpl '${VERSION}' "$(date +%Y-%m-%d).$(git rev-parse --short HEAD | head -c 7)" .bintray.json
+    - rpl '${DATE}' "$(date +%Y-%m-%d)" .bintray.json
+    - dpl --provider=bintray --file=.bintray.json --user=Calinou --key=$BINTRAY_API_KEY
