@@ -1,7 +1,5 @@
 language: cpp
 
-dist: trusty
-
 sudo: false
 
 cache: ccache
@@ -11,71 +9,7 @@ compiler:
   - clang
 
 os:
-  - linux
   - osx
-
-env:
-  - GODOT_TARGET=iphone
-  - GODOT_TARGET=osx
-  - GODOT_TARGET=x11
-  #- GODOT_TARGET=android
-  #- GODOT_TARGET=windows
-
-matrix:
-  include:
-    - env: STATIC_CHECKS=yes
-  exclude:
-    - os: linux
-      env: GODOT_TARGET=iphone
-    - os: linux
-      env: GODOT_TARGET=osx
-    - os: linux
-      env: GODOT_TARGET=android
-    - os: osx
-      env: GODOT_TARGET=x11
-    - os: osx
-      env: GODOT_TARGET=windows
-    - compiler: gcc
-      env: GODOT_TARGET=iphone
-    - compiler: gcc
-      env: GODOT_TARGET=osx
-    - compiler: clang
-      env: GODOT_TARGET=android
-    - compiler: clang
-      env: GODOT_TARGET=windows
-    - compiler: clang
-      env: GODOT_TARGET=x11
-
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-      - llvm-toolchain-trusty-3.9
-    packages:
-      - build-essential
-      - scons
-      - pkg-config
-      - libx11-dev
-      - libxcursor-dev
-      - libasound2-dev
-      - libfreetype6-dev
-      - libgl1-mesa-dev
-      - libglu1-mesa-dev
-      - libssl-dev
-      - libxinerama-dev
-      - libxrandr-dev
-
-      # For cross-compiling to Windows.
-      #- binutils-mingw-w64-i686
-      #- binutils-mingw-w64-x86-64
-      #- gcc-mingw-w64-i686
-      #- gcc-mingw-w64-x86-64
-      #- g++-mingw-w64-i686
-      #- g++-mingw-w64-x86-64
-      #- mingw-w64
-
-      # For style checks.
-      - clang-format-3.9
 
 before_script:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
