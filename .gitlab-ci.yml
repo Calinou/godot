@@ -49,12 +49,12 @@ package:linux:
     - wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
     - chmod +x appimagetool
     - ./appimagetool --appimage-extract
-    - ./squashfs-root/AppRun -n -v ./Godot.AppDir/ Godot-x86_64.AppImage
+    - ./squashfs-root/AppRun -n -v ./Godot.AppDir/ Godot-Linux-x86_64.AppImage
   artifacts:
     when: on_success
-    expire_in: 90 day
+    expire_in: 2h
     paths:
-      - Godot-x86_64.AppImage
+      - Godot-Linux-x86_64.AppImage
 
 deploy:linux:
   stage: deploy
