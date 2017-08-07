@@ -32,29 +32,21 @@ package:linux:
     - build:linux
   before_script:
     - apt-get update -y
-    - apt-get install -y wget libglib2.0-0
+    - apt-get install -y wget build-essential pkg-config libx11-dev libxcursor-dev libxinerama-dev libgl1-mesa-dev libglu-dev libasound2-dev libpulse-dev libfreetype6-dev libssl-dev libudev-dev libxrandr-dev libglib2.0-0
   script:
-    - wget -q https://github.com/probonopd/AppImages/raw/master/functions.sh -O ./functions.sh
-    - . ./functions.sh
-    - mkdir -p Godot.AppDir/usr/bin/
-    - cp bin/godot.x11.opt.tools.64 Godot.AppDir/usr/bin/godot
-    - cp icon.png Godot.AppDir/godot.png
-    - cp misc/dist/appimage/godot.desktop Godot.AppDir/godot.desktop
-    - cd Godot.AppDir/
-    - copy_deps; copy_deps; copy_deps
-    - delete_blacklisted
-    - move_lib
-    - get_apprun
-    - cd ../
-    - wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
-    - chmod +x appimagetool
-    - ./appimagetool --appimage-extract
-    - ./squashfs-root/AppRun -n -v ./Godot.AppDir/ Godot-Linux-x86_64.AppImage
+    - mkdir -p appdir/usr/bin/ appdir/usr/share/icons
+    - cp bin/godot.x11.opt.tools.64 appdir/usr/bin/godot
+    - cp misc/dist/appimage/godot.desktop appdir/godot.desktop
+    - cp icon.svg appdir/usr/share/icons/godot.svg
+    - wget https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
+    - chmod +x linuxdeployqt-continuous-x86_64.AppImage
+    - ./linuxdeployqt-continuous-x86_64.AppImage --appimage-extract
+    - ./squashfs-root/AppRun appdir/godot.desktop -appimage
   artifacts:
     when: on_success
     expire_in: 2h
     paths:
-      - Godot-Linux-x86_64.AppImage
+      - Godot_Engine-x86_64.AppImage
 
 deploy:linux:
   stage: deploy
