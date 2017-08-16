@@ -1,38 +1,70 @@
 ---
-# The GitHub repository is mirrored to GitLab.com daily, where continuous builds
+# The GitHub repository is mirrored to GitLab.com, where continuous builds
 # are performed and can be downloaded.
 #
-# https://gitlab.com/godotengine/godot
-# Pipelines URL: https://gitlab.com/godotengine/godot/pipelines
+# https://gitlab.com/Calinou/godot
+# Pipelines URL: https://gitlab.com/Calinou/godot/pipelines
+#
+# Licensed under CC0 1.0 Universal: <https://creativecommons.org/publicdomain/zero/1.0/>
 
 stages:
   - build
   - package
   - deploy
 
+##
+## Helpers
+##
+
+# Deployment helper macro (used in all `deploy` stages)
+
+.deploy: &deploy
+  stage: deploy
+  image: ubuntu:xenial
+  before_script:
+    - apt-get update -y
+    - apt-get install -y git wget ruby rpl
+    - gem install dpl
+  script:
+    - wget -q https://gist.githubusercontent.com/Calinou/14881d9d7de8bca4d482ba95fe0b61d8/raw/.bintray.json -O .bintray.json
+    - VERSION=$(git rev-parse --short HEAD | head -c 7)
+    - DATE=$(git log -1 --format=%cd --date=short)
+    - rpl "#[INCLUDE_PATTERN]" "$INCLUDE_PATTERN" .bintray.json # The variable is defined in each job
+    - rpl "#[UPLOAD_PATTERN]" "$UPLOAD_PATTERN" .bintray.json   # The variable is defined in each job
+    - rpl "#[VERSION]" "$DATE.$VERSION" .bintray.json           # Replace the version *after* replacing the upload pattern, because it also is contained in the upload pattern
+    - rpl "#[DATE]" "$DATE" .bintray.json
+    - dpl --provider=bintray --file=.bintray.json --user=Calinou --key=$BINTRAY_API_KEY
+
+# Install dependencies before building or (sometimes) packaging
+
+.install_dependencies: &install_dependencies
+  before_script:
+    - apt-get update -y
+    - apt-get install -y git cmake wget build-essential scons pkg-config libx11-dev libxcursor-dev libxinerama-dev libgl1-mesa-dev libglu-dev libasound2-dev libpulse-dev libfreetype6-dev libssl-dev libudev-dev libxrandr-dev
+
+##
+## Linux
+##
+
 build:linux:
   stage: build
   image: ubuntu:trusty
-  before_script:
-    - apt-get update -y
-    - apt-get install -y build-essential scons pkg-config libx11-dev libxcursor-dev libxinerama-dev libgl1-mesa-dev libglu-dev libasound2-dev libpulse-dev libfreetype6-dev libssl-dev libudev-dev libxrandr-dev
+  <<: *install_dependencies
   script:
-    - scons platform=x11 tools=yes target=release_debug builtin_openssl=yes builtin_libpng=yes verbose=no warnings=no -j$(nproc)
+    - scons platform=x11 tools=yes target=release_debug builtin_openssl=yes builtin_libpng=yes verbose=no warnings=no progress=no -j$(nproc)
     - strip bin/godot.x11.opt.tools.64
   artifacts:
     when: on_success
     expire_in: 2h
     paths:
-      - bin/
+      - bin/godot.x11.opt.tools.64
 
 package:linux:
   stage: package
   image: ubuntu:trusty
   dependencies:
     - build:linux
-  before_script:
-    - apt-get update -y
-    - apt-get install -y wget build-essential pkg-config libx11-dev libxcursor-dev libxinerama-dev libgl1-mesa-dev libglu-dev libasound2-dev libpulse-dev libfreetype6-dev libssl-dev libudev-dev libxrandr-dev libglib2.0-0
+  <<: *install_dependencies
   script:
     - mkdir -p appdir/usr/bin/ appdir/usr/share/icons
     - cp bin/godot.x11.opt.tools.64 appdir/usr/bin/godot
@@ -42,23 +74,74 @@ package:linux:
     - chmod +x linuxdeployqt-continuous-x86_64.AppImage
     - ./linuxdeployqt-continuous-x86_64.AppImage --appimage-extract
     - ./squashfs-root/AppRun appdir/godot.desktop -appimage
+    - mv Godot_Engine-x86_64.AppImage bin/
   artifacts:
     when: on_success
     expire_in: 2h
     paths:
-      - Godot_Engine-x86_64.AppImage
+      - bin/Godot_Engine-x86_64.AppImage
 
 deploy:linux:
-  stage: deploy
-  image: ubuntu:trusty
   dependencies:
     - package:linux
+  variables:
+    INCLUDE_PATTERN: "bin/Godot_Engine-x86_64.AppImage"
+    UPLOAD_PATTERN: "Godot-Linux-x86_64-#[VERSION].AppImage"
+  <<: *deploy
+
+##
+## HTML5
+##
+
+build:html5:
+  stage: build
+  image: ubuntu:xenial
+  <<: *install_dependencies
+  script:
+    - cd $HOME
+    - wget https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-portable.tar.gz
+    - tar xf emsdk-portable.tar.gz
+    - cd emsdk-portable/; ./emsdk update; ./emsdk install latest; ./emsdk activate latest
+    - source ./emsdk_env.sh
+    - export EMSCRIPTEN_ROOT=$(em-config EMSCRIPTEN_ROOT)
+    - cd $CI_PROJECT_DIR
+    - scons platform=javascript wasm=yes tools=no target=release_debug verbose=no warnings=no progress=no -j$(nproc)
+    - scons platform=javascript wasm=yes tools=no target=release verbose=no warnings=no progress=no -j$(nproc)
+    - scons platform=javascript wasm=no tools=no target=release_debug verbose=no warnings=no progress=no -j$(nproc)
+    - scons platform=javascript wasm=no tools=no target=release verbose=no warnings=no progress=no -j$(nproc)
+  artifacts:
+    when: on_success
+    expire_in: 2h
+    paths:
+      - bin/
+
+package:html5:
+  stage: package
+  image: ubuntu:xenial
+  dependencies:
+    - build:html5
   before_script:
     - apt-get update -y
-    - apt-get install -y git wget ruby rpl
-    - gem install dpl
+    - apt-get install -y zip
   script:
-    - wget -q https://gist.githubusercontent.com/Calinou/894db8a79d1b606f5c9d08d01ba2cbbf/raw/.bintray.json -O .bintray.json
-    - rpl '${VERSION}' "$(date +%Y-%m-%d).$(git rev-parse --short HEAD | head -c 7)" .bintray.json
-    - rpl '${DATE}' "$(date +%Y-%m-%d)" .bintray.json
-    - dpl --provider=bintray --file=.bintray.json --user=Calinou --key=$BINTRAY_API_KEY
+    - cd bin/
+    - mkdir templates/
+    - echo "3.0-alpha" > templates/version.txt
+    - mv godot.javascript.opt.debug.webassembly.zip templates/webassembly_debug.zip
+    - mv godot.javascript.opt.webassembly.zip templates/webassembly_release.zip
+    - mv godot.javascript.opt.debug.zip templates/javascript_debug.zip
+    - mv godot.javascript.opt.zip templates/javascript_release.zip
+    - zip -r9 Godot-Templates-HTML5.tpz templates/
+  artifacts:
+    when: on_success
+    expire_in: 2h
+    paths:
+      - bin/Godot-Templates-HTML5.tpz
+
+deploy:html5:
+  dependencies:
+    - package:html5
+  variables:
+    INCLUDE_PATTERN: "bin/Godot-Templates-HTML5.tpz"
+    UPLOAD_PATTERN: "templates/Godot-Templates-HTML5-#[VERSION].tpz"
+  <<: *deploy
