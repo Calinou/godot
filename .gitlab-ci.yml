@@ -131,7 +131,7 @@ package:html5:
     - mv godot.javascript.opt.webassembly.zip templates/webassembly_release.zip
     - mv godot.javascript.opt.debug.zip templates/javascript_debug.zip
     - mv godot.javascript.opt.zip templates/javascript_release.zip
-    - zip -r9 Godot-Templates-HTML5.tpz templates/
+    - zip -9 Godot-Templates-HTML5.tpz templates/*
   artifacts:
     when: on_success
     expire_in: 2h
