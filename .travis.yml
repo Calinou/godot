@@ -11,6 +11,14 @@ compiler:
 os:
   - osx
 
+env:
+  global:
+    - OPTIONS="verbose=no warnings=no progress=no builtin_openssl=yes -j$(sysctl -n hw.logicalcpu)"
+  matrix:
+    - PLATFORM=osx    INCLUDE_PATTERN_1="bin/Godot-macOS-x86_64.dmg"    UPLOAD_PATTERN_1="Godot-macOS-x86_64-#[VERSION].dmg"
+                      INCLUDE_PATTERN_2="bin/Godot-Templates-macOS.tpz" UPLOAD_PATTERN_2="templates/Godot-Templates-macOS-#[VERSION].tpz"
+    - PLATFORM=iphone INCLUDE_PATTERN="bin/Godot-Templates-iOS.tpz" UPLOAD_PATTERN="templates/Godot-Templates-iOS-#[VERSION].tpz"
+
 before_script:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
       brew update; brew install scons ccache;
