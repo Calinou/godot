@@ -30,6 +30,7 @@ before_script:
       export ANDROID_HOME=/usr/local/opt/android-sdk; export ANDROID_NDK_ROOT=/usr/local/opt/android-ndk;
     fi
 
+# For macOS, pretend 64-bit templates to be fat binaries, just in case
 script:
   - if [ "$STATIC_CHECKS" = "yes" ]; then
       sh ./misc/travis/clang-format.sh;
