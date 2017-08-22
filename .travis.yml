@@ -15,9 +15,9 @@ env:
   global:
     - OPTIONS="verbose=no warnings=no progress=no builtin_openssl=yes -j$(sysctl -n hw.logicalcpu)"
   matrix:
-    - PLATFORM=osx    INCLUDE_PATTERN_1="bin/Godot-macOS-x86_64.dmg"    UPLOAD_PATTERN_1="Godot-macOS-x86_64-#[VERSION].dmg"
-                      INCLUDE_PATTERN_2="bin/Godot-Templates-macOS.tpz" UPLOAD_PATTERN_2="templates/Godot-Templates-macOS-#[VERSION].tpz"
-    - PLATFORM=iphone INCLUDE_PATTERN="bin/Godot-Templates-iOS.tpz" UPLOAD_PATTERN="templates/Godot-Templates-iOS-#[VERSION].tpz"
+    - PLATFORM=osx    INCLUDE_PATTERN_1="Godot-macOS-x86_64.dmg"    UPLOAD_PATTERN_1="Godot-macOS-x86_64-#[VERSION].dmg"
+                      INCLUDE_PATTERN_2="Godot-Templates-macOS.tpz" UPLOAD_PATTERN_2="templates/Godot-Templates-macOS-#[VERSION].tpz"
+    - PLATFORM=iphone INCLUDE_PATTERN="Godot-Templates-iOS.tpz" UPLOAD_PATTERN="templates/Godot-Templates-iOS-#[VERSION].tpz"
 
 before_script:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
@@ -31,6 +31,8 @@ before_script:
     fi
 
 # For macOS, pretend 64-bit templates to be fat binaries, just in case
+# For iOS, compile only release templates (to avoid exceeding time limits on Travis CI),
+# and copy them as debug templates as well (to avoid errors in the export dialog of the editor)
 script:
   - if [ "$STATIC_CHECKS" = "yes" ]; then
       sh ./misc/travis/clang-format.sh;
