@@ -1548,10 +1548,6 @@ def save_active_platforms(apnames, ap):
 
 def no_verbose(sys, env):
 
-    # If the output is not a terminal, do nothing
-    if not sys.stdout.isatty():
-        return
-
     colors = {}
     colors['cyan'] = '\033[96m'
     colors['purple'] = '\033[95m'
