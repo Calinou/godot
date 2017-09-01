@@ -5,7 +5,8 @@
 # https://gitlab.com/Calinou/godot
 # Pipelines URL: https://gitlab.com/Calinou/godot/pipelines
 #
-# Licensed under CC0 1.0 Universal: <https://creativecommons.org/publicdomain/zero/1.0/>
+# This build script is licensed under CC0 1.0 Universal:
+# https://creativecommons.org/publicdomain/zero/1.0/
 
 stages:
   - build
