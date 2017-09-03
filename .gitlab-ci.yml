@@ -44,10 +44,12 @@ stages:
     - apt-get install -y git cmake wget build-essential scons pkg-config libx11-dev libxcursor-dev libxinerama-dev libgl1-mesa-dev libglu-dev libasound2-dev libpulse-dev libfreetype6-dev libssl-dev libudev-dev libxrandr-dev
 
 ##
-## Linux
+## Linux editor
 ##
 
-build:linux:
+# TODO: Build 32-bit Linux editor.
+
+build:linux_editor:
   stage: build
   image: ubuntu:trusty
   <<: *install_dependencies
@@ -56,15 +58,15 @@ build:linux:
     - strip bin/godot.x11.opt.tools.64
   artifacts:
     when: on_success
-    expire_in: 2h
+    expire_in: 2d
     paths:
       - bin/godot.x11.opt.tools.64
 
-package:linux:
+package:linux_editor:
   stage: package
   image: ubuntu:trusty
   dependencies:
-    - build:linux
+    - build:linux_editor
   <<: *install_dependencies
   script:
     - mkdir -p appdir/usr/bin/ appdir/usr/share/icons
@@ -78,16 +80,69 @@ package:linux:
     - mv Godot_Engine-x86_64.AppImage bin/
   artifacts:
     when: on_success
-    expire_in: 2h
+    expire_in: 2d
     paths:
       - bin/Godot_Engine-x86_64.AppImage
 
-deploy:linux:
+deploy:linux_editor:
   dependencies:
-    - package:linux
+    - package:linux_editor
   variables:
     INCLUDE_PATTERN: "bin/Godot_Engine-x86_64.AppImage"
     UPLOAD_PATTERN: "Godot-Linux-x86_64-#[VERSION].AppImage"
+  <<: *deploy
+
+##
+## Linux export templates
+##
+
+# TODO: Build 32-bit Linux export templates. For now, the 64-bit templates are copied to 32-bit templates,
+# to prevent errors from appearing in the export dialog.
+
+build:linux_templates:
+  stage: build
+  image: ubuntu:trusty
+  <<: *install_dependencies
+  script:
+    - scons platform=x11 tools=no target=release_debug builtin_openssl=yes builtin_libpng=yes verbose=no warnings=no progress=no -j$(nproc)
+    - scons platform=x11 tools=no target=release builtin_openssl=yes builtin_libpng=yes verbose=no warnings=no progress=no -j$(nproc)
+    - strip bin/godot.*.64
+  artifacts:
+    when: on_success
+    expire_in: 2d
+    paths:
+      - bin/godot.x11.opt.debug.64
+      - bin/godot.x11.opt.64
+
+package:linux_templates:
+  stage: package
+  image: ubuntu:trusty
+  dependencies:
+    - build:linux_templates
+  before_script:
+    - apt-get update -y
+    - apt-get install -y zip
+  script:
+    - cd bin/
+    - mkdir templates/
+    - echo "3.0-alpha" > templates/version.txt
+    - mv godot.x11.opt.debug.64 templates/linux_x11_64_debug
+    - mv godot.x11.opt.64 templates/linux_x11_64_release
+    - cp templates/linux_x11_64_debug templates/linux_x11_32_debug
+    - cp templates/linux_x11_64_release templates/linux_x11_32_release
+    - zip -9 Godot-Templates-Linux.tpz templates/*
+  artifacts:
+    when: on_success
+    expire_in: 2d
+    paths:
+      - bin/Godot-Templates-Linux.tpz
+
+deploy:linux_templates:
+  dependencies:
+    - package:linux_templates
+  variables:
+    INCLUDE_PATTERN: "bin/Godot-Templates-Linux.tpz"
+    UPLOAD_PATTERN: "templates/Godot-Templates-Linux-#[VERSION].tpz"
   <<: *deploy
 
 ##
@@ -112,7 +167,7 @@ build:html5:
     - scons platform=javascript wasm=no tools=no target=release verbose=no warnings=no progress=no -j$(nproc)
   artifacts:
     when: on_success
-    expire_in: 2h
+    expire_in: 2d
     paths:
       - bin/
 
@@ -135,7 +190,7 @@ package:html5:
     - zip -9 Godot-Templates-HTML5.tpz templates/*
   artifacts:
     when: on_success
-    expire_in: 2h
+    expire_in: 2d
     paths:
       - bin/Godot-Templates-HTML5.tpz
 
