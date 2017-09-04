@@ -4,6 +4,13 @@
 image: Visual Studio 2017
 shallow_clone: true
 
+environment:
+  SCONS_OPTIONS: verbose=no warnings=no progress=no
+
+  matrix:
+    - TARGET: editor
+    - TARGET: templates
+
 init:
  - ps: Update-AppveyorBuild -Version "$(Get-Date $env:APPVEYOR_REPO_COMMIT_TIMESTAMP -format yyyy-MM-dd).$($env:APPVEYOR_REPO_COMMIT.substring(0, 7))"
 
@@ -11,30 +18,45 @@ install:
   - pip install --egg scons # `--egg` is required for use with AppVeyor
 
 build_script:
-  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat" -arch=x64
-  - scons platform=windows tools=yes target=release_debug verbose=no warnings=no
-  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat" -arch=x86
-  - scons platform=windows tools=yes target=release_debug verbose=no warnings=no
+  - if %TARGET%==editor call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat" -arch=x64
+  - if %TARGET%==editor scons platform=windows tools=yes target=release_debug %SCONS_OPTIONS%
+  - if %TARGET%==editor call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat" -arch=x86
+  - if %TARGET%==editor scons platform=windows tools=yes target=release_debug %SCONS_OPTIONS%
+  - if %TARGET%==templates call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat" -arch=x64
+  - if %TARGET%==templates scons platform=windows tools=no target=release %SCONS_OPTIONS%
+  - if %TARGET%==templates call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat" -arch=x86
+  - if %TARGET%==templates scons platform=windows tools=no target=release %SCONS_OPTIONS%
 
+# Only release export templates are built for now, pretend that release-mode binaries are
+# debug-mode templates to avoid errors in the editor's export dialog
 after_build:
-  - mkdir %APPVEYOR_BUILD_VERSION%
-  - 7z a %APPVEYOR_BUILD_VERSION%\Godot-Windows-x86_64-%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\bin\godot.windows.opt.tools.64.exe
-  - 7z a %APPVEYOR_BUILD_VERSION%\Godot-Windows-x86-%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\bin\godot.windows.opt.tools.32.exe
-  - git clone https://github.com/tomuxmon/godot.msi
-  - cd godot.msi
-  - copy /Y ..\platform\windows\godot.ico godot.ico
-  - copy /Y ..\bin\godot.windows.opt.tools.64.exe godot.exe
-  - call "%WIX%\bin\candle.exe" godot.wxs -dexe_path=godot.exe -dversion=3.0.0.0
-  - call "%WIX%\bin\light.exe" godot.wixobj
-  - move godot.msi ..\%APPVEYOR_BUILD_VERSION%\Godot-Windows-x86_64-%APPVEYOR_BUILD_VERSION%.msi
-  - copy /Y ..\bin\godot.windows.opt.tools.32.exe godot.exe
-  - call "%WIX%\bin\candle.exe" godot.wxs -dexe_path=godot.exe -dversion=3.0.0.0
-  - call "%WIX%\bin\light.exe" godot.wixobj
-  - move godot.msi ..\%APPVEYOR_BUILD_VERSION%\Godot-Windows-x86-%APPVEYOR_BUILD_VERSION%.msi
+  - if %TARGET%==editor mkdir %APPVEYOR_BUILD_VERSION%
+  - if %TARGET%==editor 7z a %APPVEYOR_BUILD_VERSION%\Godot-Windows-x86_64-%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\bin\godot.windows.opt.tools.64.exe
+  - if %TARGET%==editor 7z a %APPVEYOR_BUILD_VERSION%\Godot-Windows-x86-%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\bin\godot.windows.opt.tools.32.exe
+  - if %TARGET%==editor git clone https://github.com/tomuxmon/godot.msi
+  - if %TARGET%==editor cd godot.msi
+  - if %TARGET%==editor copy /Y ..\platform\windows\godot.ico godot.ico
+  - if %TARGET%==editor copy /Y ..\bin\godot.windows.opt.tools.64.exe godot.exe
+  - if %TARGET%==editor call "%WIX%\bin\candle.exe" godot.wxs -dexe_path=godot.exe -dversion=3.0.0.0
+  - if %TARGET%==editor call "%WIX%\bin\light.exe" godot.wixobj
+  - if %TARGET%==editor move godot.msi ..\%APPVEYOR_BUILD_VERSION%\Godot-Windows-x86_64-%APPVEYOR_BUILD_VERSION%.msi
+  - if %TARGET%==editor copy /Y ..\bin\godot.windows.opt.tools.32.exe godot.exe
+  - if %TARGET%==editor call "%WIX%\bin\candle.exe" godot.wxs -dexe_path=godot.exe -dversion=3.0.0.0
+  - if %TARGET%==editor call "%WIX%\bin\light.exe" godot.wixobj
+  - if %TARGET%==editor move godot.msi ..\%APPVEYOR_BUILD_VERSION%\Godot-Windows-x86-%APPVEYOR_BUILD_VERSION%.msi
+  - if %TARGET%==templates mkdir bin\templates
+  - if %TARGET%==templates echo "3.0-alpha" > bin\templates\version.txt
+  - if %TARGET%==templates copy bin\godot.windows.opt.64.exe bin\templates\windows_64_debug.exe
+  - if %TARGET%==templates copy bin\godot.windows.opt.32.exe bin\templates\windows_32_debug.exe
+  - if %TARGET%==templates copy bin\godot.windows.opt.64.exe bin\templates\windows_64_release.exe
+  - if %TARGET%==templates copy bin\godot.windows.opt.32.exe bin\templates\windows_32_release.exe
+  - if %TARGET%==templates cd bin\
+  - if %TARGET%==templates 7z a -r Godot-Templates-Windows-%APPVEYOR_BUILD_VERSION%.tpz templates\
 
 artifacts:
   - path: '**\*.zip'
   - path: '**\*.msi'
+  - path: '**\*.tpz'
 
 deploy:
   - provider: BinTray
