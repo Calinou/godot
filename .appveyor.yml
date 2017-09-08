@@ -51,7 +51,8 @@ after_build:
   - if %TARGET%==templates copy bin\godot.windows.opt.64.exe bin\templates\windows_64_release.exe
   - if %TARGET%==templates copy bin\godot.windows.opt.32.exe bin\templates\windows_32_release.exe
   - if %TARGET%==templates cd bin\
-  - if %TARGET%==templates 7z a -r Godot-Templates-Windows-%APPVEYOR_BUILD_VERSION%.tpz templates\
+  - if %TARGET%==templates 7z a -r Godot-Templates-Windows-%APPVEYOR_BUILD_VERSION%.zip templates\
+  - if %TARGET%==templates move Godot-Templates-Windows-%APPVEYOR_BUILD_VERSION%.zip Godot-Templates-Windows-%APPVEYOR_BUILD_VERSION%.tpz
 
 artifacts:
   - path: '**\*.zip'
