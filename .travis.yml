@@ -5,12 +5,6 @@ language: cpp
 
 sudo: false
 
-cache: ccache
-
-compiler:
-  - gcc
-  - clang
-
 os:
   - osx
 
@@ -23,23 +17,75 @@ env:
     - PLATFORM=iphone TARGET=templates INCLUDE_PATTERN="bin/Godot-Templates-iOS.tpz"   UPLOAD_PATTERN="templates/Godot-Templates-iOS-#[VERSION].tpz"
 
 before_script:
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-      brew update; brew install scons ccache;
-      export PATH="/usr/local/opt/ccache/libexec:$PATH";
-    fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ] && [ "$GODOT_TARGET" = "android" ]; then
-      brew update; brew install -v android-sdk;
-      brew install -v android-ndk | grep -v "inflating:" | grep -v "creating:";
-      export ANDROID_HOME=/usr/local/opt/android-sdk; export ANDROID_NDK_ROOT=/usr/local/opt/android-ndk;
-    fi
+  - brew update
+  - brew install scons
 
 # For macOS, pretend 64-bit templates to be fat binaries, just in case
 # macOS editor and templates are built in separate jobs to avoid exceeding time limits
 # For iOS, compile only release templates (to avoid exceeding time limits on Travis CI),
 # and copy them as debug templates as well (to avoid errors in the export dialog of the editor)
 script:
-  - if [ "$STATIC_CHECKS" = "yes" ]; then
-      sh ./misc/travis/clang-format.sh;
-    else
-      scons -j 2 platform=$GODOT_TARGET progress=no verbose=yes CXX=$CXX;
-    fi
+  - if [ "$PLATFORM" = "osx" ]; then
+      if [ "$TARGET" = "editor" ]; then
+        scons platform=osx bits=64 tools=yes target=release_debug $OPTIONS;
+        mkdir -p godot_dmg/;
+        cp -r misc/dist/osx_tools.app/ godot_dmg/Godot.app/;
+        mkdir -p godot_dmg/Godot.app/Contents/MacOS/;
+        cp bin/godot.osx.opt.tools.64 godot_dmg/Godot.app/Contents/MacOS/Godot;
+        git clone https://github.com/andreyvit/create-dmg.git;
+        cd create-dmg/;
+        ./create-dmg --volname "Godot" --volicon "../godot_dmg/Godot.app/Contents/Resources/Godot.icns" --hide-extension "Godot.app" ../bin/Godot-macOS-x86_64.dmg ../godot_dmg/;
+        cd ../;
+      fi;
+      if [ "$TARGET" = "templates" ]; then
+        scons platform=osx bits=64 tools=no target=release_debug $OPTIONS;
+        scons platform=osx bits=64 tools=no target=release $OPTIONS;
+        mv misc/dist/osx_template.app/ osx_template.app/;
+        mkdir -p osx_template.app/Contents/MacOS/;
+        mv bin/godot.osx.opt.debug.64 osx_template.app/Contents/MacOS/godot_osx_debug.fat;
+        mv bin/godot.osx.opt.64 osx_template.app/Contents/MacOS/godot_osx_release.fat;
+        mkdir -p bin/templates/;
+        echo "3.0-alpha" > bin/templates/version.txt;
+        zip -r9 bin/templates/osx.zip osx_template.app/;
+        cd bin/;
+        zip -9 Godot-Templates-macOS.tpz templates/*;
+        cd ../;
+      fi;
+    fi;
+  - if [ "$PLATFORM" = "iphone" ]; then
+      scons platform=iphone arch=arm tools=no target=release $OPTIONS;
+      scons platform=iphone arch=arm64 tools=no target=release $OPTIONS;
+      mv misc/dist/ios_xcode/ godot_ios_xcode/;
+      lipo -create -arch armv7 bin/godot.iphone.opt.arm -arch arm64 bin/godot.iphone.opt.arm64 -output godot_ios_xcode/godot_opt.iphone;
+      cd godot_ios_xcode/;
+      cp godot_opt.iphone godot_debug.iphone;
+      cd ../;
+      mkdir -p bin/templates/;
+      echo "3.0-alpha" > bin/templates/version.txt;
+      zip -r9 bin/templates/GodotiOSXCode.zip godot_ios_xcode/;
+      cd bin/;
+      zip -9 Godot-Templates-iOS.tpz templates/*;
+      cd ../;
+    fi;
+
+# macOS has both editor and templates to deploy, so two include/upload patterns are needed
+# Include/upload patterns are defined in the environment matrix
+before_deploy:
+  - brew update
+  - brew install rpl
+  - VERSION=$(git rev-parse --short HEAD | head -c 7)
+  - DATE=$(git log -1 --format=%cd --date=short)
+  - wget -q https://gist.githubusercontent.com/Calinou/14881d9d7de8bca4d482ba95fe0b61d8/raw/.bintray.json -O .bintray.json
+  - rpl "#[INCLUDE_PATTERN]" "$INCLUDE_PATTERN" .bintray.json
+  - rpl "#[UPLOAD_PATTERN]" "$UPLOAD_PATTERN" .bintray.json
+  - rpl "#[VERSION]" "$DATE.$VERSION" .bintray.json
+  - rpl "#[DATE]" "$DATE" .bintray.json
+
+deploy:
+  skip_cleanup: true
+  provider: bintray
+  file: .bintray.json
+  user: calinou
+  key: $BINTRAY_API_KEY
+  on:
+    all_branches: true
