@@ -638,13 +638,13 @@ void SpatialMaterial::_update_shader() {
 
 	if (features[FEATURE_DEPTH_MAPPING] && !flags[FLAG_UV1_USE_TRIPLANAR]) { //depthmap not supported with triplanar
 		code += "\t{\n";
-		code += "\t\tvec3 view_dir = normalize(normalize(-VERTEX)*mat3(TANGENT,-BINORMAL,NORMAL));\n"; //binormal is negative due to mikktpsace
+		code += "\t\tvec3 view_dir = normalize(normalize(-VERTEX)*mat3(TANGENT,BINORMAL,NORMAL));\n";
 
 		if (deep_parallax) {
 			code += "\t\tfloat num_layers = mix(float(depth_max_layers),float(depth_min_layers), abs(dot(vec3(0.0, 0.0, 1.0), view_dir)));\n";
 			code += "\t\tfloat layer_depth = 1.0 / num_layers;\n";
 			code += "\t\tfloat current_layer_depth = 0.0;\n";
-			code += "\t\tvec2 P = view_dir.xy * depth_scale;\n";
+			code += "\t\tvec2 P = view_dir.xy * depth_scale * -0.1;\n";
 			code += "\t\tvec2 delta = P / num_layers;\n";
 			code += "\t\tvec2  ofs = base_uv;\n";
 			code += "\t\tfloat depth = textureLod(texture_depth, ofs,0.0).r;\n";
@@ -662,7 +662,7 @@ void SpatialMaterial::_update_shader() {
 
 		} else {
 			code += "\t\tfloat depth = texture(texture_depth, base_uv).r;\n";
-			code += "\t\tvec2 ofs = base_uv - view_dir.xy / view_dir.z * (depth * depth_scale);\n";
+			code += "\t\tvec2 ofs = base_uv - view_dir.xy / view_dir.z * (depth * depth_scale * -0.05);\n";
 		}
 
 		code += "\t\tbase_uv=ofs;\n";
@@ -2083,7 +2083,7 @@ SpatialMaterial::SpatialMaterial() :
 	set_clearcoat(1);
 	set_clearcoat_gloss(0.5);
 	set_anisotropy(0);
-	set_depth_scale(0.05);
+	set_depth_scale(0.1);
 	set_subsurface_scattering_strength(0);
 	set_transmission(Color(0, 0, 0));
 	set_refraction(0.05);
