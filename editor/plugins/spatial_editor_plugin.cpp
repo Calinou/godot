@@ -72,7 +72,7 @@
 #define MIN_FOV 0.01
 #define MAX_FOV 179
 
-void SpatialEditorViewport::_update_camera(float p_interp_delta) {
+void SpatialEditorViewport::_update_camera(float p_interp_delta = 0.0) {
 
 	bool is_orthogonal = camera->get_projection() == Camera::PROJECTION_ORTHOGONAL;
 
@@ -5185,6 +5185,7 @@ SpatialEditor::SpatialEditor(EditorNode *p_editor) {
 	settings_fov->set_min(MIN_FOV);
 	settings_fov->set_step(0.01);
 	settings_fov->set_value(EDITOR_DEF("editors/3d/default_fov", 70.0));
+	settings_fov->connect("value_changed", this, "_update_camera");
 	settings_vbc->add_margin_child(TTR("Perspective FOV (deg.):"), settings_fov);
 
 	settings_znear = memnew(SpinBox);
@@ -5192,6 +5193,7 @@ SpatialEditor::SpatialEditor(EditorNode *p_editor) {
 	settings_znear->set_min(MIN_Z);
 	settings_znear->set_step(0.01);
 	settings_znear->set_value(EDITOR_DEF("editors/3d/default_z_near", 0.05));
+	settings_fov->connect("value_changed", this, "_update_camera");
 	settings_vbc->add_margin_child(TTR("View Z-Near:"), settings_znear);
 
 	settings_zfar = memnew(SpinBox);
@@ -5199,6 +5201,7 @@ SpatialEditor::SpatialEditor(EditorNode *p_editor) {
 	settings_zfar->set_min(MIN_Z);
 	settings_zfar->set_step(0.01);
 	settings_zfar->set_value(EDITOR_DEF("editors/3d/default_z_far", 1500));
+	settings_fov->connect("value_changed", this, "_update_camera");
 	settings_vbc->add_margin_child(TTR("View Z-Far:"), settings_zfar);
 
 	/* XFORM DIALOG */
