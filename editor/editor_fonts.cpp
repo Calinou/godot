@@ -117,6 +117,7 @@ void editor_register_fonts(Ref<Theme> p_theme) {
 	/* Custom font */
 
 	DynamicFontData::Hinting font_hinting = (DynamicFontData::Hinting)(int)EditorSettings::get_singleton()->get("interface/editor/main_font_hinting");
+	bool font_subpixel_rendering = (bool)EditorSettings::get_singleton()->get("interface/editor/main_font_subpixel_rendering");
 
 	String custom_font_path = EditorSettings::get_singleton()->get("interface/editor/main_font");
 	Ref<DynamicFontData> CustomFont;
@@ -142,6 +143,8 @@ void editor_register_fonts(Ref<Theme> p_theme) {
 
 	String custom_font_path_source = EditorSettings::get_singleton()->get("interface/editor/code_font");
 	DynamicFontData::Hinting font_source_hinting = (DynamicFontData::Hinting)(int)EditorSettings::get_singleton()->get("interface/editor/code_font_hinting");
+	bool font_source_subpixel_rendering = (bool)EditorSettings::get_singleton()->get("interface/editor/code_font_subpixel_rendering");
+
 	Ref<DynamicFontData> CustomFontSource;
 	if (custom_font_path_source.length() > 0) {
 		CustomFontSource.instance();

@@ -86,8 +86,11 @@ void DynamicFontData::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_font_path"), &DynamicFontData::get_font_path);
 	ClassDB::bind_method(D_METHOD("set_hinting", "mode"), &DynamicFontData::set_hinting);
 	ClassDB::bind_method(D_METHOD("get_hinting"), &DynamicFontData::get_hinting);
+	ClassDB::bind_method(D_METHOD("set_subpixel_rendering", "enable"), &DynamicFontData::set_subpixel_rendering);
+	ClassDB::bind_method(D_METHOD("is_subpixel_rendering"), &DynamicFontData::is_subpixel_rendering);
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "hinting", PROPERTY_HINT_ENUM, "None,Light,Normal"), "set_hinting", "get_hinting");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "subpixel_rendering"), "is_subpixel_rendering", "set_subpixel_rendering");
 
 	BIND_ENUM_CONSTANT(HINTING_NONE);
 	BIND_ENUM_CONSTANT(HINTING_LIGHT);
@@ -100,6 +103,7 @@ DynamicFontData::DynamicFontData() {
 
 	force_autohinter = false;
 	hinting = DynamicFontData::HINTING_NORMAL;
+	subpixel_rendering = false;
 	font_mem = NULL;
 	font_mem_size = 0;
 }
@@ -177,8 +181,6 @@ Error DynamicFontAtSize::_load() {
 		ERR_FAIL_V(ERR_UNCONFIGURED);
 	}
 
-	//error = FT_New_Face( library, src_path.utf8().get_data(),0,&face );
-
 	if (error == FT_Err_Unknown_File_Format) {
 		ERR_EXPLAIN(TTR("Unknown font format."));
 		FT_Done_FreeType(library);
@@ -190,14 +192,6 @@ Error DynamicFontAtSize::_load() {
 	}
 
 	ERR_FAIL_COND_V(error, ERR_FILE_CANT_OPEN);
-
-	/*error = FT_Set_Char_Size(face,0,64*size,512,512);
-
-	if ( error ) {
-		FT_Done_FreeType( library );
-		ERR_EXPLAIN(TTR("Invalid font size."));
-		ERR_FAIL_COND_V( error, ERR_INVALID_PARAMETER );
-	}*/
 
 	if (FT_HAS_COLOR(face)) {
 		int best_match = 0;
@@ -435,8 +429,6 @@ DynamicFontAtSize::TexturePosition DynamicFontAtSize::_find_texture_pos_for_glyp
 		break;
 	}
 
-	//print_line("CHAR: "+String::chr(p_char)+" TEX INDEX: "+itos(tex_index)+" X: "+itos(tex_x)+" Y: "+itos(tex_y));
-
 	if (ret.index == -1) {
 		//could not find texture to fit, create one
 		ret.x = 0;
@@ -504,24 +496,31 @@ DynamicFontAtSize::Character DynamicFontAtSize::_bitmap_to_character(FT_Bitmap b
 				int ofs = ((i + tex_pos.y + rect_margin) * tex.texture_size + j + tex_pos.x + rect_margin) * color_size;
 				ERR_FAIL_COND_V(ofs >= tex.imgdata.size(), Character::not_found());
 				switch (bitmap.pixel_mode) {
-					case FT_PIXEL_MODE_MONO: {
+					case FT_PIXEL_MODE_MONO:
 						int byte = i * bitmap.pitch + (j >> 3);
 						int bit = 1 << (7 - (j % 8));
 						wr[ofs + 0] = 255; //grayscale as 1
 						wr[ofs + 1] = bitmap.buffer[byte] & bit ? 255 : 0;
-					} break;
+					break;
+
 					case FT_PIXEL_MODE_GRAY:
 						wr[ofs + 0] = 255; //grayscale as 1
 						wr[ofs + 1] = bitmap.buffer[i * bitmap.pitch + j];
-						break;
-					case FT_PIXEL_MODE_BGRA: {
+					break;
+
+					case FT_PIXEL_MODE_BGRA:
 						int ofs_color = i * bitmap.pitch + (j << 2);
 						wr[ofs + 2] = bitmap.buffer[ofs_color + 0];
 						wr[ofs + 1] = bitmap.buffer[ofs_color + 1];
 						wr[ofs + 0] = bitmap.buffer[ofs_color + 2];
 						wr[ofs + 3] = bitmap.buffer[ofs_color + 3];
-					} break;
-					// TODO: FT_PIXEL_MODE_LCD
+					break;
+
+					case FT_PIXEL_MODE_LCD:
+						// Still a 8-bit bitmap, but 3 times as wide as FT_PIXEL_MODE_GRAY
+						// TODO
+					break;
+
 					default:
 						ERR_EXPLAIN("Font uses unsupported pixel format: " + itos(bitmap.pixel_mode));
 						ERR_FAIL_V(Character::not_found());
@@ -618,10 +617,18 @@ void DynamicFontAtSize::_update_char(CharType p_char) {
 			ft_hinting = FT_LOAD_NO_HINTING;
 			break;
 		case DynamicFontData::HINTING_LIGHT:
-			ft_hinting = FT_LOAD_TARGET_LIGHT;
+			if (subpixel_rendering) {
+				ft_hinting = FT_LOAD_TARGET_LCD;
+			} else {
+				ft_hinting = FT_LOAD_TARGET_LIGHT;
+			}
 			break;
 		default:
-			ft_hinting = FT_LOAD_TARGET_NORMAL;
+			if (subpixel_rendering) {
+				ft_hinting = FT_LOAD_TARGET_LCD_V;
+			} else {
+				ft_hinting = FT_LOAD_TARGET_NORMAL;
+			}
 			break;
 	}
 
@@ -634,7 +641,15 @@ void DynamicFontAtSize::_update_char(CharType p_char) {
 	if (id.outline_size > 0) {
 		character = _make_outline_char(p_char);
 	} else {
-		error = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
+		int render_mode;
+
+		if (subpixel_rendering) {
+			render_mode = FT_RENDER_MODE_LCD;
+		} else {
+			render_mode = FT_RENDER_MODE_NORMAL;
+		}
+
+		error = FT_Render_Glyph(face->glyph, render_mode);
 		if (!error)
 			character = _bitmap_to_character(slot->bitmap, slot->bitmap_top, slot->bitmap_left, slot->advance.x / 64.0);
 	}
@@ -797,6 +812,18 @@ void DynamicFontData::set_hinting(Hinting p_hinting) {
 	if (hinting == p_hinting)
 		return;
 	hinting = p_hinting;
+}
+
+bool DynamicFontData::is_subpixel_rendering() const {
+
+	return subpixel_rendering;
+}
+
+void DynamicFontData::set_subpixel_rendering(bool p_enable) {
+
+	if (subpixel_rendering == p_enable)
+		return;
+	subpixel_rendering = p_enable;
 }
 
 int DynamicFont::get_spacing(int p_type) const {

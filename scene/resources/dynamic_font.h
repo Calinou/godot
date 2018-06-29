@@ -74,6 +74,9 @@ public:
 	Hinting get_hinting() const;
 	void set_hinting(Hinting p_hinting);
 
+	bool is_subpixel_rendering() const;
+	void set_subpixel_rendering(bool p_enable);
+
 private:
 	const uint8_t *font_mem;
 	int font_mem_size;
