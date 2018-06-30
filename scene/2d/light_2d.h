@@ -71,6 +71,7 @@ private:
 	int item_mask;
 	int item_shadow_mask;
 	int shadow_buffer_size;
+	float shadow_filter_radius;
 	float shadow_smooth;
 	float shadow_gradient_length;
 	Mode mode;
@@ -150,6 +151,9 @@ public:
 
 	void set_shadow_filter(ShadowFilter p_filter);
 	ShadowFilter get_shadow_filter() const;
+
+	void set_shadow_filter_radius(float p_filter_radius);
+	float get_shadow_filter_radius() const;
 
 	void set_shadow_color(const Color &p_shadow_color);
 	Color get_shadow_color() const;

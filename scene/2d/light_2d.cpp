@@ -303,6 +303,16 @@ Light2D::ShadowFilter Light2D::get_shadow_filter() const {
 	return shadow_filter;
 }
 
+void Light2D::set_shadow_filter_radius(float p_filter_radius) {
+	shadow_filter_radius = p_filter_radius;
+	VS::get_singleton()->canvas_light_set_shadow_filter_radius(canvas_light, p_filter_radius);
+}
+
+float Light2D::get_shadow_filter_radius() const {
+
+	return shadow_filter_radius;
+}
+
 void Light2D::set_shadow_color(const Color &p_shadow_color) {
 	shadow_color = p_shadow_color;
 	VS::get_singleton()->canvas_light_set_shadow_color(canvas_light, shadow_color);

@@ -639,6 +639,30 @@ MATERIAL_UNIFORMS
 
 FRAGMENT_SHADER_GLOBALS
 
+uniform float shadow_filter_radius;
+
+uniform vec2 kern[16] = vec2[]
+(
+	vec2(0.151205, 0.340969),
+	vec2(0.349872, -0.70755),
+	vec2(0.946959, 0.663325),
+	vec2(0.849958, -0.760292),
+	vec2(-0.792296, 0.463846),
+	vec2(0.45069, 0.832586),
+	vec2(-0.637487, -0.522192),
+	vec2(0.0185288, -0.162319),
+	vec2(0.622725, -0.289341),
+	vec2(-0.265502, 0.0830657),
+	vec2(-0.604604, 0.99042),
+	vec2(-0.228469, -0.911768),
+	vec2(-0.486144, -0.481575),
+	vec2(-0.0477502, 0.603215),
+	vec2(0.727942, 0.152266),
+	vec2(-0.890052, -0.0117375)
+);
+
+#define KERNWIDTH 4
+
 layout(std140) uniform SceneData {
 
 	highp mat4 projection_matrix;
@@ -1127,35 +1151,51 @@ LIGHT_SHADER_CODE
 
 float sample_shadow(highp sampler2DShadow shadow, vec2 shadow_pixel_size, vec2 pos, float depth, vec4 clamp_rect) {
 
-#ifdef SHADOW_MODE_PCF_13
+#ifdef SHADOW_QUALITY_HIGH
 
-	float avg=textureProj(shadow,vec4(pos,depth,1.0));
-	avg+=textureProj(shadow,vec4(pos+vec2(shadow_pixel_size.x,0.0),depth,1.0));
-	avg+=textureProj(shadow,vec4(pos+vec2(-shadow_pixel_size.x,0.0),depth,1.0));
-	avg+=textureProj(shadow,vec4(pos+vec2(0.0,shadow_pixel_size.y),depth,1.0));
-	avg+=textureProj(shadow,vec4(pos+vec2(0.0,-shadow_pixel_size.y),depth,1.0));
-	avg+=textureProj(shadow,vec4(pos+vec2(shadow_pixel_size.x,shadow_pixel_size.y),depth,1.0));
-	avg+=textureProj(shadow,vec4(pos+vec2(-shadow_pixel_size.x,shadow_pixel_size.y),depth,1.0));
-	avg+=textureProj(shadow,vec4(pos+vec2(shadow_pixel_size.x,-shadow_pixel_size.y),depth,1.0));
-	avg+=textureProj(shadow,vec4(pos+vec2(-shadow_pixel_size.x,-shadow_pixel_size.y),depth,1.0));
-	avg+=textureProj(shadow,vec4(pos+vec2(shadow_pixel_size.x*2.0,0.0),depth,1.0));
-	avg+=textureProj(shadow,vec4(pos+vec2(-shadow_pixel_size.x*2.0,0.0),depth,1.0));
-	avg+=textureProj(shadow,vec4(pos+vec2(0.0,shadow_pixel_size.y*2.0),depth,1.0));
-	avg+=textureProj(shadow,vec4(pos+vec2(0.0,-shadow_pixel_size.y*2.0),depth,1.0));
-	return avg*(1.0/13.0);
+	float shadow_value = 0.0;
 
-#elif defined(SHADOW_MODE_PCF_5)
+	for (int iy = 0; iy < 3; iy++) {
+		int y = int(mod(gl_FragCoord.y + iy, KERNWIDTH));
 
-	float avg=textureProj(shadow,vec4(pos,depth,1.0));
-	avg+=textureProj(shadow,vec4(pos+vec2(shadow_pixel_size.x,0.0),depth,1.0));
-	avg+=textureProj(shadow,vec4(pos+vec2(-shadow_pixel_size.x,0.0),depth,1.0));
-	avg+=textureProj(shadow,vec4(pos+vec2(0.0,shadow_pixel_size.y),depth,1.0));
-	avg+=textureProj(shadow,vec4(pos+vec2(0.0,-shadow_pixel_size.y),depth,1.0));
-	return avg*(1.0/5.0);
+		for (int ix = 0; ix < 3; ix++) {
+			int x = int(mod(gl_FragCoord.x + ix, KERNWIDTH));
+
+			vec2 sample = kern[y * KERNWIDTH + x];
+			vec2 offset = (sample + (vec2(ix, iy) - 1.0) * 2.0) * 0.333333 * shadow_pixel_size * shadow_filter_radius;
+			shadow_value += textureProj(shadow, vec4(vec2(pos + offset), depth, 1.0));
+		}
+	}
+
+	return shadow_value * 0.111111;
+
+#elif defined(SHADOW_QUALITY_MEDIUM)
+
+	float shadow_value = 0.0;
+
+	for (int iy = 0; iy < 2; iy++) {
+		int y = int(mod(gl_FragCoord.y + iy, KERNWIDTH));
+
+		for (int ix = 0; ix < 2; ix++) {
+			int x = int(mod(gl_FragCoord.x + ix, KERNWIDTH));
+
+			vec2 sample = kern[y * KERNWIDTH + x];
+			vec2 offset = ((sample - 1.0) * 0.5 + vec2(ix, iy)) * shadow_pixel_size * shadow_filter_radius;
+
+			shadow_value += textureProj(shadow, vec4(vec2(pos + offset), depth, 1.0));
+		}
+	}
+
+	return shadow_value * 0.25;
 
 #else
 
-	return textureProj(shadow,vec4(pos,depth,1.0));
+	int x = int(mod(gl_FragCoord.x, KERNWIDTH));
+	int y = int(mod(gl_FragCoord.y, KERNWIDTH));
+
+	vec2 offset = kern[y * KERNWIDTH + x] * shadow_pixel_size * shadow_filter_radius;
+
+	return textureProj(shadow, vec4(vec2(pos + offset), depth, 1.0));
 
 #endif
 

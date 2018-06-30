@@ -1447,12 +1447,9 @@ void RasterizerCanvasGLES3::canvas_render_items(Item *p_item_list, int p_z, cons
 					if (has_shadow) {
 
 						RasterizerStorageGLES3::CanvasLightShadow *cls = storage->canvas_light_shadow_owner.get(light->shadow_buffer);
+						state.canvas_shader.set_uniform(CanvasShaderGLES3::SHADOW_FILTER_RADIUS, light->shadow_filter_radius);
 						glActiveTexture(GL_TEXTURE0 + storage->config.max_texture_image_units - 2);
 						glBindTexture(GL_TEXTURE_2D, cls->distance);
-
-						/*canvas_shader.set_uniform(CanvasShaderGLES3::SHADOW_MATRIX,light->shadow_matrix_cache);
-						canvas_shader.set_uniform(CanvasShaderGLES3::SHADOW_ESM_MULTIPLIER,light->shadow_esm_mult);
-						canvas_shader.set_uniform(CanvasShaderGLES3::LIGHT_SHADOW_COLOR,light->shadow_color);*/
 					}
 
 					glActiveTexture(GL_TEXTURE0 + storage->config.max_texture_image_units - 1);
@@ -1537,17 +1534,13 @@ void RasterizerCanvasGLES3::canvas_debug_viewport_shadows(Light *p_lights_with_s
 	int ofs = h;
 	glDisable(GL_BLEND);
 
-	//print_line(" debug lights ");
 	while (light) {
 
-		//print_line("debug light");
 		if (light->shadow_buffer.is_valid()) {
 
-			//print_line("sb is valid");
 			RasterizerStorageGLES3::CanvasLightShadow *sb = storage->canvas_light_shadow_owner.get(light->shadow_buffer);
 			if (sb) {
 				glBindTexture(GL_TEXTURE_2D, sb->distance);
-				//glBindTexture(GL_TEXTURE_2D,storage->resources.white_tex);
 				draw_generic_textured_rect(Rect2(h, ofs, w - h * 2, h), Rect2(0, 0, 1, 1));
 				ofs += h * 2;
 			}

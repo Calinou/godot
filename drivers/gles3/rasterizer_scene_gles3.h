@@ -50,8 +50,8 @@ class RasterizerSceneGLES3 : public RasterizerScene {
 public:
 	enum ShadowFilterMode {
 		SHADOW_FILTER_NEAREST,
-		SHADOW_FILTER_PCF5,
-		SHADOW_FILTER_PCF13,
+		SHADOW_FILTER_MEDIUM,
+		SHADOW_FILTER_HIGH,
 	};
 
 	ShadowFilterMode shadow_filter_mode;
@@ -568,6 +568,7 @@ public:
 		float light_params[4]; //spot attenuation, spot angle, specular, shadow enabled
 		float light_clamp[4];
 		float light_shadow_color_contact[4];
+		float shadow_filter_radius;
 		float shadow_matrix1[16]; //up to here for spot and omni, rest is for directional
 		float shadow_matrix2[16];
 		float shadow_matrix3[16];

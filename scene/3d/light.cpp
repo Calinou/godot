@@ -243,6 +243,7 @@ void Light::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "shadow_enabled"), "set_shadow", "has_shadow");
 	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "shadow_color", PROPERTY_HINT_COLOR_NO_ALPHA), "set_shadow_color", "get_shadow_color");
 	ADD_PROPERTYI(PropertyInfo(Variant::REAL, "shadow_bias", PROPERTY_HINT_RANGE, "-16,16,0.01"), "set_param", "get_param", PARAM_SHADOW_BIAS);
+	ADD_PROPERTYI(PropertyInfo(Variant::REAL, "shadow_filter_radius", PROPERTY_HINT_RANGE, "0,128,0.001"), "set_param", "get_param", PARAM_SHADOW_FILTER_RADIUS);
 	ADD_PROPERTYI(PropertyInfo(Variant::REAL, "shadow_contact", PROPERTY_HINT_RANGE, "0,16,0.01"), "set_param", "get_param", PARAM_CONTACT_SHADOW_SIZE);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "shadow_reverse_cull_face"), "set_shadow_reverse_cull_face", "get_shadow_reverse_cull_face");
 	ADD_GROUP("Editor", "");
@@ -258,6 +259,7 @@ void Light::_bind_methods() {
 	BIND_ENUM_CONSTANT(PARAM_SPOT_ATTENUATION);
 	BIND_ENUM_CONSTANT(PARAM_CONTACT_SHADOW_SIZE);
 	BIND_ENUM_CONSTANT(PARAM_SHADOW_MAX_DISTANCE);
+	BIND_ENUM_CONSTANT(PARAM_SHADOW_FILTER_RADIUS);
 	BIND_ENUM_CONSTANT(PARAM_SHADOW_SPLIT_1_OFFSET);
 	BIND_ENUM_CONSTANT(PARAM_SHADOW_SPLIT_2_OFFSET);
 	BIND_ENUM_CONSTANT(PARAM_SHADOW_SPLIT_3_OFFSET);
@@ -301,6 +303,7 @@ Light::Light(VisualServer::LightType p_type) {
 	set_param(PARAM_SPOT_ATTENUATION, 1);
 	set_param(PARAM_CONTACT_SHADOW_SIZE, 0);
 	set_param(PARAM_SHADOW_MAX_DISTANCE, 0);
+	set_param(PARAM_SHADOW_FILTER_RADIUS, 5.0);
 	set_param(PARAM_SHADOW_SPLIT_1_OFFSET, 0.1);
 	set_param(PARAM_SHADOW_SPLIT_2_OFFSET, 0.2);
 	set_param(PARAM_SHADOW_SPLIT_3_OFFSET, 0.5);

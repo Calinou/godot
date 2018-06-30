@@ -590,6 +590,7 @@ public:
 		int shadow_buffer_size;
 		float shadow_gradient_length;
 		VS::CanvasLightShadowFilter shadow_filter;
+		float shadow_filter_radius;
 		Color shadow_color;
 		float shadow_smooth;
 
@@ -630,6 +631,7 @@ public:
 			shadow_buffer_size = 256;
 			shadow_gradient_length = 0;
 			shadow_filter = VS::CANVAS_LIGHT_FILTER_NONE;
+			shadow_filter_radius = 5.0;
 			shadow_smooth = 0.0;
 		}
 	};

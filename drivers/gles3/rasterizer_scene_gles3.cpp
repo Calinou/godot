@@ -1995,8 +1995,8 @@ void RasterizerSceneGLES3::_render_list(RenderList::Element **p_elements, int p_
 					state.scene_shader.set_conditional(SceneShaderGLES3::LIGHT_USE_PSSM2, false);
 					state.scene_shader.set_conditional(SceneShaderGLES3::LIGHT_USE_PSSM_BLEND, false);
 					state.scene_shader.set_conditional(SceneShaderGLES3::LIGHT_USE_PSSM_BLEND, false);
-					state.scene_shader.set_conditional(SceneShaderGLES3::SHADOW_MODE_PCF_5, false);
-					state.scene_shader.set_conditional(SceneShaderGLES3::SHADOW_MODE_PCF_13, false);
+					state.scene_shader.set_conditional(SceneShaderGLES3::SHADOW_QUALITY_MEDIUM, false);
+					state.scene_shader.set_conditional(SceneShaderGLES3::SHADOW_QUALITY_HIGH, false);
 					state.scene_shader.set_conditional(SceneShaderGLES3::USE_GI_PROBES, false);
 					state.scene_shader.set_conditional(SceneShaderGLES3::USE_LIGHTMAP_CAPTURE, false);
 					state.scene_shader.set_conditional(SceneShaderGLES3::USE_LIGHTMAP, false);
@@ -2020,8 +2020,8 @@ void RasterizerSceneGLES3::_render_list(RenderList::Element **p_elements, int p_
 					state.scene_shader.set_conditional(SceneShaderGLES3::LIGHT_USE_PSSM4, false);
 					state.scene_shader.set_conditional(SceneShaderGLES3::LIGHT_USE_PSSM2, false);
 					state.scene_shader.set_conditional(SceneShaderGLES3::LIGHT_USE_PSSM_BLEND, false);
-					state.scene_shader.set_conditional(SceneShaderGLES3::SHADOW_MODE_PCF_5, shadow_filter_mode == SHADOW_FILTER_PCF5);
-					state.scene_shader.set_conditional(SceneShaderGLES3::SHADOW_MODE_PCF_13, shadow_filter_mode == SHADOW_FILTER_PCF13);
+					state.scene_shader.set_conditional(SceneShaderGLES3::SHADOW_QUALITY_MEDIUM, shadow_filter_mode == SHADOW_FILTER_MEDIUM);
+					state.scene_shader.set_conditional(SceneShaderGLES3::SHADOW_QUALITY_HIGH, shadow_filter_mode == SHADOW_FILTER_HIGH);
 					state.scene_shader.set_conditional(SceneShaderGLES3::USE_RADIANCE_MAP, use_radiance_map);
 					state.scene_shader.set_conditional(SceneShaderGLES3::USE_CONTACT_SHADOWS, state.used_contact_shadows);
 
@@ -2176,8 +2176,8 @@ void RasterizerSceneGLES3::_render_list(RenderList::Element **p_elements, int p_
 	state.scene_shader.set_conditional(SceneShaderGLES3::LIGHT_USE_PSSM2, false);
 	state.scene_shader.set_conditional(SceneShaderGLES3::LIGHT_USE_PSSM_BLEND, false);
 	state.scene_shader.set_conditional(SceneShaderGLES3::SHADELESS, false);
-	state.scene_shader.set_conditional(SceneShaderGLES3::SHADOW_MODE_PCF_5, false);
-	state.scene_shader.set_conditional(SceneShaderGLES3::SHADOW_MODE_PCF_13, false);
+	state.scene_shader.set_conditional(SceneShaderGLES3::SHADOW_QUALITY_MEDIUM, false);
+	state.scene_shader.set_conditional(SceneShaderGLES3::SHADOW_QUALITY_HIGH, false);
 	state.scene_shader.set_conditional(SceneShaderGLES3::USE_GI_PROBES, false);
 	state.scene_shader.set_conditional(SceneShaderGLES3::USE_LIGHTMAP, false);
 	state.scene_shader.set_conditional(SceneShaderGLES3::USE_LIGHTMAP_CAPTURE, false);
@@ -2630,6 +2630,8 @@ void RasterizerSceneGLES3::_setup_directional_light(int p_index, const Transform
 				shadow_count = 4;
 			} break;
 		}
+
+		ubo_data.shadow_filter_radius = li->light_ptr->param[VS::LIGHT_PARAM_SHADOW_FILTER_RADIUS];
 
 		for (int j = 0; j < shadow_count; j++) {
 

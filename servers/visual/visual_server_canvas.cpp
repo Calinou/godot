@@ -1068,6 +1068,7 @@ void VisualServerCanvas::canvas_light_set_shadow_gradient_length(RID p_light, fl
 
 	clight->shadow_gradient_length = p_length;
 }
+
 void VisualServerCanvas::canvas_light_set_shadow_filter(RID p_light, VS::CanvasLightShadowFilter p_filter) {
 
 	RasterizerCanvas::Light *clight = canvas_light_owner.get(p_light);
@@ -1075,6 +1076,15 @@ void VisualServerCanvas::canvas_light_set_shadow_filter(RID p_light, VS::CanvasL
 
 	clight->shadow_filter = p_filter;
 }
+
+void VisualServerCanvas::canvas_light_set_shadow_filter_radius(RID p_light, float p_filter_radius) {
+
+	RasterizerCanvas::Light *clight = canvas_light_owner.get(p_light);
+	ERR_FAIL_COND(!clight);
+
+	clight->shadow_filter_radius = p_filter_radius;
+}
+
 void VisualServerCanvas::canvas_light_set_shadow_color(RID p_light, const Color &p_color) {
 
 	RasterizerCanvas::Light *clight = canvas_light_owner.get(p_light);
@@ -1087,6 +1097,7 @@ void VisualServerCanvas::canvas_light_set_shadow_smooth(RID p_light, float p_smo
 
 	RasterizerCanvas::Light *clight = canvas_light_owner.get(p_light);
 	ERR_FAIL_COND(!clight);
+
 	clight->shadow_smooth = p_smooth;
 }
 

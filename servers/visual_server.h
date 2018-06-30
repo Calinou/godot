@@ -373,6 +373,7 @@ public:
 		LIGHT_PARAM_SPOT_ATTENUATION,
 		LIGHT_PARAM_CONTACT_SHADOW_SIZE,
 		LIGHT_PARAM_SHADOW_MAX_DISTANCE,
+		LIGHT_PARAM_SHADOW_FILTER_RADIUS,
 		LIGHT_PARAM_SHADOW_SPLIT_1_OFFSET,
 		LIGHT_PARAM_SHADOW_SPLIT_2_OFFSET,
 		LIGHT_PARAM_SHADOW_SPLIT_3_OFFSET,
@@ -905,6 +906,7 @@ public:
 	virtual void canvas_light_set_shadow_buffer_size(RID p_light, int p_size) = 0;
 	virtual void canvas_light_set_shadow_gradient_length(RID p_light, float p_length) = 0;
 	virtual void canvas_light_set_shadow_filter(RID p_light, CanvasLightShadowFilter p_filter) = 0;
+	virtual void canvas_light_set_shadow_filter_radius(RID p_light, float p_filter_radius) = 0;
 	virtual void canvas_light_set_shadow_color(RID p_light, const Color &p_color) = 0;
 	virtual void canvas_light_set_shadow_smooth(RID p_light, float p_smooth) = 0;
 

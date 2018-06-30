@@ -341,6 +341,30 @@ MATERIAL_UNIFORMS
 
 FRAGMENT_SHADER_GLOBALS
 
+uniform float shadow_filter_radius;
+
+uniform vec2 kern[16] = vec2[]
+(
+	vec2(0.151205, 0.340969),
+	vec2(0.349872, -0.70755),
+	vec2(0.946959, 0.663325),
+	vec2(0.849958, -0.760292),
+	vec2(-0.792296, 0.463846),
+	vec2(0.45069, 0.832586),
+	vec2(-0.637487, -0.522192),
+	vec2(0.0185288, -0.162319),
+	vec2(0.622725, -0.289341),
+	vec2(-0.265502, 0.0830657),
+	vec2(-0.604604, 0.99042),
+	vec2(-0.228469, -0.911768),
+	vec2(-0.486144, -0.481575),
+	vec2(-0.0477502, 0.603215),
+	vec2(0.727942, 0.152266),
+	vec2(-0.890052, -0.0117375)
+);
+
+#define KERNWIDTH 4
+
 void light_compute(
 	inout vec4 light,
 	inout vec2 light_vec,
