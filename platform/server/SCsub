@@ -9,4 +9,4 @@ common_server = [\
     "#platform/x11/power_x11.cpp",
 ]
 
-prog = env.add_program('#bin/godot_server', ['godot_server.cpp'] + common_server)
+prog = env.add_program('#build/godot_server', ['godot_server.cpp'] + common_server)

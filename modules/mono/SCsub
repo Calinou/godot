@@ -229,7 +229,7 @@ def mono_build_solution(source, target, env):
 
     copyfile(os.path.join(src_dir, asm_file), os.path.join(dst_dir, asm_file))
 
-output_dir = Dir('#bin').abspath
+output_dir = Dir('#build').abspath
 assemblies_output_dir = Dir(env['mono_assemblies_output_dir']).abspath
 
 mono_sln_builder = Builder(action=mono_build_solution)

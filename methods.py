@@ -886,34 +886,6 @@ def win32_spawn(sh, escape, cmd, args, env):
         print("=====")
     return rv
 
-"""
-def win32_spawn(sh, escape, cmd, args, spawnenv):
-	import win32file
-	import win32event
-	import win32process
-	import win32security
-	for var in spawnenv:
-		spawnenv[var] = spawnenv[var].encode('ascii', 'replace')
-
-	sAttrs = win32security.SECURITY_ATTRIBUTES()
-	StartupInfo = win32process.STARTUPINFO()
-	newargs = ' '.join(map(escape, args[1:]))
-	cmdline = cmd + " " + newargs
-
-	# check for any special operating system commands
-	if cmd == 'del':
-		for arg in args[1:]:
-			win32file.DeleteFile(arg)
-		exit_code = 0
-	else:
-		# otherwise execute the command.
-		hProcess, hThread, dwPid, dwTid = win32process.CreateProcess(None, cmdline, None, None, 1, 0, spawnenv, None, StartupInfo)
-		win32event.WaitForSingleObject(hProcess, win32event.INFINITE)
-		exit_code = win32process.GetExitCodeProcess(hProcess)
-		win32file.CloseHandle(hProcess);
-		win32file.CloseHandle(hThread);
-	return exit_code
-"""
 
 def android_add_flat_dir(self, dir):
     if (dir not in self.android_flat_dirs):
@@ -1251,7 +1223,7 @@ def find_visual_c_batch_file(env):
     from  SCons.Tool.MSCommon.vc import get_default_version, get_host_target, find_batch_file
 
     version = get_default_version(env)
-    (host_platform, target_platform,req_target_platform) = get_host_target(env)
+    (host_platform, target_platform, req_target_platform) = get_host_target(env)
     return find_batch_file(env, version, host_platform, target_platform)[0]
 
 def generate_cpp_hint_file(filename):

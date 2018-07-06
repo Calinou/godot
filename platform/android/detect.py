@@ -105,20 +105,24 @@ def configure(env):
     can_vectorize = True
     if env['android_arch'] == 'x86':
         env['ARCH'] = 'arch-x86'
-        env.extra_suffix = ".x86" + env.extra_suffix
+        env.target_triple['arch'] = 'i686'
+        env.target_triple['system'] = 'linux-android'
         target_subpath = "x86-4.9"
         abi_subpath = "i686-linux-android"
         arch_subpath = "x86"
         env["x86_libtheora_opt_gcc"] = True
     elif env['android_arch'] == 'armv6':
         env['ARCH'] = 'arch-arm'
-        env.extra_suffix = ".armv6" + env.extra_suffix
+        env.target_triple['arch'] = 'arm'
+        env.target_triple['system'] = 'linux-androideabi'
         target_subpath = "arm-linux-androideabi-4.9"
         abi_subpath = "arm-linux-androideabi"
         arch_subpath = "armeabi"
         can_vectorize = False
     elif env["android_arch"] == "armv7":
         env['ARCH'] = 'arch-arm'
+        env.target_triple['arch'] = 'armv7'
+        env.target_triple['system'] = 'linux-androideabi'
         target_subpath = "arm-linux-androideabi-4.9"
         abi_subpath = "arm-linux-androideabi"
         arch_subpath = "armeabi-v7a"
@@ -131,6 +135,8 @@ def configure(env):
             print("WARNING: android_arch=arm64v8 is not supported by ndk_platform lower than andorid-21; setting ndk_platform=android-21")
             env["ndk_platform"] = "android-21"
         env['ARCH'] = 'arch-arm64'
+        env.target_triple['arch'] = 'aarch64'
+        env.target_triple['system'] = 'linux-android'
         target_subpath = "aarch64-linux-android-4.9"
         abi_subpath = "aarch64-linux-android"
         arch_subpath = "arm64-v8a"

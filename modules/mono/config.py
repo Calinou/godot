@@ -72,7 +72,7 @@ def configure(env):
 
     envvars = Variables()
     envvars.Add(BoolVariable('mono_static', 'Statically link mono', False))
-    envvars.Add(PathVariable('mono_assemblies_output_dir', 'Path to the assemblies output directory', '#bin', custom_path_is_dir_create))
+    envvars.Add(PathVariable('mono_assemblies_output_dir', 'Path to the assemblies output directory', '#build', custom_path_is_dir_create))
     envvars.Update(env)
 
     bits = env['bits']
@@ -95,7 +95,7 @@ def configure(env):
                 mono_root = monoreg.find_mono_root_dir(bits)
 
         if not mono_root:
-            raise RuntimeError('Mono installation directory not found')
+            raise RuntimeError('Mono installation directory not found.')
 
         mono_version = mono_root_try_find_mono_version(mono_root)
         configure_for_mono_version(env, mono_version)
@@ -114,7 +114,7 @@ def configure(env):
                 mono_static_lib_name = 'libmonosgen-2.0'
 
             if not os.path.isfile(os.path.join(mono_lib_path, mono_static_lib_name + lib_suffix)):
-                raise RuntimeError('Could not find static mono library in: ' + mono_lib_path)
+                raise RuntimeError('Could not find static Mono library in: ' + mono_lib_path)
 
             if env.msvc:
                 env.Append(LINKFLAGS=mono_static_lib_name + lib_suffix)
@@ -132,7 +132,7 @@ def configure(env):
             mono_lib_name = find_file_in_dir(mono_lib_path, mono_lib_names, extension='.lib')
 
             if not mono_lib_name:
-                raise RuntimeError('Could not find mono library in: ' + mono_lib_path)
+                raise RuntimeError('Could not find Mono library in: ' + mono_lib_path)
 
             if env.msvc:
                 env.Append(LINKFLAGS=mono_lib_name + Environment()['LIBSUFFIX'])
@@ -144,7 +144,7 @@ def configure(env):
             mono_dll_name = find_file_in_dir(mono_bin_path, mono_lib_names, extension='.dll')
 
             if not mono_dll_name:
-                raise RuntimeError('Could not find mono shared library in: ' + mono_bin_path)
+                raise RuntimeError('Could not find Mono shared library in: ' + mono_bin_path)
 
             copy_file(mono_bin_path, 'bin', mono_dll_name + '.dll')
 
@@ -167,7 +167,7 @@ def configure(env):
         if not mono_root and mono_static:
             mono_root = pkgconfig_try_find_mono_root(mono_lib_names, sharedlib_ext)
             if not mono_root:
-                raise RuntimeError('Building with mono_static=yes, but failed to find the mono prefix with pkg-config. Specify one manually')
+                raise RuntimeError('Building with mono_static=yes, but failed to find the Mono prefix with pkg-config; please specify one manually.')
 
         if mono_root:
             mono_version = mono_root_try_find_mono_version(mono_root)
@@ -181,7 +181,7 @@ def configure(env):
             mono_lib = find_file_in_dir(mono_lib_path, mono_lib_names, prefix='lib', extension='.a')
 
             if not mono_lib:
-                raise RuntimeError('Could not find mono library in: ' + mono_lib_path)
+                raise RuntimeError('Could not find Mono library in: ' + mono_lib_path)
 
             env.Append(CPPFLAGS=['-D_REENTRANT'])
 
@@ -206,7 +206,7 @@ def configure(env):
                 mono_so_name = find_file_in_dir(mono_lib_path, mono_lib_names, prefix='lib', extension=sharedlib_ext)
 
                 if not mono_so_name:
-                    raise RuntimeError('Could not find mono shared library in: ' + mono_lib_path)
+                    raise RuntimeError('Could not find Mono shared library in: ' + mono_lib_path)
 
                 copy_file(mono_lib_path, 'bin', 'lib' + mono_so_name + sharedlib_ext)
 
@@ -235,7 +235,7 @@ def configure(env):
                     break
 
             if not mono_so_name:
-                raise RuntimeError('Could not find mono shared library in: ' + str(tmpenv['LIBPATH']))
+                raise RuntimeError('Could not find Mono shared library in: ' + str(tmpenv['LIBPATH']))
 
             copy_file(mono_lib_path, 'bin', 'lib' + mono_so_name + sharedlib_ext)
             copy_file(os.path.join(mono_prefix, 'lib', 'mono', '4.5'), assemblies_output_dir, 'mscorlib.dll')
@@ -245,7 +245,7 @@ def configure(env):
 
 def configure_for_mono_version(env, mono_version):
     if mono_version is None:
-        raise RuntimeError('Mono JIT compiler version not found')
+        raise RuntimeError('Mono JIT compiler version not found.')
     print('Mono JIT compiler version: ' + str(mono_version))
     if mono_version >= LooseVersion("5.12.0"):
         env.Append(CPPFLAGS=['-DHAS_PENDING_EXCEPTIONS'])

@@ -76,7 +76,7 @@ def _build_gdnative_api_struct_header(api):
         ret_val = []
         if ext['next']:
             ret_val += generate_extension_struct(name, ext['next'])
-        
+
         ret_val += [
             'typedef struct godot_gdnative_ext_' + name + ('' if not include_version else ('_{0}_{1}'.format(ext['version']['major'], ext['version']['minor']))) + '_api_struct {',
             '\tunsigned int type;',
@@ -294,4 +294,4 @@ if ARGUMENTS.get('gdnative_wrapper', False):
     if not env.msvc:
         gd_wrapper_env.Append(CCFLAGS=['-fPIC'])
 
-    lib = gd_wrapper_env.add_library("#bin/gdnative_wrapper_code", [gensource])
+    lib = gd_wrapper_env.add_library("#build/gdnative_wrapper_code", [gensource])

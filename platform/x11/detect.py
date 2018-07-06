@@ -57,7 +57,7 @@ def get_opts():
         BoolVariable('use_static_cpp', 'Link libgcc and libstdc++ statically for better portability', False),
         BoolVariable('use_sanitizer', 'Use LLVM compiler address sanitizer', False),
         BoolVariable('use_leak_sanitizer', 'Use LLVM compiler memory leaks sanitizer (implies use_sanitizer)', False),
-        BoolVariable('pulseaudio', 'Detect & use pulseaudio', True),
+        BoolVariable('pulseaudio', 'Detect and use PulseAudio', True),
         BoolVariable('udev', 'Use udev for gamepad connection callbacks', False),
         EnumVariable('debug_symbols', 'Add debugging symbols to release builds', 'yes', ('yes', 'no', 'full')),
         BoolVariable('separate_debug_symbols', 'Create a separate file containing debugging symbols', False),
@@ -103,6 +103,11 @@ def configure(env):
     is64 = sys.maxsize > 2**32
     if (env["bits"] == "default"):
         env["bits"] = "64" if is64 else "32"
+
+    if env["bits"] == "64":
+        env.target_triple["arch"] = "x86_64"
+    else:
+        env.target_triple["arch"] = "i686"
 
     ## Compiler configuration
 
@@ -274,9 +279,12 @@ def configure(env):
 
     if (platform.system() == "Linux"):
         env.Append(LIBS=['dl'])
+        env.target_triple["system"] = "unknown-linux"
 
     if (platform.system().find("BSD") >= 0):
         env.Append(LIBS=['execinfo'])
+        # TODO: Detect BSD type (FreeBSD, OpenBSD, ...)
+        env.target_triple["system"] = "unknown-bsd"
 
     ## Cross-compilation
 
@@ -290,3 +298,6 @@ def configure(env):
     # Link those statically for portability
     if env['use_static_cpp']:
         env.Append(LINKFLAGS=['-static-libgcc', '-static-libstdc++'])
+
+    # TODO: Detect musl usage
+    env.target_triple["abi"] = "gnu"

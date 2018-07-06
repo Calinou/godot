@@ -324,7 +324,13 @@ def configure(env):
     # At this point the env has been set up with basic tools/compilers.
     env.Append(CPPPATH=['#platform/windows'])
 
+    env.target_triple['system'] = 'pc-windows'
     print("Configuring for Windows: target=%s, bits=%s" % (env['target'], env['bits']))
+
+    if str(env['bits']) == '64':
+        env.target_triple['arch'] = 'x86_64'
+    else:
+        env.target_triple['arch'] = 'i686'
 
     if (os.name == "nt"):
         env['ENV'] = os.environ # this makes build less repeatable, but simplifies some things
@@ -346,7 +352,9 @@ def configure(env):
 
     # Now set compiler/linker flags
     if env.msvc:
+        env.target_triple['abi'] = 'msvc'
         configure_msvc(env, manual_msvc_config)
 
     else: # MinGW
+        env.target_triple['abi'] = 'gnu'
         configure_mingw(env)

@@ -13,11 +13,11 @@ common_haiku = [
 ]
 
 target = env.add_program(
-    '#bin/godot',
+    '#build/godot',
     ['godot_haiku.cpp'] + common_haiku
 )
 
-command = env.Command('#bin/godot.rsrc', '#platform/haiku/godot.rdef',
+command = env.Command('#build/godot.rsrc', '#platform/haiku/godot.rdef',
                       ['rc -o $TARGET $SOURCE'])
 
 

@@ -10,7 +10,7 @@ javascript_files = [
     'os_javascript.cpp',
 ]
 
-build = env.add_program(['#bin/godot${PROGSUFFIX}.js', '#bin/godot${PROGSUFFIX}.wasm'], javascript_files);
+build = env.add_program(['#build/godot${PROGSUFFIX}.js', '#build/godot${PROGSUFFIX}.wasm'], javascript_files);
 js, wasm = build
 
 js_libraries = [
@@ -22,9 +22,9 @@ env.Depends(build, js_libraries)
 
 wrapper_start = env.File('pre.js')
 wrapper_end = env.File('engine.js')
-js_wrapped = env.Textfile('#bin/godot', [wrapper_start, js, wrapper_end], TEXTFILESUFFIX='${PROGSUFFIX}.wrapped.js')
+js_wrapped = env.Textfile('#build/godot', [wrapper_start, js, wrapper_end], TEXTFILESUFFIX='${PROGSUFFIX}.wrapped.js')
 
-zip_dir = env.Dir('#bin/.javascript_zip')
+zip_dir = env.Dir('#build/.javascript_zip')
 zip_files = env.InstallAs([
     zip_dir.File('godot.js'),
     zip_dir.File('godot.wasm'),
@@ -34,4 +34,4 @@ zip_files = env.InstallAs([
     wasm,
     '#misc/dist/html/default.html'
 ])
-env.Zip('#bin/godot', zip_files, ZIPROOT=zip_dir, ZIPSUFFIX='${PROGSUFFIX}${ZIPSUFFIX}', ZIPCOMSTR='Archving $SOURCES as $TARGET')
+env.Zip('#build/godot', zip_files, ZIPROOT=zip_dir, ZIPSUFFIX='${PROGSUFFIX}${ZIPSUFFIX}', ZIPCOMSTR='Archving $SOURCES as $TARGET')

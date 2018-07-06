@@ -283,6 +283,14 @@ if selected_platform in platform_list:
                         env.vs_srcs = env.vs_srcs + [basename + ".cpp"]
         env.AddToVSProject = AddToVSProject
 
+    # The target triple defines the architecture, operating system and ABI.
+    # See https://clang.llvm.org/docs/CrossCompilation.html
+    env.target_triple = {
+        "arch": "",
+        "system": "",
+        "abi": "",  # Can be empty depending on the platform
+    }
+
     env.extra_suffix = ""
 
     if env["extra_suffix"] != '':
@@ -311,6 +319,11 @@ if selected_platform in platform_list:
     # must happen after the flags, so when flags are used by configure, stuff happens (ie, ssl on x11)
     detect.configure(env)
 
+    if env.target_triple["abi"] != "":
+        env.target_triple_string = env.target_triple["arch"] + "-" + env.target_triple["system"] + "-" + env.target_triple["abi"]
+    else:
+        env.target_triple_string = env.target_triple["arch"] + "-" + env.target_triple["system"]
+
     if (env["warnings"] == 'yes'):
         print("WARNING: warnings=yes is deprecated; assuming warnings=all")
 
@@ -338,34 +351,16 @@ if selected_platform in platform_list:
             env.Append(CCFLAGS=['-w'])
         env.Append(CCFLAGS=['-Werror=return-type'])
 
-    suffix = "." + selected_platform
-
     if (env["target"] == "release"):
         if env["tools"]:
             print("Tools can only be built with targets 'debug' and 'release_debug'.")
             sys.exit(255)
-        suffix += ".opt"
         env.Append(CPPDEFINES=['NDEBUG'])
 
-    elif (env["target"] == "release_debug"):
-        if env["tools"]:
-            suffix += ".opt.tools"
-        else:
-            suffix += ".opt.debug"
+    if env["tools"]:
+        suffix = "-editor"
     else:
-        if env["tools"]:
-            suffix += ".tools"
-        else:
-            suffix += ".debug"
-
-    if env["arch"] != "":
-        suffix += "." + env["arch"]
-    elif (env["bits"] == "32"):
-        suffix += ".32"
-    elif (env["bits"] == "64"):
-        suffix += ".64"
-
-    suffix += env.extra_suffix
+        suffix = "-runner"
 
     sys.path.remove("./platform/" + selected_platform)
     sys.modules.pop('detect')
@@ -436,7 +431,7 @@ if selected_platform in platform_list:
     scons_cache_path = os.environ.get("SCONS_CACHE")
     if scons_cache_path != None:
         CacheDir(scons_cache_path)
-        print("Scons cache enabled... (path: '" + scons_cache_path + "')")
+        print("SCons cache enabled (path: '" + scons_cache_path + "')")
 
     Export('env')
 
