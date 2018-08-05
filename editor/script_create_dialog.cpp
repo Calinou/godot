@@ -164,7 +164,7 @@ void ScriptCreateDialog::_create_new() {
 		scr = ResourceLoader::load(script_template);
 		if (scr.is_null()) {
 			alert->get_ok()->set_text(TTR("OK"));
-			alert->set_text(vformat(TTR("Error loading template '%s'"), script_template));
+			alert->set_text(vformat(TTR("Could not load the script template \"%s\"."), script_template));
 			alert->popup_centered();
 			return;
 		}
@@ -185,7 +185,7 @@ void ScriptCreateDialog::_create_new() {
 		scr->set_path(lpath);
 		Error err = ResourceSaver::save(lpath, scr, ResourceSaver::FLAG_CHANGE_PATH);
 		if (err != OK) {
-			alert->set_text(TTR("Error - Could not create script in filesystem."));
+			alert->set_text(TTR("Could not create a script on the filesystem."));
 			alert->popup_centered();
 			return;
 		}
@@ -201,7 +201,7 @@ void ScriptCreateDialog::_load_exist() {
 	RES p_script = ResourceLoader::load(path, "Script");
 	if (p_script.is_null()) {
 		alert->get_ok()->set_text(TTR("OK"));
-		alert->set_text(vformat(TTR("Error loading script from %s"), path));
+		alert->set_text(vformat(TTR("Could not load the script from \"%s\"."), path));
 		alert->popup_centered();
 		return;
 	}

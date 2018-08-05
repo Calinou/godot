@@ -141,10 +141,10 @@ void GDAPI godot_print(const godot_string *p_message) {
 }
 
 void _gdnative_report_version_mismatch(const godot_object *p_library, const char *p_ext, godot_gdnative_api_version p_want, godot_gdnative_api_version p_have) {
-	String message = "Error loading GDNative file ";
+	String message = "Error loading GDNative file \"";
 	GDNativeLibrary *library = (GDNativeLibrary *)p_library;
 
-	message += library->get_current_library_path() + ": Extension \"" + p_ext + "\" can't be loaded.\n";
+	message += library->get_current_library_path() + "\": Extension \"" + p_ext + "\" cannot be loaded.\n";
 
 	Dictionary versions;
 	versions["have_major"] = p_have.major;
@@ -152,16 +152,16 @@ void _gdnative_report_version_mismatch(const godot_object *p_library, const char
 	versions["want_major"] = p_want.major;
 	versions["want_minor"] = p_want.minor;
 
-	message += String("Got version {have_major}.{have_minor} but needs {want_major}.{want_minor}!").format(versions);
+	message += String("Got version {have_major}.{have_minor}, but needed version {want_major}.{want_minor}.").format(versions);
 
 	_err_print_error("gdnative_init", library->get_current_library_path().utf8().ptr(), 0, message.utf8().ptr());
 }
 
 void _gdnative_report_loading_error(const godot_object *p_library, const char *p_what) {
-	String message = "Error loading GDNative file ";
+	String message = "Error loading GDNative file \"";
 	GDNativeLibrary *library = (GDNativeLibrary *)p_library;
 
-	message += library->get_current_library_path() + ": " + p_what;
+	message += library->get_current_library_path() + "\": " + p_what;
 
 	_err_print_error("gdnative_init", library->get_current_library_path().utf8().ptr(), 0, message.utf8().ptr());
 }

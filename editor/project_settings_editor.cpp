@@ -180,7 +180,7 @@ void ProjectSettingsEditor::_action_edited() {
 			ti->set_text(0, old_name);
 			add_at = "input/" + old_name;
 
-			message->set_text(vformat(TTR("Action '%s' already exists!"), new_name));
+			message->set_text(vformat(TTR("Action \"%s\" already exists!"), new_name));
 			message->popup_centered(Size2(300, 100) * EDSCALE);
 			return;
 		}
@@ -878,12 +878,12 @@ void ProjectSettingsEditor::_item_del() {
 	String property = globals_editor->get_current_section().plus_file(path);
 
 	if (!ProjectSettings::get_singleton()->has_setting(property)) {
-		EditorNode::get_singleton()->show_warning(vformat(TTR("No property '%s' exists."), property));
+		EditorNode::get_singleton()->show_warning(vformat(TTR("No property \"%s\" exists."), property));
 		return;
 	}
 
 	if (ProjectSettings::get_singleton()->get_order(property) < ProjectSettings::NO_BUILTIN_ORDER_BASE) {
-		EditorNode::get_singleton()->show_warning(vformat(TTR("Setting '%s' is internal, and it can't be deleted."), property));
+		EditorNode::get_singleton()->show_warning(vformat(TTR("Setting \"%s\" is internal, and it can't be deleted."), property));
 		return;
 	}
 

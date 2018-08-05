@@ -2081,7 +2081,7 @@ void OS_X11::process_xevents() {
 
 				} else {
 					char *targetname = XGetAtomName(x11_display, req->target);
-					printf("No Target '%s'\n", targetname);
+					printf("No Target \"%s\"\n", targetname);
 					if (targetname)
 						XFree(targetname);
 					respond.xselection.property = None;

@@ -143,7 +143,7 @@ void EditorAutoloadSettings::_autoload_edited() {
 
 		if (ProjectSettings::get_singleton()->has_setting("autoload/" + name)) {
 			ti->set_text(0, old_name);
-			EditorNode::get_singleton()->show_warning(vformat(TTR("Autoload '%s' already exists!"), name));
+			EditorNode::get_singleton()->show_warning(vformat(TTR("Autoload \"%s\" already exists!"), name));
 			return;
 		}
 

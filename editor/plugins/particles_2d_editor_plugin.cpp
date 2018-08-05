@@ -120,7 +120,7 @@ void Particles2DEditorPlugin::_generate_emission_mask() {
 	Ref<Image> img;
 	img.instance();
 	Error err = ImageLoader::load_image(source_emission_file, img);
-	ERR_EXPLAIN(TTR("Error loading image:") + " " + source_emission_file);
+	ERR_EXPLAIN(vformat(TTR("Could not load image \"%s\"."), source_emission_file));
 	ERR_FAIL_COND(err != OK);
 
 	if (img->is_compressed()) {

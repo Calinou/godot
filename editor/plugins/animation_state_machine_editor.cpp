@@ -108,7 +108,7 @@ void AnimationNodeStateMachineEditor::_state_machine_gui_input(const Ref<InputEv
 						state_machine->start(node_rects[i].node_name);
 						//removing this due to usability..
 						//error_time = 5;
-						//error_text = vformat(TTR("No path found from '%s' to '%s'."), state_machine->get_current_node(), node_rects[i].node_name);
+						//error_text = vformat(TTR("No path found from \"%s\" to \"%s\"."), state_machine->get_current_node(), node_rects[i].node_name);
 					}
 				}
 				state_machine_draw->update();

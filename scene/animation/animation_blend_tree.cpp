@@ -51,10 +51,10 @@ float AnimationNodeAnimation::process(float p_time, bool p_seek) {
 		Ref<AnimationNodeBlendTree> tree = get_parent();
 		if (tree.is_valid()) {
 			String name = tree->get_node_name(Ref<AnimationNodeAnimation>(this));
-			make_invalid(vformat(RTR("On BlendTree node '%s', animation not found: '%s'"), name, animation));
+			make_invalid(vformat(RTR("On BlendTree node \"%s\", animation not found: \"%s\""), name, animation));
 
 		} else {
-			make_invalid(vformat(RTR("Animation not found: '%s'"), animation));
+			make_invalid(vformat(RTR("Animation not found: \"%s\""), animation));
 		}
 
 		return 0;

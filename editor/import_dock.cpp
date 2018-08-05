@@ -149,11 +149,11 @@ void ImportDock::_update_options(const Ref<ConfigFile> &p_config) {
 	}
 
 	preset->get_popup()->add_separator();
-	preset->get_popup()->add_item(vformat(TTR("Set as Default for '%s'"), params->importer->get_visible_name()), ITEM_SET_AS_DEFAULT);
+	preset->get_popup()->add_item(vformat(TTR("Set as Default for \"%s\""), params->importer->get_visible_name()), ITEM_SET_AS_DEFAULT);
 	if (ProjectSettings::get_singleton()->has_setting("importer_defaults/" + params->importer->get_importer_name())) {
 		preset->get_popup()->add_item(TTR("Load Default"), ITEM_LOAD_DEFAULT);
 		preset->get_popup()->add_separator();
-		preset->get_popup()->add_item(vformat(TTR("Clear Default for '%s'"), params->importer->get_visible_name()), ITEM_CLEAR_DEFAULT);
+		preset->get_popup()->add_item(vformat(TTR("Clear Default for \"%s\""), params->importer->get_visible_name()), ITEM_CLEAR_DEFAULT);
 	}
 }
 

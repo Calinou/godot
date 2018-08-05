@@ -712,23 +712,23 @@ void EditorNode::_dialog_display_load_error(String p_file, Error p_error) {
 
 			case ERR_CANT_OPEN: {
 
-				show_accept(vformat(TTR("Can't open '%s'. The file could have been moved or deleted."), p_file.get_file()), TTR("I see..."));
+				show_accept(vformat(TTR("Can't open \"%s\". The file could have been moved or deleted."), p_file.get_file()), TTR("I see..."));
 			} break;
 			case ERR_PARSE_ERROR: {
 
-				show_accept(vformat(TTR("Error while parsing '%s'."), p_file.get_file()), TTR("I see..."));
+				show_accept(vformat(TTR("Error while parsing \"%s\"."), p_file.get_file()), TTR("I see..."));
 			} break;
 			case ERR_FILE_CORRUPT: {
 
-				show_accept(vformat(TTR("Unexpected end of file '%s'."), p_file.get_file()), TTR("I see..."));
+				show_accept(vformat(TTR("Unexpected end of file \"%s\"."), p_file.get_file()), TTR("I see..."));
 			} break;
 			case ERR_FILE_NOT_FOUND: {
 
-				show_accept(vformat(TTR("Missing '%s' or its dependencies."), p_file.get_file()), TTR("I see..."));
+				show_accept(vformat(TTR("Missing \"%s\" or its dependencies."), p_file.get_file()), TTR("I see..."));
 			} break;
 			default: {
 
-				show_accept(vformat(TTR("Error while loading '%s'."), p_file.get_file()), TTR("I see..."));
+				show_accept(vformat(TTR("Error while loading \"%s\"."), p_file.get_file()), TTR("I see..."));
 			} break;
 		}
 	}
@@ -1610,7 +1610,7 @@ void EditorNode::_run(bool p_current, const String &p_custom) {
 		if (!FileAccess::exists(main_scene)) {
 
 			current_option = -1;
-			pick_main_scene->set_text(vformat(TTR("Selected scene '%s' does not exist, select a valid one?\nYou can change it later in \"Project Settings\" under the 'application' category."), main_scene));
+			pick_main_scene->set_text(vformat(TTR("Selected scene \"%s\" does not exist, select a valid one?\nYou can change it later in \"Project Settings\" under the 'application' category."), main_scene));
 			pick_main_scene->popup_centered_minsize();
 			return;
 		}
@@ -1618,7 +1618,7 @@ void EditorNode::_run(bool p_current, const String &p_custom) {
 		if (ResourceLoader::get_resource_type(main_scene) != "PackedScene") {
 
 			current_option = -1;
-			pick_main_scene->set_text(vformat(TTR("Selected scene '%s' is not a scene file, select a valid one?\nYou can change it later in \"Project Settings\" under the 'application' category."), main_scene));
+			pick_main_scene->set_text(vformat(TTR("Selected scene \"%s\" is not a scene file, select a valid one?\nYou can change it later in \"Project Settings\" under the 'application' category."), main_scene));
 			pick_main_scene->popup_centered_minsize();
 			return;
 		}
@@ -1748,7 +1748,7 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 				tab_closing = p_option == FILE_CLOSE ? editor_data.get_edited_scene() : _next_unsaved_scene(false);
 				String scene_filename = editor_data.get_edited_scene_root(tab_closing)->get_filename();
 				save_confirmation->get_ok()->set_text(TTR("Save & Close"));
-				save_confirmation->set_text(vformat(TTR("Save changes to '%s' before closing?"), scene_filename != "" ? scene_filename : "unsaved scene"));
+				save_confirmation->set_text(vformat(TTR("Save changes to \"%s\" before closing?"), scene_filename != "" ? scene_filename : "unsaved scene"));
 				save_confirmation->popup_centered_minsize();
 				break;
 			} else {
@@ -2514,7 +2514,7 @@ void EditorNode::set_addon_plugin_enabled(const String &p_addon, bool p_enabled)
 	String addon_path = "res://addons/" + p_addon + "/plugin.cfg";
 	Error err = cf->load(addon_path);
 	if (err != OK) {
-		show_warning(vformat(TTR("Unable to enable addon plugin at: '%s' parsing of config failed."), addon_path));
+		show_warning(vformat(TTR("Unable to enable addon plugin at: \"%s\" parsing of config failed."), addon_path));
 		return;
 	}
 
@@ -2529,18 +2529,18 @@ void EditorNode::set_addon_plugin_enabled(const String &p_addon, bool p_enabled)
 	Ref<Script> script = ResourceLoader::load(path);
 
 	if (script.is_null()) {
-		show_warning(vformat(TTR("Unable to load addon script from path: '%s'."), path));
+		show_warning(vformat(TTR("Unable to load addon script from path: \"%s\"."), path));
 		return;
 	}
 
 	//could check inheritance..
 	if (String(script->get_instance_base_type()) != "EditorPlugin") {
-		show_warning(vformat(TTR("Unable to load addon script from path: '%s' Base type is not EditorPlugin."), path));
+		show_warning(vformat(TTR("Unable to load addon script from path: \"%s\" Base type is not EditorPlugin."), path));
 		return;
 	}
 
 	if (!script->is_tool()) {
-		show_warning(vformat(TTR("Unable to load addon script from path: '%s' Script is not in tool mode."), path));
+		show_warning(vformat(TTR("Unable to load addon script from path: \"%s\" Script is not in tool mode."), path));
 		return;
 	}
 
@@ -2768,7 +2768,7 @@ Error EditorNode::load_scene(const String &p_scene, bool p_ignore_broken_deps, b
 		}
 
 		if (!p_force_open_imported && FileAccess::exists(p_scene + ".import")) {
-			open_imported->set_text(vformat(TTR("Scene '%s' was automatically imported, so it can't be modified.\nTo make changes to it, a new inherited scene can be created."), p_scene.get_file()));
+			open_imported->set_text(vformat(TTR("Scene \"%s\" was automatically imported, so it cannot be modified.\nTo make changes to it, a new inherited scene can be created."), p_scene.get_file()));
 			open_imported->popup_centered_minsize();
 			new_inherited_button->grab_focus();
 			open_import_request = p_scene;
@@ -2783,7 +2783,7 @@ Error EditorNode::load_scene(const String &p_scene, bool p_ignore_broken_deps, b
 
 	if (!lpath.begins_with("res://")) {
 
-		show_accept(TTR("Error loading scene, it must be inside the project path. Use 'Import' to open the scene, then save it inside the project path."), TTR("Ugh"));
+		show_accept(TTR("Could not load the scene; it must be located in the project directory. Use \"Import\" to open the scene then save it in the project path."), TTR("OK"));
 		opening_prev = false;
 		return ERR_FILE_NOT_FOUND;
 	}
@@ -2835,7 +2835,7 @@ Error EditorNode::load_scene(const String &p_scene, bool p_ignore_broken_deps, b
 
 	for (Map<String, Set<String> >::Element *E = dependency_errors.front(); E; E = E->next()) {
 
-		String txt = vformat(TTR("Scene '%s' has broken dependencies:"), E->key()) + "\n";
+		String txt = vformat(TTR("Scene \"%s\" has broken dependencies:"), E->key()) + "\n";
 		for (Set<String>::Element *F = E->get().front(); F; F = F->next()) {
 			txt += "\t" + F->get() + "\n";
 		}
@@ -3819,7 +3819,7 @@ void EditorNode::_scene_tab_closed(int p_tab) {
 						   editor_data.get_scene_version(p_tab) != 0;
 	if (unsaved) {
 		save_confirmation->get_ok()->set_text(TTR("Save & Close"));
-		save_confirmation->set_text(vformat(TTR("Save changes to '%s' before closing?"), scene->get_filename() != "" ? scene->get_filename() : "unsaved scene"));
+		save_confirmation->set_text(vformat(TTR("Save changes to \"%s\" before closing?"), scene->get_filename() != "" ? scene->get_filename() : "unsaved scene"));
 		save_confirmation->popup_centered_minsize();
 	} else {
 		_discard_changes();

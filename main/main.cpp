@@ -221,14 +221,14 @@ void Main::print_help(const char *p_binary) {
 	for (int i = 0; i < OS::get_singleton()->get_audio_driver_count(); i++) {
 		if (i != 0)
 			OS::get_singleton()->print(", ");
-		OS::get_singleton()->print("'%s'", OS::get_singleton()->get_audio_driver_name(i));
+		OS::get_singleton()->print("\"%s\"", OS::get_singleton()->get_audio_driver_name(i));
 	}
 	OS::get_singleton()->print(").\n");
 	OS::get_singleton()->print("  --video-driver <driver>          Video driver (");
 	for (int i = 0; i < OS::get_singleton()->get_video_driver_count(); i++) {
 		if (i != 0)
 			OS::get_singleton()->print(", ");
-		OS::get_singleton()->print("'%s'", OS::get_singleton()->get_video_driver_name(i));
+		OS::get_singleton()->print("\"%s\"", OS::get_singleton()->get_video_driver_name(i));
 	}
 	OS::get_singleton()->print(").\n");
 	OS::get_singleton()->print("\n");
@@ -277,7 +277,7 @@ void Main::print_help(const char *p_binary) {
 	const char **test_names = tests_get_names();
 	const char *comma = "";
 	while (*test_names) {
-		OS::get_singleton()->print("%s'%s'", comma, *test_names);
+		OS::get_singleton()->print("%s\"%s\"", comma, *test_names);
 		test_names++;
 		comma = ", ";
 	}
@@ -395,7 +395,7 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 
 				if (vm.find("x") == -1) { // invalid parameter format
 
-					OS::get_singleton()->print("Invalid resolution '%s', it should be e.g. '1280x720'.\n", vm.utf8().get_data());
+					OS::get_singleton()->print("Invalid resolution \"%s\", it should be e.g. '1280x720'.\n", vm.utf8().get_data());
 					goto error;
 				}
 
@@ -404,7 +404,7 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 
 				if (w <= 0 || h <= 0) {
 
-					OS::get_singleton()->print("Invalid resolution '%s', width and height must be above 0.\n", vm.utf8().get_data());
+					OS::get_singleton()->print("Invalid resolution \"%s\", width and height must be above 0.\n", vm.utf8().get_data());
 					goto error;
 				}
 
@@ -425,7 +425,7 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 
 				if (vm.find(",") == -1) { // invalid parameter format
 
-					OS::get_singleton()->print("Invalid position '%s', it should be e.g. '80,128'.\n", vm.utf8().get_data());
+					OS::get_singleton()->print("Invalid position \"%s\", it should be e.g. '80,128'.\n", vm.utf8().get_data());
 					goto error;
 				}
 
@@ -689,7 +689,7 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 #ifdef TOOLS_ENABLED
 		editor = false;
 #else
-		OS::get_singleton()->print("Error: Could not load game path '%s'.\n", project_path.ascii().get_data());
+		OS::get_singleton()->print("Error: Could not load game path \"%s\".\n", project_path.ascii().get_data());
 
 		goto error;
 #endif

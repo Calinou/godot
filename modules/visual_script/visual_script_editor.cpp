@@ -2876,7 +2876,7 @@ void VisualScriptEditor::_selected_new_virtual_method(const String &p_text, cons
 
 	String name = p_text;
 	if (script->has_function(name)) {
-		EditorNode::get_singleton()->show_warning(vformat(TTR("Script already has function '%s'"), name));
+		EditorNode::get_singleton()->show_warning(vformat(TTR("Script already has function \"%s\""), name));
 		return;
 	}
 

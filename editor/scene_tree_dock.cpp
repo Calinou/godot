@@ -119,7 +119,7 @@ void SceneTreeDock::instance(const String &p_file) {
 	if (!edited_scene) {
 
 		current_option = -1;
-		accept->get_ok()->set_text(TTR("OK :("));
+		accept->get_ok()->set_text(TTR("OK"));
 		accept->set_text(TTR("No parent to instance a child at."));
 		accept->popup_centered_minsize();
 		return;
@@ -164,8 +164,8 @@ void SceneTreeDock::_perform_instance_scenes(const Vector<String> &p_files, Node
 		Ref<PackedScene> sdata = ResourceLoader::load(p_files[i]);
 		if (!sdata.is_valid()) {
 			current_option = -1;
-			accept->get_ok()->set_text(TTR("Ugh"));
-			accept->set_text(vformat(TTR("Error loading scene from %s"), p_files[i]));
+			accept->get_ok()->set_text(TTR("OK"));
+			accept->set_text(vformat(TTR("Could not load the scene from \"%s\"."), p_files[i]));
 			accept->popup_centered_minsize();
 			error = true;
 			break;
@@ -174,8 +174,8 @@ void SceneTreeDock::_perform_instance_scenes(const Vector<String> &p_files, Node
 		Node *instanced_scene = sdata->instance(PackedScene::GEN_EDIT_STATE_INSTANCE);
 		if (!instanced_scene) {
 			current_option = -1;
-			accept->get_ok()->set_text(TTR("Ugh"));
-			accept->set_text(vformat(TTR("Error instancing scene from %s"), p_files[i]));
+			accept->get_ok()->set_text(TTR("OK"));
+			accept->set_text(vformat(TTR("Could not instance the scene from \"%s\"."), p_files[i]));
 			accept->popup_centered_minsize();
 			error = true;
 			break;
@@ -186,7 +186,7 @@ void SceneTreeDock::_perform_instance_scenes(const Vector<String> &p_files, Node
 			if (_cyclical_dependency_exists(edited_scene->get_filename(), instanced_scene)) {
 
 				accept->get_ok()->set_text(TTR("Ok"));
-				accept->set_text(vformat(TTR("Cannot instance the scene '%s' because the current scene exists within one of its nodes."), p_files[i]));
+				accept->set_text(vformat(TTR("Cannot instance the scene \"%s\" because the current scene exists within one of its nodes."), p_files[i]));
 				accept->popup_centered_minsize();
 				error = true;
 				break;
@@ -233,16 +233,16 @@ void SceneTreeDock::_perform_instance_scenes(const Vector<String> &p_files, Node
 void SceneTreeDock::_replace_with_branch_scene(const String &p_file, Node *base) {
 	Ref<PackedScene> sdata = ResourceLoader::load(p_file);
 	if (!sdata.is_valid()) {
-		accept->get_ok()->set_text(TTR("Ugh"));
-		accept->set_text(vformat(TTR("Error loading scene from %s"), p_file));
+		accept->get_ok()->set_text(TTR("OK"));
+		accept->set_text(vformat(TTR("Error loading scene from \"%s\"."), p_file));
 		accept->popup_centered_minsize();
 		return;
 	}
 
 	Node *instanced_scene = sdata->instance(PackedScene::GEN_EDIT_STATE_INSTANCE);
 	if (!instanced_scene) {
-		accept->get_ok()->set_text(TTR("Ugh"));
-		accept->set_text(vformat(TTR("Error instancing scene from %s"), p_file));
+		accept->get_ok()->set_text(TTR("OK"));
+		accept->set_text(vformat(TTR("Error instancing scene from \"%s\"."), p_file));
 		accept->popup_centered_minsize();
 		return;
 	}

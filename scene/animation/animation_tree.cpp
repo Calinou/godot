@@ -17,9 +17,9 @@ void AnimationNode::blend_animation(const StringName &p_animation, float p_time,
 		Ref<AnimationNodeBlendTree> btree = get_parent();
 		if (btree.is_valid()) {
 			String name = btree->get_node_name(Ref<AnimationNodeAnimation>(this));
-			make_invalid(vformat(RTR("In node '%s', invalid animation: '%s'."), name, p_animation));
+			make_invalid(vformat(RTR("In node \"%s\", invalid animation: \"%s\"."), name, p_animation));
 		} else {
-			make_invalid(vformat(RTR("Invalid animation: '%s'."), p_animation));
+			make_invalid(vformat(RTR("Invalid animation: \"%s\"."), p_animation));
 		}
 		return;
 	}
@@ -74,7 +74,7 @@ float AnimationNode::blend_input(int p_input, float p_time, bool p_seek, float p
 	if (node.is_null()) {
 
 		String name = tree->get_node_name(Ref<AnimationNodeAnimation>(this));
-		make_invalid(vformat(RTR("Nothing connected to input '%s' of node '%s'."), get_input_name(p_input), name));
+		make_invalid(vformat(RTR("Nothing connected to input \"%s\" of node \"%s\"."), get_input_name(p_input), name));
 		return 0;
 	}
 

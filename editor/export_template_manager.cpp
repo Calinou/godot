@@ -137,7 +137,7 @@ void ExportTemplateManager::_download_template(const String &p_version) {
 
 void ExportTemplateManager::_uninstall_template(const String &p_version) {
 
-	remove_confirm->set_text(vformat(TTR("Remove template version '%s'?"), p_version));
+	remove_confirm->set_text(vformat(TTR("Remove template version \"%s\"?"), p_version));
 	remove_confirm->popup_centered_minsize();
 	to_remove = p_version;
 }

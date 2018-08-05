@@ -230,9 +230,9 @@ void DependencyEditor::edit(const String &p_path) {
 	popup_centered_ratio();
 
 	if (EditorNode::get_singleton()->is_scene_open(p_path)) {
-		EditorNode::get_singleton()->show_warning(vformat(TTR("Scene '%s' is currently being edited.\nChanges will not take effect unless reloaded."), p_path.get_file()));
+		EditorNode::get_singleton()->show_warning(vformat(TTR("Scene \"%s\" is currently being edited.\nChanges will not take effect unless reloaded."), p_path.get_file()));
 	} else if (ResourceCache::has(p_path)) {
-		EditorNode::get_singleton()->show_warning(vformat(TTR("Resource '%s' is in use.\nChanges will take effect when reloaded."), p_path.get_file()));
+		EditorNode::get_singleton()->show_warning(vformat(TTR("Resource \"%s\" is in use.\nChanges will take effect when reloaded."), p_path.get_file()));
 	}
 }
 
@@ -570,7 +570,7 @@ DependencyRemoveDialog::DependencyRemoveDialog() {
 void DependencyErrorDialog::show(const String &p_for_file, const Vector<String> &report) {
 
 	for_file = p_for_file;
-	set_title(TTR("Error loading:") + " " + p_for_file.get_file());
+	set_title(vformat(TTR("Could not load \"%s\"."), p_for_file.get_file()));
 	files->clear();
 
 	TreeItem *root = files->create_item(NULL);

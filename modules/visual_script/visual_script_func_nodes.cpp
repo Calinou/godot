@@ -2261,7 +2261,7 @@ public:
 
 				if (!valid) {
 					r_error.error = Variant::CallError::CALL_ERROR_INVALID_METHOD;
-					r_error_str = vformat(RTR("Invalid index property name '%s' in node %s."), String(property), another->get_name());
+					r_error_str = vformat(RTR("Invalid index property name \"%s\" in node %s."), String(property), another->get_name());
 					return 0;
 				}
 

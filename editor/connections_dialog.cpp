@@ -465,7 +465,7 @@ void ConnectionsDock::_connect(Connection cToMake) {
 	if (!source || !target)
 		return;
 
-	undo_redo->create_action(vformat(TTR("Connect '%s' to '%s'"), String(cToMake.signal), String(cToMake.method)));
+	undo_redo->create_action(vformat(TTR("Connect \"%s\" to \"%s\""), String(cToMake.signal), String(cToMake.method)));
 
 	undo_redo->add_do_method(source, "connect", cToMake.signal, target, cToMake.method, cToMake.binds, cToMake.flags);
 	undo_redo->add_undo_method(source, "disconnect", cToMake.signal, target, cToMake.method);
@@ -485,7 +485,7 @@ void ConnectionsDock::_disconnect(TreeItem &item) {
 	Connection c = item.get_metadata(0);
 	ERR_FAIL_COND(c.source != selectedNode); //shouldn't happen but...bugcheck
 
-	undo_redo->create_action(vformat(TTR("Disconnect '%s' from '%s'"), c.signal, c.method));
+	undo_redo->create_action(vformat(TTR("Disconnect \"%s\" from \"%s\""), c.signal, c.method));
 
 	undo_redo->add_do_method(selectedNode, "disconnect", c.signal, c.target, c.method);
 	undo_redo->add_undo_method(selectedNode, "connect", c.signal, c.target, c.method, c.binds, c.flags);
@@ -510,7 +510,7 @@ void ConnectionsDock::_disconnect_all() {
 
 	TreeItem *child = item->get_children();
 	String signalName = item->get_metadata(0).operator Dictionary()["name"];
-	undo_redo->create_action(vformat(TTR("Disconnect all from signal: '%s'"), signalName));
+	undo_redo->create_action(vformat(TTR("Disconnect all from signal: \"%s\""), signalName));
 
 	while (child) {
 		Connection c = child->get_metadata(0);

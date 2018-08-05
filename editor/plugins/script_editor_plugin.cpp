@@ -514,7 +514,7 @@ void ScriptEditor::_open_recent_script(int p_idx) {
 
 void ScriptEditor::_show_error_dialog(String p_path) {
 
-	error_dialog->set_text(vformat(TTR("Can't open '%s'. The file could have been moved or deleted."), p_path));
+	error_dialog->set_text(vformat(TTR("Can't open \"%s\". The file could have been moved or deleted."), p_path));
 	error_dialog->popup_centered_minsize();
 }
 
@@ -3097,7 +3097,7 @@ ScriptEditor::ScriptEditor(EditorNode *p_editor) {
 
 	error_dialog = memnew(AcceptDialog);
 	add_child(error_dialog);
-	error_dialog->get_ok()->set_text(TTR("I see..."));
+	error_dialog->get_ok()->set_text(TTR("OK"));
 
 	debugger = memnew(ScriptEditorDebugger(editor));
 	debugger->connect("goto_script_line", this, "_goto_script_line");

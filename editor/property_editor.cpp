@@ -1076,7 +1076,7 @@ void CustomPropertyEditor::_file_selected(String p_file) {
 
 			RES res = ResourceLoader::load(p_file, type);
 			if (res.is_null()) {
-				error->set_text(TTR("Error loading file: Not a resource!"));
+				error->set_text(TTR("Could not load the file, as it is not a resource."));
 				error->popup_centered_minsize();
 				break;
 			}
