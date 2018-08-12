@@ -167,6 +167,33 @@ void GridContainer::_notification(int p_what) {
 	}
 }
 
+void GridContainer::set_rows_first(bool p_enabled) {
+	rows_first = p_enabled;
+}
+
+bool GridContainer::is_rows_first() const {
+
+	return rows_first;
+}
+
+void GridContainer::set_flip_x(bool p_enabled) {
+	flip_x = p_enabled;
+}
+
+bool GridContainer::is_flip_x() const {
+
+	return flip_x;
+}
+
+void GridContainer::set_flip_y(bool p_enabled) {
+	flip_y = p_enabled;
+}
+
+bool GridContainer::is_flip_y() const {
+
+	return flip_y;
+}
+
 void GridContainer::set_columns(int p_columns) {
 
 	ERR_FAIL_COND(p_columns < 1);
@@ -182,6 +209,12 @@ int GridContainer::get_columns() const {
 
 void GridContainer::_bind_methods() {
 
+	ClassDB::bind_method(D_METHOD("set_rows_first", "enabled"), &GridContainer::set_rows_first);
+	ClassDB::bind_method(D_METHOD("is_rows_first"), &GridContainer::is_rows_first);
+	ClassDB::bind_method(D_METHOD("set_flip_x", "enabled"), &GridContainer::set_flip_x);
+	ClassDB::bind_method(D_METHOD("is_flip_x"), &GridContainer::is_flip_x);
+	ClassDB::bind_method(D_METHOD("set_flip_y", "enabled"), &GridContainer::set_flip_y);
+	ClassDB::bind_method(D_METHOD("is_flip_y"), &GridContainer::is_flip_y);
 	ClassDB::bind_method(D_METHOD("set_columns", "columns"), &GridContainer::set_columns);
 	ClassDB::bind_method(D_METHOD("get_columns"), &GridContainer::get_columns);
 	ClassDB::bind_method(D_METHOD("get_child_control_at_cell", "row", "column"),

@@ -37,6 +37,9 @@ class GridContainer : public Container {
 
 	GDCLASS(GridContainer, Container);
 
+	bool rows_first;
+	bool flip_x;
+	bool flip_y;
 	int columns;
 
 protected:
@@ -44,6 +47,12 @@ protected:
 	static void _bind_methods();
 
 public:
+	void set_rows_first(bool p_enabled);
+	bool is_rows_first() const;
+	void set_flip_x(bool p_enabled);
+	bool is_flip_x() const;
+	void set_flip_y(bool p_enabled);
+	bool is_flip_y() const;
 	void set_columns(int p_columns);
 	int get_columns() const;
 	virtual Size2 get_minimum_size() const;
