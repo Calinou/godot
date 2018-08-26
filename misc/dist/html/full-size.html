@@ -1,32 +1,31 @@
 <!DOCTYPE html>
-<html xmlns='http://www.w3.org/1999/xhtml' lang='' xml:lang=''>
+<html lang="en">
 <head>
-	<meta charset='utf-8' />
-	<meta name='viewport' content='width=device-width, user-scalable=no' />
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	<title></title>
-	<style type='text/css'>
-
+	<style>
 		body {
-			touch-action: none;
-			margin: 0;
+			background-color: black;
 			border: 0 none;
+			margin: 0;
 			padding: 0;
 			text-align: center;
-			background-color: black;
+			touch-action: none;
 		}
 
-		#canvas {
+		.canvas {
 			display: block;
 			margin: 0;
 			color: white;
 		}
 
-		#canvas:focus {
+		.canvas:focus {
 			outline: none;
 		}
 
 		.godot {
-			font-family: 'Noto Sans', 'Droid Sans', Arial, sans-serif;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 			color: #e0e0e0;
 			background-color: #3b3943;
 			background-image: linear-gradient(to bottom, #403e48, #35333c);
@@ -34,79 +33,69 @@
 			box-shadow: 0 0 1px 1px #2f2d35;
 		}
 
-
-		/* Status display
-		 * ============== */
-
-		#status {
-			position: absolute;
-			left: 0;
-			top: 0;
-			right: 0;
+		.status {
+			align-items: center;
 			bottom: 0;
 			display: flex;
 			justify-content: center;
-			align-items: center;
-			/* don't consume click events - make children visible explicitly */
+			left: 0;
+			position: absolute;
+			right: 0;
+			top: 0;
+			/* Don't consume click events - make children visible explicitly */
 			visibility: hidden;
 		}
 
-		#status-progress {
-			width: 366px;
-			height: 7px;
-			background-color: #38363A;
+		.status-progress {
+			background-color: #38363a;
 			border: 1px solid #444246;
-			padding: 1px;
-			box-shadow: 0 0 2px 1px #1B1C22;
 			border-radius: 2px;
+			box-shadow: 0 0 2px 1px #1b1C22;
+			height: 7px;
+			padding: 1px;
 			visibility: visible;
+			width: 366px;
 		}
 
-		@media only screen and (orientation:portrait) {
-			#status-progress {
+		@media only screen and (orientation: portrait) {
+			.status-progress {
 				width: 61.8%;
 			}
 		}
 
-		#status-progress-inner {
-			height: 100%;
-			width: 0;
-			box-sizing: border-box;
-			transition: width 0.5s linear;
+		@keyframes spin {
+			from {
+				transform: rotateZ(0);
+			}
+
+			to {
+				transform: rotateZ(360deg);
+			}
+		}
+
+		.status-progress-inner {
 			background-color: #202020;
+			border-radius: 3px;
 			border: 1px solid #222223;
 			box-shadow: 0 0 1px 1px #27282E;
-			border-radius: 3px;
+			box-sizing: border-box;
+			height: 100%;
+			transition: width 0.5s linear;
+			width: 0;
 		}
 
-		#status-indeterminate {
-			visibility: visible;
+		.status-indeterminate {
+			width: 4rem;
+			height: 4rem;
+			background-color: hsl(0, 0%, 80%);
 			position: relative;
-		}
-
-		#status-indeterminate > div {
-			width: 4.5px;
-			height: 0;
-			border-style: solid;
-			border-width: 9px 3px 0 3px;
-			border-color: #2b2b2b transparent transparent transparent;
-			transform-origin: center 21px;
-			position: absolute;
-		}
-
-		#status-indeterminate > div:nth-child(1) { transform: rotate( 22.5deg); }
-		#status-indeterminate > div:nth-child(2) { transform: rotate( 67.5deg); }
-		#status-indeterminate > div:nth-child(3) { transform: rotate(112.5deg); }
-		#status-indeterminate > div:nth-child(4) { transform: rotate(157.5deg); }
-		#status-indeterminate > div:nth-child(5) { transform: rotate(202.5deg); }
-		#status-indeterminate > div:nth-child(6) { transform: rotate(247.5deg); }
-		#status-indeterminate > div:nth-child(7) { transform: rotate(292.5deg); }
-		#status-indeterminate > div:nth-child(8) { transform: rotate(337.5deg); }
-
-		#status-notice {
-			margin: 0 100px;
-			line-height: 1.3;
 			visibility: visible;
+			animation: spin 1.5s linear infinite;
+		}
+
+		.status-notice {
+			line-height: 1.3;
+			margin: 0 100px;
 			padding: 4px 6px;
 			visibility: visible;
 		}
@@ -114,47 +103,40 @@
 $GODOT_HEAD_INCLUDE
 </head>
 <body>
-	<canvas id='canvas'>
-		HTML5 canvas appears to be unsupported in the current browser.<br />
+	<canvas class="canvas">
+		HTML5 canvas appears to be unsupported in the current browser.<br>
 		Please try updating or use a different browser.
 	</canvas>
-	<div id='status'>
-		<div id='status-progress' style='display: none;' oncontextmenu='event.preventDefault();'><div id ='status-progress-inner'></div></div>
-		<div id='status-indeterminate' style='display: none;' oncontextmenu='event.preventDefault();'>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
+	<div class="status">
+		<div class="status-progress" style="display: none;" oncontextmenu="event.preventDefault();">
+			<div class="status-progress-inner"></div>
 		</div>
-		<div id='status-notice' class='godot' style='display: none;'></div>
+		<div class="status-indeterminate" style="display: none;" oncontextmenu="event.preventDefault();"></div>
+		<div class="status-notice" class="godot" style="display: none;"></div>
 	</div>
 
-	<script type='text/javascript' src='$GODOT_BASENAME.js'></script>
-	<script type='text/javascript'>//<![CDATA[
+	<script type="text/javascript" src="$GODOT_BASENAME.js"></script>
+	<script type="text/javascript">//<![CDATA[
 
-		var engine = new Engine;
-		var setStatusMode;
-		var setStatusNotice;
+		//let engine = new Engine;
+		let setStatusMode;
+		let setStatusNotice;
 
 		(function() {
 
-			const MAIN_PACK = '$GODOT_BASENAME.pck';
+			const MAIN_PACK = "$GODOT_BASENAME.pck";
 			const INDETERMINATE_STATUS_STEP_MS = 100;
 
-			var canvas = document.getElementById('canvas');
-			var statusProgress = document.getElementById('status-progress');
-			var statusProgressInner = document.getElementById('status-progress-inner');
-			var statusIndeterminate = document.getElementById('status-indeterminate');
-			var statusNotice = document.getElementById('status-notice');
+			let canvas = document.querySelector(".canvas");
+			let statusProgress = document.querySelector(".status-progress");
+			let statusProgressInner = document.querySelector(".status-progress-inner");
+			let statusIndeterminate = document.querySelector(".status-indeterminate");
+			let statusNotice = document.querySelector(".status-notice");
 
-			var initializing = true;
-			var statusMode = 'hidden';
+			let initializing = true;
+			let statusMode = "hidden";
 
-			var animationCallbacks = [];
+			let animationCallbacks = [];
 			function animate(time) {
 				animationCallbacks.forEach(callback => callback(time));
 				requestAnimationFrame(animate);
@@ -165,47 +147,37 @@ $GODOT_HEAD_INCLUDE
 				canvas.width = innerWidth;
 				canvas.height = innerHeight;
 			}
+
 			animationCallbacks.push(adjustCanvasDimensions);
 			adjustCanvasDimensions();
 
 			setStatusMode = function setStatusMode(mode) {
 
-				if (statusMode === mode || !initializing)
+				if (statusMode === mode || !initializing) {
 					return;
-				[statusProgress, statusIndeterminate, statusNotice].forEach(elem => {
-					elem.style.display = 'none';
-				});
-				if (animateStatusIndeterminate in animationCallbacks) {
-					animationCallbacks.erase(animateStatusIndeterminate);
 				}
+
+				[statusProgress, statusIndeterminate, statusNotice].forEach(elem => {
+					elem.style.display = "none";
+				});
+
 				switch (mode) {
-					case 'progress':
-						statusProgress.style.display = 'block';
+					case "progress":
+						statusProgress.style.display = "block";
 						break;
-					case 'indeterminate':
-						statusIndeterminate.style.display = 'block';
-						animationCallbacks.push(animateStatusIndeterminate);
+					case "indeterminate":
+						statusIndeterminate.style.display = "block";
 						break;
-					case 'notice':
-						statusNotice.style.display = 'block';
+					case "notice":
+						statusNotice.style.display = "block";
 						break;
-					case 'hidden':
+					case "hidden":
 						break;
 					default:
-						throw new Error('Invalid status mode');
+						throw new Error("Invalid status mode");
 				}
+
 				statusMode = mode;
-			}
-
-			function animateStatusIndeterminate(ms) {
-
-				var i = Math.floor(ms / INDETERMINATE_STATUS_STEP_MS % 8);
-				if (statusIndeterminate.children[i].style.borderTopColor == '') {
-					Array.prototype.slice.call(statusIndeterminate.children).forEach(child => {
-						child.style.borderTopColor = '';
-					});
-					statusIndeterminate.children[i].style.borderTopColor = '#dfdfdf';
-				}
 			}
 
 			setStatusNotice = function setStatusNotice(text) {
@@ -213,47 +185,47 @@ $GODOT_HEAD_INCLUDE
 				while (statusNotice.lastChild) {
 					statusNotice.removeChild(statusNotice.lastChild);
 				}
-				var lines = text.split('\n');
+				let lines = text.split("\n");
 				lines.forEach((line) => {
 					statusNotice.appendChild(document.createTextNode(line));
-					statusNotice.appendChild(document.createElement('br'));
+					statusNotice.appendChild(document.createElement("br"));
 				});
 			};
 
-			engine.setProgressFunc((current, total) => {
+			/*engine.setProgressFunc((current, total) => {
 
 				if (total > 0) {
-					statusProgressInner.style.width = current/total * 100 + '%';
-					setStatusMode('progress');
+					statusProgressInner.style.width = current/total * 100 + "%";
+					setStatusMode("progress");
 					if (current === total) {
 						// wait for progress bar animation
 						setTimeout(() => {
-							setStatusMode('indeterminate');
+							setStatusMode("indeterminate");
 						}, 500);
 					}
 				} else {
-					setStatusMode('indeterminate');
+					setStatusMode("indeterminate");
 				}
-			});
+			});*/
 
 			function displayFailureNotice(err) {
-				var msg = err.message || err;
+				let msg = err.message || err;
 				console.error(msg);
 				setStatusNotice(msg);
-				setStatusMode('notice');
+				setStatusMode("notice");
 				initializing = false;
 			};
 
-			if (!Engine.isWebGLAvailable()) {
-				displayFailureNotice('WebGL not available');
+			/*if (!Engine.isWebGLAvailable()) {
+				displayFailureNotice("WebGL is not available.");
 			} else {
-				setStatusMode('indeterminate');
+				setStatusMode("indeterminate");
 				engine.setCanvas(canvas);
 				engine.startGame(MAIN_PACK).then(() => {
-					setStatusMode('hidden');
+					setStatusMode("hidden");
 					initializing = false;
 				}, displayFailureNotice);
-			}
+			}*/
 		})();
 	//]]></script>
 </body>

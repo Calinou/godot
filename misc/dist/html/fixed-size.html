@@ -1,141 +1,128 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html lang="en">
 <head>
-	<meta charset="utf-8" />
+	<meta charset="utf-8">
 	<title></title>
-	<style type="text/css">
-
+	<style>
 		body {
-			margin: 0;
+			background-color: #222226;
 			border: 0 none;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+			margin: 0;
 			padding: 0;
 			text-align: center;
-			background-color: #222226;
-			font-family: 'Noto Sans', Arial, sans-serif;
 		}
 
-
-		/* Godot Engine default theme style
-		 * ================================ */
-
 		.godot {
-			color: #e0e0e0;
 			background-color: #3b3943;
 			background-image: linear-gradient(to bottom, #403e48, #35333c);
 			border: 1px solid #45434e;
 			box-shadow: 0 0 1px 1px #2f2d35;
+			color: #e0e0e0;
 		}
 
 		button.godot {
-			font-family: 'Droid Sans', Arial, sans-serif; /* override user agent style */
-			padding: 1px 5px;
 			background-color: #37353f;
 			background-image: linear-gradient(to bottom, #413e49, #3a3842);
-			border: 1px solid #514f5d;
 			border-radius: 1px;
+			border: 1px solid #514f5d;
 			box-shadow: 0 0 1px 1px #2a2930;
+			font-family: "Droid Sans", Arial, sans-serif; /* override user agent style */
+			padding: 1px 5px;
 		}
 
 		button.godot:hover {
-			color: #f0f0f0;
 			background-color: #44414e;
 			background-image: linear-gradient(to bottom, #494652, #423f4c);
 			border: 1px solid #5a5667;
 			box-shadow: 0 0 1px 1px #26252b;
+			color: #f0f0f0;
 		}
 
 		button.godot:active {
-			color: #fff;
 			background-color: #3e3b46;
 			background-image: linear-gradient(to bottom, #36343d, #413e49);
 			border: 1px solid #4f4c59;
 			box-shadow: 0 0 1px 1px #26252b;
+			color: #fff;
 		}
 
 		button.godot:disabled {
-			color: rgba(230, 230, 230, 0.2);
 			background-color: #3d3d3d;
 			background-image: linear-gradient(to bottom, #434343, #393939);
 			border: 1px solid #474747;
 			box-shadow: 0 0 1px 1px #2d2b33;
+			color: rgba(230, 230, 230, 0.2);
 		}
 
-
-		/* Canvas / wrapper
-		 * ================ */
-
-		#container {
-			display: inline-block; /* scale with canvas */
-			vertical-align: top; /* prevent extra height */
-			position: relative; /* root for absolutely positioned overlay */
-			margin: 0;
-			border: 0 none;
-			padding: 0;
+		.container {
 			background-color: #0c0c0c;
+			border: 0 none;
+			display: inline-block; /* scale with canvas */
+			margin: 0;
+			padding: 0;
+			position: relative; /* root for absolutely positioned overlay */
+			vertical-align: top; /* prevent extra height */
 		}
 
-		#canvas {
+		.canvas {
+			color: white;
 			display: block;
 			margin: 0 auto;
-			color: white;
 		}
 
-		#canvas:focus {
+		.canvas:focus {
 			outline: none;
 		}
 
-
-		/* Status display
-		 * ============== */
-
-		#status {
-			position: absolute;
-			left: 0;
-			top: 0;
-			right: 0;
+		.status {
+			/* don"t consume click events - make children visible explicitly */
+			align-items: center;
 			bottom: 0;
 			display: flex;
 			justify-content: center;
-			align-items: center;
-			/* don't consume click events - make children visible explicitly */
+			left: 0;
+			position: absolute;
+			right: 0;
+			top: 0;
 			visibility: hidden;
 		}
 
-		#status-progress {
-			width: 244px;
-			height: 7px;
+		.status-progress {
 			background-color: #38363A;
-			border: 1px solid #444246;
-			padding: 1px;
-			box-shadow: 0 0 2px 1px #1B1C22;
 			border-radius: 2px;
+			border: 1px solid #444246;
+			box-shadow: 0 0 2px 1px #1B1C22;
+			height: 7px;
+			padding: 1px;
 			visibility: visible;
+			width: 244px;
 		}
 
-		#status-progress-inner {
-			height: 100%;
-			width: 0;
-			box-sizing: border-box;
-			transition: width 0.5s linear;
+		.status-progress-inner {
 			background-color: #202020;
+			border-radius: 3px;
 			border: 1px solid #222223;
 			box-shadow: 0 0 1px 1px #27282E;
-			border-radius: 3px;
+			box-sizing: border-box;
+			height: 100%;
+			transition: width 0.5s linear;
+			width: 0;
 		}
 
-		#status-indeterminate {
-			visibility: visible;
+		.status-indeterminate {
 			position: relative;
+			visibility: visible;
 		}
 
-		#status-indeterminate > div {
-			width: 3px;
-			height: 0;
+		.status-indeterminate > div {
+			border-color: #2b2b2b transparent transparent transparent;
 			border-style: solid;
 			border-width: 6px 2px 0 2px;
-			border-color: #2b2b2b transparent transparent transparent;
-			transform-origin: center 14px;
+			height: 0;
 			position: absolute;
+			transform-origin: center 14px;
+			width: 3px;
 		}
 
 		#status-indeterminate > div:nth-child(1) { transform: rotate( 22.5deg); }
@@ -147,61 +134,57 @@
 		#status-indeterminate > div:nth-child(7) { transform: rotate(292.5deg); }
 		#status-indeterminate > div:nth-child(8) { transform: rotate(337.5deg); }
 
-		#status-notice {
-			margin: 0 100px;
+		.status-notice {
 			line-height: 1.3;
-			visibility: visible;
+			margin: 0 100px;
 			padding: 4px 6px;
 			visibility: visible;
+			visibility: visible;
 		}
 
-
-		/* Debug output
-		 * ============ */
-
-		#output-panel {
+		.output-panel {
 			display: none;
-			max-width: 700px;
 			font-size: small;
+			line-height: 2.2;
 			margin: 6px auto 0;
+			max-width: 700px;
 			padding: 0 4px 4px;
 			text-align: left;
-			line-height: 2.2;
 		}
 
-		#output-header {
+		.output-header {
+			align-items: center;
 			display: flex;
 			justify-content: space-between;
-			align-items: center;
 		}
 
-		#output-container {
-			padding: 6px;
+		.output-container {
 			background-color: #2c2a32;
 			box-shadow: inset 0 0 1px 1px #232127;
 			color: #bbb;
+			padding: 6px;
 		}
 
-		#output-scroll {
-			line-height: 1;
+		.output-scroll {
+			font-family: Monaco, Consolas, "DejaVu Sans Mono", "Lucida Console", monospace;
+			font-size: small;
 			height: 12em;
+			line-height: 1;
 			overflow-y: scroll;
 			white-space: pre-wrap;
-			font-size: small;
-			font-family: "Lucida Console", Monaco, monospace;
 		}
 	</style>
 $GODOT_HEAD_INCLUDE
 </head>
 <body>
-	<div id="container">
-		<canvas id="canvas" width="640" height="480">
-			HTML5 canvas appears to be unsupported in the current browser.<br />
+	<div class="container">
+		<canvas class="canvas" width="640" height="480">
+			HTML5 canvas appears to be unsupported in the current browser.<br>
 			Please try updating or use a different browser.
 		</canvas>
-		<div id="status">
-			<div id='status-progress' style='display: none;' oncontextmenu="event.preventDefault();"><div id ='status-progress-inner'></div></div>
-			<div id='status-indeterminate' style='display: none;' oncontextmenu="event.preventDefault();">
+		<div class="status">
+			<div class="status-progress" style="display: none;" oncontextmenu="event.preventDefault();"><div id ="status-progress-inner"></div></div>
+			<div class="status-indeterminate" style="display: none;" oncontextmenu="event.preventDefault();">
 				<div></div>
 				<div></div>
 				<div></div>
@@ -211,62 +194,62 @@ $GODOT_HEAD_INCLUDE
 				<div></div>
 				<div></div>
 			</div>
-			<div id="status-notice" class="godot" style='display: none;'></div>
+			<div class="status-notice" class="godot" style="display: none;"></div>
 		</div>
 	</div>
-	<div id="output-panel" class="godot">
-		<div id="output-header">
+	<div class="output-panel" class="godot">
+		<div class="output-header">
 			Output:
-			<button id='output-clear' class='godot' type='button' autocomplete='off'>Clear</button>
+			<button class="output-clear" class="godot" type="button" autocomplete="off">Clear</button>
 		</div>
-		<div id="output-container"><div id="output-scroll"></div></div>
+		<div class="output-container"><div class="output-scroll"></div></div>
 	</div>
 
 	<script type="text/javascript" src="$GODOT_BASENAME.js"></script>
 	<script type="text/javascript">//<![CDATA[
 
-		var engine = new Engine;
+		let engine = new Engine;
 
 		(function() {
 
-			const MAIN_PACK = '$GODOT_BASENAME.pck';
+			const MAIN_PACK = "$GODOT_BASENAME.pck";
 			const DEBUG_ENABLED = $GODOT_DEBUG_ENABLED;
 			const INDETERMINATE_STATUS_STEP_MS = 100;
 
-			var container = document.getElementById('container');
-			var canvas = document.getElementById('canvas');
-			var statusProgress = document.getElementById('status-progress');
-			var statusProgressInner = document.getElementById('status-progress-inner');
-			var statusIndeterminate = document.getElementById('status-indeterminate');
-			var statusNotice = document.getElementById('status-notice');
+			let container = document.getElementsByClassName("container");
+			let canvas = document.getElementsByClassName("canvas");
+			let statusProgress = document.getElementsByClassName("status-progress");
+			let statusProgressInner = document.getElementsByClassName("status-progress-inner");
+			let statusIndeterminate = document.getElementsByClassName("status-indeterminate");
+			let statusNotice = document.getElementsByClassName("status-notice");
 
-			var initializing = true;
-			var statusMode = 'hidden';
-			var indeterminiateStatusAnimationId = 0;
+			let initializing = true;
+			let statusMode = "hidden";
+			let indeterminiateStatusAnimationId = 0;
 
 			function setStatusMode(mode) {
 
 				if (statusMode === mode || !initializing)
 					return;
 				[statusProgress, statusIndeterminate, statusNotice].forEach(elem => {
-					elem.style.display = 'none';
+					elem.style.display = "none";
 				});
 				if (indeterminiateStatusAnimationId !== 0) {
 					cancelAnimationFrame(indeterminiateStatusAnimationId);
 					indeterminiateStatusAnimationId = 0;
 				}
 				switch (mode) {
-					case 'progress':
-						statusProgress.style.display = 'block';
+					case "progress":
+						statusProgress.style.display = "block";
 						break;
-					case 'indeterminate':
-						statusIndeterminate.style.display = 'block';
+					case "indeterminate":
+						statusIndeterminate.style.display = "block";
 						indeterminiateStatusAnimationId = requestAnimationFrame(animateStatusIndeterminate);
 						break;
-					case 'notice':
-						statusNotice.style.display = 'block';
+					case "notice":
+						statusNotice.style.display = "block";
 						break;
-					case 'hidden':
+					case "hidden":
 						break;
 					default:
 						throw new Error("Invalid status mode");
@@ -275,12 +258,12 @@ $GODOT_HEAD_INCLUDE
 			}
 
 			function animateStatusIndeterminate(ms) {
-				var i = Math.floor(ms / INDETERMINATE_STATUS_STEP_MS % 8);
-				if (statusIndeterminate.children[i].style.borderTopColor == '') {
+				let i = Math.floor(ms / INDETERMINATE_STATUS_STEP_MS % 8);
+				if (statusIndeterminate.children[i].style.borderTopColor == "") {
 					Array.prototype.slice.call(statusIndeterminate.children).forEach(child => {
-						child.style.borderTopColor = '';
+						child.style.borderTopColor = "";
 					});
-					statusIndeterminate.children[i].style.borderTopColor = '#dfdfdf';
+					statusIndeterminate.children[i].style.borderTopColor = "#dfdfdf";
 				}
 				requestAnimationFrame(animateStatusIndeterminate);
 			}
@@ -290,47 +273,47 @@ $GODOT_HEAD_INCLUDE
 				while (statusNotice.lastChild) {
 					statusNotice.removeChild(statusNotice.lastChild);
 				}
-				var lines = text.split('\n');
+				let lines = text.split("\n");
 				lines.forEach((line, index) => {
 					statusNotice.appendChild(document.createTextNode(line));
-					statusNotice.appendChild(document.createElement('br'));
+					statusNotice.appendChild(document.createElement("br"));
 				});
 			};
 
 			engine.setProgressFunc((current, total) => {
 
 				if (total > 0) {
-					statusProgressInner.style.width = current/total * 100 + '%';
-					setStatusMode('progress');
+					statusProgressInner.style.width = current/total * 100 + "%";
+					setStatusMode("progress");
 					if (current === total) {
 						// wait for progress bar animation
 						setTimeout(() => {
-							setStatusMode('indeterminate');
+							setStatusMode("indeterminate");
 						}, 500);
 					}
 				} else {
-					setStatusMode('indeterminate');
+					setStatusMode("indeterminate");
 				}
 			});
 
 			if (DEBUG_ENABLED) {
-				var outputRoot = document.getElementById("output-panel");
-				var outputScroll = document.getElementById("output-scroll");
-				var OUTPUT_MSG_COUNT_MAX = 400;
+				let outputRoot = document.getElementsByClassName("output-panel");
+				let outputScroll = document.getElementsByClassName("output-scroll");
+				let OUTPUT_MSG_COUNT_MAX = 400;
 
-				document.getElementById('output-clear').addEventListener('click', () => {
+				document.getElementsByClassName("output-clear").addEventListener("click", () => {
 					while (outputScroll.firstChild) {
 						outputScroll.firstChild.remove();
 					}
 				});
 
-				outputRoot.style.display = 'block';
+				outputRoot.style.display = "block";
 
 				function print(text) {
 					while (outputScroll.childElementCount >= OUTPUT_MSG_COUNT_MAX) {
 						outputScroll.firstChild.remove();
 					}
-					var msg = document.createElement("div");
+					let msg = document.createElement("div");
 					if (String.prototype.trim.call(text).startsWith("**ERROR**")) {
 						msg.style.color = "#d44";
 					} else if (String.prototype.trim.call(text).startsWith("**WARNING**")) {
@@ -339,7 +322,7 @@ $GODOT_HEAD_INCLUDE
 						msg.style.color = "#c6d";
 					}
 					msg.textContent = text;
-					var scrollToBottom = outputScroll.scrollHeight - (outputScroll.clientHeight + outputScroll.scrollTop) < 10;
+					let scrollToBottom = outputScroll.scrollHeight - (outputScroll.clientHeight + outputScroll.scrollTop) < 10;
 					outputScroll.appendChild(msg);
 					if (scrollToBottom) {
 						outputScroll.scrollTop = outputScroll.scrollHeight;
@@ -347,8 +330,8 @@ $GODOT_HEAD_INCLUDE
 				};
 
 				function printError(text) {
-					if (!String.prototype.trim.call(text).startsWith('**ERROR**: ')) {
-						text = '**ERROR**: ' + text;
+					if (!String.prototype.trim.call(text).startsWith("**ERROR**: ")) {
+						text = "**ERROR**: " + text;
 					}
 					print(text);
 				}
@@ -365,23 +348,23 @@ $GODOT_HEAD_INCLUDE
 			}
 
 			function displayFailureNotice(err) {
-				var msg = err.message || err;
+				let msg = err.message || err;
 				if (DEBUG_ENABLED) {
 					printError(msg);
 				}
 				console.error(msg);
 				setStatusNotice(msg);
-				setStatusMode('notice');
+				setStatusMode("notice");
 				initializing = false;
 			};
 
 			if (!Engine.isWebGLAvailable()) {
 				displayFailureNotice("WebGL not available");
 			} else {
-				setStatusMode('indeterminate');
+				setStatusMode("indeterminate");
 				engine.setCanvas(canvas);
 				engine.startGame(MAIN_PACK).then(() => {
-					setStatusMode('hidden');
+					setStatusMode("hidden");
 					initializing = false;
 				}, displayFailureNotice);
 			}
