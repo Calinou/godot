@@ -2229,6 +2229,26 @@ void SpatialEditorViewport::_notification(int p_what) {
 			info_label->set_text(text);
 		}
 
+		// Display camera coordinates
+		bool show_coords = view_menu->get_popup()->is_item_checked(view_menu->get_popup()->get_item_index(VIEW_COORDINATES));
+		coords_label->set_visible(show_coords);
+
+		if (previewing) {
+			current_camera = previewing;
+		} else {
+			current_camera = camera;
+		}
+
+		if (show_coords) {
+			String text;
+			text += "X: " + rtos(current_camera->get_translation().x).pad_decimals(1) + "\n";
+			text += "Y: " + rtos(current_camera->get_translation().y).pad_decimals(1) + "\n";
+			text += "Z: " + rtos(current_camera->get_translation().z).pad_decimals(1) + "\n\n";
+			text += TTR("Pitch") + ": " + itos(Math::round(current_camera->get_rotation_degrees().x)) + "\n";
+			text += TTR("Yaw") + ": " + itos(Math::round(current_camera->get_rotation_degrees().y));
+			coords_label->set_text(text);
+		}
+
 		// FPS Counter.
 		bool show_fps = view_menu->get_popup()->is_item_checked(view_menu->get_popup()->get_item_index(VIEW_FPS));
 		fps_label->set_visible(show_fps);
@@ -2257,6 +2277,7 @@ void SpatialEditorViewport::_notification(int p_what) {
 		surface->connect("focus_entered", this, "_surface_focus_enter");
 		surface->connect("focus_exited", this, "_surface_focus_exit");
 		info_label->add_style_override("normal", editor->get_gui_base()->get_stylebox("Information3dViewport", "EditorStyles"));
+		coords_label->add_style_override("normal", editor->get_gui_base()->get_stylebox("Information3dViewport", "EditorStyles"));
 		fps_label->add_style_override("normal", editor->get_gui_base()->get_stylebox("Information3dViewport", "EditorStyles"));
 		cinema_label->add_style_override("normal", editor->get_gui_base()->get_stylebox("Information3dViewport", "EditorStyles"));
 		preview_camera->set_icon(get_icon("Camera", "EditorIcons"));
@@ -2620,12 +2641,21 @@ void SpatialEditorViewport::_menu_option(int p_option) {
 			current = !current;
 			view_menu->get_popup()->set_item_checked(idx, current);
 		} break;
-		case VIEW_INFORMATION: {
+		case VIEW_INFORMATION:
+		case VIEW_COORDINATES: {
 
-			int idx = view_menu->get_popup()->get_item_index(VIEW_INFORMATION);
+			int idx = view_menu->get_popup()->get_item_index(p_option);
 			bool current = view_menu->get_popup()->is_item_checked(idx);
 			view_menu->get_popup()->set_item_checked(idx, !current);
 
+			if (current) {
+				coords_label->set_anchor_and_margin(MARGIN_TOP, ANCHOR_END, -60 * EDSCALE);
+				coords_label->set_anchor_and_margin(MARGIN_BOTTOM, ANCHOR_END, -10 * EDSCALE);
+			} else {
+				// Move the coordinates label upwards as to not overlap it
+				coords_label->set_anchor_and_margin(MARGIN_TOP, ANCHOR_END, -190 * EDSCALE);
+				coords_label->set_anchor_and_margin(MARGIN_BOTTOM, ANCHOR_END, -140 * EDSCALE);
+			}
 		} break;
 		case VIEW_FPS: {
 
@@ -2915,6 +2945,13 @@ void SpatialEditorViewport::set_state(const Dictionary &p_state) {
 		if (view_menu->get_popup()->is_item_checked(idx) != information)
 			_menu_option(VIEW_INFORMATION);
 	}
+	if (p_state.has("coordinates")) {
+		bool coordinates = p_state["coordinates"];
+
+		int idx = view_menu->get_popup()->get_item_index(VIEW_COORDINATES);
+		if (view_menu->get_popup()->is_item_checked(idx) != coordinates)
+			_menu_option(VIEW_COORDINATES);
+	}
 	if (p_state.has("fps")) {
 		bool fps = p_state["fps"];
 
@@ -2970,6 +3007,7 @@ Dictionary SpatialEditorViewport::get_state() const {
 	d["doppler"] = view_menu->get_popup()->is_item_checked(view_menu->get_popup()->get_item_index(VIEW_AUDIO_DOPPLER));
 	d["gizmos"] = view_menu->get_popup()->is_item_checked(view_menu->get_popup()->get_item_index(VIEW_GIZMOS));
 	d["information"] = view_menu->get_popup()->is_item_checked(view_menu->get_popup()->get_item_index(VIEW_INFORMATION));
+	d["coordinates"] = view_menu->get_popup()->is_item_checked(view_menu->get_popup()->get_item_index(VIEW_COORDINATES));
 	d["fps"] = view_menu->get_popup()->is_item_checked(view_menu->get_popup()->get_item_index(VIEW_FPS));
 	d["half_res"] = viewport_container->get_stretch_shrink() > 1;
 	d["cinematic_preview"] = view_menu->get_popup()->is_item_checked(view_menu->get_popup()->get_item_index(VIEW_CINEMATIC_PREVIEW));
@@ -3444,6 +3482,7 @@ SpatialEditorViewport::SpatialEditorViewport(SpatialEditor *p_spatial_editor, Ed
 	view_menu->get_popup()->add_check_shortcut(ED_SHORTCUT("spatial_editor/view_environment", TTR("View Environment")), VIEW_ENVIRONMENT);
 	view_menu->get_popup()->add_check_shortcut(ED_SHORTCUT("spatial_editor/view_gizmos", TTR("View Gizmos")), VIEW_GIZMOS);
 	view_menu->get_popup()->add_check_shortcut(ED_SHORTCUT("spatial_editor/view_information", TTR("View Information")), VIEW_INFORMATION);
+	view_menu->get_popup()->add_check_shortcut(ED_SHORTCUT("spatial_editor/view_coordinates", TTR("View Coordinates")), VIEW_COORDINATES);
 	view_menu->get_popup()->add_check_shortcut(ED_SHORTCUT("spatial_editor/view_fps", TTR("View FPS")), VIEW_FPS);
 	view_menu->get_popup()->set_item_checked(view_menu->get_popup()->get_item_index(VIEW_ENVIRONMENT), true);
 	view_menu->get_popup()->add_separator();
@@ -3496,6 +3535,16 @@ SpatialEditorViewport::SpatialEditorViewport(SpatialEditor *p_spatial_editor, Ed
 	info_label->set_v_grow_direction(GROW_DIRECTION_BEGIN);
 	surface->add_child(info_label);
 	info_label->hide();
+
+	coords_label = memnew(Label);
+	coords_label->set_anchor_and_margin(MARGIN_LEFT, ANCHOR_END, -90 * EDSCALE);
+	coords_label->set_anchor_and_margin(MARGIN_TOP, ANCHOR_END, -60 * EDSCALE);
+	coords_label->set_anchor_and_margin(MARGIN_RIGHT, ANCHOR_END, -10 * EDSCALE);
+	coords_label->set_anchor_and_margin(MARGIN_BOTTOM, ANCHOR_END, -10 * EDSCALE);
+	coords_label->set_h_grow_direction(GROW_DIRECTION_BEGIN);
+	coords_label->set_v_grow_direction(GROW_DIRECTION_BEGIN);
+	surface->add_child(coords_label);
+	coords_label->hide();
 
 	// FPS Counter.
 	fps_label = memnew(Label);

@@ -161,6 +161,7 @@ class SpatialEditorViewport : public Control {
 		VIEW_AUDIO_DOPPLER,
 		VIEW_GIZMOS,
 		VIEW_INFORMATION,
+		VIEW_COORDINATES,
 		VIEW_FPS,
 		VIEW_DISPLAY_NORMAL,
 		VIEW_DISPLAY_WIREFRAME,
@@ -202,6 +203,7 @@ private:
 	Control *surface;
 	Viewport *viewport;
 	Camera *camera;
+	Camera *current_camera;
 	bool transforming;
 	bool orthogonal;
 	bool lock_rotation;
@@ -211,6 +213,7 @@ private:
 	real_t freelook_speed;
 
 	Label *info_label;
+	Label *coords_label;
 	Label *fps_label;
 	Label *cinema_label;
 
