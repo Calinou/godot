@@ -3195,7 +3195,6 @@ ScriptEditor::ScriptEditor(EditorNode *p_editor) {
 	find_in_files_button->hide();
 
 	history_pos = -1;
-	//debugger_gui->hide();
 
 	edit_pass = 0;
 	trim_trailing_whitespace_on_save = EditorSettings::get_singleton()->get("text_editor/files/trim_trailing_whitespace_on_save");
