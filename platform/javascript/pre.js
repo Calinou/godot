@@ -1,2 +1,2 @@
-var Engine = {
-	RuntimeEnvironment: function(Module, exposedLibs) {
+let Engine = {
+	RuntimeEnvironment (Module, exposedLibs) {

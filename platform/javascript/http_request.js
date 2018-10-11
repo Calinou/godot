@@ -26,15 +26,15 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
-var GodotHTTPRequest = {
+let GodotHTTPRequest = {
 
 	$GodotHTTPRequest: {
 
 		requests: [],
 
 		getUnusedRequestId: function() {
-			var idMax = GodotHTTPRequest.requests.length;
-			for (var potentialId = 0; potentialId < idMax; ++potentialId) {
+			let idMax = GodotHTTPRequest.requests.length;
+			for (let potentialId = 0; potentialId < idMax; ++potentialId) {
 				if (GodotHTTPRequest.requests[potentialId] instanceof XMLHttpRequest) {
 					continue;
 				}
@@ -50,7 +50,7 @@ var GodotHTTPRequest = {
 	},
 
 	godot_xhr_new: function() {
-		var newId = GodotHTTPRequest.getUnusedRequestId();
+		let newId = GodotHTTPRequest.getUnusedRequestId();
 		GodotHTTPRequest.requests[newId] = new XMLHttpRequest;
 		GodotHTTPRequest.setupRequest(GodotHTTPRequest.requests[newId]);
 		return newId;
@@ -113,27 +113,27 @@ var GodotHTTPRequest = {
 	},
 
 	godot_xhr_get_response_headers_length: function(xhrId) {
-		var headers = GodotHTTPRequest.requests[xhrId].getAllResponseHeaders();
+		let headers = GodotHTTPRequest.requests[xhrId].getAllResponseHeaders();
 		return headers === null ? 0 : lengthBytesUTF8(headers);
 	},
 
 	godot_xhr_get_response_headers: function(xhrId, dst, len) {
-		var str = GodotHTTPRequest.requests[xhrId].getAllResponseHeaders();
+		let str = GodotHTTPRequest.requests[xhrId].getAllResponseHeaders();
 		if (str === null)
 			return;
-		var buf = new Uint8Array(len + 1);
+		let buf = new Uint8Array(len + 1);
 		stringToUTF8Array(str, buf, 0, buf.length);
 		buf = buf.subarray(0, -1);
 		HEAPU8.set(buf, dst);
 	},
 
 	godot_xhr_get_response_length: function(xhrId) {
-		var body = GodotHTTPRequest.requests[xhrId].response;
+		let body = GodotHTTPRequest.requests[xhrId].response;
 		return body === null ? 0 : body.byteLength;
 	},
 
 	godot_xhr_get_response: function(xhrId, dst, len) {
-		var buf = GodotHTTPRequest.requests[xhrId].response;
+		let buf = GodotHTTPRequest.requests[xhrId].response;
 		if (buf === null)
 			return;
 		buf = new Uint8Array(buf).subarray(0, len);

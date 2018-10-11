@@ -10,7 +10,7 @@ javascript_files = [
     'os_javascript.cpp',
 ]
 
-build = env.add_program(['#bin/godot${PROGSUFFIX}.js', '#bin/godot${PROGSUFFIX}.wasm'], javascript_files);
+build = env.add_program(['#bin/godot${PROGSUFFIX}.js', '#bin/godot${PROGSUFFIX}.wasm'], javascript_files)
 js, wasm = build
 
 js_libraries = [
@@ -34,4 +34,4 @@ zip_files = env.InstallAs([
     wasm,
     '#misc/dist/html/full-size.html'
 ])
-env.Zip('#bin/godot', zip_files, ZIPROOT=zip_dir, ZIPSUFFIX='${PROGSUFFIX}${ZIPSUFFIX}', ZIPCOMSTR='Archving $SOURCES as $TARGET')
+env.Zip('#bin/godot', zip_files, ZIPROOT=zip_dir, ZIPSUFFIX='${PROGSUFFIX}${ZIPSUFFIX}', ZIPCOMSTR='Archiving $SOURCES as $TARGET')
