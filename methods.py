@@ -651,4 +651,3 @@ def detect_darwin_sdk_path(platform, env):
         except (subprocess.CalledProcessError, OSError) as e:
             print("Failed to find SDK path while running xcrun --sdk {} --show-sdk-path.".format(sdk_name))
             raise
-

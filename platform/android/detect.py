@@ -40,6 +40,10 @@ def get_flags():
     ]
 
 
+def quote_path(path):
+    return '"' + path + '"'
+
+
 def create(env):
 
     tools = env['TOOLS']
@@ -187,16 +191,16 @@ def configure(env):
 
     ccache_path = os.environ.get("CCACHE")
     if ccache_path is None:
-        env['CC'] = compiler_path + '/clang'
-        env['CXX'] = compiler_path + '/clang++'
+        env['CC'] = quote_path(compiler_path + '/clang')
+        env['CXX'] = quote_path(compiler_path + '/clang++')
     else:
         # there aren't any ccache wrappers available for Android,
         # to enable caching we need to prepend the path to the ccache binary
-        env['CC'] = ccache_path + ' ' + compiler_path + '/clang'
-        env['CXX'] = ccache_path + ' ' + compiler_path + '/clang++'
-    env['AR'] = tools_path + "/ar"
-    env['RANLIB'] = tools_path + "/ranlib"
-    env['AS'] = tools_path + "/as"
+        env['CC'] = quote_path(ccache_path + ' ' + compiler_path + '/clang')
+        env['CXX'] = quote_path(ccache_path + ' ' + compiler_path + '/clang++')
+    env['AR'] = quote_path(tools_path + '/ar')
+    env['RANLIB'] = quote_path(tools_path + '/ranlib')
+    env['AS'] = quote_path(tools_path + '/as')
 
     common_opts = ['-fno-integrated-as', '-gcc-toolchain', gcc_toolchain_path]
 
