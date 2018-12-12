@@ -875,7 +875,7 @@ void TextEdit::_notification(int p_what) {
 						ofs_x = cache.style_readonly->get_offset().x / 2;
 					}
 
-					int ofs_y = (i * get_row_height() + cache.line_spacing / 2) + ofs_readonly;
+					int ofs_y = (i * get_row_height() + 6 / 2) + ofs_readonly;
 					ofs_y -= cursor.wrap_ofs * get_row_height();
 					if (smooth_scroll_enabled)
 						ofs_y += (-get_v_scroll_offset()) * get_row_height();
@@ -922,16 +922,15 @@ void TextEdit::_notification(int p_what) {
 					int indent_level = get_indent_level(i);
 					if (draw_indent_guides && indent_level > 0) {
 #ifdef TOOLS_ENABLED
-						int indent_size = EditorSettings::get_singleton()->get("text_editor/indent/size");
 						float line_width = Math::round(EDSCALE);
 #else
-						int indent_size = 4;
 						float line_width = 1.0;
 #endif
 						int guides = 1 + (indent_level - 1) / indent_size;
 
 						for (int guide = 0; guide < guides; guide++) {
-							draw_line(
+							VisualServer::get_singleton()->canvas_item_add_line(
+									ci,
 									Point2(guide * indent_size * cache.font->get_char_size(' ').width + char_margin, ofs_y),
 									Point2(guide * indent_size * cache.font->get_char_size(' ').width + char_margin, ofs_y + get_row_height()),
 									cache.indent_guide_color,
@@ -6271,6 +6270,7 @@ TextEdit::TextEdit() {
 	draw_tabs = false;
 	override_selected_font_color = false;
 	draw_caret = true;
+	draw_indent_guides = true;
 	max_chars = 0;
 	clear();
 	wrap_enabled = false;
