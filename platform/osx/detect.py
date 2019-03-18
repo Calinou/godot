@@ -23,6 +23,7 @@ def get_opts():
     from SCons.Variables import BoolVariable, EnumVariable
 
     return [
+        BoolVariable('use_lld', 'Use the LLD linker', False),
         ('osxcross_sdk', 'OSXCross SDK version', 'darwin14'),
         ('MACOS_SDK_PATH', 'Path to the macOS SDK', ''),
         EnumVariable('debug_symbols', 'Add debugging symbols to release builds', 'yes', ('yes', 'no', 'full')),
@@ -69,6 +70,9 @@ def configure(env):
     # Mac OS X no longer runs on 32-bit since 10.7 which is unsupported since 2014
     # As such, we only support 64-bit
     env["bits"] = "64"
+
+    if env['use_lld']:
+        env.Append(LINKFLAGS=['-fuse-ld=lld'])
 
     ## Compiler configuration
 
