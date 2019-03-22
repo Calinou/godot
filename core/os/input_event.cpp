@@ -489,6 +489,15 @@ bool InputEventMouseButton::action_match(const Ref<InputEvent> &p_event, bool *p
 	return match;
 }
 
+bool InputEventMouseButton::shortcut_match(const Ref<InputEvent> &p_event) const {
+
+	Ref<InputEventMouseButton> button = p_event;
+	if (button.is_null())
+		return false;
+
+	return button_index == button->button_index;
+}
+
 String InputEventMouseButton::as_text() const {
 
 	String button_index_string = "";
