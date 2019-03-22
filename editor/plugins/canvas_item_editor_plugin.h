@@ -357,6 +357,7 @@ private:
 	Control *left_ruler;
 
 	DragType drag_type;
+	DragType prev_drag_type;
 	Point2 drag_from;
 	Point2 drag_to;
 	Point2 drag_rotation_center;

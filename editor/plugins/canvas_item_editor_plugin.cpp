@@ -1072,7 +1072,9 @@ bool CanvasItemEditor::_gui_input_zoom_or_pan(const Ref<InputEvent> &p_event) {
 			}
 		}
 
-		if (drag_type == DRAG_NONE) {
+		if (drag_type == DRAG_NONE || drag_type == DRAG_MOVE) {
+			prev_drag_type = drag_type;
+
 			if (b->is_pressed() &&
 					(b->get_button_index() == BUTTON_MIDDLE ||
 							(b->get_button_index() == BUTTON_LEFT && tool == TOOL_PAN) ||
@@ -1085,7 +1087,7 @@ bool CanvasItemEditor::_gui_input_zoom_or_pan(const Ref<InputEvent> &p_event) {
 		if (drag_type == DRAG_PAN) {
 			if (!b->is_pressed()) {
 				// Stop panning the viewport (for any mouse button press)
-				drag_type = DRAG_NONE;
+				drag_type = prev_drag_type;
 			}
 		}
 	}
@@ -1095,7 +1097,7 @@ bool CanvasItemEditor::_gui_input_zoom_or_pan(const Ref<InputEvent> &p_event) {
 		if (k->get_scancode() == KEY_SPACE && EditorSettings::get_singleton()->get("editors/2d/simple_spacebar_panning")) {
 			if (drag_type == DRAG_NONE) {
 				if (k->is_pressed() && !k->is_echo()) {
-					//Pan the viewport
+					// Pan the viewport
 					drag_type = DRAG_PAN;
 				}
 			} else if (drag_type == DRAG_PAN) {
@@ -1768,13 +1770,13 @@ bool CanvasItemEditor::_gui_input_move(const Ref<InputEvent> &p_event) {
 	Ref<InputEventMouseMotion> m = p_event;
 	Ref<InputEventKey> k = p_event;
 
-	if (drag_type == DRAG_NONE) {
-		//Start moving the nodes
+	if (drag_type == DRAG_NONE || drag_type == DRAG_PAN) {
+		// Start moving the nodes
 		if (b.is_valid() && b->get_button_index() == BUTTON_LEFT && b->is_pressed()) {
 			if ((b->get_alt() && !b->get_control()) || tool == TOOL_MOVE) {
 				List<CanvasItem *> selection = _get_edited_canvas_items();
 
-				// Remove not movable nodes
+				// Ignore non-movable nodes
 				for (int i = 0; i < selection.size(); i++) {
 					if (!_is_node_movable(selection[i], true)) {
 						selection.erase(selection[i]);
@@ -1782,6 +1784,7 @@ bool CanvasItemEditor::_gui_input_move(const Ref<InputEvent> &p_event) {
 				}
 
 				if (selection.size() > 0) {
+					prev_drag_type = drag_type;
 					drag_type = DRAG_MOVE;
 					drag_from = transform.affine_inverse().xform(b->get_position());
 					drag_selection = selection;
@@ -1796,7 +1799,7 @@ bool CanvasItemEditor::_gui_input_move(const Ref<InputEvent> &p_event) {
 		// Move the nodes
 		if (m.is_valid()) {
 
-			// Save the ik chain for reapplying before IK solve
+			// Save the IK chain for reapplying before IK solve
 			Vector<List<Dictionary> > all_bones_ik_states;
 			for (List<CanvasItem *>::Element *E = drag_selection.front(); E; E = E->next()) {
 				List<Dictionary> bones_ik_states;
@@ -1847,12 +1850,14 @@ bool CanvasItemEditor::_gui_input_move(const Ref<InputEvent> &p_event) {
 		}
 
 		// Confirm the move (only if it was moved)
-		if (b.is_valid() && !b->is_pressed() && b->get_button_index() == BUTTON_LEFT && (drag_type == DRAG_MOVE)) {
+		if (b.is_valid() && !b->is_pressed() && b->get_button_index() == BUTTON_LEFT && drag_type == DRAG_MOVE) {
 			if (transform.affine_inverse().xform(b->get_position()) != drag_from) {
 				_commit_canvas_item_state(drag_selection, TTR("Move CanvasItem"), true);
 			}
 
-			drag_type = DRAG_NONE;
+			print_line("drag_type = " + itos(drag_type));
+			print_line("prev_drag_type = " + itos(prev_drag_type));
+			drag_type = prev_drag_type;
 			viewport->update();
 			return true;
 		}
@@ -1860,7 +1865,7 @@ bool CanvasItemEditor::_gui_input_move(const Ref<InputEvent> &p_event) {
 		// Cancel a drag
 		if (b.is_valid() && b->get_button_index() == BUTTON_RIGHT && b->is_pressed()) {
 			_restore_canvas_item_state(drag_selection, true);
-			drag_type = DRAG_NONE;
+			drag_type = prev_drag_type;
 			viewport->update();
 			return true;
 		}
@@ -2190,6 +2195,9 @@ bool CanvasItemEditor::_gui_input_hover(const Ref<InputEvent> &p_event) {
 
 void CanvasItemEditor::_gui_input_viewport(const Ref<InputEvent> &p_event) {
 	bool accepted = false;
+
+	_gui_input_zoom_or_pan(p_event);
+
 	if ((accepted = _gui_input_rulers_and_guides(p_event))) {
 		//printf("Rulers and guides\n");
 	} else if ((accepted = editor->get_editor_plugins_over()->forward_gui_input(p_event))) {
@@ -2208,8 +2216,6 @@ void CanvasItemEditor::_gui_input_viewport(const Ref<InputEvent> &p_event) {
 		//printf("Rotate\n");
 	} else if ((accepted = _gui_input_move(p_event))) {
 		//printf("Move\n");
-	} else if ((accepted = _gui_input_zoom_or_pan(p_event))) {
-		//printf("Zoom or pan\n");
 	} else if ((accepted = _gui_input_select(p_event))) {
 		//printf("Selection\n");
 	} else {
@@ -4565,6 +4571,7 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 	skeleton_show_bones = true;
 
 	drag_type = DRAG_NONE;
+	prev_drag_type = DRAG_NONE;
 	drag_from = Vector2();
 	drag_to = Vector2();
 	dragged_guide_pos = Point2();
