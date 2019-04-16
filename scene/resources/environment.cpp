@@ -38,6 +38,11 @@ RID Environment::get_rid() const {
 	return environment;
 }
 
+void Environment::set_antialiasing_fxaa_enabled(bool p_enabled) {
+
+	VS::get_singleton()->environment_set_antialiasing_fxaa(environment, p_enabled);
+}
+
 void Environment::set_background(BGMode p_bg) {
 
 	bg_mode = p_bg;
@@ -111,10 +116,16 @@ void Environment::set_ambient_light_sky_contribution(float p_energy) {
 	VS::get_singleton()->environment_set_ambient_light(environment, ambient_color, ambient_energy, ambient_sky_contribution);
 }
 
+bool Environment::is_antialiasing_fxaa_enabled() const {
+
+	return antialiasing_fxaa_enabled;
+}
+
 Environment::BGMode Environment::get_background() const {
 
 	return bg_mode;
 }
+
 Ref<Sky> Environment::get_sky() const {
 
 	return bg_sky;
@@ -934,6 +945,12 @@ float Environment::get_fog_height_curve() const {
 
 void Environment::_bind_methods() {
 
+	ClassDB::bind_method(D_METHOD("set_antialiasing_fxaa_enabled", "enabled"), &Environment::set_antialiasing_fxaa_enabled);
+	ClassDB::bind_method(D_METHOD("is_antialiasing_fxaa_enabled"), &Environment::is_antialiasing_fxaa_enabled);
+
+	ADD_GROUP("Antialiasing", "antialiasing_");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "antialiasing_fxaa"), "set_antialiasing_fxaa_enabled", "is_antialiasing_fxaa_enabled");
+
 	ClassDB::bind_method(D_METHOD("set_background", "mode"), &Environment::set_background);
 	ClassDB::bind_method(D_METHOD("set_sky", "sky"), &Environment::set_sky);
 	ClassDB::bind_method(D_METHOD("set_sky_custom_fov", "scale"), &Environment::set_sky_custom_fov);
@@ -1301,6 +1318,8 @@ Environment::Environment() :
 		dof_blur_near_quality(DOF_BLUR_QUALITY_LOW) {
 
 	environment = VS::get_singleton()->environment_create();
+
+	antialiasing_fxaa_enabled = false;
 
 	bg_mode = BG_CLEAR_COLOR;
 	bg_sky_custom_fov = 0;

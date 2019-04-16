@@ -707,6 +707,8 @@ public:
 		ENV_BG_MAX
 	};
 
+	virtual void environment_set_antialiasing_fxaa(RID p_env, bool p_enable) = 0;
+
 	virtual void environment_set_background(RID p_env, EnvironmentBG p_bg) = 0;
 	virtual void environment_set_sky(RID p_env, RID p_sky) = 0;
 	virtual void environment_set_sky_custom_fov(RID p_env, float p_scale) = 0;

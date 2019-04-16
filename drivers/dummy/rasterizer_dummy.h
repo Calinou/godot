@@ -53,6 +53,8 @@ public:
 
 	RID environment_create() { return RID(); }
 
+	void environment_set_antialiasing_fxaa(RID p_env, bool p_enable) {}
+
 	void environment_set_background(RID p_env, VS::EnvironmentBG p_bg) {}
 	void environment_set_sky(RID p_env, RID p_sky) {}
 	void environment_set_sky_custom_fov(RID p_env, float p_scale) {}

@@ -342,6 +342,9 @@ public:
 	/* ENVIRONMENT API */
 
 	struct Environment : public RID_Data {
+
+		bool antialiasing_fxaa_enabled;
+
 		VS::EnvironmentBG bg_mode;
 
 		RID sky;
@@ -402,6 +405,8 @@ public:
 	mutable RID_Owner<Environment> environment_owner;
 
 	virtual RID environment_create();
+
+	virtual void environment_set_antialiasing_fxaa(RID p_env, bool p_enable);
 
 	virtual void environment_set_background(RID p_env, VS::EnvironmentBG p_bg);
 	virtual void environment_set_sky(RID p_env, RID p_sky);

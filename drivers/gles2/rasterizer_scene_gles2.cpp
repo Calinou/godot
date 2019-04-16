@@ -702,6 +702,13 @@ RID RasterizerSceneGLES2::environment_create() {
 	return environment_owner.make_rid(env);
 }
 
+void RasterizerSceneGLES2::environment_set_antialiasing_fxaa(RID p_env, bool p_enable) {
+	Environment *env = environment_owner.getornull(p_env);
+	ERR_FAIL_COND(!env);
+
+	env->antialiasing_fxaa_enabled = p_enable;
+}
+
 void RasterizerSceneGLES2::environment_set_background(RID p_env, VS::EnvironmentBG p_bg) {
 
 	Environment *env = environment_owner.getornull(p_env);
@@ -2697,6 +2704,8 @@ void RasterizerSceneGLES2::render_scene(const Transform &p_cam_transform, const 
 		viewport_width = storage->frame.current_rt->width;
 		viewport_height = storage->frame.current_rt->height;
 	}
+
+	storage->shaders.copy.set_conditional(CopyShaderGLES2::USE_FXAA, env->antialiasing_fxaa_enabled);
 
 	state.used_screen_texture = false;
 	state.viewport_size.x = viewport_width;

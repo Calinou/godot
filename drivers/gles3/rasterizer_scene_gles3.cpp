@@ -768,6 +768,13 @@ RID RasterizerSceneGLES3::environment_create() {
 	return environment_owner.make_rid(env);
 }
 
+void RasterizerSceneGLES3::environment_set_antialiasing_fxaa(RID p_env, bool p_enable) {
+	Environment *env = environment_owner.getornull(p_env);
+	ERR_FAIL_COND(!env);
+
+	env->antialiasing_fxaa_enabled = p_enable;
+}
+
 void RasterizerSceneGLES3::environment_set_background(RID p_env, VS::EnvironmentBG p_bg) {
 
 	Environment *env = environment_owner.getornull(p_env);

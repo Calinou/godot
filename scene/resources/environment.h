@@ -88,6 +88,8 @@ public:
 private:
 	RID environment;
 
+	bool antialiasing_fxaa_enabled;
+
 	BGMode bg_mode;
 	Ref<Sky> bg_sky;
 	float bg_sky_custom_fov;
@@ -180,6 +182,10 @@ protected:
 	virtual void _validate_property(PropertyInfo &property) const;
 
 public:
+	void set_antialiasing_fxaa_enabled(bool p_enabled);
+
+	bool is_antialiasing_fxaa_enabled() const;
+
 	void set_background(BGMode p_bg);
 	void set_sky(const Ref<Sky> &p_sky);
 	void set_sky_custom_fov(float p_scale);

@@ -1900,6 +1900,7 @@ void VisualServer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("viewport_set_debug_draw", "viewport", "draw"), &VisualServer::viewport_set_debug_draw);
 
 	ClassDB::bind_method(D_METHOD("environment_create"), &VisualServer::environment_create);
+	ClassDB::bind_method(D_METHOD("environment_set_antialiasing_fxaa", "env", "enable"), &VisualServer::environment_set_antialiasing_fxaa);
 	ClassDB::bind_method(D_METHOD("environment_set_background", "env", "bg"), &VisualServer::environment_set_background);
 	ClassDB::bind_method(D_METHOD("environment_set_sky", "env", "sky"), &VisualServer::environment_set_sky);
 	ClassDB::bind_method(D_METHOD("environment_set_sky_custom_fov", "env", "scale"), &VisualServer::environment_set_sky_custom_fov);
