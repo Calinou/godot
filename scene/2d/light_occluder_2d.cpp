@@ -137,7 +137,7 @@ void OccluderPolygon2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_polygon"), &OccluderPolygon2D::get_polygon);
 
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "closed"), "set_closed", "is_closed");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "cull_mode", PROPERTY_HINT_ENUM, "Disabled,ClockWise,CounterClockWise"), "set_cull_mode", "get_cull_mode");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "cull_mode", PROPERTY_HINT_ENUM, "Disabled,Clockwise,Counterclockwise"), "set_cull_mode", "get_cull_mode");
 	ADD_PROPERTY(PropertyInfo(Variant::POOL_VECTOR2_ARRAY, "polygon"), "set_polygon", "get_polygon");
 
 	BIND_ENUM_CONSTANT(CULL_DISABLED);
