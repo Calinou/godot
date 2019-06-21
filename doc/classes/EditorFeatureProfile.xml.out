@@ -1,0 +1,5 @@
+1.) Line 103, column 77, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...ature" type="int" enum="EditorFeatureProfile.Feature">    </argument>    <argument index="1" name...
+                                                ^^^^^^^                                             
+Time: 9989ms for 4 sentences (0.4 sentences/sec)

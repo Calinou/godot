@@ -1,0 +1,18 @@
+1.) Line 7, column 74, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 1.×.; 1.·.
+... code. Uses a drawing mode similar to OpenGL 1.x.  </description>  <tutorials>  </tutorials>  ...
+                                                ^^^^                                             
+
+2.) Line 24, column 27, Rule ID: EN_A_VS_AN
+Message: Use 'an' instead of 'a' if the following word starts with a vowel sound, e.g. 'an article', 'an hour'
+Suggestion: an
+...>    <description>     Simple helper to draw a uvsphere, with given latitudes, longitude an...
+                                                ^                                             
+
+3.) Line 44, column 61, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “When” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...ng (And optionally pass a texture override). When done call end(). For more information on how...
+                                                ^^^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+Time: 12138ms for 17 sentences (1.4 sentences/sec)

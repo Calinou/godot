@@ -1,0 +1,6 @@
+1.) Line 73, column 22, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+..." getter="get_texture">    Particle texture. If [code]null[/code] particles will be squares....
+                                                ^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+Time: 14557ms for 44 sentences (3.0 sentences/sec)

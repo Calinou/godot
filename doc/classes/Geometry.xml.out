@@ -1,0 +1,36 @@
+1.) Line 225, column 54, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...rns [code]true[/code] if [code]polygon[/code]'s vertices are ordered in clockwise order, ot...
+                                                ^                                             
+
+2.) Line 354, column 319, Rule ID: EN_A_VS_AN
+Message: Use 'a' instead of 'an' if the following word doesn't start with a vowel sound, e.g. 'a sentence', 'a university'
+Suggestion: a
+...e hull's normal. If no intersecion is found, an the returned array is empty.    </descriptio...
+                                                ^^                                             
+
+3.) Line 354, column 319, Rule ID: DT_DT[1]
+Message: Maybe you need to remove one determiner so that only 'an' or 'the' is left.
+Suggestion: an; the
+...e hull's normal. If no intersecion is found, an the returned array is empty.    </description>  ...
+                                                ^^^^^^                                             
+
+4.) Line 437, column 306, Rule ID: MULTIPLICATION_SIGN[1]
+Message: Replace by the typographical symbol.
+Suggestion: ×; ·
+...] (i.e. the returned array will have [code]n * 3[/code] elements, with [code]n[/code] being...
+                                                ^                                             
+
+5.) Line 446, column 237, Rule ID: MULTIPLICATION_SIGN[1]
+Message: Replace by the typographical symbol.
+Suggestion: ×; ·
+...] (i.e. the returned array will have [code]n * 3[/code] elements, with [code]n[/code] being...
+                                                ^                                             
+
+6.) Line 467, column 26, Rule ID: ADVERB_WORD_ORDER[9]
+Message: The adverb 'never' is usually put before the verb 'can'.
+Suggestion: never can
+...num="PolyJoinType">    While flattened paths can never perfectly trace an arc, they are approximate...
+                                                ^^^^^^^^^                                             
+More info: http://faculty.washington.edu/marynell/grammar/AdverbPl.html
+Time: 24935ms for 117 sentences (4.7 sentences/sec)

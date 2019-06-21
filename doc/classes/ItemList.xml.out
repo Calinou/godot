@@ -1,0 +1,52 @@
+1.) Line 8, column 229, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: double-click
+... menus. Items may also be 'activated' with a double click (or Enter key).  </description>  <tutorials>...
+                                                ^^^^^^^^^^^^                                             
+
+2.) Line 35, column 1, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...n icon of null for a list item with no icon.     If selectable is [code]true[/code] the list ite...
+                                                ^^^^^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+3.) Line 168, column 13, Rule ID: WHETHER[7]
+Message: Consider shortening this phrase to just 'whether'. It is correct though if you mean 'regardless of whether'.
+Suggestion: whether
+...    </argument>    <description>     Returns whether or not the item at the specified index is disabled....
+                                                ^^^^^^^^^^^^^^                                             
+
+4.) Line 185, column 13, Rule ID: WHETHER[7]
+Message: Consider shortening this phrase to just 'whether'. It is correct though if you mean 'regardless of whether'.
+Suggestion: whether
+...    </argument>    <description>     Returns whether or not the item at the specified index is selectabl...
+                                                ^^^^^^^^^^^^^^                                             
+
+5.) Line 203, column 13, Rule ID: WHETHER[7]
+Message: Consider shortening this phrase to just 'whether'. It is correct though if you mean 'regardless of whether'.
+Suggestion: whether
+...    </argument>    <description>     Returns whether or not item at the specified index is currently sel...
+                                                ^^^^^^^^^^^^^^                                             
+
+6.) Line 249, column 41, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ')' seems to be missing
+...ext"     some_string.set_item_custom_bg_color(0,Color(1, 0, 0, 1) # This will set the backg...
+                                                ^                                             
+
+7.) Line 264, column 41, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ')' seems to be missing
+...ext"     some_string.set_item_custom_fg_color(0,Color(1, 0, 0, 1) # This will set the foreg...
+                                                ^                                             
+
+8.) Line 277, column 28, Rule ID: BEEN_PART_AGREEMENT[2]
+Message: Consider using a past participle here: 'been'.
+Suggestion: been
+... specified index.     Disabled items are not be selectable and do not trigger activation (En...
+                                                ^^                                             
+
+9.) Line 442, column 57, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: double-click
+...ed when specified list item is activated via double click or Enter.    </description>   </signal>   <s...
+                                                ^^^^^^^^^^^^                                             
+Time: 20997ms for 77 sentences (3.7 sentences/sec)

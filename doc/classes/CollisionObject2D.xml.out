@@ -1,0 +1,24 @@
+1.) Line 218, column 219, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...es at least one [code]collision_layer[/code] bit to be set.   </member>  </members>  <signals...
+                                                ^^^                                             
+
+2.) Line 230, column 148, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...nd at least one [code]collision_layer[/code] bit to be set. See [method _input_event] for det...
+                                                ^^^                                             
+
+3.) Line 235, column 179, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...nd at least one [code]collision_layer[/code] bit to be set.    </description>   </signal>   <...
+                                                ^^^                                             
+
+4.) Line 240, column 175, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...nd at least one [code]collision_layer[/code] bit to be set.    </description>   </signal>  </...
+                                                ^^^                                             
+Time: 16123ms for 40 sentences (2.5 sentences/sec)

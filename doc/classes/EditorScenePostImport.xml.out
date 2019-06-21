@@ -1,0 +1,6 @@
+1.) Line 21, column 3, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Func
+...e # remember to return the imported scene    func iterate(node):       if node != null:       ...
+                                                ^^^^                                             
+Time: 10570ms for 9 sentences (0.9 sentences/sec)

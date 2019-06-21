@@ -1,0 +1,5 @@
+1.) Line 53, column 112, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...ation. This rotation mode requires the [Path]'s [member Curve3D.up_vector_enabled] property...
+                                                ^                                             
+Time: 11666ms for 27 sentences (2.3 sentences/sec)

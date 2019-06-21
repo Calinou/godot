@@ -1,0 +1,41 @@
+1.) Line 11, column 3, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Var
+...o the right by   # 100 pixels in 1 second.   var animation = Animation.new()   var track_inde...
+                                                ^^^                                             
+
+2.) Line 348, column 31, Rule ID: KIND_OF_A[1]
+Message: If 'type' is a classification term, 'a' is not necessary. Use 'type of'. (The phrases 'kind of' and 'sort of' are informal if they mean 'to some extent'.)
+Suggestion: type of
+... <description>     Returns the interpolation type of a given track, from the INTERPOLATION_* enum. ...
+                                                ^^^^^^^^^                                             
+
+3.) Line 399, column 30, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: For
+...  <description>     Get the path of a track. for more information on the path format, see [me...
+                                                ^^^                                             
+
+4.) Line 408, column 13, Rule ID: KIND_OF_A[1]
+Message: If 'type' is a classification term, 'a' is not necessary. Use 'type of'. (The phrases 'kind of' and 'sort of' are informal if they mean 'to some extent'.)
+Suggestion: type of
+...    </argument>    <description>     Get the type of a track.    </description>   </method>   <meth...
+                                                ^^^^^^^^^                                             
+
+5.) Line 536, column 27, Rule ID: KIND_OF_A[1]
+Message: If 'type' is a classification term, 'a' is not necessary. Use 'type of'. (The phrases 'kind of' and 'sort of' are informal if they mean 'to some extent'.)
+Suggestion: type of
+...>    <description>     Set the interpolation type of a given track, from the INTERPOLATION_* enum. ...
+                                                ^^^^^^^^^                                             
+
+6.) Line 598, column 37, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...ription>     Swaps the track [code]idx[/code]'s index position with the track [code]with_id...
+                                                ^                                             
+
+7.) Line 697, column 21, Rule ID: THE_SUPERLATIVE[2]
+Message: A determiner is probably missing here: '( the nearest'.
+Suggestion: ( the nearest
+...num="InterpolationType">    No interpolation (nearest value).   </constant>   <constant name="INTE...
+                                                ^^^^^^^^                                             
+Time: 23997ms for 78 sentences (3.3 sentences/sec)

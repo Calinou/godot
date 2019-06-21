@@ -1,0 +1,24 @@
+1.) Line 21, column 26, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Only
+..."_get_lower_limit">    The minimum rotation. only active if [member angular_limit/enable] is [...
+                                                ^^^^                                             
+
+2.) Line 29, column 26, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Only
+..."_get_upper_limit">    The maximum rotation. only active if [member angular_limit/enable] is [...
+                                                ^^^^                                             
+
+3.) Line 49, column 26, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Only
+...e="1" enum="Param">    The maximum rotation. only active if [member angular_limit/enable] is [...
+                                                ^^^^                                             
+
+4.) Line 52, column 26, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Only
+...e="2" enum="Param">    The minimum rotation. only active if [member angular_limit/enable] is [...
+                                                ^^^^                                             
+Time: 10702ms for 27 sentences (2.5 sentences/sec)

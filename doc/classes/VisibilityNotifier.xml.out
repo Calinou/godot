@@ -1,0 +1,5 @@
+1.) Line 38, column 57, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+... when the VisibilityNotifier exits a [Camera]'s view.    </description>   </signal>   <sign...
+                                                ^                                             
+Time: 12694ms for 11 sentences (0.9 sentences/sec)

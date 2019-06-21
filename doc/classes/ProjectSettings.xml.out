@@ -1,0 +1,76 @@
+1.) Line 362, column 50, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 256×256; 256·256
+...ustom image for the mouse cursor (limited to 256x256).   </member>   <member name="display/mouse_...
+                                                ^^^^^^^                                             
+
+2.) Line 639, column 43, Rule ID: EN_A_VS_AN
+Message: Use 'a' instead of 'an' if the following word doesn't start with a vowel sound, e.g. 'a sentence', 'a university'
+Suggestion: a
+...">    Path to logs within the project. Using an [code]user://[/code] path is recommended.   ...
+                                                ^^                                             
+
+3.) Line 651, column 41, Rule ID: ALLOW_TO[2]
+Message: Did you mean 'sending'? Or maybe you should add a pronoun? In active voice, 'allow' + 'to' takes an object, usually a pronoun.
+Suggestion: sending
+...="">    Maximum amount of characters allowed to send as output from the debugger. Over this value...
+                                                ^^^^^^^                                             
+More info: http://www.ef.com/english-resources/english-grammar/gerund-equals-infinitive/
+
+4.) Line 654, column 37, Rule ID: ALLOW_TO[2]
+Message: Did you mean 'sending'? Or maybe you should add a pronoun? In active voice, 'allow' + 'to' takes an object, usually a pronoun.
+Suggestion: sending
+...tter="">    Maximum amount of errors allowed to send as output from the debugger. Over this value...
+                                                ^^^^^^^                                             
+More info: http://www.ef.com/english-resources/english-grammar/gerund-equals-infinitive/
+
+5.) Line 657, column 39, Rule ID: ALLOW_TO[2]
+Message: Did you mean 'sending'? Or maybe you should add a pronoun? In active voice, 'allow' + 'to' takes an object, usually a pronoun.
+Suggestion: sending
+...er="">    Maximum amount of messages allowed to send as output from the debugger. Over this value...
+                                                ^^^^^^^                                             
+More info: http://www.ef.com/english-resources/english-grammar/gerund-equals-infinitive/
+
+6.) Line 688, column 12, Rule ID: USE_TO_VERB[1]
+Message: Did you mean 'used'?
+Suggestion: used
+..." type="int" setter="" getter="">    What to use to separate node name from number. This is m...
+                                                ^^^                                             
+
+7.) Line 704, column 89, Rule ID: RATHER_THEN[2]
+Message: Did you mean 'different 'from''? 'Different than' is often considered colloquial style.
+Suggestion: from
+... on monitors where refresh rate is different than the physics FPS.   </member>   <member name=...
+                                                ^^^^                                             
+More info: https://en.wiktionary.org/wiki/than
+
+8.) Line 722, column 8, Rule ID: HE_VERB_AGR[8]
+Message: The singular proper name 'Max' must be used with a third-person or a past tense verb: 'amounts', 'amounted'.
+Suggestion: amounts; amounted
+...ents" type="int" setter="" getter="">    Max amount of elements renderable in a frame. If more t...
+                                                ^^^^^^                                             
+
+9.) Line 732, column 85, Rule ID: HE_VERB_AGR[8]
+Message: The singular proper name 'May' must be used with a third-person or a past tense verb: 'helps', 'helped'.
+Suggestion: helps; helped
+...g of polygons to pixels in 2D rendering. May help in some pixel art styles.   </member>   <mem...
+                                                ^^^^                                             
+
+10.) Line 760, column 101, Rule ID: FEWER_LESS[2]
+Message: Did you mean 'fewer'? The noun features is countable.
+Suggestion: fewer
+...r it is, the less resources it uses (but the less features it supports).   </member>   <member...
+                                                ^^^^                                             
+More info: http://www.oxforddictionaries.com/words/less-or-fewer
+
+11.) Line 835, column 125, Rule ID: CD_NN[1]
+Message: Possible agreement error. The noun 'algorithm' seems to be countable, so consider using: 'algorithms'.
+Suggestion: algorithms
+...res using the Ericsson Texture Compression 2 algorithm. This texture compression algorithm is only ...
+                                                ^^^^^^^^^                                             
+
+12.) Line 843, column 57, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: '"' seems to be missing
+...ame="script" type="Script" setter="" getter="">   </member>  </members>  <constants>  </con...
+                                                ^                                             
+Time: 36791ms for 278 sentences (7.6 sentences/sec)

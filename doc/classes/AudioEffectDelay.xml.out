@@ -1,0 +1,12 @@
+1.) Line 4, column 78, Rule ID: PERIOD_OF_TIME[1]
+Message: Consider using 'period'.
+Suggestion: period
+...n Audio bus. Plays input signal back after a period of time.   Two tap delay and feedback options.  </br...
+                                                ^^^^^^^^^^^^^^                                             
+
+2.) Line 8, column 35, Rule ID: PERIOD_OF_TIME[1]
+Message: Consider using 'period'.
+Suggestion: period
+...scription>   Plays input signal back after a period of time. The delayed signal may be played back multi...
+                                                ^^^^^^^^^^^^^^                                             
+Time: 12850ms for 38 sentences (3.0 sentences/sec)

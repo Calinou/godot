@@ -1,0 +1,48 @@
+1.) Line 4, column 25, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'seen' (past participle of 'see') might be the correct word here, not 'scene' (place where some action occurs). Please check.
+Suggestion: seen
+... <brief_description>   Base class for all [i]scene[/i] objects.  </brief_description>  <descrip...
+                                                ^^^^^                                             
+
+2.) Line 8, column 34, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'seen' (past participle of 'see') might be the correct word here, not 'scene' (place where some action occurs). Please check.
+Suggestion: seen
+...ique names.   A tree of nodes is called a [i]scene[/i]. Scenes can be saved to the disk and the...
+                                                ^^^^^                                             
+
+3.) Line 14, column 164, Rule ID: THIS_NNS_VB[1]
+Message: Did you mean 'these'?
+Suggestion: These
+...r the node with the [member owner] property. This keeps track of who instanced what. This is m...
+                                                ^^^^                                             
+
+4.) Line 353, column 73, Rule ID: TO_NON_BASE[1]
+Message: The verb after "to" should be in the base form: 'exist'.
+Suggestion: exist
+...e] if the node that the [NodePath] points to exists.    </description>   </method>   <method nam...
+                                                ^^^^^^                                             
+
+5.) Line 485, column 5, Rule ID: ENGLISH_WORD_REPEAT_RULE
+Message: Possible typo: you repeated a word
+Suggestion: TheGame
+...unction. Example output:     [codeblock]     TheGame     TheGame/Menu     TheGame/Menu/Label     TheGame/Menu...
+                                                ^^^^^^^^^^^^^^^^^^^                                             
+
+6.) Line 535, column 147, Rule ID: IT_IS[25]
+Message: Did you mean 'its' (possessive pronoun) instead of 'it's' (short form of 'it is')?
+Suggestion: its
+...will be deleted as well. This method ensures it's safe to delete the node, contrary to [method...
+                                                ^^^^                                             
+
+7.) Line 733, column 383, Rule ID: POSSESSIVE_APOSTROPHE[2]
+Message: Possible typo: apostrophe is missing. Did you mean 'nodes'' or 'node's'?
+Suggestion: nodes'; node's
+...ful for advanced uses to manipulate built-in nodes behaviour.    </description>   </method>   <...
+                                                ^^^^^                                             
+
+8.) Line 760, column 354, Rule ID: POSSESSIVE_APOSTROPHE[2]
+Message: Possible typo: apostrophe is missing. Did you mean 'nodes'' or 'node's'?
+Suggestion: nodes'; node's
+...ful for advanced uses to manipulate built-in nodes behaviour.    </description>   </method>   <...
+                                                ^^^^^                                             
+Time: 35773ms for 283 sentences (7.9 sentences/sec)

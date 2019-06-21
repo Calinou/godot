@@ -1,0 +1,12 @@
+1.) Line 17, column 23, Rule ID: MULTIPLICATION_SIGN[1]
+Message: Replace by the typographical symbol.
+Suggestion: ×; ·
+...colon-delimited label.     Example: "*.tscn, *.scn; Scenes", results in filter text "Scenes...
+                                                ^                                             
+
+2.) Line 17, column 79, Rule ID: MULTIPLICATION_SIGN[1]
+Message: Replace by the typographical symbol.
+Suggestion: ×; ·
+...es", results in filter text "Scenes (*.tscn, *.scn)".    </description>   </method>   <meth...
+                                                ^                                             
+Time: 12775ms for 37 sentences (2.9 sentences/sec)

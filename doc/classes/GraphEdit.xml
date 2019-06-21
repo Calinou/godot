@@ -4,8 +4,8 @@
 		GraphEdit is an area capable of showing various GraphNodes. It manages connection events between them.
 	</brief_description>
 	<description>
-		GraphEdit manages the showing of GraphNodes it contains, as well as connections and disconnections between them. Signals are sent for each of these two events. Disconnection between GraphNodes slots is disabled by default.
-		It is greatly advised to enable low processor usage mode (see [member OS.low_processor_usage_mode]) when using GraphEdits.
+		GraphEdit manages the showing of GraphNodes it contains, as well as connections and disconnections between them. Signals are sent for each of these two events. Disconnection between GraphNode slots is disabled by default.
+		It is greatly advised to enable low-processor usage mode (see [member OS.low_processor_usage_mode]) when using GraphEdits.
 	</description>
 	<tutorials>
 	</tutorials>
@@ -43,7 +43,7 @@
 			<return type="void">
 			</return>
 			<description>
-				Remove all connections between nodes.
+				Removes all connections between nodes.
 			</description>
 		</method>
 		<method name="connect_node">
@@ -73,7 +73,7 @@
 			<argument index="3" name="to_port" type="int">
 			</argument>
 			<description>
-				Remove the connection between 'from_port' slot of 'from' GraphNode and 'to_port' slot of 'to' GraphNode, if connection exists.
+				Removes the connection between 'from_port' slot of 'from' GraphNode and 'to_port' slot of 'to' GraphNode, if connection exists.
 			</description>
 		</method>
 		<method name="get_connection_list" qualifiers="const">
@@ -248,12 +248,12 @@
 			<argument index="3" name="to_slot" type="int">
 			</argument>
 			<description>
-				Signal sent to the GraphEdit when the connection between 'from_slot' slot of 'from' GraphNode and 'to_slot' slot of 'to' GraphNode is attempted to be removed.
+				Emitted to the GraphEdit when the connection between [code]from_slot[/code] slot of [code]from[/code] GraphNode and [code]to_slot[/code] slot of [code]to[/code] GraphNode is attempted to be removed.
 			</description>
 		</signal>
 		<signal name="duplicate_nodes_request">
 			<description>
-				Signal sent when a GraphNode is attempted to be duplicated in the GraphEdit.
+				Emitted when a GraphNode is attempted to be duplicated in the GraphEdit.
 			</description>
 		</signal>
 		<signal name="node_selected">
@@ -267,7 +267,7 @@
 			<argument index="0" name="position" type="Vector2">
 			</argument>
 			<description>
-				Signal sent when a popup is requested. Happens on right-clicking in the GraphEdit. 'p_position' is the position of the mouse pointer when the signal is sent.
+				Emitted when a popup is requested. Happens on right-clicking in the GraphEdit. [code]position[/code] is the position of the mouse pointer when the signal is sent.
 			</description>
 		</signal>
 		<signal name="scroll_offset_changed">

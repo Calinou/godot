@@ -1,0 +1,5 @@
+1.) Line 71, column 69, Rule ID: A_INFINITIVE[1]
+Message: Maybe a wrong construction: a/the + infinitive. Some possible errors: 1) An incorrect spelling of a noun. 2) A missing hyphen in a compound adjective. 3) A verb used as a noun and the verb is not a noun in standard English.
+...f the [StreamPeerTCP], also the status after a disconnect.   </constant>   <constant name="STATUS_CONN...
+                                                ^^^^^^^^^^^^                                             
+Time: 11809ms for 20 sentences (1.7 sentences/sec)

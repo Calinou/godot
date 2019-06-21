@@ -1,0 +1,7 @@
+1.) Line 53, column 33, Rule ID: ALLOW_TO[1]
+Message: Did you mean 'editing'? Or maybe you should add a pronoun? In active voice, 'allow' + 'to' takes an object, usually a pronoun.
+Suggestion: editing
+...s_hsv_mode">    If [code]true[/code], allows to edit color with Hue/Saturation/Value sliders.    ...
+                                                ^^^^^^^                                             
+More info: http://www.ef.com/english-resources/english-grammar/gerund-equals-infinitive/
+Time: 11868ms for 19 sentences (1.6 sentences/sec)

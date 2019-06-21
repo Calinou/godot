@@ -1,0 +1,33 @@
+1.) Line 22, column 100, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...rigin point depends very much on the system. For OpenVR our origin point is usually the cente...
+                                                ^^^                                             
+
+2.) Line 22, column 188, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...center of the tracking space, on the ground. For other platforms its often the location of th...
+                                                ^^^                                             
+
+3.) Line 24, column 137, Rule ID: YOUR_YOU_RE[2]
+Message: Did you mean 'you're'?
+Suggestion: you're
+...this often takes a few frames after starting your game.     You should call this method after ...
+                                                ^^^^                                             
+
+4.) Line 25, column 174, Rule ID: PERIOD_OF_TIME[1]
+Message: Consider using 'period'.
+Suggestion: period
+...esignated button on a controller for a short period of time, and when implementing a teleport mechanism....
+                                                ^^^^^^^^^^^^^^                                             
+
+5.) Line 57, column 231, Rule ID: A_INFINITIVE[1]
+Message: Maybe a wrong construction: a/the + infinitive. Some possible errors: 1) An incorrect spelling of a noun. 2) A missing hyphen in a compound adjective. 3) A verb used as a noun and the verb is not a noun in standard English.
+...sent the user with a selection or simply try an initialize each interface and use the first one that re...
+                                                ^^^^^^^^^^^^^                                             
+
+6.) Line 179, column 19, Rule ID: EN_CONTRACTION_SPELLING
+Message: Possible spelling mistake found
+Suggestion: DON'T
+...ll be reset.   </constant>   <constant name="DONT_RESET_ROTATION" value="2" enum="RotationMode...
+                                                ^^^^                                             
+Time: 16957ms for 43 sentences (2.5 sentences/sec)

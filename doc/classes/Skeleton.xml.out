@@ -1,0 +1,12 @@
+1.) Line 90, column 60, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'as' might be the correct word here. Please check.
+Suggestion: as
+...e bone index which is the parent of the bone at "bone_idx". If -1, then bone has no parent. ...
+                                                ^^                                             
+
+2.) Line 221, column 63, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'as' might be the correct word here. Please check.
+Suggestion: as
+...index "parent_idx" as the parent of the bone at "bone_idx". If -1, then bone has no parent. ...
+                                                ^^                                             
+Time: 13661ms for 31 sentences (2.3 sentences/sec)

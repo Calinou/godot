@@ -1,0 +1,6 @@
+1.) Line 4, column 10, Rule ID: HE_VERB_AGR[8]
+Message: The singular proper name 'Button' must be used with a third-person or a past tense verb: 'controls', 'controlled'.
+Suggestion: controls; controlled
+...version="3.2">  <brief_description>   Button control that provides selectable options when presse...
+                                                ^^^^^^^                                             
+Time: 14725ms for 28 sentences (1.9 sentences/sec)

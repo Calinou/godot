@@ -1,0 +1,36 @@
+1.) Line 32, column 30, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...">    </return>    <argument index="0" name="bit" type="int">    </argument>    <description>...
+                                                ^^^                                             
+
+2.) Line 35, column 27, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...>    <description>     Returns an individual bit on the [member collision_layer].    </descri...
+                                                ^^^                                             
+
+3.) Line 41, column 30, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...">    </return>    <argument index="0" name="bit" type="int">    </argument>    <description>...
+                                                ^^^                                             
+
+4.) Line 44, column 27, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...>    <description>     Returns an individual bit on the [member collision_mask].    </descrip...
+                                                ^^^                                             
+
+5.) Line 59, column 30, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...">    </return>    <argument index="0" name="bit" type="int">    </argument>    <argument ind...
+                                                ^^^                                             
+
+6.) Line 70, column 30, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...">    </return>    <argument index="0" name="bit" type="int">    </argument>    <argument ind...
+                                                ^^^                                             
+Time: 12429ms for 20 sentences (1.6 sentences/sec)

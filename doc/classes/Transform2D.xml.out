@@ -1,0 +1,29 @@
+1.) Line 4, column 22, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×2; 3·2
+...">  <brief_description>   2D Transformation. 3x2 matrix.  </brief_description>  <description>...
+                                                ^^^                                             
+
+2.) Line 7, column 176, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×2; 3·2
+...y and [Vector2] "origin". It is similar to a 3x2 matrix.  </description>  <tutorials>  </tuto...
+                                                ^^^                                             
+
+3.) Line 131, column 12, Rule ID: A_INFINITIVE[1]
+Message: Maybe a wrong construction: a/the + infinitive. Some possible errors: 1) An incorrect spelling of a noun. 2) A missing hyphen in a compound adjective. 3) A verb used as a noun and the verb is not a noun in standard English.
+...>    </argument>    <description>     Scales the transform by the given factor.    </description>   </m...
+                                                ^^^^^^^^^^^^^                                             
+
+4.) Line 167, column 18, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 2×2; 2·2
+...ctor2" setter="" getter="">    The X axis of 2x2 basis matrix containing 2 [Vector2]s as its ...
+                                                ^^^                                             
+
+5.) Line 170, column 18, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 2×2; 2·2
+...ctor2" setter="" getter="">    The Y axis of 2x2 basis matrix containing 2 [Vector2]s as its ...
+                                                ^^^                                             
+Time: 13496ms for 28 sentences (2.1 sentences/sec)

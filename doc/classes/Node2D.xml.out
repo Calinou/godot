@@ -1,0 +1,7 @@
+1.) Line 7, column 192, Rule ID: SENT_START_CONJUNCTIVE_LINKING_ADVERB_COMMA[1]
+Message: Did you forget a comma after a conjunctive/linking adverb?
+Suggestion: Also,
+..., scale and rotate children in a 2D project. Also gives control on the node's render order.  <...
+                                                ^^^^
+More info: https://writing.wisc.edu/handbook/grammarpunct/conjadv/
+Time: 12957ms for 35 sentences (2.7 sentences/sec)

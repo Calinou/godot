@@ -1,0 +1,12 @@
+1.) Line 20, column 22, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×3; 3·3
+...perator">   </constant>   <constant name="OP_3x3_AxB" value="2" enum="Operator">   </constant...
+                                                ^^^                                             
+
+2.) Line 22, column 22, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×3; 3·3
+...perator">   </constant>   <constant name="OP_3x3_BxA" value="3" enum="Operator">   </constant...
+                                                ^^^                                             
+Time: 3929ms for 2 sentences (0.5 sentences/sec)

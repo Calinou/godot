@@ -1,0 +1,12 @@
+1.) Line 7, column 104, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'past' (past times) might be the correct word here, not 'passed' (paste tense of 'to pass'). Please check.
+Suggestion: past
+...uilt-in math function call, method call of a passed instance, or built-in type construction call...
+                                                ^^^^^^                                             
+
+2.) Line 16, column 3, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Func
+..."text_entered", self, "_on_text_entered")    func _on_text_entered(command):       var error =...
+                                                ^^^^                                             
+Time: 11874ms for 15 sentences (1.3 sentences/sec)

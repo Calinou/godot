@@ -1,0 +1,11 @@
+1.) Line 9, column 1, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “When” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...ry values over the lifetime of the particle.   When a randomness ratio is applied to a property ...
+                                                ^^^^^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+2.) Line 55, column 55, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...article's initial color. If the [Particles2D]'s [code]texture[/code] is defined, it will be...
+                                                ^                                             
+Time: 20419ms for 123 sentences (6.0 sentences/sec)

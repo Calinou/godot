@@ -1,0 +1,11 @@
+1.) Line 7, column 3, Rule ID: THIS_NNS[1]
+Message: Did you mean 'these'?
+Suggestion: These
+...iles.  </brief_description>  <description>   This class can serve as base to make custom XML p...
+                                                ^^^^                                             
+
+2.) Line 103, column 48, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ')' seems to be missing
+...  Check whether the current element is empty (this only works for completely empty tags, e....
+                                                ^                                             
+Time: 8176ms for 31 sentences (3.8 sentences/sec)

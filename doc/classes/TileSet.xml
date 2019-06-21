@@ -512,7 +512,7 @@
 			<argument index="0" name="id" type="int">
 			</argument>
 			<description>
-				Returns the tile's z-index (drawing layer).
+				Returns the tile's Z index (drawing layer).
 			</description>
 		</method>
 		<method name="tile_set_light_occluder">

@@ -1,0 +1,22 @@
+1.) Line 45, column 161, Rule ID: A_INFINITIVE[1]
+Message: Maybe a wrong construction: a/the + infinitive. Some possible errors: 1) An incorrect spelling of a noun. 2) A missing hyphen in a compound adjective. 3) A verb used as a noun and the verb is not a noun in standard English.
+... be added as the root's last child, or it'll the be the root itself if the tree is empty.    </d...
+                                                ^^^^^^                                             
+
+2.) Line 45, column 161, Rule ID: MISSING_NOUN[1]
+Message: Please check whether a word is missing between 'the' and 'be' or whether 'the' is the correct determiner.
+... be added as the root's last child, or it'll the be the root itself if the tree is empty.    ...
+                                                ^^^                                             
+
+3.) Line 45, column 161, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'to' might be the correct word here. Please check.
+Suggestion: to
+... be added as the root's last child, or it'll the be the root itself if the tree is empty.    ...
+                                                ^^^                                             
+
+4.) Line 96, column 48, Rule ID: THERE_RE_MANY[3]
+Message: Possible agreement error. Did you mean 'items'?
+Suggestion: items
+...  Otherwise, returns 0. If there are no tree item at [code]position[/code], returns -100.    <...
+                                                ^^^^                                             
+Time: 19936ms for 67 sentences (3.4 sentences/sec)

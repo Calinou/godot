@@ -1,0 +1,6 @@
+1.) Line 59, column 8, Rule ID: HE_VERB_AGR[8]
+Message: The singular proper name 'End' must be used with a third-person or a past tense verb: 'flags', 'flagged'.
+Suggestion: flags; flagged
+...e="PARAM_MAX" value="5" enum="Param">    End flag of PARAM_* constants, used internally.   </c...
+                                                ^^^^                                             
+Time: 13900ms for 30 sentences (2.2 sentences/sec)

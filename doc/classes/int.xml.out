@@ -1,0 +1,6 @@
+1.) Line 17, column 3, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Var
+...ring is explicitly cast with [method int]    var max_int = 9223372036854775807   print(max_in...
+                                                ^^^                                             
+Time: 12407ms for 12 sentences (1.0 sentences/sec)

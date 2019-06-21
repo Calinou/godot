@@ -1,0 +1,5 @@
+1.) Line 22, column 45, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...    The margin around the region. The [Rect2]'s 'size' parameter ('w' and 'h' in the editor...
+                                                ^                                             
+Time: 12638ms for 11 sentences (0.9 sentences/sec)

@@ -1,0 +1,29 @@
+1.) Line 263, column 39, Rule ID: AGREEMENT_SENT_START[33]
+Message: Possible agreement error. You should probably use: 'Replace underscores' or 'Replaces underscore'.
+Suggestion: Replace underscores; Replaces underscore
+...ption>     Changes the case of some letters. Replaces underscores with spaces, converts all letters to lowerca...
+                                                ^^^^^^^^^^^^^^^^^^^^                                             
+
+2.) Line 533, column 19, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: case-insensitive
+...argument>    <description>     Does a simple case insensitive expression match, using [code]?[/code] and [...
+                                                ^^^^^^^^^^^^^^^^                                             
+
+3.) Line 597, column 72, Rule ID: EN_A_VS_AN
+Message: Use 'an' instead of 'a' if the following word starts with a vowel sound, e.g. 'an article', 'an hour'
+Suggestion: an
+...ng. Encodes parameters in a URL when sending a HTTP GET request (and bodies of form-urlenco...
+                                                ^                                             
+
+4.) Line 734, column 99, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: '"' seems to be missing
+...n [code][1,2.5,3][/code] if split by [code]","[/code].    </description>   </method>   <met...
+                                                ^                                             
+
+5.) Line 784, column 57, Rule ID: EN_A_VS_AN
+Message: Use 'a' instead of 'an' if the following word doesn't start with a vowel sound, e.g. 'a sentence', 'a university'
+Suggestion: a
+...s a string containing an integer number into an [code]int[/code].    </description>   </meth...
+                                                ^^                                             
+Time: 25979ms for 133 sentences (5.1 sentences/sec)

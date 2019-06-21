@@ -1,0 +1,6 @@
+1.) Line 7, column 77, Rule ID: ANY_BODY[2]
+Message: Did you mean 'anybody'?
+Suggestion: anybody
+... It works like a 2D plane and will not allow any body to go to the negative side. Not recommended ...
+                                                ^^^^^^^^                                             
+Time: 11242ms for 7 sentences (0.6 sentences/sec)

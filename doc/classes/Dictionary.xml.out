@@ -1,0 +1,12 @@
+1.) Line 16, column 3, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: D
+...nd assign the String "hello" as its value.   d["Godot"] = 3.01  # Add String "Godot" as a k...
+                                                ^                                             
+
+2.) Line 79, column 53, Rule ID: ALL_OF_THE[1]
+Message: Consider using 'all the'.
+Suggestion: all the
+...urns [code]true[/code] if the dictionary has all of the keys in the given array.    </description>  ...
+                                                ^^^^^^^^^^                                             
+Time: 11773ms for 22 sentences (1.9 sentences/sec)

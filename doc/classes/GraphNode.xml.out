@@ -1,0 +1,6 @@
+1.) Line 4, column 35, Rule ID: MANY_NN[1]
+Message: Possible agreement error. The noun input seems to be countable; consider using: 'several inputs'.
+Suggestion: several inputs
+...scription>   A GraphNode is a container with several input and output slots allowing connections betwee...
+                                                ^^^^^^^^^^^^^                                             
+Time: 15344ms for 32 sentences (2.1 sentences/sec)

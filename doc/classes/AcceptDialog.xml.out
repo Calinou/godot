@@ -1,0 +1,16 @@
+1.) Line 32, column 46, Rule ID: A_INFINITIVE[1]
+Message: Maybe a wrong construction: a/the + infinitive. Some possible errors: 1) An incorrect spelling of a noun. 2) A missing hyphen in a compound adjective. 3) A verb used as a noun and the verb is not a noun in standard English.
+...    Adds a button with label [i]name[/i] and a cancel action to the dialog and returns the created...
+                                                ^^^^^^^^
+
+2.) Line 55, column 48, Rule ID: A_INFINITIVE[1]
+Message: Maybe a wrong construction: a/the + infinitive. Some possible errors: 1) An incorrect spelling of a noun. 2) A missing hyphen in a compound adjective. 3) A verb used as a noun and the verb is not a noun in standard English.
+...  Registers a [LineEdit] in the dialog. When the enter key is pressed, the dialog will be accepted....
+                                                ^^^^^^^^^
+
+3.) Line 65, column 34, Rule ID: THIS_NNS[1]
+Message: Did you mean 'these'?
+Suggestion: these
+...rue[/code].    [b]Note:[/b] Some nodes derived from this class can have a different default value, an...
+                                                ^^^^
+Time: 14937ms for 24 sentences (1.6 sentences/sec)

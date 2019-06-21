@@ -1,0 +1,36 @@
+1.) Line 4, column 3, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×3; 3·3
+...Types" version="3.2">  <brief_description>   3x3 matrix datatype.  </brief_description>  <des...
+                                                ^^^
+
+2.) Line 7, column 3, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×3; 3·3
+...type.  </brief_description>  <description>   3x3 matrix used for 3D rotation and scale. Conta...
+                                                ^^^
+
+3.) Line 7, column 182, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'assessed' (evaluated) might be the correct word here, not 'accessed' (got, retrieved). Please check.
+Suggestion: assessed
+...sis vectors of a transformation. Can also be accessed as array of 3D vectors. These vectors are or...
+                                                ^^^^^^^^
+
+4.) Line 111, column 76, Rule ID: PHRASE_REPETITION[1]
+Message: This phrase is duplicated. You should probably leave only 'time to'.
+Suggestion: time to
+...d version of the matrix (useful to call from time to time to avoid rounding error for orthogonal matrices...
+                                                ^^^^^^^^^^^^^^^
+
+5.) Line 151, column 37, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: X axis
+...ription>     Transposed dot product with the x axis of the matrix.    </description>   </method>...
+                                                ^^^^^^
+
+6.) Line 160, column 37, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: Y axis
+...ription>     Transposed dot product with the y axis of the matrix.    </description>   </method>...
+                                                ^^^^^^
+Time: 16652ms for 38 sentences (2.3 sentences/sec)

@@ -1,0 +1,6 @@
+1.) Line 8, column 332, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: floating-point
+...cular) are more efficient and robust against floating-point errors.   Quaternions need to be (re)normali...
+                                                ^^^^^^^^^^^^^^
+Time: 15520ms for 30 sentences (1.9 sentences/sec)

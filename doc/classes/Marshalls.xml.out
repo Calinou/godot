@@ -1,0 +1,6 @@
+1.) Line 38, column 57, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “When” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+... [Variant] of a given base64 encoded String. When [code]allow_objects[/code] is [code]true[/co...
+                                                ^^^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+Time: 11740ms for 13 sentences (1.1 sentences/sec)

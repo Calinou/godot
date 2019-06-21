@@ -1,0 +1,7 @@
+1.) Line 92, column 28, Rule ID: RID_FROM_OF[117]
+Message: The usual collocation for "RID" is "of" not "from". Did you mean 'RID of'.
+Suggestion: RID of
+...    <description>     Returns the viewport's RID from the [VisualServer].    </description>   </me...
+                                                ^^^^^^^^                                             
+More info: http://www.kentlee7.com/writ/collocation.errors.typical.pdf
+Time: 22025ms for 127 sentences (5.8 sentences/sec)

@@ -1,0 +1,18 @@
+1.) Line 36, column 5, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Editor
+...   "hint_string": "one,two,three"     }      editor_settings.add_property_info(property_info)   ...
+                                                ^^^^^^                                             
+
+2.) Line 72, column 97, Rule ID: POSSESSIVE_APOSTROPHE[1]
+Message: Apostrophe might be missing. Did you mean 'settings'' or 'setting's'?
+Suggestion: settings'; setting's
+...s all have a unique sub-directory inside the settings path where project specific settings are sav...
+                                                ^^^^^^^^                                             
+
+3.) Line 94, column 20, Rule ID: POSSESSIVE_APOSTROPHE[1]
+Message: Apostrophe might be missing. Did you mean 'settings'' or 'setting's'?
+Suggestion: settings'; setting's
+.../return>    <description>     Get the global settings path for the engine. Inside this path you ca...
+                                                ^^^^^^^^                                             
+Time: 13798ms for 16 sentences (1.2 sentences/sec)

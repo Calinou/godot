@@ -1,0 +1,21 @@
+1.) Line 7, column 151, Rule ID: MULTIPLICATION_SIGN[3]
+Message: Replace by the typographical symbol.
+Suggestion: g×,; g·,
+...es. The name *tween* comes from *in-betweening*, an animation technique where you specify *ke...
+                                                ^^^                                             
+
+2.) Line 17, column 196, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ')' seems to be missing
+...e way the timing of the animation is handled (see [code]http://easings.net/[/code] for some...
+                                                ^                                             
+
+3.) Line 17, column 232, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: '[' seems to be missing
+... handled (see [code]http://easings.net/[/code] for some examples). The second accepts an [e...
+                                                ^                                             
+
+4.) Line 17, column 251, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: '(' seems to be missing
+...]http://easings.net/[/code] for some examples). The second accepts an [enum EaseType] const...
+                                                ^                                             
+Time: 18471ms for 102 sentences (5.5 sentences/sec)

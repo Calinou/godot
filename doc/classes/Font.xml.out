@@ -1,0 +1,18 @@
+1.) Line 28, column 133, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Position
+..." color, and optionally clipping the width. "position" specifies the baseline, not the top. To dra...
+                                                ^^^^^^^^                                             
+
+2.) Line 47, column 149, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Clipping
+... and optionally kerning if "next" is passed. clipping the width. "position" specifies the baseline...
+                                                ^^^^^^^^                                             
+
+3.) Line 47, column 170, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Position
+...ng if "next" is passed. clipping the width. "position" specifies the baseline, not the top. To dra...
+                                                ^^^^^^^^                                             
+Time: 11758ms for 18 sentences (1.5 sentences/sec)

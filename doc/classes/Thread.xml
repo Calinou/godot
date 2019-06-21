@@ -35,7 +35,7 @@
 			<argument index="3" name="priority" type="int" enum="Thread.Priority" default="1">
 			</argument>
 			<description>
-				Starts a new [Thread] that runs "method" on object "instance" with "userdata" passed as an argument. The "priority" of the [Thread] can be changed by passing a PRIORITY_* enum.
+				Starts a new [Thread] that runs "method" on object "instance" with "userdata" passed as an argument. The "priority" of the [Thread] can be changed by passing a [code]PRIORITY_*[/code] enum.
 				Returns OK on success, or ERR_CANT_CREATE on failure.
 			</description>
 		</method>

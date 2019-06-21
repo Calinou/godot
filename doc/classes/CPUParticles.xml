@@ -110,19 +110,19 @@
 			The particle system's frame rate is fixed to a value. For instance, changing the value to 2 will make the particles render at 2 frames per second. Note this does not slow down the particle system itself.
 		</member>
 		<member name="flag_align_y" type="bool" setter="set_particle_flag" getter="get_particle_flag">
-			Align y-axis of particle with the direction of its velocity.
+			Align Y axis of particle with the direction of its velocity.
 		</member>
 		<member name="flag_disable_z" type="bool" setter="set_particle_flag" getter="get_particle_flag">
 			If [code]true[/code], particles will not move on the z axis. Default value: [code]false[/code].
 		</member>
 		<member name="flag_rotate_y" type="bool" setter="set_particle_flag" getter="get_particle_flag">
-			If [code]true[/code], particles rotate around y-axis by [member angle].
+			If [code]true[/code], particles rotate around Y axis by [member angle].
 		</member>
 		<member name="flatness" type="float" setter="set_flatness" getter="get_flatness">
 			Amount of [member spread] in Y/Z plane. A value of [code]1[/code] restricts particles to X/Z plane. Default [code]0[/code].
 		</member>
 		<member name="fract_delta" type="bool" setter="set_fractional_delta" getter="get_fractional_delta">
-			If [code]true[/code], results in fractional delta calculation which has a smoother particles display effect. Default value: [code]true[/code]
+			If [code]true[/code], results in fractional delta calculation which has a smoother particles display effect. Default value: [code]true[/code].
 		</member>
 		<member name="gravity" type="Vector3" setter="set_gravity" getter="get_gravity">
 			Gravity applied to every particle. Default value: [code](0, -9.8, 0)[/code].

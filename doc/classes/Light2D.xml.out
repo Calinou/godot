@@ -1,0 +1,5 @@
+1.) Line 76, column 28, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...t_texture_scale">    The [code]texture[/code]'s scale factor.   </member>  </members>  <con...
+                                                ^                                             
+Time: 14802ms for 62 sentences (4.2 sentences/sec)

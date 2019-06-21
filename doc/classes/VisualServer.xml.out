@@ -1,0 +1,105 @@
+1.) Line 8, column 3, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...hole scene system mounts on it to display.   The visual server is completely opaque, the inte...
+                                                ^^^
+
+2.) Line 620, column 26, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...t>    <description>     Sets the [CanvasItem]'s Z index, i.e. its draw order (lower indexes...
+                                                ^
+
+3.) Line 766, column 22, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Binary
+...ument>    <description>     The shadow mask. binary about which layers this canvas light affects...
+                                                ^^^^^^
+
+4.) Line 2548, column 27, Rule ID: KIND_OF_A[1]
+Message: If 'type' is a classification term, 'a' is not necessary. Use 'type of'. (The phrases 'kind of' and 'sort of' are informal if they mean 'to some extent'.)
+Suggestion: type of
+...>    <description>     Returns the primitive type of a mesh's surface.    </description>   </method...
+                                                ^^^^^^^^^
+
+5.) Line 3163, column 258, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...ge will be scaled with linear interpolation. If [code]use_filter[/code] is [code]false[/code...
+                                                ^^
+
+6.) Line 3722, column 10, Rule ID: A_INFINITIVE[1]
+Message: Maybe a wrong construction: a/the + infinitive. Some possible errors: 1) An incorrect spelling of a noun. 2) A missing hyphen in a compound adjective. 3) A verb used as a noun and the verb is not a noun in standard English.
+...w">    </argument>    <description>     Sets the debug draw mode of a viewport. See [enum VisualSer...
+                                                ^^^^^^^^^
+
+7.) Line 3820, column 508, Rule ID: CONSEQUENCES_OF_FOR[164]
+Message: The usual prepositions to use after "consequence" is "of" or 'for' not "to". Did you mean 'consequence of' or 'consequence for'?
+Suggestion: consequence of; consequence for
+..., such as the various stretch modes. Another consequence to be aware of is that in 2D the rendering happ...
+                                                ^^^^^^^^^^^^^^
+More info: http://www.kentlee7.com/writ/collocation.errors.typical.pdf
+
+8.) Line 4036, column 13, Rule ID: EN_A_VS_AN
+Message: Use 'a' instead of 'an' if the following word doesn't start with a vowel sound, e.g. 'a sentence', 'a university'
+Suggestion: a
+..._UV" value="4" enum="ArrayType">    Array is an UV coordinates array.   </constant>   <const...
+                                                ^^
+
+9.) Line 4039, column 13, Rule ID: EN_A_VS_AN
+Message: Use 'a' instead of 'an' if the following word doesn't start with a vowel sound, e.g. 'a sentence', 'a university'
+Suggestion: a
+...UV2" value="5" enum="ArrayType">    Array is an UV coordinates array for the second UV coord...
+                                                ^^
+
+10.) Line 4066, column 22, Rule ID: EN_A_VS_AN
+Message: Use 'a' instead of 'an' if the following word doesn't start with a vowel sound, e.g. 'a sentence', 'a university'
+Suggestion: a
+...16" enum="ArrayFormat">    Flag used to mark an UV coordinates array.   </constant>   <const...
+                                                ^^
+
+11.) Line 4069, column 22, Rule ID: EN_A_VS_AN
+Message: Use 'a' instead of 'an' if the following word doesn't start with a vowel sound, e.g. 'a sentence', 'a university'
+Suggestion: a
+...32" enum="ArrayFormat">    Flag used to mark an UV coordinates array for the second UV coord...
+                                                ^^
+
+12.) Line 4136, column 24, Rule ID: POSSESSIVE_APOSTROPHE[2]
+Message: Possible typo: apostrophe is missing. Did you mean 'types'' or 'type's'?
+Suggestion: types'; type's
+...enum="PrimitiveType">    Marks the primitive types endpoint. Used internally.   </constant>   <...
+                                                ^^^^^
+
+13.) Line 4187, column 14, Rule ID: POSSESSIVE_APOSTROPHE[2]
+Message: Possible typo: apostrophe is missing. Did you mean 'parameters'' or 'parameter's'?
+Suggestion: parameters'; parameter's
+..." value="15" enum="LightParam">    The light parameters endpoint. Used internally.   </constant>   <...
+                                                ^^^^^^^^^^
+
+14.) Line 4334, column 42, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'were' might be the correct word here. Please check.
+Suggestion: were
+...e">    The nine patch gets filled with tiles where needed.   </constant>   <constant name="NINE...
+                                                ^^^^^
+
+15.) Line 4337, column 42, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'were' might be the correct word here. Please check.
+Suggestion: were
+...e">    The nine patch gets filled with tiles where needed and stretches them a bit if needed.  ...
+                                                ^^^^^
+
+16.) Line 4475, column 33, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 1×1; 1·1
+... </constant>   <constant name="ENV_SSAO_BLUR_1x1" value="1" enum="EnvironmentSSAOBlur">   </c...
+                                                ^^^
+
+17.) Line 4477, column 33, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 2×2; 2·2
+... </constant>   <constant name="ENV_SSAO_BLUR_2x2" value="2" enum="EnvironmentSSAOBlur">   </c...
+                                                ^^^
+
+18.) Line 4479, column 33, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×3; 3·3
+... </constant>   <constant name="ENV_SSAO_BLUR_3x3" value="3" enum="EnvironmentSSAOBlur">   </c...
+                                                ^^^
+Time: 49944ms for 379 sentences (7.6 sentences/sec)

@@ -1,0 +1,17 @@
+1.) Line 8, column 130, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: top-level
+...ystem, unless the [Spatial] object is set as top level. Affine operations in this coordinate system...
+                                                ^^^^^^^^^
+
+2.) Line 8, column 240, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+... to direct affine operations on the [Spatial]'s transform. The word local below refers to t...
+                                                ^
+
+3.) Line 304, column 361, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: floating-point
+...ts as a convenient data-structure to store 3 floating-point numbers. Therefore, applying affine operatio...
+                                                ^^^^^^^^^^^^^^
+Time: 16209ms for 70 sentences (4.3 sentences/sec)

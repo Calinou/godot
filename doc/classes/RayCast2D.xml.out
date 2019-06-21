@@ -1,0 +1,24 @@
+1.) Line 65, column 30, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...">    </return>    <argument index="0" name="bit" type="int">    </argument>    <description>...
+                                                ^^^                                             
+
+2.) Line 68, column 27, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...>    <description>     Returns an individual bit on the collision mask.    </description>   <...
+                                                ^^^                                             
+
+3.) Line 113, column 30, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...">    </return>    <argument index="0" name="bit" type="int">    </argument>    <argument ind...
+                                                ^^^                                             
+
+4.) Line 118, column 54, Rule ID: THIS_NNS_VB[1]
+Message: Did you mean 'these'?
+Suggestion: These
+...clear individual bits on the collision mask. This makes selecting the areas scanned easier.   ...
+                                                ^^^^                                             
+Time: 15786ms for 37 sentences (2.3 sentences/sec)

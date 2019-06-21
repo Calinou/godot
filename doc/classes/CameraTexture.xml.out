@@ -1,0 +1,6 @@
+1.) Line 14, column 4, Rule ID: EN_CONTRACTION_SPELLING
+Message: Possible spelling mistake found
+Suggestion: I'd
+...era_feed_id" getter="get_camera_feed_id">    Id of the [CameraFeed] for which we want to dis...
+                                                ^^                                             
+Time: 10592ms for 7 sentences (0.7 sentences/sec)

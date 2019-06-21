@@ -1,0 +1,19 @@
+1.) Line 7, column 419, Rule ID: EN_A_VS_AN
+Message: Use 'an' instead of 'a' if the following word starts with a vowel sound, e.g. 'an article', 'an hour'
+Suggestion: an
+...d as many groups as you want to create, e.g. a "enemy" group. You can then iterate these gr...
+                                                ^                                             
+
+2.) Line 280, column 153, Rule ID: ALLOW_TO[1]
+Message: Did you mean 'running'? Or maybe you should add a pronoun? In active voice, 'allow' + 'to' takes an object, usually a pronoun.
+Suggestion: running
+...ckets and delivering RPCs/RSETs. This allows to run RPCs/RSETs in a different loop (e.g. physics...
+                                                ^^^^^^                                             
+More info: http://www.ef.com/english-resources/english-grammar/gerund-equals-infinitive/
+
+3.) Line 415, column 70, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'axis' (singular) might be the correct word here, not 'axes' (plural). Please check.
+Suggestion: axis
+...t ratio by padding with black bars in either axes. No expansion of content.   </constant>   <c...
+                                                ^^^^                                             
+Time: 20507ms for 94 sentences (4.6 sentences/sec)

@@ -1,0 +1,33 @@
+1.) Line 194, column 113, Rule ID: WITH_THE_EXCEPTION_OF[1]
+Message: Consider using 'except' or 'except for'
+Suggestion: except; except for
+...et_time] and [method get_date] dictionaries (with the exception of dst = day light standard time, as it cannot ...
+                                                ^^^^^^^^^^^^^^^^^^^^^                                             
+
+2.) Line 463, column 5, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...[code]use_custom_user_dir[/code] is set.     On Windows, this is [code]%APPDATA%/Godot/app_u...
+                                                ^^                                             
+
+3.) Line 511, column 208, Rule ID: A_INFINITIVE[1]
+Message: Maybe a wrong construction: a/the + infinitive. Some possible errors: 1) An incorrect spelling of a noun. 2) A missing hyphen in a compound adjective. 3) A verb used as a noun and the verb is not a noun in standard English.
+...ed to check whether you're currently running a debug build, on a certain platform or arch, etc. R...
+                                                ^^^^^^^                                             
+
+4.) Line 540, column 47, Rule ID: A_INFINITIVE[1]
+Message: Maybe a wrong construction: a/the + infinitive. Some possible errors: 1) An incorrect spelling of a noun. 2) A missing hyphen in a compound adjective. 3) A verb used as a noun and the verb is not a noun in standard English.
+...   Returns [code]true[/code] if the build is a debug build.     Returns [code]true[/code] when ru...
+                                                ^^^^^^^                                             
+
+5.) Line 716, column 73, Rule ID: EN_A_VS_AN
+Message: Use 'a' instead of 'an' if the following word doesn't start with a vowel sound, e.g. 'a sentence', 'a university'
+Suggestion: a
+...ey events before the application and creates an composition string and suggestion list.     ...
+                                                ^^                                             
+
+6.) Line 777, column 17, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'shall' (a verb) might be the correct word here, not 'shell' (hard outer covering of many animals). Please check.
+Suggestion: shall
+...  </description>   </method>   <method name="shell_open">    <return type="int" enum="Error">  ...
+                                                ^^^^^                                             
+Time: 28765ms for 222 sentences (7.7 sentences/sec)

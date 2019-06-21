@@ -1,0 +1,5 @@
+1.) Line 15, column 76, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...rs children relative to the [CenterContainer]'s top left corner. Default value: [code]false...
+                                                ^                                             
+Time: 7829ms for 6 sentences (0.8 sentences/sec)

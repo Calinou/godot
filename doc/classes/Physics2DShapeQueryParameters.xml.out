@@ -1,0 +1,6 @@
+1.) Line 40, column 59, Rule ID: ALSO_SENT_END[1]
+Message: 'Also' is not used at the end of the sentence. Use 'as well' instead.
+Suggestion: as well
+...of the queried shape. See [method set_shape] also.   </member>   <member name="transform" type...
+                                                ^^^^                                             
+Time: 11582ms for 11 sentences (0.9 sentences/sec)

@@ -1,0 +1,6 @@
+1.) Line 15, column 89, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “When” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...e between [code]0[/code] and [code]1[/code]. When the two bodies move into different direction...
+                                                ^^^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+Time: 11156ms for 14 sentences (1.3 sentences/sec)

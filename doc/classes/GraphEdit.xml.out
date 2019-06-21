@@ -1,0 +1,6 @@
+1.) Line 258, column 89, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: P
+...Happens on right-clicking in the GraphEdit. 'p_position' is the position of the mouse point...
+                                                ^                                             
+Time: 16543ms for 38 sentences (2.3 sentences/sec)

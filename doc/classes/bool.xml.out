@@ -1,0 +1,12 @@
+1.) Line 27, column 105, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: floating-point
+...ll return [code]true[/code] if called with a floating-point value different to 0 and [code]false[/code] ...
+                                                ^^^^^^^^^^^^^^
+
+2.) Line 36, column 106, Rule ID: EN_COMPOUNDS
+Message: This expression is normally spelled as one or with hyphen.
+Suggestion: non-empty; nonempty
+...ll return [code]true[/code] if called with a non empty string and [code]false[/code] in other case....
+                                                ^^^^^^^^^
+Time: 7314ms for 6 sentences (0.8 sentences/sec)

@@ -1,0 +1,43 @@
+1.) Line 205, column 36, Rule ID: ANY_BODY[2]
+Message: Did you mean 'anybody'?
+Suggestion: anybody
+...cription>     Sets the function to call when any body/area enters or exits the area. This callback...
+                                                ^^^^^^^^                                             
+
+2.) Line 434, column 89, Rule ID: MULTIPLICATION_SIGN[3]
+Message: Replace by the typographical symbol.
+Suggestion: E×,; E·,
+...eter can be any value from constants BODY_MODE*, for the type of body created. Additionally, ...
+                                                ^^^                                             
+
+3.) Line 691, column 59, Rule ID: MULTIPLICATION_SIGN[3]
+Message: Replace by the typographical symbol.
+Suggestion: E×.; E·.
+...body mode, from one of the constants BODY_MODE*.    </description>   </method>   <method name...
+                                                ^^^                                             
+
+4.) Line 897, column 74, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'past' (past times) might be the correct word here, not 'passed' (paste tense of 'to pass'). Please check.
+Suggestion: past
+...cts created by Physics2DServer. If the [RID] passed is not one of the objects that can be create...
+                                                ^^^^^^                                             
+
+5.) Line 906, column 59, Rule ID: POSSESSIVE_APOSTROPHE[2]
+Message: Possible typo: apostrophe is missing. Did you mean 'physics'' or 'physic's'?
+Suggestion: physics'; physic's
+...nformation about the current state of the 2D physics engine. The states are listed under the INFO...
+                                                ^^^^^^^                                             
+
+6.) Line 943, column 17, Rule ID: KIND_OF_A[1]
+Message: If 'type' is a classification term, 'a' is not necessary. Use 'type of'. (The phrases 'kind of' and 'sort of' are informal if they mean 'to some extent'.)
+Suggestion: type of
+...</argument>    <description>     Returns the type of a joint (see JOINT_* constants).    </descript...
+                                                ^^^^^^^^^                                             
+
+7.) Line 1251, column 77, Rule ID: GO_TO_HOME[89]
+Message: There isn't usually a preposition before "back". Did you mean 'go back'.
+Suggestion: go back
+...e spring joint. The joint will always try to go to back this length when pulled apart.   </constant>...
+                                                ^^^^^^^^^^                                             
+More info: http://www.kentlee7.com/writ/collocation.errors.typical.pdf
+Time: 32298ms for 241 sentences (7.5 sentences/sec)

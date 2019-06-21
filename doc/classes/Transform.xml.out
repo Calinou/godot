@@ -1,0 +1,23 @@
+1.) Line 4, column 22, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×4; 3·4
+...">  <brief_description>   3D Transformation. 3x4 matrix.  </brief_description>  <description>...
+                                                ^^^                                             
+
+2.) Line 7, column 134, Rule ID: EN_A_VS_AN
+Message: Use 'a' instead of 'an' if the following word doesn't start with a vowel sound, e.g. 'a sentence', 'a university'
+Suggestion: a
+...caling. It consists of a [Basis] "basis" and an [Vector3] "origin". It is similar to a 3x4 m...
+                                                ^^                                             
+
+3.) Line 7, column 176, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×4; 3·4
+...nd an [Vector3] "origin". It is similar to a 3x4 matrix.  </description>  <tutorials>   <link...
+                                                ^^^                                             
+
+4.) Line 129, column 12, Rule ID: A_INFINITIVE[1]
+Message: Maybe a wrong construction: a/the + infinitive. Some possible errors: 1) An incorrect spelling of a noun. 2) A missing hyphen in a compound adjective. 3) A verb used as a noun and the verb is not a noun in standard English.
+...>    </argument>    <description>     Scales the transform by the specified 3D scaling factors.    </de...
+                                                ^^^^^^^^^^^^^                                             
+Time: 12960ms for 30 sentences (2.3 sentences/sec)

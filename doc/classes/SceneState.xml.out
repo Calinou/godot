@@ -1,0 +1,17 @@
+1.) Line 34, column 71, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+... the signal at [code]idx[/code]. See [Object]'s [code]CONNECT_*[/code] flags.    </descript...
+                                                ^                                             
+
+2.) Line 199, column 103, Rule ID: AGREEMENT_SENT_START[33]
+Message: Possible agreement error. You should probably use: 'Require tools' or 'Requires tool'.
+Suggestion: Require tools; Requires tool
+...nherited scene resources to the local scene. Requires tools compiled.   </constant>   <constant name="GE...
+                                                ^^^^^^^^^^^^^^                                             
+
+3.) Line 202, column 155, Rule ID: AGREEMENT_SENT_START[33]
+Message: Possible agreement error. You should probably use: 'Require tools' or 'Requires tool'.
+Suggestion: Require tools; Requires tool
+...in scene should receive the main edit state. Requires tools compiled.   </constant>  </constants> </clas...
+                                                ^^^^^^^^^^^^^^                                             
+Time: 14686ms for 29 sentences (2.0 sentences/sec)

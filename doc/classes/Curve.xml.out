@@ -1,0 +1,13 @@
+1.) Line 7, column 60, Rule ID: BY_DEFAULT_COMMA[1]
+Message: Did you mean: 'By default,'?
+Suggestion: By default,
+... can be saved and re-used for other objects. By default it ranges between [code]0[/code] and [code]1...
+                                                ^^^^^^^^^^                                             
+
+2.) Line 7, column 63, Rule ID: MISSING_COMMA_AFTER_INTRODUCTORY_PHRASE[1]
+Message: The comma is probably missing here: 'default, it'.
+Suggestion: default, it
+...n be saved and re-used for other objects. By default it ranges between [code]0[/code] and [code]1[/c...
+                                                ^^^^^^^^^^                                             
+More info: http://englishplus.com/grammar/00000074.htm
+Time: 13984ms for 40 sentences (2.9 sentences/sec)

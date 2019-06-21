@@ -1,0 +1,11 @@
+1.) Line 4, column 8, Rule ID: EN_A_VS_AN
+Message: Use 'an' instead of 'a' if the following word starts with a vowel sound, e.g. 'an article', 'an hour'
+Suggestion: an
+..." version="3.2">  <brief_description>   Adds a Amplify audio effect to an Audio bus.   Incr...
+                                                ^                                             
+
+2.) Line 4, column 8, Rule ID: A_INFINITIVE[1]
+Message: Maybe a wrong construction: a/the + infinitive. Some possible errors: 1) An incorrect spelling of a noun. 2) A missing hyphen in a compound adjective. 3) A verb used as a noun and the verb is not a noun in standard English.
+..." version="3.2">  <brief_description>   Adds a Amplify audio effect to an Audio bus.   Increases or...
+                                                ^^^^^^^^^                                             
+Time: 10214ms for 8 sentences (0.8 sentences/sec)

@@ -1,0 +1,6 @@
+1.) Line 7, column 189, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: floating-point
+..., often used for transparency. Values are in floating-point and usually range from 0 to 1. Some properti...
+                                                ^^^^^^^^^^^^^^
+Time: 31718ms for 53 sentences (1.7 sentences/sec)

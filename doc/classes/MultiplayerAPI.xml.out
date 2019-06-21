@@ -1,0 +1,11 @@
+1.) Line 61, column 212, Rule ID: BY_DEFAULT_COMMA[1]
+Message: Did you mean: 'By default,'?
+Suggestion: By default,
+...ree.multiplayer_poll] to [code]false[/code]. By default [SceneTree] will poll its MultiplayerAPI for...
+                                                ^^^^^^^^^^                                             
+
+2.) Line 91, column 25, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ')' seems to be missing
+...t_decoding_allowed">    If [code]true[/code] (or if the [member network_peer] [member Packe...
+                                                ^                                             
+Time: 16211ms for 68 sentences (4.2 sentences/sec)

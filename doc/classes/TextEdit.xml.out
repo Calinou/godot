@@ -1,0 +1,5 @@
+1.) Line 58, column 12, Rule ID: A_INFINITIVE[1]
+Message: Maybe a wrong construction: a/the + infinitive. Some possible errors: 1) An incorrect spelling of a noun. 2) A missing hyphen in a compound adjective. 3) A verb used as a noun and the verb is not a noun in standard English.
+...d">    </return>    <description>     Clears the undo history.    </description>   </method>   <me...
+                                                ^^^^^^^^                                             
+Time: 18238ms for 93 sentences (5.1 sentences/sec)

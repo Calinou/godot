@@ -1,0 +1,42 @@
+1.) Line 12, column 52, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “As” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...ing corner radius to high values is allowed. As soon as corners would overlap the stylebox w...
+                                                ^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+2.) Line 88, column 83, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “As” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...round edges. This ring fades to transparent. As a result edges look much smoother. This is o...
+                                                ^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+3.) Line 115, column 142, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “When” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...s but take more processing power to compute. When choosing a value you should take the corner ...
+                                                ^^^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+4.) Line 120, column 49, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “When” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...The corner radius of the bottom left corner. When set to 0 the corner is not rounded.   </memb...
+                                                ^^^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+5.) Line 123, column 50, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “When” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...he corner radius of the bottom right corner. When set to 0 the corner is not rounded.   </memb...
+                                                ^^^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+6.) Line 126, column 46, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “When” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...   The corner radius of the top left corner. When set to 0 the corner is not rounded.   </memb...
+                                                ^^^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+7.) Line 129, column 47, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “When” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...  The corner radius of the top right corner. When set to 0 the corner is not rounded.   </memb...
+                                                ^^^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+Time: 16614ms for 50 sentences (3.0 sentences/sec)

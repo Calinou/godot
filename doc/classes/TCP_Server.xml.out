@@ -1,0 +1,5 @@
+1.) Line 30, column 5, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...ailable addresses matching that IP type.     If "bind_address" is set to any valid address (...
+                                                ^^                                             
+Time: 11336ms for 10 sentences (0.9 sentences/sec)

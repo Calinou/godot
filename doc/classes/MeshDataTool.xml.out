@@ -1,0 +1,49 @@
+1.) Line 8, column 75, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “When” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...ad a mesh with [method create_from_surface]. When you are finished editing the data commit the...
+                                                ^^^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+2.) Line 16, column 7, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Mdt
+...r vertex = mdt.get_vertex(i)       ...       mdt.set_vertex(i, vertex)   mesh.surface_remove(...
+                                                ^^^                                             
+
+3.) Line 114, column 13, Rule ID: META_DATA[1]
+Message: Did you mean 'metadata'?
+Suggestion: metadata
+...    </argument>    <description>     Returns meta data associated with given face.    </description...
+                                                ^^^^^^^^^                                             
+
+4.) Line 142, column 83, Rule ID: COMBINE_TOGETHER[1]
+Message: 'combined together' is redundant. Use 'combined'
+Suggestion: combined
+...is an integer made up of [Mesh] format flags combined together. For example, a mesh containing both vertice...
+                                                ^^^^^^^^^^^^^^^^^                                             
+More info: https://www.btb.termiumplus.gc.ca/tpv2guides/guides/wrtps/index-eng.html?lang=eng&lettr=indx_catlog_c&page=9xIUi4CtvHsc.html
+
+5.) Line 211, column 13, Rule ID: META_DATA[1]
+Message: Did you mean 'metadata'?
+Suggestion: metadata
+...    </argument>    <description>     Returns meta data associated with given vertex.    </descripti...
+                                                ^^^^^^^^^                                             
+
+6.) Line 267, column 14, Rule ID: META_DATA[1]
+Message: Did you mean 'metadata'?
+Suggestion: metadata
+...   </argument>    <description>     Sets the meta data of given edge.    </description>   </method>...
+                                                ^^^^^^^^^                                             
+
+7.) Line 278, column 14, Rule ID: META_DATA[1]
+Message: Did you mean 'metadata'?
+Suggestion: metadata
+...   </argument>    <description>     Sets the meta data of given face.    </description>   </method>...
+                                                ^^^^^^^^^                                             
+
+8.) Line 331, column 14, Rule ID: META_DATA[1]
+Message: Did you mean 'metadata'?
+Suggestion: metadata
+...   </argument>    <description>     Sets the meta data associated with given vertex.    </descripti...
+                                                ^^^^^^^^^                                             
+Time: 16097ms for 54 sentences (3.4 sentences/sec)

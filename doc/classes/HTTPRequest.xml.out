@@ -1,0 +1,24 @@
+1.) Line 57, column 314, Rule ID: CANT[1]
+Message: Did you mean 'can't' or 'cannot'?
+Suggestion: Can't; Cannot
+...ring is not a valid URL format, or [code]ERR_CANT_CONNECT[/code] if not using thread and the [...
+                                                ^^^^                                             
+
+2.) Line 96, column 26, Rule ID: CANT[1]
+Message: Did you mean 'can't' or 'cannot'?
+Suggestion: Can't; Cannot
+...ult">   </constant>   <constant name="RESULT_CANT_CONNECT" value="2" enum="Result">    Request...
+                                                ^^^^                                             
+
+3.) Line 99, column 26, Rule ID: CANT[1]
+Message: Did you mean 'can't' or 'cannot'?
+Suggestion: Can't; Cannot
+...ting.   </constant>   <constant name="RESULT_CANT_RESOLVE" value="3" enum="Result">    Request...
+                                                ^^^^                                             
+
+4.) Line 117, column 40, Rule ID: CANT[1]
+Message: Did you mean 'can't' or 'cannot'?
+Suggestion: Can't; Cannot
+...tant>   <constant name="RESULT_DOWNLOAD_FILE_CANT_OPEN" value="9" enum="Result">    HTTPReques...
+                                                ^^^^                                             
+Time: 14217ms for 33 sentences (2.3 sentences/sec)

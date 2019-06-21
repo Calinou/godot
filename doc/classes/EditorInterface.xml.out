@@ -1,0 +1,6 @@
+1.) Line 149, column 47, Rule ID: CANT[1]
+Message: Did you mean 'can't' or 'cannot'?
+Suggestion: Can't; Cannot
+...   Saves the scene. Returns either OK or ERR_CANT_CREATE. See [@GlobalScope] constants.    </d...
+                                                ^^^^                                             
+Time: 12273ms for 27 sentences (2.2 sentences/sec)

@@ -1,0 +1,13 @@
+1.) Line 7, column 256, Rule ID: ALLOW_TO[1]
+Message: Did you mean 'reusing'? Or maybe you should add a pronoun? In active voice, 'allow' + 'to' takes an object, usually a pronoun.
+Suggestion: reusing
+... a single [Mesh] in many places. This allows to reuse geometry and save on resources. When a [Mesh...
+                                                ^^^^^^^^                                             
+More info: http://www.ef.com/english-resources/english-grammar/gerund-equals-infinitive/
+
+2.) Line 7, column 363, Rule ID: CLOSE_SCRUTINY[2]
+Message: Consider using 'proximity'.
+Suggestion: proximity
+...be instanced more than thousands of times at close proximity, consider using a [MultiMesh] in a [MultiMes...
+                                                ^^^^^^^^^^^^^^^                                             
+Time: 12899ms for 17 sentences (1.3 sentences/sec)

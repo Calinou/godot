@@ -1,0 +1,6 @@
+1.) Line 50, column 8, Rule ID: POSSESSIVE_APOSTROPHE[1]
+Message: Apostrophe might be missing. Did you mean 'objects'' or 'object's'?
+Suggestion: objects'; object's
+...r="set_opacity" getter="get_opacity">    The objects visibility on a scale from [code]0[/code] fu...
+                                                ^^^^^^^                                             
+Time: 13720ms for 26 sentences (1.9 sentences/sec)

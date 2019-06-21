@@ -1,0 +1,7 @@
+1.) Line 7, column 125, Rule ID: ALLOW_TO[1]
+Message: Did you mean 'loading'? Or maybe you should add a pronoun? In active voice, 'allow' + 'to' takes an object, usually a pronoun.
+Suggestion: loading
+...en performing an interactive load. It allows to load with high granularity, so this is mainly use...
+                                                ^^^^^^^                                             
+More info: http://www.ef.com/english-resources/english-grammar/gerund-equals-infinitive/
+Time: 11571ms for 21 sentences (1.8 sentences/sec)

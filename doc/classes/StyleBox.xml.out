@@ -1,0 +1,5 @@
+1.) Line 41, column 58, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+... values reduce size inwards, unlike [Control]'s margin values.    </description>   </method...
+                                                ^                                             
+Time: 14144ms for 25 sentences (1.8 sentences/sec)

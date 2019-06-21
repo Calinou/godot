@@ -1,0 +1,12 @@
+1.) Line 15, column 132, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: Y axis
+...et [member initial_offset] along the joint's y axis (along the groove). Default value: [code]25[...
+                                                ^^^^^^
+
+2.) Line 18, column 111, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: Y axis
+...ards [member length] along the joint's local y axis. Default value: [code]50[/code]   </member> ...
+                                                ^^^^^^
+Time: 10178ms for 7 sentences (0.7 sentences/sec)

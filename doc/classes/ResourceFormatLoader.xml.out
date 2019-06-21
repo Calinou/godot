@@ -1,0 +1,25 @@
+1.) Line 9, column 157, Rule ID: DEPEND_ON[1]
+Message: The verb 'to depend' requires the preposition '(up)on':  'depends on'.
+Suggestion: depends on
+...ad its format. Choosing one way over another depends if the format is suitable or not for the fin...
+                                                ^^^^^^^                                             
+More info: https://www.merriam-webster.com/dictionary/depend
+
+2.) Line 22, column 285, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'know' (to be aware of) might be the correct word here, not 'known' (past participle of 'know'). Please check.
+Suggestion: know
+...tom resource types defined by scripts aren't known by the [ClassDB], so you might just return [...
+                                                ^^^^^                                             
+
+3.) Line 38, column 197, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'know' (to be aware of) might be the correct word here, not 'known' (past participle of 'know'). Please check.
+Suggestion: know
+...tom resource types defined by scripts aren't known by the [ClassDB], so you might just return [...
+                                                ^^^^^                                             
+
+4.) Line 47, column 112, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'know' (to be aware of) might be the correct word here, not 'known' (past participle of 'know'). Please check.
+Suggestion: know
+...tom resource types defined by scripts aren't known by the [ClassDB], so you might just handle [...
+                                                ^^^^^                                             
+Time: 14092ms for 30 sentences (2.1 sentences/sec)

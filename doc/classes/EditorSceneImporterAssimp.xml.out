@@ -1,0 +1,6 @@
+1.) Line 23, column 65, Rule ID: EN_A_VS_AN
+Message: Use 'an' instead of 'a' if the following word starts with a vowel sound, e.g. 'an article', 'an hour'
+Suggestion: an
+...orting embed media, texture and mesh will be a un-alterable file.   --       Reimport of fb...
+                                                ^                                             
+Time: 8530ms for 6 sentences (0.7 sentences/sec)

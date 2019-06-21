@@ -1,0 +1,18 @@
+1.) Line 18, column 179, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×3; 3·3
+...h_margin_bottom], to set up the nine patch's 3x3 grid. Default value: [code]false[/code].   <...
+                                                ^^^                                             
+
+2.) Line 24, column 24, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'full' might be the correct word here. Please check.
+Suggestion: full
+...r="get_fill_degrees">    Upper limit for the fill of [member texture_progress] if [member fill...
+                                                ^^^^                                             
+
+3.) Line 28, column 27, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'full' might be the correct word here. Please check.
+Suggestion: full
+...al_initial_angle">    Starting angle for the fill of [member texture_progress] if [member fill...
+                                                ^^^^                                             
+Time: 15661ms for 52 sentences (3.3 sentences/sec)

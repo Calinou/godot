@@ -1,0 +1,12 @@
+1.) Line 97, column 24, Rule ID: MISSING_HYPHEN[5]
+Message: Did you mean the adjective 'left-hand'?
+Suggestion: left-hand
+..." enum="TrackerHand">    This tracker is the left hand controller.   </constant>   <constant name="...
+                                                ^^^^^^^^^                                             
+
+2.) Line 100, column 24, Rule ID: MISSING_HYPHEN[5]
+Message: Did you mean the adjective 'right-hand'?
+Suggestion: right-hand
+..." enum="TrackerHand">    This tracker is the right hand controller.   </constant>  </constants> </cl...
+                                                ^^^^^^^^^^                                             
+Time: 15024ms for 23 sentences (1.5 sentences/sec)

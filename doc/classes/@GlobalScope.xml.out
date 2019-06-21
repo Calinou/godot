@@ -1,0 +1,207 @@
+1.) Line 457, column 6, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Key
+..."KEY_EXCLAM" value="33" enum="KeyList">    ! key   </constant>   <constant name="KEY_QUOTEDBL...
+                                                ^^^                                             
+
+2.) Line 460, column 4, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: '"' seems to be missing
+..."KEY_QUOTEDBL" value="34" enum="KeyList">    " key   </constant>   <constant name="KEY_NUMB...
+                                                ^                                             
+
+3.) Line 475, column 4, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...EY_APOSTROPHE" value="39" enum="KeyList">    ' key   </constant>   <constant name="KEY_PARE...
+                                                ^                                             
+
+4.) Line 496, column 6, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Key
+..."KEY_PERIOD" value="46" enum="KeyList">    . key   </constant>   <constant name="KEY_SLASH" v...
+                                                ^^^                                             
+
+5.) Line 547, column 6, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Key
+...EY_QUESTION" value="63" enum="KeyList">    ? key   </constant>   <constant name="KEY_AT" valu...
+                                                ^^^                                             
+
+6.) Line 547, column 6, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...EY_QUESTION" value="63" enum="KeyList">    ? key   </constant>   <constant name="KEY_AT" valu...
+                                                ^^^                                             
+
+7.) Line 1174, column 28, Rule ID: CANT[1]
+Message: Did you mean 'can't' or 'cannot'?
+Suggestion: Can't; Cannot
+...ror   </constant>   <constant name="ERR_FILE_CANT_OPEN" value="12" enum="Error">    File: Can'...
+                                                ^^^^                                             
+
+8.) Line 1177, column 28, Rule ID: CANT[1]
+Message: Did you mean 'can't' or 'cannot'?
+Suggestion: Can't; Cannot
+...ror   </constant>   <constant name="ERR_FILE_CANT_WRITE" value="13" enum="Error">    File: Can...
+                                                ^^^^                                             
+
+9.) Line 1180, column 28, Rule ID: CANT[1]
+Message: Did you mean 'can't' or 'cannot'?
+Suggestion: Can't; Cannot
+...ror   </constant>   <constant name="ERR_FILE_CANT_READ" value="14" enum="Error">    File: Can'...
+                                                ^^^^                                             
+
+10.) Line 1190, column 18, Rule ID: POSSESSIVE_APOSTROPHE[2]
+Message: Possible typo: apostrophe is missing. Did you mean 'dependencies'' or 'dependency's'?
+Suggestion: dependencies'; dependency's
+...S" value="17" enum="Error">    File: Missing dependencies error   </constant>   <constant name="ERR_FI...
+                                                ^^^^^^^^^^^^                                             
+
+11.) Line 1195, column 23, Rule ID: CANT[1]
+Message: Did you mean 'can't' or 'cannot'?
+Suggestion: Can't; Cannot
+...F) error   </constant>   <constant name="ERR_CANT_OPEN" value="19" enum="Error">    Can't open...
+                                                ^^^^                                             
+
+12.) Line 1198, column 23, Rule ID: CANT[1]
+Message: Did you mean 'can't' or 'cannot'?
+Suggestion: Can't; Cannot
+...en error   </constant>   <constant name="ERR_CANT_CREATE" value="20" enum="Error">    Can't cr...
+                                                ^^^^                                             
+
+13.) Line 1216, column 23, Rule ID: CANT[1]
+Message: Did you mean 'can't' or 'cannot'?
+Suggestion: Can't; Cannot
+...ut error   </constant>   <constant name="ERR_CANT_ACQUIRE_RESOURCE" value="28" enum="Error">  ...
+                                                ^^^^                                             
+
+14.) Line 1231, column 32, Rule ID: CANT[1]
+Message: Did you mean 'can't' or 'cannot'?
+Suggestion: Can't; Cannot
+...  </constant>   <constant name="ERR_DATABASE_CANT_READ" value="34" enum="Error">    Database: ...
+                                                ^^^^                                             
+
+15.) Line 1234, column 32, Rule ID: CANT[1]
+Message: Did you mean 'can't' or 'cannot'?
+Suggestion: Can't; Cannot
+...  </constant>   <constant name="ERR_DATABASE_CANT_WRITE" value="35" enum="Error">    Database:...
+                                                ^^^^                                             
+
+16.) Line 1458, column 52, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...stant name="OP_LESS" value="2" enum="Variant.Operator">   </constant>   <constant name="OP_LESS_EQ...
+                                                ^^^^^^^^                                             
+
+17.) Line 1460, column 58, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...name="OP_LESS_EQUAL" value="3" enum="Variant.Operator">   </constant>   <constant name="OP_GREATER...
+                                                ^^^^^^^^                                             
+
+18.) Line 1462, column 55, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...nt name="OP_GREATER" value="4" enum="Variant.Operator">   </constant>   <constant name="OP_GREATER...
+                                                ^^^^^^^^                                             
+
+19.) Line 1464, column 61, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...e="OP_GREATER_EQUAL" value="5" enum="Variant.Operator">   </constant>   <constant name="OP_ADD" va...
+                                                ^^^^^^^^                                             
+
+20.) Line 1466, column 51, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...nstant name="OP_ADD" value="6" enum="Variant.Operator">   </constant>   <constant name="OP_SUBTRAC...
+                                                ^^^^^^^^                                             
+
+21.) Line 1468, column 56, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...t name="OP_SUBTRACT" value="7" enum="Variant.Operator">   </constant>   <constant name="OP_MULTIPL...
+                                                ^^^^^^^^                                             
+
+22.) Line 1470, column 56, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...t name="OP_MULTIPLY" value="8" enum="Variant.Operator">   </constant>   <constant name="OP_DIVIDE"...
+                                                ^^^^^^^^                                             
+
+23.) Line 1472, column 54, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...ant name="OP_DIVIDE" value="9" enum="Variant.Operator">   </constant>   <constant name="OP_NEGATE"...
+                                                ^^^^^^^^                                             
+
+24.) Line 1474, column 55, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...nt name="OP_NEGATE" value="10" enum="Variant.Operator">   </constant>   <constant name="OP_POSITIV...
+                                                ^^^^^^^^                                             
+
+25.) Line 1476, column 57, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+... name="OP_POSITIVE" value="11" enum="Variant.Operator">   </constant>   <constant name="OP_MODULE"...
+                                                ^^^^^^^^                                             
+
+26.) Line 1478, column 55, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...nt name="OP_MODULE" value="12" enum="Variant.Operator">   </constant>   <constant name="OP_STRING_...
+                                                ^^^^^^^^                                             
+
+27.) Line 1480, column 62, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...="OP_STRING_CONCAT" value="13" enum="Variant.Operator">   </constant>   <constant name="OP_SHIFT_L...
+                                                ^^^^^^^^                                             
+
+28.) Line 1482, column 59, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...ame="OP_SHIFT_LEFT" value="14" enum="Variant.Operator">   </constant>   <constant name="OP_SHIFT_R...
+                                                ^^^^^^^^                                             
+
+29.) Line 1484, column 60, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...me="OP_SHIFT_RIGHT" value="15" enum="Variant.Operator">   </constant>   <constant name="OP_BIT_AND...
+                                                ^^^^^^^^                                             
+
+30.) Line 1486, column 56, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...t name="OP_BIT_AND" value="16" enum="Variant.Operator">   </constant>   <constant name="OP_BIT_OR"...
+                                                ^^^^^^^^                                             
+
+31.) Line 1488, column 55, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...nt name="OP_BIT_OR" value="17" enum="Variant.Operator">   </constant>   <constant name="OP_BIT_XOR...
+                                                ^^^^^^^^                                             
+
+32.) Line 1490, column 56, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...t name="OP_BIT_XOR" value="18" enum="Variant.Operator">   </constant>   <constant name="OP_BIT_NEG...
+                                                ^^^^^^^^                                             
+
+33.) Line 1492, column 59, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...ame="OP_BIT_NEGATE" value="19" enum="Variant.Operator">   </constant>   <constant name="OP_AND" va...
+                                                ^^^^^^^^                                             
+
+34.) Line 1494, column 52, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...stant name="OP_AND" value="20" enum="Variant.Operator">   </constant>   <constant name="OP_OR" val...
+                                                ^^^^^^^^                                             
+
+35.) Line 1496, column 51, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...nstant name="OP_OR" value="21" enum="Variant.Operator">   </constant>   <constant name="OP_XOR" va...
+                                                ^^^^^^^^                                             
+
+36.) Line 1498, column 52, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...stant name="OP_XOR" value="22" enum="Variant.Operator">   </constant>   <constant name="OP_NOT" va...
+                                                ^^^^^^^^                                             
+
+37.) Line 1500, column 52, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...stant name="OP_NOT" value="23" enum="Variant.Operator">   </constant>   <constant name="OP_IN" val...
+                                                ^^^^^^^^                                             
+
+38.) Line 1502, column 51, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...nstant name="OP_IN" value="24" enum="Variant.Operator">   </constant>   <constant name="OP_MAX" va...
+                                                ^^^^^^^^                                             
+
+39.) Line 1504, column 52, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...stant name="OP_MAX" value="25" enum="Variant.Operator">   </constant>  </constants> </class> 
+                                                ^^^^^^^^                                        
+Time: 43693ms for 124 sentences (2.8 sentences/sec)

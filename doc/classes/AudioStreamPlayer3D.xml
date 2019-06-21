@@ -78,7 +78,7 @@
 			If [code]true[/code], the audio should be dampened according to the direction of the sound.
 		</member>
 		<member name="emission_angle_filter_attenuation_db" type="float" setter="set_emission_angle_filter_attenuation_db" getter="get_emission_angle_filter_attenuation_db">
-			dampens audio if camera is outside of 'emission_angle_degrees' and 'emission_angle_enabled' is set by this factor, in dB.
+			Dampens audio if camera is outside of [member emission_angle_degrees] and [member emission_angle_enabled] is set by this factor, in dB.
 		</member>
 		<member name="max_db" type="float" setter="set_max_db" getter="get_max_db">
 			Sets the absolute maximum of the soundlevel, in dB.
@@ -110,7 +110,7 @@
 	<signals>
 		<signal name="finished">
 			<description>
-				Fires when the audio stops playing.
+				Emitted when the audio stops playing.
 			</description>
 		</signal>
 	</signals>

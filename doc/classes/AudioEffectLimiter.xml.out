@@ -1,0 +1,7 @@
+1.) Line 7, column 167, Rule ID: ADMIT_ENJOY_VB[1]
+Message: The verb 'recommended' is used with the gerund form: 'recommended reducing'.
+Suggestion: recommended reducing
+...hold. Adding one in the Master Bus is always recommended to reduce the effects of clipping.   Soft clipping sta...
+                                                ^^^^^^^^^^^^^^^^^^^^^                                             
+More info: http://www.ef.com/english-resources/english-grammar/gerund-equals-infinitive/
+Time: 9524ms for 14 sentences (1.5 sentences/sec)

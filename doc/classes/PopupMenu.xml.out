@@ -1,0 +1,7 @@
+1.) Line 519, column 33, Rule ID: ALLOW_TO[1]
+Message: Did you mean 'navigating'? Or maybe you should add a pronoun? In active voice, 'allow' + 'to' takes an object, usually a pronoun.
+Suggestion: navigating
+...low_search">    If [code]true[/code], allows to navigate [PopupMenu] with letter keys. Default value:...
+                                                ^^^^^^^^^^^                                             
+More info: http://www.ef.com/english-resources/english-grammar/gerund-equals-infinitive/
+Time: 20136ms for 72 sentences (3.6 sentences/sec)

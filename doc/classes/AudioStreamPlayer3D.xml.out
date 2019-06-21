@@ -1,0 +1,5 @@
+1.) Line 81, column 42, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...b">    dampens audio if camera is outside of 'emission_angle_degrees' and 'emission_angle_e...
+                                                ^                                             
+Time: 13890ms for 40 sentences (2.9 sentences/sec)

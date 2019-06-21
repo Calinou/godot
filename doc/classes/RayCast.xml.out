@@ -1,0 +1,12 @@
+1.) Line 66, column 30, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...">    </return>    <argument index="0" name="bit" type="int">    </argument>    <description>...
+                                                ^^^                                             
+
+2.) Line 114, column 30, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...">    </return>    <argument index="0" name="bit" type="int">    </argument>    <argument ind...
+                                                ^^^                                             
+Time: 16170ms for 38 sentences (2.4 sentences/sec)

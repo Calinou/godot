@@ -1,0 +1,5 @@
+1.) Line 19, column 54, Rule ID: A_INFINITIVE[1]
+Message: Maybe a wrong construction: a/the + infinitive. Some possible errors: 1) An incorrect spelling of a noun. 2) A missing hyphen in a compound adjective. 3) A verb used as a noun and the verb is not a noun in standard English.
+...ode]true[/code], the mouse button's state is a double-click.   </member>   <member name="factor" type="f...
+                                                ^^^^^^^^^^^^^^                                             
+Time: 9691ms for 13 sentences (1.3 sentences/sec)

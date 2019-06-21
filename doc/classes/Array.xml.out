@@ -1,0 +1,17 @@
+1.) Line 106, column 177, Rule ID: A_RB_NN[1]
+Message: You used an adverb ('before') instead an adjective, or a noun ('specifier') instead of another adjective.
+...he array) using binary search. Optionally, a before specifier can be passed. If [code]false[/code], the re...
+                                                ^^^^^^^^^^^^^^^^                                             
+More info: http://www.ucl.ac.uk/internet-grammar/adverbs/xadvb1.htm
+
+2.) Line 121, column 208, Rule ID: A_RB_NN[1]
+Message: You used an adverb ('before') instead an adjective, or a noun ('specifier') instead of another adjective.
+...nd a custom comparison method. Optionally, a before specifier can be passed. If [code]false[/code], the re...
+                                                ^^^^^^^^^^^^^^^^                                             
+More info: http://www.ucl.ac.uk/internet-grammar/adverbs/xadvb1.htm
+
+3.) Line 319, column 26, Rule ID: THE_PUNCT[1]
+Message: Did you forget something after 'a'?
+...ass MyCustomSorter:         static func sort(a, b):             if a[0] &lt; b[0]:          ...
+                                                ^^                                             
+Time: 17175ms for 65 sentences (3.8 sentences/sec)

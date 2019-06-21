@@ -1,0 +1,5 @@
+1.) Line 38, column 62, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...number of lines shown. Useful if the [Label] 's height cannot currently display all lines. ...
+                                                ^                                             
+Time: 14816ms for 43 sentences (2.9 sentences/sec)

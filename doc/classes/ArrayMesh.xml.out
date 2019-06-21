@@ -1,0 +1,23 @@
+1.) Line 14, column 3, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Var
+...r3(0, 0, 1))   # Initialize the ArrayMesh.   var arr_mesh = ArrayMesh.new()   var arrays = []...
+                                                ^^^                                             
+
+2.) Line 19, column 3, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Arr
+...AY_VERTEX] = vertices   # Create the Mesh.   arr_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_...
+                                                ^^^                                             
+
+3.) Line 103, column 89, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...with this name held within this [ArrayMesh]. If none are found -1 is returned.    </descript...
+                                                ^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+4.) Line 224, column 340, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+..."index mode," where the index selects the *i*'th vertex, normal, tangent, color, UV, etc. T...
+                                                ^                                             
+Time: 16772ms for 70 sentences (4.2 sentences/sec)

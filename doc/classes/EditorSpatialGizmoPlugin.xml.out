@@ -1,0 +1,24 @@
+1.) Line 21, column 86, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'assessed' (evaluated) might be the correct word here, not 'accessed' (got, retrieved). Please check.
+Suggestion: assessed
+...material list for the plugin. It can then be accessed with [method get_material]. Should not be ov...
+                                                ^^^^^^^^                                             
+
+2.) Line 63, column 138, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'assessed' (evaluated) might be the correct word here, not 'accessed' (got, retrieved). Please check.
+Suggestion: assessed
+...the internal material list. They can then be accessed with [method get_material] and used in [meth...
+                                                ^^^^^^^^                                             
+
+3.) Line 78, column 137, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'assessed' (evaluated) might be the correct word here, not 'accessed' (got, retrieved). Please check.
+Suggestion: assessed
+...the internal material list. They can then be accessed with [method get_material] and used in [meth...
+                                                ^^^^^^^^                                             
+
+4.) Line 95, column 141, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'assessed' (evaluated) might be the correct word here, not 'accessed' (got, retrieved). Please check.
+Suggestion: assessed
+...the internal material list. They can then be accessed with [method get_material] and used in [meth...
+                                                ^^^^^^^^                                             
+Time: 15948ms for 38 sentences (2.4 sentences/sec)

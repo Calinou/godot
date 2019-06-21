@@ -1,0 +1,6 @@
+1.) Line 8, column 1, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “When” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...gle physical camera attached to your device.   When enabled Godot will start capturing frames fr...
+                                                ^^^^^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+Time: 13580ms for 15 sentences (1.1 sentences/sec)

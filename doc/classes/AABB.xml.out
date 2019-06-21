@@ -1,0 +1,12 @@
+1.) Line 62, column 17, Rule ID: THE_SUPERLATIVE[2]
+Message: A determiner is probably missing here: 'normalized the longest'.
+Suggestion: normalized the longest
+...  </return>    <description>     Returns the normalized longest axis of the [AABB].    </description>   </me...
+                                                ^^^^^^^^^^^^^^^^^^                                             
+
+2.) Line 83, column 17, Rule ID: THE_SUPERLATIVE[2]
+Message: A determiner is probably missing here: 'normalized the shortest'.
+Suggestion: normalized the shortest
+...  </return>    <description>     Returns the normalized shortest axis of the [AABB].    </description>   </me...
+                                                ^^^^^^^^^^^^^^^^^^^                                             
+Time: 14778ms for 30 sentences (2.0 sentences/sec)

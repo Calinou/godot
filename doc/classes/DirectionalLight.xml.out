@@ -1,0 +1,18 @@
+1.) Line 7, column 343, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'to' might be the correct word here. Please check.
+Suggestion: to
+... (origin) is ignored. Only the basis is used do determine light direction.  </description>  ...
+                                                ^^                                             
+
+2.) Line 45, column 80, Rule ID: HE_VERB_AGR[8]
+Message: The singular proper name 'May' must be used with a third-person or a past tense verb: 'results', 'resulted'.
+Suggestion: results; resulted
+...ow map from an orthogonal point of view. May result in blockier shadows on close objects.   </co...
+                                                ^^^^^^                                             
+
+3.) Line 57, column 52, Rule ID: HE_VERB_AGR[8]
+Message: The singular proper name 'May' must be used with a third-person or a past tense verb: 'results', 'resulted'.
+Suggestion: results; resulted
+...es to achieve maximum shadow resolution. May result in saw effect on shadow edges.   </constant>...
+                                                ^^^^^^                                             
+Time: 12024ms for 35 sentences (2.9 sentences/sec)

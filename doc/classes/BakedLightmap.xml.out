@@ -1,0 +1,18 @@
+1.) Line 61, column 65, Rule ID: THE_SUPERLATIVE[2]
+Message: A determiner is probably missing here: '> the Lowest'.
+Suggestion: > the Lowest
+...AKE_QUALITY_LOW" value="0" enum="BakeQuality">    Lowest bake quality mode. Fastest to calculate.   <...
+                                                ^^^^^^^^^^^                                             
+
+2.) Line 67, column 66, Rule ID: THE_SUPERLATIVE[2]
+Message: A determiner is probably missing here: '> the Highest'.
+Suggestion: > the Highest
+...KE_QUALITY_HIGH" value="2" enum="BakeQuality">    Highest bake quality mode. Takes longer to calculate...
+                                                ^^^^^^^^^^^^                                             
+
+3.) Line 82, column 30, Rule ID: CANT[1]
+Message: Did you mean 'can't' or 'cannot'?
+Suggestion: Can't; Cannot
+...>   </constant>   <constant name="BAKE_ERROR_CANT_CREATE_IMAGE" value="3" enum="BakeError">   ...
+                                                ^^^^                                             
+Time: 14548ms for 30 sentences (2.1 sentences/sec)

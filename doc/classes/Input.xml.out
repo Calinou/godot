@@ -1,0 +1,66 @@
+1.) Line 86, column 101, Rule ID: MULTIPLICATION_SIGN[1]
+Message: Replace by the typographical symbol.
+Suggestion: ×; ·
+... rate of rotation in rad/s around a device's x, y, and z axis. Otherwise, it returns an emp...
+                                                ^                                             
+
+2.) Line 190, column 41, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...ion>     Returns mouse buttons as a bitmask. If multiple mouse buttons are pressed at the sa...
+                                                ^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+3.) Line 309, column 50, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 256×256.; 256·256.
+...[code]image[/code]'s size must be lower than 256x256.     [code]hotspot[/code] must be within [cod...
+                                                ^^^^^^^^                                             
+
+4.) Line 320, column 75, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...change the default cursor shape for [Control]'s nodes, use [member Control.mouse_default_cu...
+                                                ^                                             
+
+5.) Line 353, column 105, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Weak
+... two rumble motors, a strong and a weak one. weak_magnitude is the strength of the weak motor ...
+                                                ^^^^                                             
+
+6.) Line 353, column 248, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Duration
+...ength of the strong motor (between 0 and 1). duration is the duration of the effect in seconds (a ...
+                                                ^^^^^^^^                                             
+
+7.) Line 410, column 18, Rule ID: SENT_START_CONJUNCTIVE_LINKING_ADVERB_COMMA[1]
+Message: Did you forget a comma after a conjunctive/linking adverb?
+Suggestion: Typically,
+...lue="3" enum="CursorShape">    Cross cursor. Typically appears over regions in which a drawing oper...
+                                                ^^^^^^^^^                                             
+More info: https://writing.wisc.edu/handbook/grammarpunct/conjadv/
+
+8.) Line 428, column 36, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: double-headed
+...orShape">    Vertical resize mouse cursor. A double headed vertical arrow. It tells the user they can r...
+                                                ^^^^^^^^^^^^^                                             
+
+9.) Line 431, column 38, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: double-headed
+...Shape">    Horizontal resize mouse cursor. A double headed horizontal arrow. It tells the user they can...
+                                                ^^^^^^^^^^^^^                                             
+
+10.) Line 434, column 48, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: double-headed
+... Window resize mouse cursor. The cursor is a double headed arrow that goes from the bottom left to the ...
+                                                ^^^^^^^^^^^^^                                             
+
+11.) Line 437, column 48, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: double-headed
+... Window resize mouse cursor. The cursor is a double headed arrow that goes from the top left to the bot...
+                                                ^^^^^^^^^^^^^                                             
+Time: 21843ms for 122 sentences (5.6 sentences/sec)

@@ -1,0 +1,90 @@
+1.) Line 4, column 17, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×3; 3·3
+...="3.2">  <brief_description>   Texture Based 3x3 scale style.  </brief_description>  <descrip...
+                                                ^^^                                             
+
+2.) Line 7, column 17, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×3; 3·3
+..._description>  <description>   Texture Based 3x3 scale style. This stylebox performs a 3x3 sc...
+                                                ^^^                                             
+
+3.) Line 7, column 59, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×3; 3·3
+...ed 3x3 scale style. This stylebox performs a 3x3 scaling of a texture, where only the center ...
+                                                ^^^                                             
+
+4.) Line 43, column 73, Rule ID: IT_VBZ[1]
+Message: Did you mean 'is'?
+Suggestion: is
+...n of this style box when drawing, causing it be drawn larger than requested.   </member>   <...
+                                                ^^                                             
+
+5.) Line 46, column 71, Rule ID: IT_VBZ[1]
+Message: Did you mean 'is'?
+Suggestion: is
+...n of this style box when drawing, causing it be drawn larger than requested.   </member>   <...
+                                                ^^                                             
+
+6.) Line 49, column 72, Rule ID: IT_VBZ[1]
+Message: Did you mean 'is'?
+Suggestion: is
+...n of this style box when drawing, causing it be drawn larger than requested.   </member>   <...
+                                                ^^                                             
+
+7.) Line 52, column 70, Rule ID: IT_VBZ[1]
+Message: Did you mean 'is'?
+Suggestion: is
+...n of this style box when drawing, causing it be drawn larger than requested.   </member>   <...
+                                                ^^                                             
+
+8.) Line 55, column 39, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×3; 3·3
+...size">    Increases the bottom margin of the 3x3 texture box.    A higher value means more of...
+                                                ^^^                                             
+
+9.) Line 56, column 105, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×3; 3·3
+...dered to be part of the bottom border of the 3x3 box.    This is also the value used as fallb...
+                                                ^^^                                             
+
+10.) Line 60, column 37, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×3; 3·3
+...n_size">    Increases the left margin of the 3x3 texture box.    A higher value means more of...
+                                                ^^^                                             
+
+11.) Line 61, column 103, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×3; 3·3
+...sidered to be part of the left border of the 3x3 box.    This is also the value used as fallb...
+                                                ^^^                                             
+
+12.) Line 65, column 38, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×3; 3·3
+..._size">    Increases the right margin of the 3x3 texture box.    A higher value means more of...
+                                                ^^^                                             
+
+13.) Line 66, column 104, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×3; 3·3
+...idered to be part of the right border of the 3x3 box.    This is also the value used as fallb...
+                                                ^^^                                             
+
+14.) Line 70, column 36, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×3; 3·3
+...in_size">    Increases the top margin of the 3x3 texture box.    A higher value means more of...
+                                                ^^^                                             
+
+15.) Line 71, column 102, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×3; 3·3
+...nsidered to be part of the top border of the 3x3 box.    This is also the value used as fallb...
+                                                ^^^                                             
+Time: 14251ms for 28 sentences (2.0 sentences/sec)

@@ -1,0 +1,26 @@
+1.) Line 17, column 1, Rule ID: BY_DEFAULT_COMMA[1]
+Message: Did you mean: 'By default,'?
+Suggestion: By default,
+... generate_from_path] for small previews too.     By default it returns false.    </description>   </meth...
+                                                ^^^^^^^^^^^^^^                                             
+
+2.) Line 17, column 8, Rule ID: MISSING_COMMA_AFTER_INTRODUCTORY_PHRASE[1]
+Message: The comma is probably missing here: 'default, it'.
+Suggestion: default, it
+...te_from_path] for small previews too.     By default it returns false.    </description>   </method>...
+                                                ^^^^^^^^^^                                             
+More info: http://englishplus.com/grammar/00000074.htm
+
+3.) Line 51, column 1, Rule ID: BY_DEFAULT_COMMA[1]
+Message: Did you mean: 'By default,'?
+Suggestion: By default,
+...od generate] or [method generate_from_path].     By default it returns false.    </description>   </meth...
+                                                ^^^^^^^^^^^^^^                                             
+
+4.) Line 51, column 8, Rule ID: MISSING_COMMA_AFTER_INTRODUCTORY_PHRASE[1]
+Message: The comma is probably missing here: 'default, it'.
+Suggestion: default, it
+...rate] or [method generate_from_path].     By default it returns false.    </description>   </method>...
+                                                ^^^^^^^^^^                                             
+More info: http://englishplus.com/grammar/00000074.htm
+Time: 11724ms for 17 sentences (1.5 sentences/sec)

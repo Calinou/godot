@@ -1,0 +1,5 @@
+1.) Line 16, column 64, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...ints that make up the [ConcavePolygonShape2D]'s line segments.   </member>  </members>  <co...
+                                                ^                                             
+Time: 11485ms for 9 sentences (0.8 sentences/sec)

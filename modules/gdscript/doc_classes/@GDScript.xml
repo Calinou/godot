@@ -210,7 +210,7 @@
 			<argument index="1" name="type" type="int">
 			</argument>
 			<description>
-				Converts from a type to another in the best way possible. The [code]type[/code] parameter uses the enum TYPE_* in [@GlobalScope].
+				Converts from a type to another in the best way possible. The [code]type[/code] parameter uses the enum [code]TYPE_*[/code] in [@GlobalScope].
 				[codeblock]
 				a = Vector2(1, 0)
 				# prints 1
@@ -1149,7 +1149,7 @@
 			<argument index="0" name="what" type="Variant">
 			</argument>
 			<description>
-				Returns the internal type of the given Variant object, using the TYPE_* enum in [@GlobalScope].
+				Returns the internal type of the given Variant object, using the [code]TYPE_*[/code] enum in [@GlobalScope].
 				[codeblock]
 				p = parse_json('["a", "b", "c"]')
 				if typeof(p) == TYPE_ARRAY:
@@ -1245,8 +1245,8 @@
 				# infinite rotation (in radians)
 				angle = wrapf(angle + 0.1, 0.0, TAU)
 				[/codeblock]
-				Note: If you just want to wrap between 0.0 and [code]n[/code] (where [code]n[/code] is a positive float value) then it's better for performance to use [method fmod] method like [code]fmod(number, n)[/code].
-				The usage of [code]wrapf[/code] is more flexible than using the [method fmod] approach by giving the user a simple control over the minimum value. It also fully supports negative numbers, e.g.
+				[b]Note:[/b] If you just want to wrap between 0.0 and [code]n[/code] (where [code]n[/code] is a positive floating-point value), it is better for performance to use the [method fmod] method like [code]fmod(number, n)[/code].
+				[code]wrapf[/code] is more flexible than using the [method fmod] approach by giving the user a simple control over the minimum value. It also fully supports negative numbers, e.g.
 				[codeblock]
 				# infinite rotation (in radians)
 				angle = wrapf(angle + 0.1, -PI, PI)
@@ -1277,8 +1277,8 @@
 				# infinite loop between 0 and 9
 				frame = wrapi(frame + 1, 0, 10)
 				[/codeblock]
-				Note: If you just want to wrap between 0 and [code]n[/code] (where [code]n[/code] is a positive integer value) then it's better for performance to use modulo operator like [code]number % n[/code].
-				The usage of [code]wrapi[/code] is more flexible than using the modulo approach by giving the user a simple control over the minimum value. It also fully supports negative numbers, e.g.
+				[b]Note:[/b] If you just want to wrap between 0 and [code]n[/code] (where [code]n[/code] is a positive integer value), it is better for performance to use the modulo operator like [code]number % n[/code].
+				[code]wrapi[/code] is more flexible than using the modulo approach by giving the user a simple control over the minimum value. It also fully supports negative numbers, e.g.
 				[codeblock]
 				# result is -2
 				var result = wrapi(-6, -5, -1)

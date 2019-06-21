@@ -1,0 +1,22 @@
+1.) Line 91, column 120, Rule ID: AGREEMENT_SENT_START[33]
+Message: Possible agreement error. You should probably use: 'Recalculate caches' or 'Recalculates cache'.
+Suggestion: Recalculate caches; Recalculates cache
+...ayer] to the animation node [code]id[/code]. Recalculates caches.    </description>   </method>   <method nam...
+                                                ^^^^^^^^^^^^^^^^^^^                                             
+
+2.) Line 126, column 27, Rule ID: THE_SENT_END[1]
+Message: Did you forget something after 'a'?
+...t between 0 and 1.     At 0, Output is input a.     Towards 1, the influence of a gets lesse...
+                                                ^^                                             
+
+3.) Line 165, column 27, Rule ID: THE_SENT_END[1]
+Message: Did you forget something after 'a'?
+...luence of b+ is 0.     At 0, Output is input a.     From 0 to 1, the influence of a gets les...
+                                                ^^                                             
+
+4.) Line 241, column 43, Rule ID: DT_DT[1]
+Message: Maybe you need to remove one determiner so that only 'a' or 'the' is left.
+Suggestion: a; the
+...e.     A Mix node adds input b to input a by a the amount given by ratio.    </description>   <...
+                                                ^^^^^                                             
+Time: 21254ms for 111 sentences (5.2 sentences/sec)

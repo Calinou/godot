@@ -1,0 +1,18 @@
+1.) Line 56, column 149, Rule ID: SENT_START_CONJUNCTIVE_LINKING_ADVERB_COMMA[1]
+Message: Did you forget a comma after a conjunctive/linking adverb?
+Suggestion: However,
+...t to track controllers from other platforms. However at this point in time only one interface can...
+                                                ^^^^^^^                                             
+More info: https://writing.wisc.edu/handbook/grammarpunct/conjadv/
+
+2.) Line 99, column 156, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ')' seems to be missing
+...ified buffer of either the left or right eye (stretched if the viewport size is not changed...
+                                                ^                                             
+
+3.) Line 114, column 63, Rule ID: COMPARISONS_THEN[1]
+Message: Did you mean 'faster than'?
+Suggestion: faster than
+...ndered by excessive motion, player is moving faster then tracking can keep up.   </constant>   <const...
+                                                ^^^^^^^^^^^                                             
+Time: 17638ms for 39 sentences (2.2 sentences/sec)

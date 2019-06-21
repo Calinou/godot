@@ -1,0 +1,12 @@
+1.) Line 7, column 82, Rule ID: BY_DEFAULT_COMMA[1]
+Message: Did you mean: 'By default,'?
+Suggestion: By default,
+...g within a collection of [NavigationMesh]es. By default these will be automatically collected from c...
+                                                ^^^^^^^^^^                                             
+
+2.) Line 101, column 35, Rule ID: BY_DEFAULT_COMMA[1]
+Message: Did you mean: 'By default,'?
+Suggestion: By default,
+...p_vector">    Defines which direction is up. By default this is [code](0, 1, 0)[/code], which is the...
+                                                ^^^^^^^^^^                                             
+Time: 13230ms for 26 sentences (2.0 sentences/sec)

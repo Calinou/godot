@@ -1,0 +1,18 @@
+1.) Line 146, column 10, Rule ID: EN_A_VS_AN
+Message: Use 'a' instead of 'an' if the following word doesn't start with a vowel sound, e.g. 'a sentence', 'a university'
+Suggestion: a
+...t">    </argument>    <description>     Adds an [code][indent][/code] tag to the tag stack. ...
+                                                ^^                                             
+
+2.) Line 218, column 24, Rule ID: POSSESSIVE_APOSTROPHE[1]
+Message: Apostrophe might be missing. Did you mean 'columns'' or 'column's'?
+Suggestion: columns'; column's
+...ent>    <description>     Edits the selected columns expansion options. If [code]expand[/code] is...
+                                                ^^^^^^^                                             
+
+3.) Line 229, column 112, Rule ID: AGREEMENT_SENT_START[33]
+Message: Possible agreement error. You should probably use: 'Erase changes' or 'Erases change'.
+Suggestion: Erase changes; Erases change
+...ual modifications to the internal tag stack. Erases changes made by other methods when edited.   </membe...
+                                                ^^^^^^^^^^^^^^                                             
+Time: 18849ms for 82 sentences (4.4 sentences/sec)

@@ -1,0 +1,6 @@
+1.) Line 15, column 30, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'full' might be the correct word here. Please check.
+Suggestion: full
+...rcent_visible">    If [code]true[/code], the fill percentage is displayed on the bar. Default ...
+                                                ^^^^                                             
+Time: 7568ms for 6 sentences (0.8 sentences/sec)

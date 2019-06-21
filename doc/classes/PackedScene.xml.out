@@ -1,0 +1,23 @@
+1.) Line 23, column 3, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Var
+...but not of collision   rigid.owner = node    var scene = PackedScene.new()   # only node and ...
+                                                ^^^                                             
+
+2.) Line 53, column 100, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...child scene instantiation(s). Triggers [Node]'s [code]NOTIFICATION_INSTANCED[/code] notific...
+                                                ^                                             
+
+3.) Line 77, column 87, Rule ID: AGREEMENT_SENT_START[33]
+Message: Possible agreement error. You should probably use: 'Require tools' or 'Requires tool'.
+Suggestion: Require tools; Requires tool
+...es local scene resources to the local scene. Requires tools compiled.   </constant>   <constant name="GE...
+                                                ^^^^^^^^^^^^^^                                             
+
+4.) Line 80, column 143, Rule ID: AGREEMENT_SENT_START[33]
+Message: Possible agreement error. You should probably use: 'Require tools' or 'Requires tool'.
+Suggestion: Require tools; Requires tool
+...in scene should receive the main edit state. Requires tools compiled.   </constant>  </constants> </clas...
+                                                ^^^^^^^^^^^^^^                                             
+Time: 12816ms for 30 sentences (2.3 sentences/sec)

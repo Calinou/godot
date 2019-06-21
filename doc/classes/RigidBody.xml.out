@@ -1,0 +1,20 @@
+1.) Line 7, column 110, Rule ID: SENT_START_CONJUNCTIVE_LINKING_ADVERB_COMMA[1]
+Message: Did you forget a comma after a conjunctive/linking adverb?
+Suggestion: Instead,
+...hat you do not control a RigidBody directly. Instead you can apply forces to it (gravity, impulse...
+                                                ^^^^^^^                                             
+More info: https://writing.wisc.edu/handbook/grammarpunct/conjadv/
+
+2.) Line 82, column 118, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'past' (past times) might be the correct word here, not 'passed' (paste tense of 'to pass'). Please check.
+Suggestion: past
+... shape. This will rotate the body around the passed in vector.    </description>   </method>   <...
+                                                ^^^^^^                                             
+
+3.) Line 141, column 210, Rule ID: FEWER_LESS[2]
+Message: Did you mean 'fewer'? The noun impacts is countable.
+Suggestion: fewer
+...lision detection is more precise, and misses less impacts by small, fast-moving objects. Not u...
+                                                ^^^^                                             
+More info: http://www.oxforddictionaries.com/words/less-or-fewer
+Time: 19411ms for 90 sentences (4.6 sentences/sec)

@@ -1,0 +1,11 @@
+1.) Line 28, column 41, Rule ID: HAVE_PART_AGREEMENT[1]
+Message: Use past participle here: 'moused'.
+Suggestion: moused
+...re">    Texture to display when the node has mouse or keyboard focus.   </member>   <member nam...
+                                                ^^^^^                                             
+
+2.) Line 37, column 106, Rule ID: A_INFINITIVE[1]
+Message: Maybe a wrong construction: a/the + infinitive. Some possible errors: 1) An incorrect spelling of a noun. 2) A missing hyphen in a compound adjective. 3) A verb used as a noun and the verb is not a noun in standard English.
+...de has keyboard focus and the player presses the enter key or if the player presses the [member Bas...
+                                                ^^^^^^^^^                                             
+Time: 15251ms for 31 sentences (2.0 sentences/sec)

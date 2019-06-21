@@ -1,0 +1,5 @@
+1.) Line 4, column 26, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...<brief_description>   Handle for a [Resource]'s unique ID.  </brief_description>  <descript...
+                                                ^                                             
+Time: 10250ms for 8 sentences (0.8 sentences/sec)

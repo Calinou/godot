@@ -1,0 +1,24 @@
+1.) Line 96, column 159, Rule ID: DID_BASEFORM[3]
+Message: The verb 'does' requires base form of the verb: 'exist'
+Suggestion: exist
+...latforms, or if the requested drive does not existed, the method returns an empty String.    </de...
+                                                ^^^^^^^                                             
+
+2.) Line 138, column 129, Rule ID: ADVERB_VERB_ADVERB_REPETITION[1]
+Message: Adverb repetition. Please, verify.
+Suggestion: not does; does not
+...en fully processed with [method get_next] or not does not matter).    </description>   </method>   <me...
+                                                ^^^^^^^^^^^^                                             
+More info: https://en.oxforddictionaries.com/grammar/positions-of-adverbs
+
+3.) Line 138, column 129, Rule ID: DOUBLE_NEGATIVE[4]
+Message: Double negatives are discouraged in standard English. Can you reformulate this phrase or is a comma missing?
+...en fully processed with [method get_next] or not does not matter).    </description>   </method>   <me...
+                                                ^^^^^^^^^^^^                                             
+More info: https://en.oxforddictionaries.com/grammar/double-negatives
+
+4.) Line 148, column 5, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...ively, see [method make_dir_recursive]).     The method returns one of the error code constan...
+                                                ^^^                                             
+Time: 16631ms for 52 sentences (3.1 sentences/sec)

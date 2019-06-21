@@ -1,0 +1,6 @@
+1.) Line 76, column 39, Rule ID: EN_A_VS_AN
+Message: Use 'a' instead of 'an' if the following word doesn't start with a vowel sound, e.g. 'a sentence', 'a university'
+Suggestion: a
+...stead.     Additionally, the method can take an [code]exclude[/code] array of objects or [RI...
+                                                ^^                                             
+Time: 13759ms for 37 sentences (2.7 sentences/sec)

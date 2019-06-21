@@ -1,0 +1,34 @@
+1.) Line 13, column 3, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Func
+...get_undo_redo() # Method of EditorPlugin.    func do_something():       pass # Put your code h...
+                                                ^^^^                                             
+
+2.) Line 13, column 8, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'to' might be the correct word here. Please check.
+Suggestion: to
+...ndo_redo() # Method of EditorPlugin.    func do_something():       pass # Put your code here...
+                                                ^^                                             
+
+3.) Line 16, column 3, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Func
+...thing():       pass # Put your code here.    func undo_something():       pass # Put here the ...
+                                                ^^^^                                             
+
+4.) Line 19, column 3, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Func
+... reverts what's done by "do_something()".    func _on_MyButton_pressed():       var node = get...
+                                                ^^^^                                             
+
+5.) Line 19, column 3, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+... reverts what's done by "do_something()".    func _on_MyButton_pressed():       var node = get...
+                                                ^^^^                                             
+
+6.) Line 106, column 11, Rule ID: A_INFINITIVE[1]
+Message: Maybe a wrong construction: a/the + infinitive. Some possible errors: 1) An incorrect spelling of a noun. 2) A missing hyphen in a compound adjective. 3) A verb used as a noun and the verb is not a noun in standard English.
+...">    </argument>    <description>     Clear the undo/redo history and associated references.     ...
+                                                ^^^^^^^^                                             
+Time: 14903ms for 38 sentences (2.5 sentences/sec)

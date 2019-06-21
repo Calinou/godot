@@ -1,0 +1,47 @@
+1.) Line 15, column 30, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...">    </return>    <argument index="0" name="bit" type="int">    </argument>    <description>...
+                                                ^^^                                             
+
+2.) Line 18, column 27, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...>    <description>     Returns an individual bit on the layer mask.    </description>   </met...
+                                                ^^^                                             
+
+3.) Line 24, column 30, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...">    </return>    <argument index="0" name="bit" type="int">    </argument>    <description>...
+                                                ^^^                                             
+
+4.) Line 27, column 27, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...>    <description>     Returns an individual bit on the collision mask.    </description>   <...
+                                                ^^^                                             
+
+5.) Line 65, column 30, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...">    </return>    <argument index="0" name="bit" type="int">    </argument>    <argument ind...
+                                                ^^^                                             
+
+6.) Line 70, column 85, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...yer mask. This simplifies editing this [Area]'s layers.    </description>   </method>   <me...
+                                                ^                                             
+
+7.) Line 76, column 30, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...">    </return>    <argument index="0" name="bit" type="int">    </argument>    <argument ind...
+                                                ^^^                                             
+
+8.) Line 96, column 213, Rule ID: A_PLURAL[1]
+Message: Don't use indefinite articles with plural words. Did you mean 'A scan' or simply 'scans'?
+Suggestion: A scan; Scans
+...ns, or object B is in any layers that object A scans. See also [member collision_mask].   </membe...
+                                                ^^^^^^^                                             
+Time: 17115ms for 78 sentences (4.6 sentences/sec)

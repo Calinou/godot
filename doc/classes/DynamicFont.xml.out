@@ -1,0 +1,6 @@
+1.) Line 11, column 23, Rule ID: CURRENCY[1]
+Message: The currency mark is usually put at the beginning of the number: '$64'.
+Suggestion: $64
+...owCondensed-Bold.ttf")   dynamic_font.size = 64   $"Label".set("custom_fonts/font", dynamic_font...
+                                                ^^^^^^                                             
+Time: 11553ms for 22 sentences (1.9 sentences/sec)

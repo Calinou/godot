@@ -1,0 +1,12 @@
+1.) Line 55, column 38, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...ratio">    Time ratio between each emission. If [code]0[/code] particles are emitted continu...
+                                                ^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+2.) Line 55, column 92, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...0[/code] particles are emitted continuously. If [code]1[/code] all particles are emitted sim...
+                                                ^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+Time: 15460ms for 50 sentences (3.2 sentences/sec)

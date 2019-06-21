@@ -1,0 +1,13 @@
+1.) Line 7, column 47, Rule ID: MISSING_COMMA_AFTER_INTRODUCTORY_PHRASE[1]
+Message: The comma is probably missing here: 'general, it'.
+Suggestion: general, it
+... Base resource for [AnimationTree] nodes. In general it's not used directly but you can create custo...
+                                                ^^^^^^^^^^                                             
+More info: http://englishplus.com/grammar/00000074.htm
+
+2.) Line 92, column 9, Rule ID: DT_DT[1]
+Message: Maybe you need to remove one determiner so that only 'the' or 'a' is left.
+Suggestion: the; a
+...ng">    </argument>    <description>     Get the a child node by index (used by editors inherit...
+                                                ^^^^^                                             
+Time: 13449ms for 47 sentences (3.5 sentences/sec)

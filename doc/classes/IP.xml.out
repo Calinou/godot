@@ -1,0 +1,41 @@
+1.) Line 18, column 32, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...<description>     Removes all of a "hostname"'s cached references. If no "hostname" is give...
+                                                ^                                             
+
+2.) Line 18, column 54, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...ves all of a "hostname"'s cached references. If no "hostname" is given then all cached IP ad...
+                                                ^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+3.) Line 34, column 13, Rule ID: ALL_OF_THE[1]
+Message: Consider using 'all the'.
+Suggestion: all the
+...">    </return>    <description>     Returns all of the user's current IPv4 and IPv6 addresses as an...
+                                                ^^^^^^^^^^                                             
+
+4.) Line 46, column 10, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Name
+...   "index": "1", # Interface index.         "name": "eth0", # Interface name.         "friendl...
+                                                ^^^^                                             
+
+5.) Line 47, column 10, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Friendly
+...  "name": "eth0", # Interface name.         "friendly": "Ethernet One", # A friendly name (might b...
+                                                ^^^^^^^^                                             
+
+6.) Line 48, column 10, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Addresses
+...# A friendly name (might be empty).         "addresses": ["192.168.1.101"], # An array of IP addres...
+                                                ^^^^^^^^^                                             
+
+7.) Line 49, column 5, Rule ID: UNLIKELY_OPENING_PUNCTUATION[1]
+Message: Loose punctuation mark.
+Suggestion: 
+... addresses associated to this interface.     }     [/codeblock]    </description>   </metho...
+                                                ^                                             
+Time: 14180ms for 36 sentences (2.5 sentences/sec)

@@ -1,0 +1,18 @@
+1.) Line 7, column 44, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: floating-point
+...>   An [Array] specifically designed to hold floating-point values ([float]). Optimized for memory usage...
+                                                ^^^^^^^^^^^^^^
+
+2.) Line 69, column 32, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...<description>     Set the size of the array. If the array is grown reserve elements at the e...
+                                                ^^
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+3.) Line 69, column 96, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...wn reserve elements at the end of the array. If the array is shrunk truncate the array to th...
+                                                ^^
+More info: http://www.chompchomp.com/rules/fragrules.htm
+Time: 12167ms for 19 sentences (1.6 sentences/sec)

@@ -1,0 +1,5 @@
+1.) Line 55, column 17, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...age" enum="CubeMap.Storage">    The [CubeMap]'s storage mode. See [code]STORAGE_*[/code] co...
+                                                ^                                             
+Time: 13093ms for 31 sentences (2.4 sentences/sec)

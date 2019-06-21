@@ -1,0 +1,6 @@
+1.) Line 4, column 80, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'assessed' (evaluated) might be the correct word here, not 'accessed' (got, retrieved). Please check.
+Suggestion: assessed
+...r the whole screen) to a buffer so it can be accessed with [code]SCREEN_TEXTURE[/code] in the [cod...
+                                                ^^^^^^^^                                             
+Time: 10477ms for 14 sentences (1.3 sentences/sec)

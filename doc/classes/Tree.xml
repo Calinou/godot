@@ -193,7 +193,7 @@
 			<argument index="1" name="min_width" type="int">
 			</argument>
 			<description>
-				Set the minimum width of a column.
+				Sets the minimum width of a column.
 			</description>
 		</method>
 		<method name="set_column_title">
@@ -204,7 +204,7 @@
 			<argument index="1" name="title" type="String">
 			</argument>
 			<description>
-				Set the title of a column.
+				Sets the title of a column.
 			</description>
 		</method>
 		<method name="set_column_titles_visible">
@@ -335,7 +335,7 @@
 			<argument index="2" name="selected" type="bool">
 			</argument>
 			<description>
-				Emitted instead of [code]item_selected[/code] when [code]select_mode[/code] is [constant SELECT_MULTI].
+				Emitted instead of [code]item_selected[/code] if [code]select_mode[/code] is [constant SELECT_MULTI].
 			</description>
 		</signal>
 		<signal name="nothing_selected">

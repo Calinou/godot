@@ -1,0 +1,74 @@
+1.) Line 137, column 5, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Func
+...a].     [codeblock]     extends Control      func can_drop_data(position, data):         # che...
+                                                ^^^^                                             
+
+2.) Line 159, column 5, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Func
+...= TYPE_DICTIONARY and data.has('color')      func drop_data(position, data):         color = d...
+                                                ^^^^                                             
+
+3.) Line 229, column 5, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Func
+...od.     [codeblock]     extends Control      func get_drag_data(position):         var mydata ...
+                                                ^^^^                                             
+
+4.) Line 553, column 5, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Func
+..._control):         my_handle_data(data)      func get_drag_data_fw(position, from_control):   ...
+                                                ^^^^                                             
+
+5.) Line 712, column 151, Rule ID: SENT_START_CONJUNCTIVE_LINKING_ADVERB_COMMA[1]
+Message: Did you forget a comma after a conjunctive/linking adverb?
+Suggestion: Also,
+...put] and how these events should be handled. Also controls whether the control can receive the...
+                                                ^^^^                                             
+More info: https://writing.wisc.edu/handbook/grammarpunct/conjadv/
+
+6.) Line 742, column 273, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: two-thirds
+... neighbour a ratio of 1, this node will take two thirds of the available space.   </member>   <membe...
+                                                ^^^^^^^^^^                                             
+
+7.) Line 865, column 84, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: double-headed
+...ouse cursor when the user hovers the node. A double headed vertical arrow. It tells the user they can r...
+                                                ^^^^^^^^^^^^^                                             
+
+8.) Line 868, column 86, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: double-headed
+...ouse cursor when the user hovers the node. A double headed horizontal arrow. It tells the user they can...
+                                                ^^^^^^^^^^^^^                                             
+
+9.) Line 871, column 96, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: double-headed
+...en the user hovers the node. The cursor is a double headed arrow that goes from the bottom left to the ...
+                                                ^^^^^^^^^^^^^                                             
+
+10.) Line 874, column 96, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: double-headed
+...en the user hovers the node. The cursor is a double headed arrow that goes from the top left to the bot...
+                                                ^^^^^^^^^^^^^                                             
+
+11.) Line 934, column 191, Rule ID: ENGLISH_WORD_REPEAT_RULE
+Message: Possible typo: you repeated a word
+Suggestion: to
+...l fit its parent control. This is equivalent to to the "Full Rect" layout option in the editor....
+                                                ^^^^^                                             
+
+12.) Line 960, column 230, Rule ID: COMMA_COMPOUND_SENTENCE[1]
+Message: Use a comma before 'and' if it connects two independent clauses (unless they are closely connected and short).
+Suggestion: handled, and
+...ls. These events are automatically marked as handled and they will not propagate further to other con...
+                                                ^^^^^^^^^^^                                             
+More info: https://www.grammar-monster.com/lessons/commas_before_conjunctions.htm
+Time: 39101ms for 338 sentences (8.6 sentences/sec)

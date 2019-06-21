@@ -1,0 +1,7 @@
+1.) Line 121, column 203, Rule ID: COMMA_COMPOUND_SENTENCE[1]
+Message: Use a comma before 'so' if it connects two independent clauses (unless they are closely connected and short).
+Suggestion: ratio, so
+...t ratios and regular mipmaps keep the aspect ratio so they don't optimize storage that well in tho...
+                                                ^^^^^^^^                                             
+More info: https://www.grammar-monster.com/lessons/commas_before_conjunctions.htm
+Time: 13629ms for 20 sentences (1.5 sentences/sec)

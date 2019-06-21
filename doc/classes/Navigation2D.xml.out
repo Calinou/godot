@@ -1,0 +1,6 @@
+1.) Line 7, column 130, Rule ID: BY_DEFAULT_COMMA[1]
+Message: Did you mean: 'By default,'?
+Suggestion: By default,
+...collection of [NavigationPolygon] resources. By default these are automatically collected from child...
+                                                ^^^^^^^^^^                                             
+Time: 12080ms for 18 sentences (1.5 sentences/sec)

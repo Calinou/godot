@@ -1,0 +1,18 @@
+1.) Line 738, column 27, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 2×2; 2·2
+...hods>  <constants>   <constant name="BITMASK_2X2" value="0" enum="BitmaskMode">   </constant>...
+                                                ^^^                                             
+
+2.) Line 740, column 27, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×3; 3·3
+...de">   </constant>   <constant name="BITMASK_3X3_MINIMAL" value="1" enum="BitmaskMode">   </c...
+                                                ^^^                                             
+
+3.) Line 742, column 27, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×3; 3·3
+...de">   </constant>   <constant name="BITMASK_3X3" value="2" enum="BitmaskMode">   </constant>...
+                                                ^^^                                             
+Time: 22441ms for 89 sentences (4.0 sentences/sec)

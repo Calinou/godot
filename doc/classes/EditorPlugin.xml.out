@@ -1,0 +1,35 @@
+1.) Line 44, column 119, Rule ID: I_MOVING[1]
+Message: Please check if the base form of the verb should be used here.
+Suggestion: add
+... controls yourself (and likely hide it after adding it).     When your plugin is deactivated, ma...
+                                                ^^^^^^                                             
+
+2.) Line 131, column 26, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...t>    <description>     Add a custom menu to 'Project &gt; Tools' as [code]name[/code] that...
+                                                ^                                             
+
+3.) Line 263, column 97, Rule ID: IT_VBZ[1]
+Message: Did you mean 'uses'?
+Suggestion: uses
+...pts. Note that users can configure it before use.    </description>   </method>   <method nam...
+                                                ^^^                                             
+
+4.) Line 277, column 9, Rule ID: A_INFINITIVE[1]
+Message: Maybe a wrong construction: a/the + infinitive. Some possible errors: 1) An incorrect spelling of a noun. 2) A missing hyphen in a compound adjective. 3) A verb used as a noun and the verb is not a noun in standard English.
+...Redo">    </return>    <description>     Get the undo/redo object. Most actions in the editor can ...
+                                                ^^^^^^^^                                             
+
+5.) Line 302, column 86, Rule ID: POSSESSIVE_APOSTROPHE[1]
+Message: Apostrophe might be missing. Did you mean 'workspaces'' or 'workspace's'?
+Suggestion: workspaces'; workspace's
+... a main screen editor plugin (it goes in the workspaces selector together with '2D', '3D', and 'Scri...
+                                                ^^^^^^^^^^                                             
+
+6.) Line 483, column 73, Rule ID: SENT_START_CONJUNCTIVE_LINKING_ADVERB_COMMA[1]
+Message: Did you forget a comma after a conjunctive/linking adverb?
+Suggestion: Also,
+...es the workspace (2D, 3D, Script, AssetLib). Also works with custom screens defined by plugins...
+                                                ^^^^                                             
+More info: https://writing.wisc.edu/handbook/grammarpunct/conjadv/
+Time: 21258ms for 78 sentences (3.7 sentences/sec)

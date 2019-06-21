@@ -1,0 +1,52 @@
+1.) Line 8, column 163, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: '(' seems to be missing
+...ed_extensions] and [method get_resource_type]). They may optionally specify some import pre...
+                                                ^                                             
+
+2.) Line 20, column 3, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...e():       return "Special Mesh Importer"    func get_recognized_extensions():       return ["...
+                                                ^^^^                                             
+
+3.) Line 23, column 3, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...sions():       return ["special", "spec"]    func get_save_extension():       return "mesh"   ...
+                                                ^^^^                                             
+
+4.) Line 26, column 3, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...get_save_extension():       return "mesh"    func get_resource_type():       return "Mesh"    ...
+                                                ^^^^                                             
+
+5.) Line 29, column 3, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+... get_resource_type():       return "Mesh"    func get_preset_count():       return 1    func g...
+                                                ^^^^                                             
+
+6.) Line 32, column 3, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...  func get_preset_count():       return 1    func get_preset_name(i):       return "Default"  ...
+                                                ^^^^                                             
+
+7.) Line 35, column 3, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...et_preset_name(i):       return "Default"    func get_import_options(i):       return [{"name"...
+                                                ^^^^                                             
+
+8.) Line 38, column 3, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...e": "my_option", "default_value": false}]    func import(source_file, save_path, options, plat...
+                                                ^^^^                                             
+
+9.) Line 46, column 7, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Var
+...file', left as exercise to the reader        var filename = save_path + "." + get_save_extens...
+                                                ^^^                                             
+
+10.) Line 115, column 68, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: case-insensitive
+...le extensions to associate with this loader (case insensitive). e.g. [code]["obj"][/code].    </descriptio...
+                                                ^^^^^^^^^^^^^^^^                                             
+Time: 13663ms for 39 sentences (2.9 sentences/sec)

@@ -1,0 +1,6 @@
+1.) Line 97, column 156, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+... won't also detect any collisions with them. If [code]false[/code] it will interact with [Ri...
+                                                ^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+Time: 16112ms for 52 sentences (3.2 sentences/sec)

@@ -1,0 +1,29 @@
+1.) Line 68, column 89, Rule ID: BY_DEFAULT_COMMA[1]
+Message: Did you mean: 'By default,'?
+Suggestion: By default,
+...tween [code]from[/code] and [code]to[/code]. By default [code]from[/code] is at the beginning and [c...
+                                                ^^^^^^^^^^                                             
+
+2.) Line 87, column 33, Rule ID: A_INFINITIVE[1]
+Message: Maybe a wrong construction: a/the + infinitive. Some possible errors: 1) An incorrect spelling of a noun. 2) A missing hyphen in a compound adjective. 3) A verb used as a noun and the verb is not a noun in standard English.
+...Edit.Align">    Text alignment as defined in the ALIGN_* enum.   </member>   <member name="caret_bl...
+                                                ^^^^^^^^^                                             
+
+3.) Line 126, column 21, Rule ID: USE_TO_VERB[1]
+Message: Did you mean 'used'?
+Suggestion: used
+...="get_secret_character">    The character to use to mask secret input (defaults to "*"). Only...
+                                                ^^^                                             
+
+4.) Line 150, column 27, Rule ID: MISSING_HYPHEN[5]
+Message: Did you mean the adjective 'left-hand'?
+Suggestion: left-hand
+...="0" enum="Align">    Aligns the text on the left hand side of the [LineEdit].   </constant>   <con...
+                                                ^^^^^^^^^                                             
+
+5.) Line 156, column 27, Rule ID: MISSING_HYPHEN[5]
+Message: Did you mean the adjective 'right-hand'?
+Suggestion: right-hand
+...="2" enum="Align">    Aligns the text on the right hand side of the [LineEdit].   </constant>   <con...
+                                                ^^^^^^^^^^                                             
+Time: 14557ms for 52 sentences (3.6 sentences/sec)

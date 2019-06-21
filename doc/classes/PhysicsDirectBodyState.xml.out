@@ -1,0 +1,12 @@
+1.) Line 7, column 93, Rule ID: TO_NON_BASE[2]
+Message: Did you mean 'physic'?
+Suggestion: physic
+...he [PhysicsServer], allowing safe changes to physics properties. This object is passed via the di...
+                                                ^^^^^^^                                             
+
+2.) Line 69, column 118, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'past' (past times) might be the correct word here, not 'passed' (paste tense of 'to pass'). Please check.
+Suggestion: past
+...shape). This will rotate the body around the passed in vector.    </description>   </method>   <...
+                                                ^^^^^^                                             
+Time: 13582ms for 45 sentences (3.3 sentences/sec)

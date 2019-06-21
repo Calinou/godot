@@ -1,0 +1,11 @@
+1.) Line 7, column 404, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...el should not include meshes for the wheels. You should control the vehicle by using the [mem...
+                                                ^^^                                             
+
+2.) Line 15, column 17, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'break' might be the correct word here. Please check.
+Suggestion: break
+...hods>  </methods>  <members>   <member name="brake" type="float" setter="set_brake" getter="get...
+                                                ^^^^^                                             
+Time: 12975ms for 21 sentences (1.6 sentences/sec)

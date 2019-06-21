@@ -1,0 +1,24 @@
+1.) Line 9, column 131, Rule ID: DID_BASEFORM[1]
+Message: The verb 'will' requires the base form of the verb: 'render'
+Suggestion: render
+...reduced as every single instance will always rendered (they are spatially indexed as one, for the ...
+                                                ^^^^^^^^                                             
+
+2.) Line 118, column 46, Rule ID: PASSED_PAST[1]
+Message: Did you mean 'past'?
+Suggestion: past
+...   Format of colors in color array that gets passed to shader.   </member>   <member name="custo...
+                                                ^^^^^^                                             
+
+3.) Line 121, column 57, Rule ID: PASSED_PAST[1]
+Message: Did you mean 'past'?
+Suggestion: past
+...f custom data in custom data array that gets passed to shader.   </member>   <member name="insta...
+                                                ^^^^^^                                             
+
+4.) Line 124, column 84, Rule ID: BY_DEFAULT_COMMA[1]
+Message: Did you mean: 'By default,'?
+Suggestion: By default,
+...rawn. This clears and (re)sizes the buffers. By default all instances are drawn but you can limit th...
+                                                ^^^^^^^^^^                                             
+Time: 14785ms for 47 sentences (3.2 sentences/sec)

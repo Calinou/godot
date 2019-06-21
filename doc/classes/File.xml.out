@@ -1,0 +1,59 @@
+1.) Line 16, column 3, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Func
+....store_string(content)       file.close()    func load():       var file = File.new()       fi...
+                                                ^^^^
+
+2.) Line 111, column 49, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: floating-point
+... Returns the next 64 bits from the file as a floating-point number.    </description>   </method>   <met...
+                                                ^^^^^^^^^^^^^^
+
+3.) Line 125, column 49, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: floating-point
+... Returns the next 32 bits from the file as a floating-point number.    </description>   </method>   <met...
+                                                ^^^^^^^^^^^^^^
+
+4.) Line 194, column 46, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: floating-point
+...    Returns the next bits from the file as a floating-point number.    </description>   </method>   <met...
+                                                ^^^^^^^^^^^^^^
+
+5.) Line 203, column 13, Rule ID: EN_A_VS_AN
+Message: Use 'an' instead of 'a' if the following word starts with a vowel sound, e.g. 'an article', 'an hour'
+Suggestion: an
+...    </argument>    <description>     Returns a SHA-256 [String] representing the file at th...
+                                                ^
+
+6.) Line 212, column 53, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “When” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...urns the next [Variant] value from the file. When [code]allow_objects[/code] is [code]true[/co...
+                                                ^^^^
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+7.) Line 354, column 14, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: floating-point
+...   </argument>    <description>     Stores a floating-point number as 64 bits in the file.    </descript...
+                                                ^^^^^^^^^^^^^^
+
+8.) Line 363, column 14, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: floating-point
+...   </argument>    <description>     Stores a floating-point number as 32 bits in the file.    </descript...
+                                                ^^^^^^^^^^^^^^
+
+9.) Line 392, column 14, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: floating-point
+...   </argument>    <description>     Stores a floating-point number in the file.    </description>   </me...
+                                                ^^^^^^^^^^^^^^
+
+10.) Line 440, column 9, Rule ID: A_INFINITIVE[1]
+Message: Maybe a wrong construction: a/the + infinitive. Some possible errors: 1) An incorrect spelling of a noun. 2) A missing hyphen in a compound adjective. 3) A verb used as a noun and the verb is not a noun in standard English.
+...E" value="1" enum="CompressionMode">    Uses the Deflate compression method.   </constant>   <constan...
+                                                ^^^^^^^^^^^
+Time: 19661ms for 97 sentences (4.9 sentences/sec)

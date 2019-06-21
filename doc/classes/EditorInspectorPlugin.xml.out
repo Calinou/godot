@@ -1,0 +1,20 @@
+1.) Line 7, column 3, Rule ID: THIS_NNS[1]
+Message: Did you mean 'these'?
+Suggestion: These
+...ctor.  </brief_description>  <description>   This plugins allows adding custom property editor...
+                                                ^^^^                                             
+
+2.) Line 10, column 76, Rule ID: ALLOW_TO[1]
+Message: Did you mean 'placing'? Or maybe you should add a pronoun? In active voice, 'allow' + 'to' takes an object, usually a pronoun.
+Suggestion: placing
+...method parse_begin] will be called, allowing to place custom controls at the beginning of the clas...
+                                                ^^^^^^^^                                             
+More info: http://www.ef.com/english-resources/english-grammar/gerund-equals-infinitive/
+
+3.) Line 12, column 3, Rule ID: SENT_START_CONJUNCTIVE_LINKING_ADVERB_COMMA[1]
+Message: Did you forget a comma after a conjunctive/linking adverb?
+Suggestion: Finally,
+... add custom controls to the inspector too.   Finally [method parse_end] will be called.   On each...
+                                                ^^^^^^^                                             
+More info: https://writing.wisc.edu/handbook/grammarpunct/conjadv/
+Time: 12393ms for 18 sentences (1.5 sentences/sec)

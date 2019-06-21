@@ -1,0 +1,18 @@
+1.) Line 8, column 3, Rule ID: THIS_NNS[1]
+Message: Did you mean 'these'?
+Suggestion: These
+...ositional audio). The sound can be looped.   This class can also be used to store dynamically ...
+                                                ^^^^                                             
+
+2.) Line 49, column 18, Rule ID: CD_NN[1]
+Message: Possible agreement error. The noun 'bit' seems to be countable, so consider using: 'bites', 'bits'.
+Suggestion: bites; bits
+...S" value="0" enum="Format">    Audio codec 8 bit.   </constant>   <constant name="FORMAT_16_B...
+                                                ^^^                                             
+
+3.) Line 52, column 19, Rule ID: CD_NN[1]
+Message: Possible agreement error. The noun 'bit' seems to be countable, so consider using: 'bites', 'bits'.
+Suggestion: bites; bits
+..." value="1" enum="Format">    Audio codec 16 bit.   </constant>   <constant name="FORMAT_IMA_...
+                                                ^^^                                             
+Time: 11776ms for 28 sentences (2.4 sentences/sec)

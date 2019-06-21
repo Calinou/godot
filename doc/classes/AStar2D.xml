@@ -24,7 +24,7 @@
 				var as = AStar2D.new()
 				as.add_point(1, Vector2(1, 0), 4) # Adds the point (1, 0) with weight_scale 4 and id 1
 				[/codeblock]
-				If there already exists a point for the given id, its position and weight scale are updated to the given values.
+				If there already exists a point for the given [code]id[/code], its position and weight scale are updated to the given values.
 			</description>
 		</method>
 		<method name="are_points_connected" qualifiers="const">
@@ -79,7 +79,7 @@
 			<return type="int">
 			</return>
 			<description>
-				Returns the next available point id with no point associated to it.
+				Returns the next available point ID with no point associated to it.
 			</description>
 		</method>
 		<method name="get_closest_point" qualifiers="const">
@@ -88,7 +88,7 @@
 			<argument index="0" name="to_position" type="Vector2">
 			</argument>
 			<description>
-				Returns the id of the closest point to [code]to_position[/code]. Returns -1 if there are no points in the points pool.
+				Returns the ID of the closest point to [code]to_position[/code]. Returns -1 if there are no points in the points pool.
 			</description>
 		</method>
 		<method name="get_closest_position_in_segment" qualifiers="const">
@@ -116,7 +116,7 @@
 			<argument index="1" name="to_id" type="int">
 			</argument>
 			<description>
-				Returns an array with the ids of the points that form the path found by AStar2D between the given points. The array is ordered from the starting point to the ending point of the path.
+				Returns an array with the IDs of the points that form the path found by AStar2D between the given points. The array is ordered from the starting point to the ending point of the path.
 				[codeblock]
 				var as = AStar2D.new()
 				as.add_point(1, Vector2(0, 0))
@@ -141,7 +141,7 @@
 			<argument index="0" name="id" type="int">
 			</argument>
 			<description>
-				Returns an array with the ids of the points that form the connect with the given point.
+				Returns an array with the IDs of the points that form the connection with the given point.
 				[codeblock]
 				var as = AStar2D.new()
 				as.add_point(1, Vector2(0, 0))
@@ -173,7 +173,7 @@
 			<argument index="0" name="id" type="int">
 			</argument>
 			<description>
-				Returns the position of the point associated with the given id.
+				Returns the position of the point associated with the given [code]id[/code].
 			</description>
 		</method>
 		<method name="get_point_weight_scale" qualifiers="const">
@@ -182,7 +182,7 @@
 			<argument index="0" name="id" type="int">
 			</argument>
 			<description>
-				Returns the weight scale of the point associated with the given id.
+				Returns the weight scale of the point associated with the given [code]id[/code].
 			</description>
 		</method>
 		<method name="get_points">
@@ -198,7 +198,7 @@
 			<argument index="0" name="id" type="int">
 			</argument>
 			<description>
-				Returns whether a point associated with the given id exists.
+				Returns whether a point associated with the given [code]id[/code] exists.
 			</description>
 		</method>
 		<method name="is_point_disabled" qualifiers="const">
@@ -216,7 +216,7 @@
 			<argument index="0" name="id" type="int">
 			</argument>
 			<description>
-				Removes the point associated with the given id from the points pool.
+				Removes the point associated with the given [code]id[/code] from the points pool.
 			</description>
 		</method>
 		<method name="set_point_disabled">
@@ -238,7 +238,7 @@
 			<argument index="1" name="position" type="Vector2">
 			</argument>
 			<description>
-				Sets the position for the point with the given id.
+				Sets the [code]position[/code] for the point with the given [code]id[/code].
 			</description>
 		</method>
 		<method name="set_point_weight_scale">
@@ -249,7 +249,7 @@
 			<argument index="1" name="weight_scale" type="float">
 			</argument>
 			<description>
-				Sets the [code]weight_scale[/code] for the point with the given id.
+				Sets the [code]weight_scale[/code] for the point with the given [code]id[/code].
 			</description>
 		</method>
 	</methods>

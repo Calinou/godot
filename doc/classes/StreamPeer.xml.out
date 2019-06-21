@@ -1,0 +1,36 @@
+1.) Line 85, column 71, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...e-length [code]bytes[/code] from the stream. If [code]bytes[/code] is negative (default) the...
+                                                ^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+2.) Line 122, column 9, Rule ID: EN_A_VS_AN
+Message: Use 'an' instead of 'a' if the following word starts with a vowel sound, e.g. 'an article', 'an hour'
+Suggestion: an
+...-1">    </argument>    <description>     Get a utf8 string with byte-length [code]bytes[/co...
+                                                ^                                             
+
+3.) Line 122, column 115, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...ream (this decodes the string sent as utf8). If [code]bytes[/code] is negative (default) the...
+                                                ^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+4.) Line 131, column 36, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “When” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...cription>     Get a Variant from the stream. When [code]allow_objects[/code] is [code]true[/co...
+                                                ^^^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+5.) Line 204, column 194, Rule ID: MUCH_COUNTABLE[1]
+Message: Use 'many' with countable nouns.
+Suggestion: many
+...an Error code and an integer, describing how much data was actually sent.    </description>   ...
+                                                ^^^^                                             
+
+6.) Line 275, column 49, Rule ID: DID_BASEFORM[1]
+Message: The verb 'will' requires the base form of the verb: 'use'
+Suggestion: use
+...If [code]true[/code], this [StreamPeer] will using big-endian format for encoding and decoding....
+                                                ^^^^^                                             
+Time: 16757ms for 50 sentences (3.0 sentences/sec)

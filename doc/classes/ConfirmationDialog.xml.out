@@ -1,0 +1,5 @@
+1.) Line 16, column 13, Rule ID: A_INFINITIVE[1]
+Message: Maybe a wrong construction: a/the + infinitive. Some possible errors: 1) An incorrect spelling of a noun. 2) A missing hyphen in a compound adjective. 3) A verb used as a noun and the verb is not a noun in standard English.
+...">    </return>    <description>     Returns the cancel button.    </description>   </method>  </met...
+                                                ^^^^^^^^^^                                             
+Time: 7665ms for 5 sentences (0.7 sentences/sec)

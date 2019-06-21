@@ -1,0 +1,24 @@
+1.) Line 146, column 1, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...rue[/code] can play the animation backwards.     If the animation has been paused by [code]stop(...
+                                                ^^^^^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+2.) Line 158, column 1, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...ation with key [code]name[/code] in reverse.     If the animation has been paused by [code]stop(...
+                                                ^^^^^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+3.) Line 254, column 104, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+... 1 then the animation plays at normal speed. If it's 0.5 then it plays at half speed. If it'...
+                                                ^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+4.) Line 254, column 145, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...ed. If it's 0.5 then it plays at half speed. If it's 2 then it plays at double speed. Defaul...
+                                                ^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+Time: 14424ms for 81 sentences (5.6 sentences/sec)

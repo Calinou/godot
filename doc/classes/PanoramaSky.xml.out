@@ -1,0 +1,6 @@
+1.) Line 7, column 159, Rule ID: EN_A_VS_AN
+Message: Use 'an' instead of 'a' if the following word starts with a vowel sound, e.g. 'an article', 'an hour'
+Suggestion: an
+... to skyboxes in other engines except it uses a equirectangular sky map instead of a cube ma...
+                                                ^                                             
+Time: 8091ms for 5 sentences (0.6 sentences/sec)

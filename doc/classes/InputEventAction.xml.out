@@ -1,0 +1,6 @@
+1.) Line 7, column 56, Rule ID: MANY_NN[1]
+Message: Possible agreement error. The noun type seems to be countable; consider using: 'several types'.
+Suggestion: several types
+... a generic action which can be targeted from several type of inputs. Actions can be created from the p...
+                                                ^^^^^^^^^^^^                                             
+Time: 11993ms for 12 sentences (1.0 sentences/sec)

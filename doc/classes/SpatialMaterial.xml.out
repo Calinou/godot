@@ -1,0 +1,12 @@
+1.) Line 132, column 71, Rule ID: SHORT_COMPARATIVES[1]
+Message: This adjective uses the short comparatives form.
+Suggestion: lighter
+...e object's surface. The higher the value the more light is reflected.   </member>   <member name="me...
+                                                ^^^^^^^^^^                                             
+
+2.) Line 389, column 24, Rule ID: EN_CONTRACTION_SPELLING
+Message: Possible spelling mistake found
+Suggestion: DON'T
+...Flags">   </constant>   <constant name="FLAG_DONT_RECEIVE_SHADOWS" value="15" enum="Flags">   ...
+                                                ^^^^                                             
+Time: 23200ms for 140 sentences (6.0 sentences/sec)

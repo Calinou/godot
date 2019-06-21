@@ -1,0 +1,25 @@
+1.) Line 4, column 10, Rule ID: HE_VERB_AGR[8]
+Message: The singular proper name 'Server' must be used with a third-person or a past tense verb: 'interfaces', 'interfaced'.
+Suggestion: interfaces; interfaced
+...version="3.2">  <brief_description>   Server interface for low level audio access.  </brief_descrip...
+                                                ^^^^^^^^^                                             
+
+2.) Line 410, column 42, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “After” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...on>     Unlocks the audiodriver's main loop. After locking it always unlock it.    </descriptio...
+                                                ^^^^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+3.) Line 410, column 48, Rule ID: MISSING_COMMA_AFTER_INTRODUCTORY_PHRASE[1]
+Message: The comma is probably missing here: 'locking, it'.
+Suggestion: locking, it
+...  Unlocks the audiodriver's main loop. After locking it always unlock it.    </description>   </meth...
+                                                ^^^^^^^^^^                                             
+More info: http://englishplus.com/grammar/00000074.htm
+
+4.) Line 410, column 66, Rule ID: IT_VBZ[1]
+Message: Did you mean 'unlocks'?
+Suggestion: unlocks
+...odriver's main loop. After locking it always unlock it.    </description>   </method>  </methods...
+                                                ^^^^^^                                             
+Time: 14620ms for 45 sentences (3.1 sentences/sec)

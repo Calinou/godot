@@ -1,0 +1,13 @@
+1.) Line 7, column 310, Rule ID: SENT_START_CONJUNCTIVE_LINKING_ADVERB_COMMA[1]
+Message: Did you forget a comma after a conjunctive/linking adverb?
+Suggestion: Similarly,
+...rve to interpolate between these two colors. Similarly the sun is described by a position in the sk...
+                                                ^^^^^^^^^                                             
+More info: https://writing.wisc.edu/handbook/grammarpunct/conjadv/
+
+2.) Line 55, column 8, Rule ID: POSSESSIVE_APOSTROPHE[1]
+Message: Apostrophe might be missing. Did you mean 'suns'' or 'sun's'?
+Suggestion: suns'; sun's
+..._latitude" getter="get_sun_latitude">    The suns height using polar coordinates.   </member> ...
+                                                ^^^^                                             
+Time: 12924ms for 25 sentences (1.9 sentences/sec)

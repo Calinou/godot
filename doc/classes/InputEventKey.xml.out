@@ -1,0 +1,7 @@
+1.) Line 32, column 42, Rule ID: MISSING_GENITIVE[1]
+Message: The genitive is possibly missing.
+Suggestion: Unicode's identifiers
+...e">    Key unicode identifier when relevant. Unicode identifiers for the composite characters and complex scr...
+                                                ^^^^^^^^^^^^^^^^^^^                                             
+More info: https://www.ef.edu/english-resources/english-grammar/forming-possessive/
+Time: 10598ms for 14 sentences (1.3 sentences/sec)

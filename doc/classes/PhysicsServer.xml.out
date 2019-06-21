@@ -1,0 +1,60 @@
+1.) Line 4, column 10, Rule ID: HE_VERB_AGR[8]
+Message: The singular proper name 'Server' must be used with a third-person or a past tense verb: 'interfaces', 'interfaced'.
+Suggestion: interfaces; interfaced
+...version="3.2">  <brief_description>   Server interface for low level physics access.  </brief_descr...
+                                                ^^^^^^^^^                                             
+
+2.) Line 196, column 36, Rule ID: ANY_BODY[2]
+Message: Did you mean 'anybody'?
+Suggestion: anybody
+...cription>     Sets the function to call when any body/area enters or exits the area. This callback...
+                                                ^^^^^^^^                                             
+
+3.) Line 429, column 89, Rule ID: MULTIPLICATION_SIGN[3]
+Message: Replace by the typographical symbol.
+Suggestion: E×,; E·,
+...eter can be any value from constants BODY_MODE*, for the type of body created. Additionally, ...
+                                                ^^^                                             
+
+4.) Line 718, column 59, Rule ID: MULTIPLICATION_SIGN[3]
+Message: Replace by the typographical symbol.
+Suggestion: E×.; E·.
+...body mode, from one of the constants BODY_MODE*.    </description>   </method>   <method name...
+                                                ^^^                                             
+
+5.) Line 848, column 72, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'past' (past times) might be the correct word here, not 'passed' (paste tense of 'to pass'). Please check.
+Suggestion: past
+...jects created by PhysicsServer. If the [RID] passed is not one of the objects that can be create...
+                                                ^^^^^^                                             
+
+6.) Line 1074, column 62, Rule ID: EN_A_VS_AN
+Message: Use 'an' instead of 'a' if the following word starts with a vowel sound, e.g. 'an article', 'an hour'
+Suggestion: an
+...tion of the joint in the local space of body a of the joint.    </description>   </method> ...
+                                                ^                                             
+
+7.) Line 1105, column 59, Rule ID: EN_A_VS_AN
+Message: Use 'an' instead of 'a' if the following word starts with a vowel sound, e.g. 'an article', 'an hour'
+Suggestion: an
+...tion of the joint in the local space of body a of the joint.    </description>   </method> ...
+                                                ^                                             
+
+8.) Line 1387, column 8, Rule ID: HE_VERB_AGR[8]
+Message: The singular proper name 'End' must be used with a third-person or a past tense verb: 'flags', 'flagged'.
+Suggestion: flags; flagged
+..." value="22" enum="SliderJointParam">    End flag of SLIDER_JOINT_* constants, used internally...
+                                                ^^^^                                             
+
+9.) Line 1419, column 37, Rule ID: POSSESSIVE_APOSTROPHE[2]
+Message: Possible typo: apostrophe is missing. Did you mean 'axes'' or 'ax's', 'axe's', 'axis's'?
+Suggestion: axes'; ax's; axe's; axis's
+...sParam">    The amount of restitution on the axes movement. The lower, the more velocity-energ...
+                                                ^^^^                                             
+
+10.) Line 1419, column 37, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'axis' (singular) might be the correct word here, not 'axes' (plural). Please check.
+Suggestion: axis
+...sParam">    The amount of restitution on the axes movement. The lower, the more velocity-energ...
+                                                ^^^^                                             
+Time: 37786ms for 319 sentences (8.4 sentences/sec)

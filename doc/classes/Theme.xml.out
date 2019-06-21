@@ -1,0 +1,47 @@
+1.) Line 107, column 13, Rule ID: ALL_OF_THE[1]
+Message: Consider using 'all the'.
+Suggestion: all the
+...    </argument>    <description>     Returns all of the [Color]s as a [PoolStringArray] filled with ...
+                                                ^^^^^^^^^^                                             
+
+2.) Line 127, column 13, Rule ID: ALL_OF_THE[1]
+Message: Consider using 'all the'.
+Suggestion: all the
+...    </argument>    <description>     Returns all of the constants as a [PoolStringArray] filled with...
+                                                ^^^^^^^^^^                                             
+
+3.) Line 147, column 13, Rule ID: ALL_OF_THE[1]
+Message: Consider using 'all the'.
+Suggestion: all the
+...    </argument>    <description>     Returns all of the [Font]s as a [PoolStringArray] filled with e...
+                                                ^^^^^^^^^^                                             
+
+4.) Line 167, column 13, Rule ID: ALL_OF_THE[1]
+Message: Consider using 'all the'.
+Suggestion: all the
+...    </argument>    <description>     Returns all of the icons as a [PoolStringArray] filled with eac...
+                                                ^^^^^^^^^^                                             
+
+5.) Line 187, column 13, Rule ID: ALL_OF_THE[1]
+Message: Consider using 'all the'.
+Suggestion: all the
+...    </argument>    <description>     Returns all of the [StyleBox]s as a [PoolStringArray] filled wi...
+                                                ^^^^^^^^^^                                             
+
+6.) Line 194, column 13, Rule ID: ALL_OF_THE[1]
+Message: Consider using 'all the'.
+Suggestion: all the
+...">    </return>    <description>     Returns all of the [StyleBox] types as a [PoolStringArray] fill...
+                                                ^^^^^^^^^^                                             
+
+7.) Line 194, column 91, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...[PoolStringArray] filled with each [StyleBox]'s type, for use in [method get_stylebox] and/...
+                                                ^                                             
+
+8.) Line 203, column 13, Rule ID: ALL_OF_THE[1]
+Message: Consider using 'all the'.
+Suggestion: all the
+...    </argument>    <description>     Returns all of the types in [code]type[/code] as a [PoolStringA...
+                                                ^^^^^^^^^^                                             
+Time: 17304ms for 45 sentences (2.6 sentences/sec)

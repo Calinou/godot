@@ -1,0 +1,12 @@
+1.) Line 37, column 68, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...the points where this shape touches another. If there are no collisions the list is empty.  ...
+                                                ^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+2.) Line 73, column 105, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...ch another, if a given movement was applied. If there are no collisions the list is empty.  ...
+                                                ^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+Time: 11293ms for 14 sentences (1.2 sentences/sec)

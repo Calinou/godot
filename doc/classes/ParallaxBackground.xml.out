@@ -1,0 +1,12 @@
+1.) Line 24, column 44, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...>    Top left limits for scrolling to begin. If the camera is outside of this limit the back...
+                                                ^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+2.) Line 27, column 46, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...   Right bottom limits for scrolling to end. If the camera is outside of this limit the back...
+                                                ^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+Time: 12353ms for 17 sentences (1.4 sentences/sec)

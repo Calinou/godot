@@ -1,0 +1,30 @@
+1.) Line 17, column 6, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Lead
+...ine author information in a Dictionary.     "lead_developers" - Array of Strings, lead develop...
+                                                ^^^^                                             
+
+2.) Line 28, column 6, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: Name
+... of copyright information Dictionaries.     "name" - String, component name     "parts" - Arra...
+                                                ^^^^                                             
+
+3.) Line 91, column 70, Rule ID: EN_A_VS_AN
+Message: Use 'a' instead of 'an' if the following word doesn't start with a vowel sound, e.g. 'a sentence', 'a university'
+Suggestion: a
+...  - Holds the full version number encoded as an hexadecimal int with one byte (2 places) per...
+                                                ^^                                             
+
+4.) Line 97, column 192, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 0×03010; 0·03010
+...ersion. For example, "3.1.12" would be [code]0x03010C[/code]. Note that it's still an int interna...
+                                                ^^^^^^^                                             
+
+5.) Line 99, column 44, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 0×030200; 0·030200
+...]     if Engine.get_version_info().hex &gt;= 0x030200:         # do things specific to version 3.2...
+                                                ^^^^^^^^                                             
+Time: 14962ms for 25 sentences (1.7 sentences/sec)

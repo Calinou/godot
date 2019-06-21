@@ -1,0 +1,7 @@
+1.) Line 65, column 296, Rule ID: GO_GERUND[47]
+Message: The usual collocation for an activity ending in "-ing" is "go" not "do" or "play." Revise: 'go according'.
+Suggestion: go according
+...ber of frames per second, the animation will play according to each frame's frame delay (see [method set...
+                                                ^^^^^^^^^^^^^^                                             
+More info: http://www.kentlee7.com/writ/collocation.errors.typical.pdf
+Time: 15338ms for 26 sentences (1.7 sentences/sec)

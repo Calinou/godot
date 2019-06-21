@@ -1,0 +1,5 @@
+1.) Line 187, column 47, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...  If [code]true[/code], the [CollisionObject]'s shapes will respond to [RayCast]s. Default ...
+                                                ^                                             
+Time: 14687ms for 36 sentences (2.5 sentences/sec)

@@ -1,0 +1,5 @@
+1.) Line 44, column 33, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: ''' seems to be missing
+...description>     Returns point [code]i[/code]'s position.    </description>   </method>   <...
+                                                ^                                             
+Time: 14472ms for 51 sentences (3.5 sentences/sec)

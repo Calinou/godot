@@ -1,0 +1,63 @@
+1.) Line 9, column 192, Rule ID: MISSING_GENITIVE[1]
+Message: The genitive is possibly missing.
+Suggestion: HTTP's status
+...SSL and SSL server certificate verification. HTTP status codes in the 2xx range indicate success, 3xx...
+                                                ^^^^^^^^^^^                                             
+More info: https://www.ef.edu/english-resources/english-grammar/forming-possessive/
+
+2.) Line 21, column 45, Rule ID: ALLOW_TO_DO[1]
+Message: Please check whether 'to' is missing here (to allow to do something).
+Suggestion: to reuse
+...     Closes the current connection, allowing reuse of this [HTTPClient].    </description>   </...
+                                                ^^^^^                                             
+
+3.) Line 139, column 143, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: '[' seems to be missing
+...for [code]http://somehost.com/index.php[/code], it is [code]index.php[/code].     Headers a...
+                                                ^                                             
+
+4.) Line 162, column 147, Rule ID: EN_UNPAIRED_BRACKETS
+Message: Unpaired symbol: '[' seems to be missing
+...for [code]http://somehost.com/index.php[/code], it is [code]index.php[/code].     Headers a...
+                                                ^                                             
+
+5.) Line 173, column 79, Rule ID: UPPERCASE_SENTENCE_START
+Message: This sentence does not start with an uppercase letter
+Suggestion: See
+...sed and maximum bytes to read per iteration. see [method read_response_body_chunk]    </descr...
+                                                ^^^                                             
+
+6.) Line 199, column 24, Rule ID: A_INFINITIVE[1]
+Message: Maybe a wrong construction: a/the + infinitive. Some possible errors: 1) An incorrect spelling of a noun. 2) A missing hyphen in a compound adjective. 3) A verb used as a noun and the verb is not a noun in standard English.
+...ue="4" enum="Method">    HTTP DELETE method. The DELETE method requests to delete the specified reso...
+                                                ^^^^^^^^^^                                             
+
+7.) Line 208, column 25, Rule ID: A_INFINITIVE[1]
+Message: Maybe a wrong construction: a/the + infinitive. Some possible errors: 1) An incorrect spelling of a noun. 2) A missing hyphen in a compound adjective. 3) A verb used as a noun and the verb is not a noun in standard English.
+...e="7" enum="Method">    HTTP CONNECT method. The CONNECT method establishes a tunnel to the server id...
+                                                ^^^^^^^^^^^                                             
+
+8.) Line 222, column 26, Rule ID: CANT[1]
+Message: Did you mean 'can't' or 'cannot'?
+Suggestion: Can't; Cannot
+...n IP.   </constant>   <constant name="STATUS_CANT_RESOLVE" value="2" enum="Status">    Status:...
+                                                ^^^^                                             
+
+9.) Line 228, column 26, Rule ID: CANT[1]
+Message: Did you mean 'can't' or 'cannot'?
+Suggestion: Can't; Cannot
+...rver.   </constant>   <constant name="STATUS_CANT_CONNECT" value="4" enum="Status">    Status:...
+                                                ^^^^                                             
+
+10.) Line 250, column 78, Rule ID: EN_A_VS_AN
+Message: Use 'a' instead of 'an' if the following word doesn't start with a vowel sound, e.g. 'a sentence', 'a university'
+Suggestion: a
+...itching Protocol[/code]. Sent in response to an [code]Upgrade[/code] request header by the c...
+                                                ^^                                             
+
+11.) Line 394, column 89, Rule ID: PROGRESSIVE_VERBS[1]
+Message: The verb 'denying' is a stative verb and sometimes the progressive form is not correct. Try a simple form instead.
+...ailable For Legal Reasons[/code]. The server is denying access to the resource as a consequence of a...
+                                                ^^^^^^^^^^                                             
+More info: https://learnenglish.britishcouncil.org/en/intermediate-grammar/stative-verbs
+Time: 26848ms for 244 sentences (9.1 sentences/sec)

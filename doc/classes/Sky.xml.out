@@ -1,0 +1,42 @@
+1.) Line 22, column 29, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 32×32; 32·32
+...="RadianceSize">    Radiance texture size is 32x32 pixels.   </constant>   <constant name="RADI...
+                                                ^^^^^                                             
+
+2.) Line 25, column 29, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 64×64; 64·64
+...="RadianceSize">    Radiance texture size is 64x64 pixels.   </constant>   <constant name="RADI...
+                                                ^^^^^                                             
+
+3.) Line 28, column 29, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 128×128; 128·128
+...="RadianceSize">    Radiance texture size is 128x128 pixels.   </constant>   <constant name="RADI...
+                                                ^^^^^^^                                             
+
+4.) Line 31, column 29, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 256×256; 256·256
+...="RadianceSize">    Radiance texture size is 256x256 pixels.   </constant>   <constant name="RADI...
+                                                ^^^^^^^                                             
+
+5.) Line 34, column 29, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 512×512; 512·512
+...="RadianceSize">    Radiance texture size is 512x512 pixels.   </constant>   <constant name="RADI...
+                                                ^^^^^^^                                             
+
+6.) Line 37, column 29, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 1024×1024; 1024·1024
+...="RadianceSize">    Radiance texture size is 1024x1024 pixels.   </constant>   <constant name="RADI...
+                                                ^^^^^^^^^                                             
+
+7.) Line 40, column 29, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 2048×2048; 2048·2048
+...="RadianceSize">    Radiance texture size is 2048x2048 pixels.   </constant>   <constant name="RADI...
+                                                ^^^^^^^^^                                             
+Time: 11945ms for 16 sentences (1.3 sentences/sec)

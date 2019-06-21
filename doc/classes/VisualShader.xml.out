@@ -1,0 +1,50 @@
+1.) Line 43, column 66, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...0" name="type" type="int" enum="VisualShader.Type">    </argument>    <argument index="1" name...
+                                                ^^^^                                             
+
+2.) Line 59, column 66, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...0" name="type" type="int" enum="VisualShader.Type">    </argument>    <argument index="1" name...
+                                                ^^^^                                             
+
+3.) Line 75, column 66, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...0" name="type" type="int" enum="VisualShader.Type">    </argument>    <argument index="1" name...
+                                                ^^^^                                             
+
+4.) Line 91, column 66, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...0" name="type" type="int" enum="VisualShader.Type">    </argument>    <argument index="1" name...
+                                                ^^^^                                             
+
+5.) Line 101, column 66, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...0" name="type" type="int" enum="VisualShader.Type">    </argument>    <description>    </descr...
+                                                ^^^^                                             
+
+6.) Line 109, column 66, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...0" name="type" type="int" enum="VisualShader.Type">    </argument>    <description>    </descr...
+                                                ^^^^                                             
+
+7.) Line 117, column 66, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...0" name="type" type="int" enum="VisualShader.Type">    </argument>    <argument index="1" name...
+                                                ^^^^                                             
+
+8.) Line 127, column 66, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...0" name="type" type="int" enum="VisualShader.Type">    </argument>    <description>    </descr...
+                                                ^^^^                                             
+
+9.) Line 135, column 66, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...0" name="type" type="int" enum="VisualShader.Type">    </argument>    <argument index="1" name...
+                                                ^^^^                                             
+
+10.) Line 157, column 66, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...0" name="type" type="int" enum="VisualShader.Type">    </argument>    <argument index="1" name...
+                                                ^^^^                                             
+Time: 12081ms for 15 sentences (1.2 sentences/sec)

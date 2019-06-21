@@ -1,0 +1,12 @@
+1.) Line 76, column 5, Rule ID: ENGLISH_WORD_REPEAT_BEGINNING_RULE
+Message: Three successive sentences begin with the same word. Consider rewording the sentence or use a thesaurus to find a synonym.
+...ailable addresses matching that IP type.     If "bind_address" is set to any valid address (...
+                                                ^^                                             
+
+2.) Line 94, column 26, Rule ID: ARRIVE_ON_AT_THE_BEACH[91]
+Message: The usual proposition after "arrive" is "at" not "on". Did you mean 'arrive at'?
+Suggestion: arrive at
+...n>    <description>     Wait for a packet to arrive on the listening port, see [method listen].    ...
+                                                ^^^^^^^^^                                             
+More info: https://www.ldoceonline.com/dictionary/arrive
+Time: 12398ms for 18 sentences (1.5 sentences/sec)

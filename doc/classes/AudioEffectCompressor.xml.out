@@ -1,0 +1,6 @@
+1.) Line 5, column 1, Rule ID: AGREEMENT_SENT_START[33]
+Message: Possible agreement error. You should probably use: 'Reduce sounds' or 'Reduces sound'.
+Suggestion: Reduce sounds; Reduces sound
+...s a Compressor audio effect to an Audio bus.   Reduces sounds that exceed a certain threshold level, smoot...
+                                                ^^^^^^^^^^^^^^^^                                             
+Time: 13997ms for 28 sentences (2.0 sentences/sec)

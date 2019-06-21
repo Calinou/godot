@@ -1,0 +1,13 @@
+1.) Line 8, column 86, Rule ID: ADVERB_WORD_ORDER[9]
+Message: The adverb 'often' is usually put before the verb 'happen'.
+Suggestion: often happen
+...elper to get things going quickly and it may happen often that more functionality is desired to change...
+                                                ^^^^^^^^^^^^                                             
+More info: http://faculty.washington.edu/marynell/grammar/AdverbPl.html
+
+2.) Line 52, column 81, Rule ID: THERE_S_MANY[2]
+Message: Did you mean 'there're many cameras'?
+Suggestion: there're many cameras
+... for the scene (viewport and layer), in case there's many cameras in the scene.    </description>   </method> ...
+                                                ^^^^^^^^^^^^^^^^^^^^                                             
+Time: 17476ms for 58 sentences (3.3 sentences/sec)

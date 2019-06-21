@@ -1,0 +1,12 @@
+1.) Line 4, column 9, Rule ID: HE_VERB_AGR[8]
+Message: The singular proper name 'State' must be used with a third-person or a past tense verb: 'machines', 'machined'.
+Suggestion: machines; machined
+... version="3.2">  <brief_description>   State machine for control of animations.  </brief_descript...
+                                                ^^^^^^^                                             
+
+2.) Line 7, column 80, Rule ID: AGREEMENT_SENT_START[34]
+Message: Possible agreement error. You should probably use: 'node transitions'.
+Suggestion: Node transitions
+...ting animation states, connected in a graph. Nodes transitions can be configured to happen automatically or...
+                                                ^^^^^^^^^^^^^^^^^                                             
+Time: 11651ms for 32 sentences (2.7 sentences/sec)

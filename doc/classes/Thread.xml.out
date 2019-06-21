@@ -1,0 +1,6 @@
+1.) Line 39, column 35, Rule ID: CANT[1]
+Message: Did you mean 'can't' or 'cannot'?
+Suggestion: Can't; Cannot
+...TY_* enum.     Returns OK on success, or ERR_CANT_CREATE on failure.    </description>   </met...
+                                                ^^^^                                             
+Time: 11330ms for 14 sentences (1.2 sentences/sec)

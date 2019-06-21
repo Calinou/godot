@@ -1,0 +1,6 @@
+1.) Line 99, column 190, Rule ID: THE_SUPERLATIVE[2]
+Message: A determiner is probably missing here: 'potentially the slowest'.
+Suggestion: potentially the slowest
+...re sent in. Most reliable transfer mode, but potentially slowest due to the overhead. Use for critical data t...
+                                                ^^^^^^^^^^^^^^^^^^^                                             
+Time: 13767ms for 40 sentences (2.9 sentences/sec)

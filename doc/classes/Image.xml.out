@@ -1,0 +1,18 @@
+1.) Line 473, column 10, Rule ID: ALL_OF_THE[1]
+Message: Consider using 'all the'.
+Suggestion: all the
+...ter="_set_data" getter="_get_data">    Holds all of the image's color data in a given format. See [c...
+                                                ^^^^^^^^^^                                             
+
+2.) Line 521, column 41, Rule ID: THERE_S_MANY[2]
+Message: Did you mean 'there're two components'?
+Suggestion: there're two components
+...at">    OpenGL texture format GL_RG32F where there's two components, each a 16-bit "half-precision" floating-poi...
+                                                ^^^^^^^^^^^^^^^^^^^^^^                                             
+
+3.) Line 524, column 42, Rule ID: THERE_S_MANY[2]
+Message: Did you mean 'there're three components'?
+Suggestion: there're three components
+...t">    OpenGL texture format GL_RGB32F where there's three components, each a 16-bit "half-precision" floating-poi...
+                                                ^^^^^^^^^^^^^^^^^^^^^^^^                                             
+Time: 22432ms for 156 sentences (7.0 sentences/sec)

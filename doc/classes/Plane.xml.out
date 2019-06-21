@@ -1,0 +1,23 @@
+1.) Line 7, column 97, Rule ID: THE_PUNCT[1]
+Message: Did you forget something after 'a'?
+...ically, "normal" is the normal of the plane (a,b,c normalized), and "d" is the distance from...
+                                                ^^                                             
+
+2.) Line 94, column 81, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...of the three planes "b", "c" and this plane. If no intersection is found null is returned.  ...
+                                                ^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+3.) Line 105, column 127, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+... the direction normal "dir" with this plane. If no intersection is found null is returned.  ...
+                                                ^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+
+4.) Line 116, column 106, Rule ID: SENTENCE_FRAGMENT[1]
+Message: “If” at the beginning of a sentence usually requires a 2nd clause. Maybe a comma, question or exclamation mark is missing, or the sentence is incomplete and should be joined with the following sentence.
+...n "begin" to position "end" with this plane. If no intersection is found null is returned.  ...
+                                                ^^                                             
+More info: http://www.chompchomp.com/rules/fragrules.htm
+Time: 14277ms for 21 sentences (1.5 sentences/sec)

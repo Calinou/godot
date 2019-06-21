@@ -1,0 +1,18 @@
+1.) Line 313, column 29, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 1×1; 1·1
+...">   </constant>   <constant name="SSAO_BLUR_1x1" value="1" enum="SSAOBlur">   </constant>   ...
+                                                ^^^                                             
+
+2.) Line 315, column 29, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 2×2; 2·2
+...">   </constant>   <constant name="SSAO_BLUR_2x2" value="2" enum="SSAOBlur">   </constant>   ...
+                                                ^^^                                             
+
+3.) Line 317, column 29, Rule ID: MULTIPLICATION_SIGN[2]
+Message: Prefira o símbolo de multiplicação.
+Suggestion: 3×3; 3·3
+...">   </constant>   <constant name="SSAO_BLUR_3x3" value="3" enum="SSAOBlur">   </constant>   ...
+                                                ^^^                                             
+Time: 18952ms for 100 sentences (5.3 sentences/sec)

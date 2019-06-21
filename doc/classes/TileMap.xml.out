@@ -1,0 +1,36 @@
+1.) Line 60, column 30, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...">    </return>    <argument index="0" name="bit" type="int">    </argument>    <description>...
+                                                ^^^
+
+2.) Line 69, column 30, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...">    </return>    <argument index="0" name="bit" type="int">    </argument>    <description>...
+                                                ^^^
+
+3.) Line 117, column 67, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: X axis
+...e[/code] if the given cell is flipped in the x axis.    </description>   </method>   <method nam...
+                                                ^^^^^^
+
+4.) Line 128, column 67, Rule ID: EN_COMPOUNDS
+Message: This word is normally spelled with hyphen.
+Suggestion: Y axis
+...e[/code] if the given cell is flipped in the y axis.    </description>   </method>   <method nam...
+                                                ^^^^^^
+
+5.) Line 199, column 30, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...">    </return>    <argument index="0" name="bit" type="int">    </argument>    <argument ind...
+                                                ^^^
+
+6.) Line 210, column 30, Rule ID: CONFUSION_RULE
+Message: Statistics suggests that 'but' might be the correct word here. Please check.
+Suggestion: but
+...">    </return>    <argument index="0" name="bit" type="int">    </argument>    <argument ind...
+                                                ^^^
+Time: 17978ms for 82 sentences (4.6 sentences/sec)
