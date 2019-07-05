@@ -68,6 +68,7 @@ public:
 	};
 
 	struct Config {
+		bool shrink_3d;
 		bool shrink_textures_x2;
 		bool use_fast_texture_filter;
 		bool use_anisotropic_filter;
@@ -1313,6 +1314,9 @@ public:
 		struct Buffers {
 			bool active;
 			bool effects_active;
+
+			int width, height;
+
 			GLuint fbo;
 			GLuint depth;
 			GLuint specular;
@@ -1394,6 +1398,7 @@ public:
 		bool flags[RENDER_TARGET_FLAG_MAX];
 
 		bool used_in_frame;
+		bool use_shrink_3d;
 		VS::ViewportMSAA msaa;
 		bool use_fxaa;
 		bool use_debanding;
@@ -1408,6 +1413,7 @@ public:
 				width(0),
 				height(0),
 				used_in_frame(false),
+				use_shrink_3d(false),
 				msaa(VS::VIEWPORT_MSAA_DISABLED),
 				use_fxaa(false),
 				use_debanding(false),
@@ -1421,6 +1427,8 @@ public:
 			flags[RENDER_TARGET_HDR] = true;
 			buffers.active = false;
 			buffers.effects_active = false;
+			buffers.width = 0;
+			buffers.height = 0;
 		}
 	};
 

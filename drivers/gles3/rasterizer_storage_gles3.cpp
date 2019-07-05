@@ -46,6 +46,8 @@
 #include "editor/editor_settings.h"
 #endif
 
+#define SHRINK_3D 4.0
+
 /* TEXTURE API */
 
 #define _EXT_COMPRESSED_RGB_PVRTC_4BPPV1_IMG 0x8C00
@@ -6939,6 +6941,10 @@ void RasterizerStorageGLES3::_render_target_allocate(RenderTarget *rt) {
 		}
 	}
 
+	rt->use_shrink_3d = false;
+	rt->buffers.width = rt->width;
+	rt->buffers.height = rt->height;
+
 	{
 		/* FRONT FBO */
 
@@ -7002,7 +7008,6 @@ void RasterizerStorageGLES3::_render_target_allocate(RenderTarget *rt) {
 	}
 
 	/* BACK FBO */
-
 	if (!rt->flags[RENDER_TARGET_NO_3D] && (!rt->flags[RENDER_TARGET_NO_3D_EFFECTS] || rt->msaa != VS::VIEWPORT_MSAA_DISABLED)) {
 		rt->buffers.active = true;
 
@@ -7016,6 +7021,13 @@ void RasterizerStorageGLES3::_render_target_allocate(RenderTarget *rt) {
 			msaa = max_samples;
 		}
 
+		// shrink_3d is only useful when using a back buffer
+		if (config.shrink_3d) {
+			rt->use_shrink_3d = true;
+			rt->buffers.width = rt->width / SHRINK_3D;
+			rt->buffers.height = rt->height / SHRINK_3D;
+		}
+
 		//regular fbo
 		glGenFramebuffers(1, &rt->buffers.fbo);
 		glBindFramebuffer(GL_FRAMEBUFFER, rt->buffers.fbo);
@@ -7023,9 +7035,9 @@ void RasterizerStorageGLES3::_render_target_allocate(RenderTarget *rt) {
 		glGenRenderbuffers(1, &rt->buffers.depth);
 		glBindRenderbuffer(GL_RENDERBUFFER, rt->buffers.depth);
 		if (msaa == 0) {
-			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, rt->width, rt->height);
+			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, rt->buffers.width, rt->buffers.height);
 		} else {
-			glRenderbufferStorageMultisample(GL_RENDERBUFFER, msaa, GL_DEPTH_COMPONENT24, rt->width, rt->height);
+			glRenderbufferStorageMultisample(GL_RENDERBUFFER, msaa, GL_DEPTH_COMPONENT24, rt->buffers.width, rt->buffers.height);
 		}
 
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rt->buffers.depth);
@@ -7034,14 +7046,16 @@ void RasterizerStorageGLES3::_render_target_allocate(RenderTarget *rt) {
 		glBindRenderbuffer(GL_RENDERBUFFER, rt->buffers.diffuse);
 
 		if (msaa == 0) {
-			glRenderbufferStorage(GL_RENDERBUFFER, color_internal_format, rt->width, rt->height);
+			glRenderbufferStorage(GL_RENDERBUFFER, color_internal_format, rt->buffers.width, rt->buffers.height);
 		} else {
-			glRenderbufferStorageMultisample(GL_RENDERBUFFER, msaa, color_internal_format, rt->width, rt->height);
+			glRenderbufferStorageMultisample(GL_RENDERBUFFER, msaa, color_internal_format, rt->buffers.width, rt->buffers.height);
 		}
 
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, rt->buffers.diffuse);
 
-		if (!rt->flags[RENDER_TARGET_NO_3D_EFFECTS]) {
+		//don't use effects when using shrink 3d
+		if (!rt->flags[RENDER_TARGET_NO_3D_EFFECTS] && !rt->use_shrink_3d) {
+
 			rt->buffers.effects_active = true;
 			glGenRenderbuffers(1, &rt->buffers.specular);
 			glBindRenderbuffer(GL_RENDERBUFFER, rt->buffers.specular);
@@ -7196,14 +7210,14 @@ void RasterizerStorageGLES3::_render_target_allocate(RenderTarget *rt) {
 		}
 	} else {
 		rt->buffers.active = false;
-		rt->buffers.effects_active = true;
+		rt->buffers.effects_active = false;
 	}
 
-	if (!rt->flags[RENDER_TARGET_NO_SAMPLING] && rt->width >= 2 && rt->height >= 2) {
+	if (!rt->flags[RENDER_TARGET_NO_SAMPLING] && rt->buffers.width >= 2 && rt->buffers.height >= 2) {
 		for (int i = 0; i < 2; i++) {
 			ERR_FAIL_COND(rt->effects.mip_maps[i].sizes.size());
-			int w = rt->width;
-			int h = rt->height;
+			int w = rt->buffers.width;
+			int h = rt->buffers.height;
 
 			if (i > 0) {
 				w >>= 1;
@@ -8082,6 +8096,8 @@ void RasterizerStorageGLES3::initialize() {
 			config.extensions.insert((const char *)s);
 		}
 	}
+
+	config.shrink_3d = true; //ProjectSettings::get_singleton()->get("display/window/stretch/shrink_3d")
 
 	config.shrink_textures_x2 = false;
 	config.use_fast_texture_filter = int(ProjectSettings::get_singleton()->get("rendering/quality/filters/use_nearest_mipmap_filter"));
