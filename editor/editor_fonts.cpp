@@ -64,11 +64,39 @@
 	Ref<DynamicFont> m_name;                                    \
 	m_name.instance();                                          \
 	m_name->set_size(m_size);                                   \
-	if (CustomFont.is_valid()) {                                \
+	if (CustomFontBold.is_valid()) {                            \
 		m_name->set_font_data(CustomFontBold);                  \
 		m_name->add_fallback(DefaultFontBold);                  \
 	} else {                                                    \
 		m_name->set_font_data(DefaultFontBold);                 \
+	}                                                           \
+	m_name->set_spacing(DynamicFont::SPACING_TOP, -EDSCALE);    \
+	m_name->set_spacing(DynamicFont::SPACING_BOTTOM, -EDSCALE); \
+	MAKE_FALLBACKS(m_name);
+
+#define MAKE_ITALIC_FONT(m_name, m_size)                        \
+	Ref<DynamicFont> m_name;                                    \
+	m_name.instance();                                          \
+	m_name->set_size(m_size);                                   \
+	if (CustomFontItalic.is_valid()) {                          \
+		m_name->set_font_data(CustomFontItalic);                \
+		m_name->add_fallback(DefaultFontItalic);                \
+	} else {                                                    \
+		m_name->set_font_data(DefaultFontItalic);               \
+	}                                                           \
+	m_name->set_spacing(DynamicFont::SPACING_TOP, -EDSCALE);    \
+	m_name->set_spacing(DynamicFont::SPACING_BOTTOM, -EDSCALE); \
+	MAKE_FALLBACKS(m_name);
+
+#define MAKE_BOLD_ITALIC_FONT(m_name, m_size)                   \
+	Ref<DynamicFont> m_name;                                    \
+	m_name.instance();                                          \
+	m_name->set_size(m_size);                                   \
+	if (CustomFontBoldItalic.is_valid()) {                      \
+		m_name->set_font_data(CustomFontBoldItalic);            \
+		m_name->add_fallback(DefaultFontBoldItalic);            \
+	} else {                                                    \
+		m_name->set_font_data(DefaultFontBoldItalic);           \
 	}                                                           \
 	m_name->set_spacing(DynamicFont::SPACING_TOP, -EDSCALE);    \
 	m_name->set_spacing(DynamicFont::SPACING_BOTTOM, -EDSCALE); \
@@ -103,7 +131,7 @@ void editor_register_fonts(Ref<Theme> p_theme) {
 		CustomFont->set_antialiased(font_antialiased);
 		CustomFont->set_hinting(font_hinting);
 		CustomFont->set_font_path(custom_font_path);
-		CustomFont->set_force_autohinter(true); //just looks better..i think?
+		CustomFont->set_force_autohinter(true);
 	} else {
 		EditorSettings::get_singleton()->set_manually("interface/editor/main_font", "");
 	}
@@ -117,9 +145,37 @@ void editor_register_fonts(Ref<Theme> p_theme) {
 		CustomFontBold->set_antialiased(font_antialiased);
 		CustomFontBold->set_hinting(font_hinting);
 		CustomFontBold->set_font_path(custom_font_path_bold);
-		CustomFontBold->set_force_autohinter(true); //just looks better..i think?
+		CustomFontBold->set_force_autohinter(true);
 	} else {
 		EditorSettings::get_singleton()->set_manually("interface/editor/main_font_bold", "");
+	}
+
+	/* Custom Italic font */
+
+	String custom_font_path_italic = EditorSettings::get_singleton()->get("interface/editor/main_font_italic");
+	Ref<DynamicFontData> CustomFontItalic;
+	if (custom_font_path_italic.length() > 0 && dir->file_exists(custom_font_path_italic)) {
+		CustomFontItalic.instance();
+		CustomFontItalic->set_antialiased(font_antialiased);
+		CustomFontItalic->set_hinting(font_hinting);
+		CustomFontItalic->set_font_path(custom_font_path_italic);
+		CustomFontItalic->set_force_autohinter(true);
+	} else {
+		EditorSettings::get_singleton()->set_manually("interface/editor/main_font_italic", "");
+	}
+
+	/* Custom Bold Italic font */
+
+	String custom_font_path_bold_italic = EditorSettings::get_singleton()->get("interface/editor/main_font_bold_italic");
+	Ref<DynamicFontData> CustomFontBoldItalic;
+	if (custom_font_path_bold_italic.length() > 0 && dir->file_exists(custom_font_path_bold_italic)) {
+		CustomFontBoldItalic.instance();
+		CustomFontBoldItalic->set_antialiased(font_antialiased);
+		CustomFontBoldItalic->set_hinting(font_hinting);
+		CustomFontBoldItalic->set_font_path(custom_font_path_bold_italic);
+		CustomFontBoldItalic->set_force_autohinter(true);
+	} else {
+		EditorSettings::get_singleton()->set_manually("interface/editor/main_font_bold_italic", "");
 	}
 
 	/* Custom source code font */
@@ -139,65 +195,79 @@ void editor_register_fonts(Ref<Theme> p_theme) {
 
 	memdelete(dir);
 
-	/* Droid Sans */
+	// Unhinted fonts are bundled with the editor, as they are smaller compared to hinted fonts.
+	// To provide hinting, all fonts (except Hack) use the FreeType autohinter to
+	// generate hinting instructions on-the-fly.
 
 	Ref<DynamicFontData> DefaultFont;
 	DefaultFont.instance();
 	DefaultFont->set_antialiased(font_antialiased);
 	DefaultFont->set_hinting(font_hinting);
-	DefaultFont->set_font_ptr(_font_NotoSansUI_Regular, _font_NotoSansUI_Regular_size);
-	DefaultFont->set_force_autohinter(true); //just looks better..i think?
+	DefaultFont->set_font_ptr(_font_NotoSans_Regular, _font_NotoSans_Regular_size);
+	DefaultFont->set_force_autohinter(true);
 
 	Ref<DynamicFontData> DefaultFontBold;
 	DefaultFontBold.instance();
 	DefaultFontBold->set_antialiased(font_antialiased);
 	DefaultFontBold->set_hinting(font_hinting);
-	DefaultFontBold->set_font_ptr(_font_NotoSansUI_Bold, _font_NotoSansUI_Bold_size);
-	DefaultFontBold->set_force_autohinter(true); // just looks better..i think?
+	DefaultFontBold->set_font_ptr(_font_NotoSans_Bold, _font_NotoSans_Bold_size);
+	DefaultFontBold->set_force_autohinter(true);
+
+	Ref<DynamicFontData> DefaultFontItalic;
+	DefaultFontItalic.instance();
+	DefaultFontItalic->set_antialiased(font_antialiased);
+	DefaultFontItalic->set_hinting(font_hinting);
+	DefaultFontItalic->set_font_ptr(_font_NotoSans_Italic, _font_NotoSans_Italic_size);
+	DefaultFontItalic->set_force_autohinter(true);
+
+	Ref<DynamicFontData> DefaultFontBoldItalic;
+	DefaultFontBoldItalic.instance();
+	DefaultFontBoldItalic->set_antialiased(font_antialiased);
+	DefaultFontBoldItalic->set_hinting(font_hinting);
+	DefaultFontBoldItalic->set_font_ptr(_font_NotoSans_BoldItalic, _font_NotoSans_BoldItalic_size);
+	DefaultFontBoldItalic->set_force_autohinter(true);
 
 	Ref<DynamicFontData> FontFallback;
 	FontFallback.instance();
 	FontFallback->set_antialiased(font_antialiased);
 	FontFallback->set_hinting(font_hinting);
 	FontFallback->set_font_ptr(_font_DroidSansFallback, _font_DroidSansFallback_size);
-	FontFallback->set_force_autohinter(true); //just looks better..i think?
+	FontFallback->set_force_autohinter(true);
 
 	Ref<DynamicFontData> FontJapanese;
 	FontJapanese.instance();
 	FontJapanese->set_antialiased(font_antialiased);
 	FontJapanese->set_hinting(font_hinting);
 	FontJapanese->set_font_ptr(_font_DroidSansJapanese, _font_DroidSansJapanese_size);
-	FontJapanese->set_force_autohinter(true); //just looks better..i think?
+	FontJapanese->set_force_autohinter(true);
 
 	Ref<DynamicFontData> FontArabic;
 	FontArabic.instance();
 	FontArabic->set_antialiased(font_antialiased);
 	FontArabic->set_hinting(font_hinting);
 	FontArabic->set_font_ptr(_font_NotoNaskhArabicUI_Regular, _font_NotoNaskhArabicUI_Regular_size);
-	FontArabic->set_force_autohinter(true); //just looks better..i think?
+	FontArabic->set_force_autohinter(true);
 
 	Ref<DynamicFontData> FontHebrew;
 	FontHebrew.instance();
 	FontHebrew->set_antialiased(font_antialiased);
 	FontHebrew->set_hinting(font_hinting);
 	FontHebrew->set_font_ptr(_font_NotoSansHebrew_Regular, _font_NotoSansHebrew_Regular_size);
-	FontHebrew->set_force_autohinter(true); //just looks better..i think?
+	FontHebrew->set_force_autohinter(true);
 
 	Ref<DynamicFontData> FontThai;
 	FontThai.instance();
 	FontThai->set_antialiased(font_antialiased);
 	FontThai->set_hinting(font_hinting);
 	FontThai->set_font_ptr(_font_NotoSansThaiUI_Regular, _font_NotoSansThaiUI_Regular_size);
-	FontThai->set_force_autohinter(true); //just looks better..i think?
+	FontThai->set_force_autohinter(true);
 
 	Ref<DynamicFontData> FontHindi;
 	FontHindi.instance();
 	FontHindi->set_antialiased(font_antialiased);
 	FontHindi->set_hinting(font_hinting);
 	FontHindi->set_font_ptr(_font_NotoSansDevanagariUI_Regular, _font_NotoSansDevanagariUI_Regular_size);
-	FontHindi->set_force_autohinter(true); //just looks better..i think?
-
-	/* Hack */
+	FontHindi->set_force_autohinter(true);
 
 	Ref<DynamicFontData> dfmono;
 	dfmono.instance();
@@ -214,6 +284,14 @@ void editor_register_fonts(Ref<Theme> p_theme) {
 	// Bold font
 	MAKE_BOLD_FONT(df_bold, default_font_size);
 	p_theme->set_font("bold", "EditorFonts", df_bold);
+
+	// Italic font
+	MAKE_ITALIC_FONT(df_italic, default_font_size);
+	p_theme->set_font("italic", "EditorFonts", df_italic);
+
+	// Bold italic font
+	MAKE_BOLD_ITALIC_FONT(df_bold_italic, default_font_size);
+	p_theme->set_font("bold_italic", "EditorFonts", df_bold_italic);
 
 	// Title font
 	MAKE_BOLD_FONT(df_title, default_font_size + 2 * EDSCALE);

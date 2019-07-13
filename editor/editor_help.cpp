@@ -328,6 +328,8 @@ void EditorHelp::_update_doc() {
 
 	Ref<Font> doc_font = get_font("doc", "EditorFonts");
 	Ref<Font> doc_bold_font = get_font("doc_bold", "EditorFonts");
+	Ref<Font> doc_italic_font = get_font("doc_italic", "EditorFonts");
+	Ref<Font> doc_bold_italic_font = get_font("doc_bold_italic", "EditorFonts");
 	Ref<Font> doc_title_font = get_font("doc_title", "EditorFonts");
 	Ref<Font> doc_code_font = get_font("doc_source", "EditorFonts");
 	String link_color_text = title_color.to_html(false);
@@ -1184,6 +1186,8 @@ static void _add_text_to_rt(const String &p_bbcode, RichTextLabel *p_rt) {
 
 	Ref<Font> doc_font = p_rt->get_font("doc", "EditorFonts");
 	Ref<Font> doc_bold_font = p_rt->get_font("doc_bold", "EditorFonts");
+	Ref<Font> doc_italic_font = p_rt->get_font("doc_italic", "EditorFonts");
+	Ref<Font> doc_bold_italic_font = p_rt->get_font("doc_bold_italic", "EditorFonts");
 	Ref<Font> doc_code_font = p_rt->get_font("doc_source", "EditorFonts");
 	Color font_color_hl = p_rt->get_color("headline_color", "EditorHelp");
 	Color link_color = p_rt->get_color("accent_color", "Editor").linear_interpolate(font_color_hl, 0.8);
@@ -1191,9 +1195,11 @@ static void _add_text_to_rt(const String &p_bbcode, RichTextLabel *p_rt) {
 	String bbcode = p_bbcode.dedent().replace("\t", "").replace("\r", "").strip_edges();
 
 	List<String> tag_stack;
-	bool code_tag = false;
-
 	int pos = 0;
+	bool code_tag = false;
+	bool in_bold = false;
+	bool in_italics = false;
+
 	while (pos < bbcode.length()) {
 
 		int brk_pos = bbcode.find("[", pos);
@@ -1227,6 +1233,11 @@ static void _add_text_to_rt(const String &p_bbcode, RichTextLabel *p_rt) {
 
 		if (tag.begins_with("/")) {
 			bool tag_ok = tag_stack.size() && tag_stack.front()->get() == tag.substr(1, tag.length());
+
+			if (tag_stack.front()->get() == "b")
+				in_bold = false;
+			if (tag_stack.front()->get() == "i")
+				in_italics = false;
 
 			if (!tag_ok) {
 
@@ -1271,13 +1282,21 @@ static void _add_text_to_rt(const String &p_bbcode, RichTextLabel *p_rt) {
 		} else if (tag == "b") {
 
 			//use bold font
-			p_rt->push_font(doc_bold_font);
+			in_bold = true;
+			if (in_italics)
+				p_rt->push_font(doc_bold_italic_font);
+			else
+				p_rt->push_font(doc_bold_font);
 			pos = brk_end + 1;
 			tag_stack.push_front(tag);
 		} else if (tag == "i") {
 
 			//use italics font
-			p_rt->push_color(font_color_hl);
+			in_italics = true;
+			if (in_bold)
+				p_rt->push_font(doc_bold_italic_font);
+			else
+				p_rt->push_font(doc_italic_font);
 			pos = brk_end + 1;
 			tag_stack.push_front(tag);
 		} else if (tag == "code" || tag == "codeblock") {
