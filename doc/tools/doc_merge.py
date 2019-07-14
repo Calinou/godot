@@ -4,7 +4,6 @@
 import sys
 import xml.etree.ElementTree as ET
 
-
 tree = ET.parse(sys.argv[1])
 old_doc = tree.getroot()
 
@@ -43,6 +42,7 @@ def dec_tab():
     global tab
     tab -= 1
 
+
 write_string(f, '<?xml version="1.0" encoding="UTF-8" ?>')
 write_string(f, '<doc version="' + new_doc.attrib["version"] + '">')
 
@@ -57,7 +57,7 @@ def get_tag(node, name):
 def find_method_descr(old_class, name):
 
     methods = old_class.find("methods")
-    if(methods != None and len(list(methods)) > 0):
+    if (methods != None and len(list(methods)) > 0):
         for m in list(methods):
             if (m.attrib["name"] == name):
                 description = m.find("description")
@@ -70,7 +70,7 @@ def find_method_descr(old_class, name):
 def find_signal_descr(old_class, name):
 
     signals = old_class.find("signals")
-    if(signals != None and len(list(signals)) > 0):
+    if (signals != None and len(list(signals)) > 0):
         for m in list(signals):
             if (m.attrib["name"] == name):
                 description = m.find("description")
@@ -85,7 +85,7 @@ def find_constant_descr(old_class, name):
     if (old_class is None):
         return None
     constants = old_class.find("constants")
-    if(constants != None and len(list(constants)) > 0):
+    if (constants != None and len(list(constants)) > 0):
         for m in list(constants):
             if (m.attrib["name"] == name):
                 if (m.text.strip() != ""):
@@ -124,7 +124,7 @@ def write_class(c):
     write_string(f, "</description>")
 
     methods = c.find("methods")
-    if(methods != None and len(list(methods)) > 0):
+    if (methods != None and len(list(methods)) > 0):
 
         write_string(f, "<methods>")
         inc_tab()
@@ -132,7 +132,9 @@ def write_class(c):
         for m in list(methods):
             qualifiers = get_tag(m, "qualifiers")
 
-            write_string(f, '<method name="' + escape(m.attrib["name"]) + '" ' + qualifiers + '>')
+            write_string(
+                f,
+                '<method name="' + escape(m.attrib["name"]) + '" ' + qualifiers + '>')
             inc_tab()
 
             for a in list(m):
@@ -144,7 +146,10 @@ def write_class(c):
 
                     default = get_tag(a, "default")
 
-                    write_string(f, '<argument index="' + a.attrib["index"] + '" name="' + escape(a.attrib["name"]) + '" type="' + a.attrib["type"] + '"' + default + '>')
+                    write_string(
+                        f, '<argument index="' + a.attrib["index"] + '" name="' +
+                        escape(a.attrib["name"]) + '" type="' + a.attrib["type"] + '"' +
+                        default + '>')
                     write_string(f, '</argument>')
 
             write_string(f, '<description>')
@@ -160,7 +165,7 @@ def write_class(c):
         write_string(f, "</methods>")
 
     signals = c.find("signals")
-    if(signals != None and len(list(signals)) > 0):
+    if (signals != None and len(list(signals)) > 0):
 
         write_string(f, "<signals>")
         inc_tab()
@@ -173,7 +178,9 @@ def write_class(c):
             for a in list(m):
                 if (a.tag == "argument"):
 
-                    write_string(f, '<argument index="' + a.attrib["index"] + '" name="' + escape(a.attrib["name"]) + '" type="' + a.attrib["type"] + '">')
+                    write_string(
+                        f, '<argument index="' + a.attrib["index"] + '" name="' +
+                        escape(a.attrib["name"]) + '" type="' + a.attrib["type"] + '">')
                     write_string(f, '</argument>')
 
             write_string(f, '<description>')
@@ -188,14 +195,16 @@ def write_class(c):
         write_string(f, "</signals>")
 
     constants = c.find("constants")
-    if(constants != None and len(list(constants)) > 0):
+    if (constants != None and len(list(constants)) > 0):
 
         write_string(f, "<constants>")
         inc_tab()
 
         for m in list(constants):
 
-            write_string(f, '<constant name="' + escape(m.attrib["name"]) + '" value="' + m.attrib["value"] + '">')
+            write_string(
+                f, '<constant name="' + escape(m.attrib["name"]) + '" value="' +
+                m.attrib["value"] + '">')
             old_constant_descr = find_constant_descr(old_class, m.attrib["name"])
             if (old_constant_descr):
                 write_string(f, escape(old_constant_descr.strip()))
@@ -206,6 +215,7 @@ def write_class(c):
 
     dec_tab()
     write_string(f, "</class>")
+
 
 for c in list(old_doc):
     old_classes[c.attrib["name"]] = c

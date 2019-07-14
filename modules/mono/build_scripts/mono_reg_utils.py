@@ -5,7 +5,7 @@ from compat import decode_utf8
 
 if os.name == 'nt':
     import sys
-    if sys.version_info < (3,):
+    if sys.version_info < (3, ):
         import _winreg as winreg
     else:
         import winreg
@@ -75,7 +75,9 @@ def find_msbuild_tools_path_reg():
         vswhere = os.getenv('PROGRAMFILES')
     vswhere += r'\Microsoft Visual Studio\Installer\vswhere.exe'
 
-    vswhere_args = ['-latest', '-products', '*', '-requires', 'Microsoft.Component.MSBuild']
+    vswhere_args = [
+        '-latest', '-products', '*', '-requires', 'Microsoft.Component.MSBuild'
+    ]
 
     try:
         lines = subprocess.check_output([vswhere] + vswhere_args).splitlines()
@@ -103,7 +105,7 @@ def find_msbuild_tools_path_reg():
     except ValueError as e:
         print('Error reading output from vswhere: ' + e.message)
     except WindowsError:
-        pass # Fine, vswhere not found
+        pass  # Fine, vswhere not found
     except (subprocess.CalledProcessError, OSError):
         pass
 

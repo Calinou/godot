@@ -14,10 +14,12 @@ import editor_builders
 def _make_doc_data_class_path(to_path):
     # NOTE: It is safe to generate this file here, since this is still executed serially
     g = open_utf8(os.path.join(to_path, "doc_data_class_path.gen.h"), "w")
-    g.write("static const int _doc_data_class_path_count = " + str(len(env.doc_class_path)) + ";\n")
+    g.write("static const int _doc_data_class_path_count = " +
+            str(len(env.doc_class_path)) + ";\n")
     g.write("struct _DocDataClassPath { const char* name; const char* path; };\n")
 
-    g.write("static const _DocDataClassPath _doc_data_class_paths[" + str(len(env.doc_class_path) + 1) + "] = {\n");
+    g.write("static const _DocDataClassPath _doc_data_class_paths[" +
+            str(len(env.doc_class_path) + 1) + "] = {\n")
     for c in sorted(env.doc_class_path):
         g.write("\t{\"" + c + "\", \"" + env.doc_class_path[c] + "\"},\n")
     g.write("\t{NULL, NULL}\n")
@@ -60,7 +62,8 @@ if env['tools']:
 
     docs = sorted(docs)
     env.Depends("#editor/doc_data_compressed.gen.h", docs)
-    env.CommandNoCache("#editor/doc_data_compressed.gen.h", docs, run_in_subprocess(editor_builders.make_doc_header))
+    env.CommandNoCache("#editor/doc_data_compressed.gen.h", docs,
+                       run_in_subprocess(editor_builders.make_doc_header))
 
     import glob
 
@@ -69,14 +72,16 @@ if env['tools']:
     # Translations
     tlist = glob.glob(path + "/translations/*.po")
     env.Depends('#editor/translations.gen.h', tlist)
-    env.CommandNoCache('#editor/translations.gen.h', tlist, run_in_subprocess(editor_builders.make_translations_header))
+    env.CommandNoCache('#editor/translations.gen.h', tlist,
+                       run_in_subprocess(editor_builders.make_translations_header))
 
     # Fonts
     flist = glob.glob(path + "/../thirdparty/fonts/*.ttf")
     flist.extend(glob.glob(path + "/../thirdparty/fonts/*.otf"))
     flist.sort()
     env.Depends('#editor/builtin_fonts.gen.h', flist)
-    env.CommandNoCache('#editor/builtin_fonts.gen.h', flist, run_in_subprocess(editor_builders.make_fonts_header))
+    env.CommandNoCache('#editor/builtin_fonts.gen.h', flist,
+                       run_in_subprocess(editor_builders.make_fonts_header))
 
     env.add_source_files(env.editor_sources, "*.cpp")
 

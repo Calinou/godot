@@ -17,11 +17,9 @@ if env['tools']:
     env_mono.add_source_files(env.modules_sources, 'editor/*.cpp')
     # NOTE: It is safe to generate this file here, since this is still executed serially
     import build_scripts.make_cs_compressed_header as make_cs_compressed_header
-    make_cs_compressed_header.generate_header(
-        'glue/Managed/Files',
-        'glue/cs_compressed.gen.h',
-        'glue/cs_glue_version.gen.h'
-    )
+    make_cs_compressed_header.generate_header('glue/Managed/Files',
+                                              'glue/cs_compressed.gen.h',
+                                              'glue/cs_glue_version.gen.h')
 
 # Glue sources
 if env_mono['mono_glue']:
@@ -29,7 +27,9 @@ if env_mono['mono_glue']:
 
     import os.path
     if not os.path.isfile('glue/mono_glue.gen.cpp'):
-        raise RuntimeError("Mono glue sources not found. Did you forget to run '--generate-mono-glue'?")
+        raise RuntimeError(
+            "Mono glue sources not found. Did you forget to run '--generate-mono-glue'?"
+        )
 
 if env_mono['tools'] or env_mono['target'] != 'release':
     env_mono.Append(CPPDEFINES=['GD_MONO_HOT_RELOAD'])

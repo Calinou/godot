@@ -7,8 +7,8 @@ env.add_source_files(env.drivers_sources, "*.cpp")
 # Thirdparty dependencies
 thirdparty_dir = "#thirdparty/b2d_convexdecomp/"
 thirdparty_sources = [
-	"b2Polygon.cpp",
-	"b2Triangle.cpp",
+    "b2Polygon.cpp",
+    "b2Triangle.cpp",
 ]
 thirdparty_sources = [thirdparty_dir + file for file in thirdparty_sources]
 

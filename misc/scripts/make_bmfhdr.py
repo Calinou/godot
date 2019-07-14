@@ -1,5 +1,3 @@
-
-
 import sys
 
 if (len(sys.argv) != 2):
@@ -17,7 +15,7 @@ font_charcount = 0
 font_chars = []
 font_cc = 0
 
-while(l != ""):
+while (l != ""):
 
     fs = l.strip().find(" ")
     if (fs == -1):
@@ -49,7 +47,6 @@ while(l != ""):
         font_cc += 1
 
     l = f.readline()
-
 
 print("static const int _bi_font_" + name + "_height=" + str(font_height) + ";")
 print("static const int _bi_font_" + name + "_ascent=" + str(font_ascent) + ";")

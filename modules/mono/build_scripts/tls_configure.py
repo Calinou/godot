@@ -1,19 +1,22 @@
 from __future__ import print_function
 
+
 def supported(result):
     return 'supported' if result else 'not supported'
 
 
 def check_cxx11_thread_local(conf):
     print('Checking for `thread_local` support...', end=" ")
-    result = conf.TryCompile('thread_local int foo = 0; int main() { return foo; }', '.cpp')
+    result = conf.TryCompile('thread_local int foo = 0; int main() { return foo; }',
+                             '.cpp')
     print(supported(result))
     return bool(result)
 
 
 def check_declspec_thread(conf):
     print('Checking for `__declspec(thread)` support...', end=" ")
-    result = conf.TryCompile('__declspec(thread) int foo = 0; int main() { return foo; }', '.cpp')
+    result = conf.TryCompile(
+        '__declspec(thread) int foo = 0; int main() { return foo; }', '.cpp')
     print(supported(result))
     return bool(result)
 

@@ -5,6 +5,7 @@ import sys
 # This file is mostly based on platform/x11/detect.py.
 # If editing this file, make sure to apply relevant changes here too.
 
+
 def is_active():
     return True
 
@@ -31,13 +32,21 @@ def get_opts():
     from SCons.Variables import BoolVariable, EnumVariable
     return [
         BoolVariable('use_llvm', 'Use the LLVM compiler', False),
-        BoolVariable('use_static_cpp', 'Link libgcc and libstdc++ statically for better portability', False),
-        BoolVariable('use_ubsan', 'Use LLVM/GCC compiler undefined behavior sanitizer (UBSAN)', False),
-        BoolVariable('use_asan', 'Use LLVM/GCC compiler address sanitizer (ASAN))', False),
+        BoolVariable('use_static_cpp',
+                     'Link libgcc and libstdc++ statically for better portability',
+                     False),
+        BoolVariable('use_ubsan',
+                     'Use LLVM/GCC compiler undefined behavior sanitizer (UBSAN)',
+                     False),
+        BoolVariable('use_asan', 'Use LLVM/GCC compiler address sanitizer (ASAN))',
+                     False),
         BoolVariable('use_lsan', 'Use LLVM/GCC compiler leak sanitizer (LSAN))', False),
-        EnumVariable('debug_symbols', 'Add debugging symbols to release builds', 'yes', ('yes', 'no', 'full')),
-        BoolVariable('separate_debug_symbols', 'Create a separate file containing debugging symbols', False),
-        BoolVariable('execinfo', 'Use libexecinfo on systems where glibc is not available', False),
+        EnumVariable('debug_symbols', 'Add debugging symbols to release builds', 'yes',
+                     ('yes', 'no', 'full')),
+        BoolVariable('separate_debug_symbols',
+                     'Create a separate file containing debugging symbols', False),
+        BoolVariable('execinfo',
+                     'Use libexecinfo on systems where glibc is not available', False),
     ]
 
 
@@ -51,9 +60,9 @@ def configure(env):
     ## Build type
 
     if (env["target"] == "release"):
-        if (env["optimize"] == "speed"): #optimize for speed (default)
+        if (env["optimize"] == "speed"):  #optimize for speed (default)
             env.Prepend(CCFLAGS=['-O3'])
-        else: #optimize for size
+        else:  #optimize for size
             env.Prepend(CCFLAGS=['-Os'])
 
         if (env["debug_symbols"] == "yes"):
@@ -62,9 +71,9 @@ def configure(env):
             env.Prepend(CCFLAGS=['-g2'])
 
     elif (env["target"] == "release_debug"):
-        if (env["optimize"] == "speed"): #optimize for speed (default)
+        if (env["optimize"] == "speed"):  #optimize for speed (default)
             env.Prepend(CCFLAGS=['-O2'])
-        else: #optimize for size
+        else:  #optimize for size
             env.Prepend(CCFLAGS=['-Os'])
         env.Prepend(CPPDEFINES=['DEBUG_ENABLED'])
 
@@ -97,7 +106,6 @@ def configure(env):
             env["LINK"] = "clang++"
         env.Append(CPPDEFINES=['TYPED_METHOD_BIND'])
         env.extra_suffix = ".llvm" + env.extra_suffix
-
 
     if env['use_ubsan'] or env['use_asan'] or env['use_lsan']:
         env.extra_suffix += "s"
@@ -147,10 +155,13 @@ def configure(env):
     if not env['builtin_bullet']:
         # We need at least version 2.89
         import subprocess
-        bullet_version = subprocess.check_output(['pkg-config', 'bullet', '--modversion']).strip()
+        bullet_version = subprocess.check_output(
+            ['pkg-config', 'bullet', '--modversion']).strip()
         if str(bullet_version) < "2.89":
             # Abort as system bullet was requested but too old
-            print("Bullet: System version {0} does not match minimal requirements ({1}). Aborting.".format(bullet_version, "2.89"))
+            print(
+                "Bullet: System version {0} does not match minimal requirements ({1}). Aborting."
+                .format(bullet_version, "2.89"))
             sys.exit(255)
         env.ParseConfig('pkg-config bullet --cflags --libs')
 
@@ -219,7 +230,9 @@ def configure(env):
     env.Append(CPPDEFINES=['SERVER_ENABLED', 'UNIX_ENABLED'])
 
     if (platform.system() == "Darwin"):
-        env.Append(LINKFLAGS=['-framework', 'Cocoa', '-framework', 'Carbon', '-lz', '-framework', 'IOKit'])
+        env.Append(LINKFLAGS=[
+            '-framework', 'Cocoa', '-framework', 'Carbon', '-lz', '-framework', 'IOKit'
+        ])
 
     env.Append(LIBS=['pthread'])
 

@@ -71,21 +71,21 @@ while (fname != ""):
     line = fileread.readline()
     header_done = False
 
-    while (line.strip() == ""): # Skip empty lines at the top
+    while (line.strip() == ""):  # Skip empty lines at the top
         line = fileread.readline()
 
-    if (line.find("/**********") == -1): # Godot header starts this way
+    if (line.find("/**********") == -1):  # Godot header starts this way
         # Maybe starting with a non-Godot comment, abort header magic
         header_done = True
 
-    while (not header_done): # Handle header now
-        if (line.find("/*") != 0): # No more starting with a comment
+    while (not header_done):  # Handle header now
+        if (line.find("/*") != 0):  # No more starting with a comment
             header_done = True
             if (line.strip() != ""):
                 text += line
         line = fileread.readline()
 
-    while (line != ""): # Dump everything until EOF
+    while (line != ""):  # Dump everything until EOF
         text += line
         line = fileread.readline()
 

@@ -1,4 +1,3 @@
-
 import sys
 
 arg = "memdump.txt"
@@ -8,15 +7,12 @@ if (len(sys.argv) > 1):
 
 f = open(arg, "rb")
 
-
 l = f.readline()
-
 
 sum = {}
 cnt = {}
 
-
-while(l != ""):
+while (l != ""):
 
     s = l.split("-")
     amount = int(s[1])
@@ -29,7 +25,6 @@ while(l != ""):
         cnt[what] = 1
 
     l = f.readline()
-
 
 for x in sum:
     print(x.strip() + "(" + str(cnt[x]) + "):\n: " + str(sum[x]))

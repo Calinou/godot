@@ -1,4 +1,3 @@
-
 def generate_compressed_config(config_src, output_dir):
     import os.path
     from compat import byte_to_str

@@ -10,7 +10,8 @@ def get_name():
 
 
 def can_build():
-    return 'EM_CONFIG' in os.environ or os.path.exists(os.path.expanduser('~/.emscripten'))
+    return 'EM_CONFIG' in os.environ or os.path.exists(
+        os.path.expanduser('~/.emscripten'))
 
 
 def get_opts():
@@ -61,22 +62,28 @@ def configure(env):
 
     em_config_file = os.getenv('EM_CONFIG') or os.path.expanduser('~/.emscripten')
     if not os.path.exists(em_config_file):
-        raise RuntimeError("Emscripten configuration file '%s' does not exist" % em_config_file)
+        raise RuntimeError("Emscripten configuration file '%s' does not exist" %
+                           em_config_file)
     with open(em_config_file) as f:
         em_config = {}
         try:
             # Emscripten configuration file is a Python file with simple assignments.
             exec(f.read(), em_config)
         except StandardError as e:
-            raise RuntimeError("Emscripten configuration file '%s' is invalid:\n%s" % (em_config_file, e))
-    if 'BINARYEN_ROOT' in em_config and os.path.isdir(os.path.join(em_config.get('BINARYEN_ROOT'), 'emscripten')):
+            raise RuntimeError("Emscripten configuration file '%s' is invalid:\n%s" %
+                               (em_config_file, e))
+    if 'BINARYEN_ROOT' in em_config and os.path.isdir(
+            os.path.join(em_config.get('BINARYEN_ROOT'), 'emscripten')):
         # New style, emscripten path as a subfolder of BINARYEN_ROOT
-        env.PrependENVPath('PATH', os.path.join(em_config.get('BINARYEN_ROOT'), 'emscripten'))
+        env.PrependENVPath('PATH',
+                           os.path.join(em_config.get('BINARYEN_ROOT'), 'emscripten'))
     elif 'EMSCRIPTEN_ROOT' in em_config:
         # Old style (but can be there as a result from previous activation, so do last)
         env.PrependENVPath('PATH', em_config.get('EMSCRIPTEN_ROOT'))
     else:
-        raise RuntimeError("'BINARYEN_ROOT' or 'EMSCRIPTEN_ROOT' missing in Emscripten configuration file '%s'" % em_config_file)
+        raise RuntimeError(
+            "'BINARYEN_ROOT' or 'EMSCRIPTEN_ROOT' missing in Emscripten configuration file '%s'"
+            % em_config_file)
 
     env['CC'] = 'emcc'
     env['CXX'] = 'em++'
@@ -90,8 +97,7 @@ def configure(env):
 
     # Use TempFileMunge since some AR invocations are too long for cmd.exe.
     # Use POSIX-style paths, required with TempFileMunge.
-    env['ARCOM_POSIX'] = env['ARCOM'].replace(
-        '$TARGET', '$TARGET.posix').replace(
+    env['ARCOM_POSIX'] = env['ARCOM'].replace('$TARGET', '$TARGET.posix').replace(
         '$SOURCES', '$SOURCES.posix')
     env['ARCOM'] = '${TEMPFILE(ARCOM_POSIX)}'
 

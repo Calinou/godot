@@ -190,7 +190,6 @@ MethodBind* create_method_bind($ifret R$ $ifnoret void$ (T::*p_method)($arg, P@$
 #endif
 """
 
-
 template_typed_free_func = """
 #ifdef TYPED_METHOD_BIND
 template<class T $ifret ,class R$ $ifargs ,$ $arg, class P@$>
@@ -280,14 +279,13 @@ MethodBind* create_method_bind($ifret R$ $ifnoret void$ (*p_method)($ifconst con
 """
 
 
-
 def make_version(template, nargs, argmax, const, ret):
 
     intext = template
     from_pos = 0
     outtext = ""
 
-    while(True):
+    while (True):
         to_pos = intext.find("$", from_pos)
         if (to_pos == -1):
             outtext += intext[from_pos:]
@@ -369,10 +367,14 @@ def run(target, source, env):
         else:
             text += t
 
-        text_free_func += make_version(template_typed_free_func, i, versions, False, False)
-        text_free_func += make_version(template_typed_free_func, i, versions, False, True)
-        text_free_func += make_version(template_typed_free_func, i, versions, True, False)
-        text_free_func += make_version(template_typed_free_func, i, versions, True, True)
+        text_free_func += make_version(template_typed_free_func, i, versions, False,
+                                       False)
+        text_free_func += make_version(template_typed_free_func, i, versions, False,
+                                       True)
+        text_free_func += make_version(template_typed_free_func, i, versions, True,
+                                       False)
+        text_free_func += make_version(template_typed_free_func, i, versions, True,
+                                       True)
 
     text_free_func += "#endif"
 

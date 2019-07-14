@@ -9,7 +9,8 @@ env_gdnative.add_source_files(env.modules_sources, "register_types.cpp")
 env_gdnative.add_source_files(env.modules_sources, "android/*.cpp")
 env_gdnative.add_source_files(env.modules_sources, "gdnative/*.cpp")
 env_gdnative.add_source_files(env.modules_sources, "nativescript/*.cpp")
-env_gdnative.add_source_files(env.modules_sources, "gdnative_library_singleton_editor.cpp")
+env_gdnative.add_source_files(env.modules_sources,
+                              "gdnative_library_singleton_editor.cpp")
 env_gdnative.add_source_files(env.modules_sources, "gdnative_library_editor_plugin.cpp")
 
 env_gdnative.Prepend(CPPPATH=['#modules/gdnative/include/'])
@@ -21,19 +22,20 @@ SConscript("arvr/SCsub")
 SConscript("pluginscript/SCsub")
 SConscript("videodecoder/SCsub")
 
-
 from platform_methods import run_in_subprocess
 import gdnative_builders
 
-_, gensource = env_gdnative.CommandNoCache(['include/gdnative_api_struct.gen.h', 'gdnative_api_struct.gen.cpp'],
-                               'gdnative_api.json', run_in_subprocess(gdnative_builders.build_gdnative_api_struct))
+_, gensource = env_gdnative.CommandNoCache(
+    ['include/gdnative_api_struct.gen.h', 'gdnative_api_struct.gen.cpp'],
+    'gdnative_api.json', run_in_subprocess(gdnative_builders.build_gdnative_api_struct))
 env_gdnative.add_source_files(env.modules_sources, [gensource])
 
 env.use_ptrcall = True
 
-
 if ARGUMENTS.get('gdnative_wrapper', False):
-    gensource, = env_gdnative.CommandNoCache('gdnative_wrapper_code.gen.cpp', 'gdnative_api.json', run_in_subprocess(gdnative_builders.build_gdnative_wrapper_code))
+    gensource, = env_gdnative.CommandNoCache(
+        'gdnative_wrapper_code.gen.cpp', 'gdnative_api.json',
+        run_in_subprocess(gdnative_builders.build_gdnative_wrapper_code))
 
     gd_wrapper_env = env.Clone()
     gd_wrapper_env.Prepend(CPPPATH=['#modules/gdnative/include/'])

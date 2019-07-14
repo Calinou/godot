@@ -29,7 +29,8 @@ def make_certs_header(target, source, env):
         # Defined here and not in env so changing it does not trigger a full rebuild.
         g.write("#define BUILTIN_CERTS_ENABLED\n")
         g.write("static const int _certs_compressed_size = " + str(len(buf)) + ";\n")
-        g.write("static const int _certs_uncompressed_size = " + str(decomp_size) + ";\n")
+        g.write("static const int _certs_uncompressed_size = " + str(decomp_size) +
+                ";\n")
         g.write("static const unsigned char _certs_compressed[] = {\n")
         for i in range(len(buf)):
             g.write("\t" + byte_to_str(buf[i]) + ",\n")
@@ -42,7 +43,10 @@ def make_certs_header(target, source, env):
 
 def make_authors_header(target, source, env):
     sections = ["Project Founders", "Lead Developer", "Project Manager", "Developers"]
-    sections_id = ["AUTHORS_FOUNDERS", "AUTHORS_LEAD_DEVELOPERS", "AUTHORS_PROJECT_MANAGERS", "AUTHORS_DEVELOPERS"]
+    sections_id = [
+        "AUTHORS_FOUNDERS", "AUTHORS_LEAD_DEVELOPERS", "AUTHORS_PROJECT_MANAGERS",
+        "AUTHORS_DEVELOPERS"
+    ]
 
     src = source[0]
     dst = target[0]
@@ -85,10 +89,14 @@ def make_authors_header(target, source, env):
 
 
 def make_donors_header(target, source, env):
-    sections = ["Platinum sponsors", "Gold sponsors", "Mini sponsors",
-                "Gold donors", "Silver donors", "Bronze donors"]
-    sections_id = ["DONORS_SPONSOR_PLAT", "DONORS_SPONSOR_GOLD", "DONORS_SPONSOR_MINI",
-                   "DONORS_GOLD", "DONORS_SILVER", "DONORS_BRONZE"]
+    sections = [
+        "Platinum sponsors", "Gold sponsors", "Mini sponsors", "Gold donors",
+        "Silver donors", "Bronze donors"
+    ]
+    sections_id = [
+        "DONORS_SPONSOR_PLAT", "DONORS_SPONSOR_GOLD", "DONORS_SPONSOR_MINI",
+        "DONORS_GOLD", "DONORS_SILVER", "DONORS_BRONZE"
+    ]
 
     src = source[0]
     dst = target[0]
@@ -228,11 +236,11 @@ def make_license_header(target, source, env):
         for project_name, project in iteritems(projects):
             part_indexes[project_name] = part_index
             for part in project:
-                f.write("\t{ \"" + escape_string(part["License"][0]) + "\", "
-                        + "&COPYRIGHT_INFO_DATA[" + str(part["file_index"]) + "], "
-                        + "&COPYRIGHT_INFO_DATA[" + str(part["copyright_index"]) + "], "
-                        + str(len(part["Files"])) + ", "
-                        + str(len(part["Copyright"])) + " },\n")
+                f.write("\t{ \"" + escape_string(part["License"][0]) + "\", " +
+                        "&COPYRIGHT_INFO_DATA[" + str(part["file_index"]) + "], " +
+                        "&COPYRIGHT_INFO_DATA[" + str(part["copyright_index"]) + "], " +
+                        str(len(part["Files"])) + ", " + str(len(part["Copyright"])) +
+                        " },\n")
                 part_index += 1
         f.write("};\n\n")
 
@@ -240,9 +248,9 @@ def make_license_header(target, source, env):
 
         f.write("const ComponentCopyright COPYRIGHT_INFO[] = {\n")
         for project_name, project in iteritems(projects):
-            f.write("\t{ \"" + escape_string(project_name) + "\", "
-                    + "&COPYRIGHT_PROJECT_PARTS[" + str(part_indexes[project_name]) + "], "
-                    + str(len(project)) + " },\n")
+            f.write("\t{ \"" + escape_string(project_name) + "\", " +
+                    "&COPYRIGHT_PROJECT_PARTS[" + str(part_indexes[project_name]) +
+                    "], " + str(len(project)) + " },\n")
         f.write("};\n\n")
 
         f.write("const int LICENSE_COUNT = " + str(len(license_list)) + ";\n")

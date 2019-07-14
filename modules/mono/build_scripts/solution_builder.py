@@ -1,6 +1,4 @@
-
 import os
-
 
 verbose = False
 
@@ -21,7 +19,10 @@ def find_nuget_unix():
 
     hint_dirs = ['/opt/novell/mono/bin']
     if sys.platform == 'darwin':
-        hint_dirs = ['/Library/Frameworks/Mono.framework/Versions/Current/bin', '/usr/local/var/homebrew/linked/mono/bin'] + hint_dirs
+        hint_dirs = [
+            '/Library/Frameworks/Mono.framework/Versions/Current/bin',
+            '/usr/local/var/homebrew/linked/mono/bin'
+        ] + hint_dirs
 
     for hint_dir in hint_dirs:
         hint_path = os.path.join(hint_dir, 'nuget')
@@ -35,7 +36,8 @@ def find_nuget_unix():
         hint_path = os.path.join(hint_dir, 'nuget')
         if os.path.isfile(hint_path) and os.access(hint_path, os.X_OK):
             return hint_path
-        if os.path.isfile(hint_path + '.exe') and os.access(hint_path + '.exe', os.X_OK):
+        if os.path.isfile(hint_path + '.exe') and os.access(hint_path + '.exe',
+                                                            os.X_OK):
             return hint_path + '.exe'
 
     return None
@@ -52,7 +54,7 @@ def find_nuget_windows(env):
         if os.path.isfile(hint_path) and os.access(hint_path, os.X_OK):
             return hint_path
 
-    from . mono_reg_utils import find_mono_root_dir
+    from .mono_reg_utils import find_mono_root_dir
 
     mono_root = env['mono_prefix'] or find_mono_root_dir(env['bits'])
 
@@ -80,7 +82,10 @@ def find_msbuild_unix(filename):
 
     hint_dirs = ['/opt/novell/mono/bin']
     if sys.platform == 'darwin':
-        hint_dirs = ['/Library/Frameworks/Mono.framework/Versions/Current/bin', '/usr/local/var/homebrew/linked/mono/bin'] + hint_dirs
+        hint_dirs = [
+            '/Library/Frameworks/Mono.framework/Versions/Current/bin',
+            '/usr/local/var/homebrew/linked/mono/bin'
+        ] + hint_dirs
 
     for hint_dir in hint_dirs:
         hint_path = os.path.join(hint_dir, filename)
@@ -94,14 +99,15 @@ def find_msbuild_unix(filename):
         hint_path = os.path.join(hint_dir, filename)
         if os.path.isfile(hint_path) and os.access(hint_path, os.X_OK):
             return hint_path
-        if os.path.isfile(hint_path + '.exe') and os.access(hint_path + '.exe', os.X_OK):
+        if os.path.isfile(hint_path + '.exe') and os.access(hint_path + '.exe',
+                                                            os.X_OK):
             return hint_path + '.exe'
 
     return None
 
 
 def find_msbuild_windows(env):
-    from . mono_reg_utils import find_mono_root_dir, find_msbuild_tools_path_reg
+    from .mono_reg_utils import find_mono_root_dir, find_msbuild_tools_path_reg
 
     mono_root = env['mono_prefix'] or find_mono_root_dir(env['bits'])
 

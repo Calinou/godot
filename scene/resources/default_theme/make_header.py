@@ -26,7 +26,7 @@ for x in pixmaps:
     pngf = open(x, "rb")
 
     b = pngf.read(1)
-    while(len(b) == 1):
+    while (len(b) == 1):
         f.write(hex(ord(b)).encode(enc))
         b = pngf.read(1)
         if (len(b) == 1):
@@ -36,7 +36,7 @@ for x in pixmaps:
     pngf.close()
 
 # Generate shaders block
-f.write(b"\n// shaders block\n");
+f.write(b"\n// shaders block\n")
 
 shaders = glob.glob("*.gsl")
 shaders.sort()
@@ -51,7 +51,7 @@ for x in shaders:
     sf = open(x, "rb")
 
     b = sf.readline()
-    while(b != ""):
+    while (b != ""):
         if (b.endswith("\r\n")):
             b = b[:-2]
         if (b.endswith("\n")):

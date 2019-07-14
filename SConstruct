@@ -105,14 +105,20 @@ opts = Variables(customs, ARGUMENTS)
 
 # Target build options
 opts.Add('arch', "Platform-dependent architecture (arm/arm64/x86/x64/mips/...)", '')
-opts.Add(EnumVariable('bits', "Target platform bits", 'default', ('default', '32', '64')))
+opts.Add(
+    EnumVariable('bits', "Target platform bits", 'default', ('default', '32', '64')))
 opts.Add('p', "Platform (alias for 'platform')", '')
 opts.Add('platform', "Target platform (%s)" % ('|'.join(platform_list), ), '')
-opts.Add(EnumVariable('target', "Compilation target", 'debug', ('debug', 'release_debug', 'release')))
+opts.Add(
+    EnumVariable('target', "Compilation target", 'debug',
+                 ('debug', 'release_debug', 'release')))
 opts.Add(EnumVariable('optimize', "Optimization type", 'speed', ('speed', 'size')))
 opts.Add(BoolVariable('tools', "Build the tools (a.k.a. the Godot editor)", True))
 opts.Add(BoolVariable('use_lto', 'Use link-time optimization', False))
-opts.Add(BoolVariable('use_precise_math_checks', 'Math checks use very precise epsilon (useful to debug the engine)', False))
+opts.Add(
+    BoolVariable('use_precise_math_checks',
+                 'Math checks use very precise epsilon (useful to debug the engine)',
+                 False))
 
 # Components
 opts.Add(BoolVariable('deprecated', "Enable deprecated features", True))
@@ -123,20 +129,43 @@ opts.Add(BoolVariable('xaudio2', "Enable the XAudio2 audio driver", False))
 # Advanced options
 opts.Add(BoolVariable('verbose', "Enable verbose output for the compilation", False))
 opts.Add(BoolVariable('progress', "Show a progress indicator during compilation", True))
-opts.Add(EnumVariable('warnings', "Set the level of warnings emitted during compilation", 'all', ('extra', 'all', 'moderate', 'no')))
-opts.Add(BoolVariable('werror', "Treat compiler warnings as errors. Depends on the level of warnings set with 'warnings'", False))
-opts.Add(BoolVariable('dev', "If yes, alias for verbose=yes warnings=extra werror=yes", False))
-opts.Add('extra_suffix', "Custom extra suffix added to the base filename of all generated binary files", '')
+opts.Add(
+    EnumVariable('warnings', "Set the level of warnings emitted during compilation",
+                 'all', ('extra', 'all', 'moderate', 'no')))
+opts.Add(
+    BoolVariable(
+        'werror',
+        "Treat compiler warnings as errors. Depends on the level of warnings set with 'warnings'",
+        False))
+opts.Add(
+    BoolVariable('dev', "If yes, alias for verbose=yes warnings=extra werror=yes",
+                 False))
+opts.Add(
+    'extra_suffix',
+    "Custom extra suffix added to the base filename of all generated binary files", '')
 opts.Add(BoolVariable('vsproj', "Generate a Visual Studio solution", False))
-opts.Add(EnumVariable('macports_clang', "Build using Clang from MacPorts", 'no', ('no', '5.0', 'devel')))
+opts.Add(
+    EnumVariable('macports_clang', "Build using Clang from MacPorts", 'no',
+                 ('no', '5.0', 'devel')))
 opts.Add(BoolVariable('disable_3d', "Disable 3D nodes for a smaller executable", False))
-opts.Add(BoolVariable('disable_advanced_gui', "Disable advanced GUI nodes and behaviors", False))
-opts.Add(BoolVariable('no_editor_splash', "Don't use the custom splash screen for the editor", False))
-opts.Add('system_certs_path', "Use this path as SSL certificates default for editor (for package maintainers)", '')
+opts.Add(
+    BoolVariable('disable_advanced_gui', "Disable advanced GUI nodes and behaviors",
+                 False))
+opts.Add(
+    BoolVariable('no_editor_splash',
+                 "Don't use the custom splash screen for the editor", False))
+opts.Add(
+    'system_certs_path',
+    "Use this path as SSL certificates default for editor (for package maintainers)",
+    '')
 
 # Thirdparty libraries
 opts.Add(BoolVariable('builtin_bullet', "Use the built-in Bullet library", True))
-opts.Add(BoolVariable('builtin_certs', "Bundle default SSL certificates to be used if you don't specify an override in the project settings", True))
+opts.Add(
+    BoolVariable(
+        'builtin_certs',
+        "Bundle default SSL certificates to be used if you don't specify an override in the project settings",
+        True))
 opts.Add(BoolVariable('builtin_enet', "Use the built-in ENet library", True))
 opts.Add(BoolVariable('builtin_freetype', "Use the built-in FreeType library", True))
 opts.Add(BoolVariable('builtin_libogg', "Use the built-in libogg library", True))
@@ -182,7 +211,9 @@ for x in module_list:
         module_enabled = False
     sys.path.remove(tmppath)
     sys.modules.pop('config')
-    opts.Add(BoolVariable('module_' + x + '_enabled', "Enable module '%s'" % (x, ), module_enabled))
+    opts.Add(
+        BoolVariable('module_' + x + '_enabled', "Enable module '%s'" % (x, ),
+                     module_enabled))
 
 opts.Update(env_base)  # update environment
 Help(opts.GenerateHelpText(env_base))  # generate help
@@ -199,7 +230,7 @@ if (env_base["use_precise_math_checks"]):
     env_base.Append(CPPDEFINES=['PRECISE_MATH_CHECKS'])
 
 if (env_base['target'] == 'debug'):
-    env_base.Append(CPPDEFINES=['DEBUG_MEMORY_ALLOC','DISABLE_FORCED_INLINE'])
+    env_base.Append(CPPDEFINES=['DEBUG_MEMORY_ALLOC', 'DISABLE_FORCED_INLINE'])
 
     # The two options below speed up incremental builds, but reduce the certainty that all files
     # will properly be rebuilt. As such, we only enable them for debug (dev) builds, not release.
@@ -280,6 +311,7 @@ if selected_platform in platform_list:
                         env.vs_srcs = env.vs_srcs + [basename + ".c"]
                     elif os.path.isfile(basename + ".cpp"):
                         env.vs_srcs = env.vs_srcs + [basename + ".cpp"]
+
         env.AddToVSProject = AddToVSProject
 
     env.extra_suffix = ""
@@ -314,14 +346,16 @@ if selected_platform in platform_list:
     # Configure compiler warnings
     if env.msvc:
         # Truncations, narrowing conversions, signed/unsigned comparisons...
-        disable_nonessential_warnings = ['/wd4267', '/wd4244', '/wd4305', '/wd4018', '/wd4800']
+        disable_nonessential_warnings = [
+            '/wd4267', '/wd4244', '/wd4305', '/wd4018', '/wd4800'
+        ]
         if (env["warnings"] == 'extra'):
-            env.Append(CCFLAGS=['/Wall']) # Implies /W4
+            env.Append(CCFLAGS=['/Wall'])  # Implies /W4
         elif (env["warnings"] == 'all'):
             env.Append(CCFLAGS=['/W3'] + disable_nonessential_warnings)
         elif (env["warnings"] == 'moderate'):
             env.Append(CCFLAGS=['/W2'] + disable_nonessential_warnings)
-        else: # 'no'
+        else:  # 'no'
             env.Append(CCFLAGS=['/w'])
         # Set exception handling model to avoid warnings caused by Windows system headers.
         env.Append(CCFLAGS=['/EHsc'])
@@ -329,7 +363,7 @@ if selected_platform in platform_list:
             env.Append(CCFLAGS=['/WX'])
         # Force to use Unicode encoding
         env.Append(MSVC_FLAGS=['/utf8'])
-    else: # Rest of the world
+    else:  # Rest of the world
         shadow_local_warning = []
         all_plus_warnings = ['-Wwrite-strings']
 
@@ -341,13 +375,14 @@ if selected_platform in platform_list:
         if (env["warnings"] == 'extra'):
             # Note: enable -Wimplicit-fallthrough for Clang (already part of -Wextra for GCC)
             # once we switch to C++11 or later (necessary for our FALLTHROUGH macro).
-            env.Append(CCFLAGS=['-Wall', '-Wextra', '-Wno-unused-parameter']
-                + all_plus_warnings + shadow_local_warning)
+            env.Append(CCFLAGS=['-Wall', '-Wextra', '-Wno-unused-parameter'] +
+                       all_plus_warnings + shadow_local_warning)
             env.Append(CXXFLAGS=['-Wctor-dtor-privacy', '-Wnon-virtual-dtor'])
             if methods.using_gcc(env):
-                env.Append(CCFLAGS=['-Walloc-zero',
-                    '-Wduplicated-branches', '-Wduplicated-cond',
-                    '-Wstringop-overflow=4', '-Wlogical-op'])
+                env.Append(CCFLAGS=[
+                    '-Walloc-zero', '-Wduplicated-branches', '-Wduplicated-cond',
+                    '-Wstringop-overflow=4', '-Wlogical-op'
+                ])
                 env.Append(CXXFLAGS=['-Wnoexcept', '-Wplacement-new=1'])
                 version = methods.get_compiler_version(env)
                 if version != None and version[0] >= '9':
@@ -355,12 +390,12 @@ if selected_platform in platform_list:
         elif (env["warnings"] == 'all'):
             env.Append(CCFLAGS=['-Wall'] + shadow_local_warning)
         elif (env["warnings"] == 'moderate'):
-            env.Append(CCFLAGS=['-Wall', '-Wno-unused']  + shadow_local_warning)
-        else: # 'no'
+            env.Append(CCFLAGS=['-Wall', '-Wno-unused'] + shadow_local_warning)
+        else:  # 'no'
             env.Append(CCFLAGS=['-w'])
         if (env["werror"]):
             env.Append(CCFLAGS=['-Werror'])
-        else: # always enable those errors
+        else:  # always enable those errors
             env.Append(CCFLAGS=['-Werror=return-type'])
 
     if (hasattr(detect, 'get_program_suffix')):
@@ -422,7 +457,7 @@ if selected_platform in platform_list:
         if (can_build):
             config.configure(env)
             env.module_list.append(x)
-            
+
             # Get doc classes paths (if present)
             try:
                 doc_classes = config.get_doc_classes()
@@ -465,7 +500,9 @@ if selected_platform in platform_list:
         env.Append(CPPDEFINES=['TOOLS_ENABLED'])
     if env['disable_3d']:
         if env['tools']:
-            print("Build option 'disable_3d=yes' cannot be used with 'tools=yes' (editor), only with 'tools=no' (export template).")
+            print(
+                "Build option 'disable_3d=yes' cannot be used with 'tools=yes' (editor), only with 'tools=no' (export template)."
+            )
             sys.exit(255)
         else:
             env.Append(CPPDEFINES=['_3D_DISABLED'])
@@ -473,7 +510,9 @@ if selected_platform in platform_list:
         env.Append(CPPDEFINES=['GDSCRIPT_ENABLED'])
     if env['disable_advanced_gui']:
         if env['tools']:
-            print("Build option 'disable_advanced_gui=yes' cannot be used with 'tools=yes' (editor), only with 'tools=no' (export template).")
+            print(
+                "Build option 'disable_advanced_gui=yes' cannot be used with 'tools=yes' (editor), only with 'tools=no' (export template)."
+            )
             sys.exit(255)
         else:
             env.Append(CPPDEFINES=['ADVANCED_GUI_DISABLED'])
@@ -483,9 +522,21 @@ if selected_platform in platform_list:
     if not env['verbose']:
         methods.no_verbose(sys, env)
 
-    if (not env["platform"] == "server"): # FIXME: detect GLES3
-        env.Append(BUILDERS = { 'GLES3_GLSL' : env.Builder(action=run_in_subprocess(gles_builders.build_gles3_headers), suffix='glsl.gen.h', src_suffix='.glsl')})
-        env.Append(BUILDERS = { 'GLES2_GLSL' : env.Builder(action=run_in_subprocess(gles_builders.build_gles2_headers), suffix='glsl.gen.h', src_suffix='.glsl')})
+    if (not env["platform"] == "server"):  # FIXME: detect GLES3
+        env.Append(
+            BUILDERS={
+                'GLES3_GLSL':
+                env.Builder(action=run_in_subprocess(gles_builders.build_gles3_headers),
+                            suffix='glsl.gen.h',
+                            src_suffix='.glsl')
+            })
+        env.Append(
+            BUILDERS={
+                'GLES2_GLSL':
+                env.Builder(action=run_in_subprocess(gles_builders.build_gles2_headers),
+                            suffix='glsl.gen.h',
+                            src_suffix='.glsl')
+            })
 
     scons_cache_path = os.environ.get("SCONS_CACHE")
     if scons_cache_path != None:
@@ -544,12 +595,14 @@ if 'env' in locals():
 
     class cache_progress:
         # The default is 1 GB cache and 12 hours half life
-        def __init__(self, path = None, limit = 1073741824, half_life = 43200):
+        def __init__(self, path=None, limit=1073741824, half_life=43200):
             self.path = path
             self.limit = limit
             self.exponent_scale = math.log(2) / half_life
             if env['verbose'] and path != None:
-                screen.write('Current cache limit is ' + self.convert_size(limit) + ' (used: ' + self.convert_size(self.get_size(path)) + ')\n')
+                screen.write('Current cache limit is ' + self.convert_size(limit) +
+                             ' (used: ' + self.convert_size(self.get_size(path)) +
+                             ')\n')
             self.delete(self.file_list())
 
         def __call__(self, node, *args, **kw):
@@ -572,7 +625,8 @@ if 'env' in locals():
                 return
             if env['verbose']:
                 # Utter something
-                screen.write('\rPurging %d %s from cache...\n' % (len(files), len(files) > 1 and 'files' or 'file'))
+                screen.write('\rPurging %d %s from cache...\n' %
+                             (len(files), len(files) > 1 and 'files' or 'file'))
             [os.remove(f) for f in files]
 
         def file_list(self):
@@ -581,7 +635,8 @@ if 'env' in locals():
                 return []
             # Gather a list of (filename, (size, atime)) within the
             # cache directory
-            file_stat = [(x, os.stat(x)[6:8]) for x in glob.glob(os.path.join(self.path, '*', '*'))]
+            file_stat = [(x, os.stat(x)[6:8])
+                         for x in glob.glob(os.path.join(self.path, '*', '*'))]
             if file_stat == []:
                 # Nothing to do
                 return []
@@ -596,7 +651,7 @@ if 'env' in locals():
             # Search for the first entry where the storage limit is
             # reached
             sum, mark = 0, None
-            for i,x in enumerate(file_stat):
+            for i, x in enumerate(file_stat):
                 sum += x[1]
                 if sum > self.limit:
                     mark = i
@@ -615,7 +670,7 @@ if 'env' in locals():
             s = round(size_bytes / p, 2)
             return "%s %s" % (int(s) if i == 0 else s, size_name[i])
 
-        def get_size(self, start_path = '.'):
+        def get_size(self, start_path='.'):
             total_size = 0
             for dirpath, dirnames, filenames in os.walk(start_path):
                 for f in filenames:
@@ -640,7 +695,7 @@ if 'env' in locals():
     # cache directory to a size not larger than cache_limit.
     cache_limit = float(os.getenv("SCONS_CACHE_LIMIT", 1024)) * 1024 * 1024
     progressor = cache_progress(cache_directory, cache_limit)
-    Progress(progressor, interval = node_count_interval)
+    Progress(progressor, interval=node_count_interval)
 
     progress_finish_command = Command('progress_finish', [], progress_finish)
     AlwaysBuild(progress_finish_command)

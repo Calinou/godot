@@ -6,7 +6,6 @@ import shutil
 import subprocess
 import sys
 
-
 line_nb = False
 
 for arg in sys.argv[1:]:
@@ -16,10 +15,8 @@ for arg in sys.argv[1:]:
     else:
         os.sys.exit("Non supported argument '" + arg + "'. Aborting.")
 
-
 if (not os.path.exists("editor")):
     os.sys.exit("ERROR: This script should be started from the root of the git repo.")
-
 
 matches = []
 for root, dirnames, filenames in os.walk('.'):
@@ -32,7 +29,6 @@ for root, dirnames, filenames in os.walk('.'):
             continue
         matches.append(os.path.join(root, filename))
 matches.sort()
-
 
 unique_str = []
 unique_loc = {}
@@ -51,6 +47,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\\n"
 "Content-Transfer-Encoding: 8-bit\\n"
 """
+
 
 def process_file(f, fname):
 
@@ -91,12 +88,15 @@ def process_file(f, fname):
                 # Add additional location to previous occurrence too
                 msg_pos = main_po.find('\nmsgid "' + msg + '"')
                 if (msg_pos == -1):
-                    print("Someone apparently thought writing Python was as easy as GDScript. Ping Akien.")
+                    print(
+                        "Someone apparently thought writing Python was as easy as GDScript. Ping Akien."
+                    )
                 main_po = main_po[:msg_pos] + ' ' + location + main_po[msg_pos:]
                 unique_loc[msg].append(location)
 
         l = f.readline()
         lc += 1
+
 
 print("Updating the editor.pot template...")
 
@@ -116,7 +116,10 @@ shutil.move("editor.pot", "editor/translations/editor.pot")
 
 # TODO: Make that in a portable way, if we care; if not, kudos to Unix users
 if (os.name == "posix"):
-    added = subprocess.check_output(r"git diff editor/translations/editor.pot | grep \+msgid | wc -l", shell=True)
-    removed = subprocess.check_output(r"git diff editor/translations/editor.pot | grep \\\-msgid | wc -l", shell=True)
+    added = subprocess.check_output(
+        r"git diff editor/translations/editor.pot | grep \+msgid | wc -l", shell=True)
+    removed = subprocess.check_output(
+        r"git diff editor/translations/editor.pot | grep \\\-msgid | wc -l", shell=True)
     print("\n# Template changes compared to the staged status:")
-    print("#   Additions: %s msgids.\n#   Deletions: %s msgids." % (int(added), int(removed)))
+    print("#   Additions: %s msgids.\n#   Deletions: %s msgids." %
+          (int(added), int(removed)))

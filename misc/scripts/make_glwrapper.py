@@ -5,7 +5,6 @@ if (len(sys.argv) < 2):
     print("usage: make_glwrapper.py <headers>")
     sys.exit(255)
 
-
 functions = []
 types = []
 constants = []
@@ -16,8 +15,9 @@ READ_CONSTANTS = 2
 
 read_what = READ_TYPES
 
+
 def read_file(f):
-    while(True):
+    while (True):
 
         line = f.readline()
         if (line == ""):
@@ -41,12 +41,14 @@ def read_file(f):
                 continue
             constants.append(line)
         elif (line.find("typedef") != -1):
-            if (line.find("(") != -1 or line.find(")") != -1 or line.find("ARB") != -1 or line.find("EXT") != -1 or line.find("GL") == -1):
+            if (line.find("(") != -1 or line.find(")") != -1 or line.find("ARB") != -1
+                    or line.find("EXT") != -1 or line.find("GL") == -1):
                 continue
             types.append(line)
         elif (line.find("APIENTRY") != -1 and line.find("GLAPI") != -1):
 
-            if (line.find("ARB") != -1 or line.find("EXT") != -1 or line.find("NV") != -1):
+            if (line.find("ARB") != -1 or line.find("EXT") != -1
+                    or line.find("NV") != -1):
                 continue
 
             line = line.replace("APIENTRY", "")
@@ -84,6 +86,7 @@ def read_file(f):
             functions.append(funcdata)
             print(funcdata)
 
+
 for path in sys.argv[1:]:
     with open(path, "r") as f:
         read_file(f)
@@ -91,7 +94,6 @@ for path in sys.argv[1:]:
 # print(types)
 # print(constants)
 # print(functions)
-
 
 f = open("glwrapper.h", "w")
 
@@ -147,7 +149,8 @@ for x in constants:
 f.write("\n\n")
 
 for x in functions:
-    f.write("extern " + x["ret"] + " GLWRP_APIENTRY (*__wrapper_" + x["name"] + ")(" + x["args"] + ");\n")
+    f.write("extern " + x["ret"] + " GLWRP_APIENTRY (*__wrapper_" + x["name"] + ")(" +
+            x["args"] + ");\n")
     f.write("#define " + x["name"] + " __wrapper_" + x["name"] + "\n")
 
 f.write("\n\n")
@@ -166,14 +169,16 @@ f.write("#include \"glwrapper.h\"\n")
 f.write("\n\n")
 
 for x in functions:
-    f.write(x["ret"] + " GLWRP_APIENTRY (*__wrapper_" + x["name"] + ")(" + x["args"] + ")=NULL;\n")
+    f.write(x["ret"] + " GLWRP_APIENTRY (*__wrapper_" + x["name"] + ")(" + x["args"] +
+            ")=NULL;\n")
 
 f.write("\n\n")
 f.write("void glWrapperInit( GLWrapperFuncPtr (*wrapperFunc)(const char*) )  {\n")
 f.write("\n")
 
 for x in functions:
-    f.write("\t__wrapper_" + x["name"] + "=(" + x["ret"] + " GLWRP_APIENTRY (*)(" + x["args"] + "))wrapperFunc(\"" + x["name"] + "\");\n")
+    f.write("\t__wrapper_" + x["name"] + "=(" + x["ret"] + " GLWRP_APIENTRY (*)(" +
+            x["args"] + "))wrapperFunc(\"" + x["name"] + "\");\n")
 
 f.write("\n\n")
 f.write("}\n")

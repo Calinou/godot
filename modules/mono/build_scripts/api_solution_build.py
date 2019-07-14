@@ -13,19 +13,26 @@ def build_api_solution(source, target, env):
     solution_path = os.path.join(module_dir, 'glue/Managed/Generated/GodotSharp.sln')
 
     if not os.path.isfile(solution_path):
-        raise RuntimeError("Godot API solution not found. Did you forget to run '--generate-mono-glue'?")
+        raise RuntimeError(
+            "Godot API solution not found. Did you forget to run '--generate-mono-glue'?"
+        )
 
     build_config = env['solution_build_config']
 
     extra_msbuild_args = ['/p:NoWarn=1591']  # Ignore missing documentation warnings
 
     from .solution_builder import build_solution
-    build_solution(env, solution_path, build_config, extra_msbuild_args=extra_msbuild_args)
+    build_solution(env,
+                   solution_path,
+                   build_config,
+                   extra_msbuild_args=extra_msbuild_args)
 
     # Copy targets
 
-    core_src_dir = os.path.abspath(os.path.join(solution_path, os.pardir, 'GodotSharp', 'bin', build_config))
-    editor_src_dir = os.path.abspath(os.path.join(solution_path, os.pardir, 'GodotSharpEditor', 'bin', build_config))
+    core_src_dir = os.path.abspath(
+        os.path.join(solution_path, os.pardir, 'GodotSharp', 'bin', build_config))
+    editor_src_dir = os.path.abspath(
+        os.path.join(solution_path, os.pardir, 'GodotSharpEditor', 'bin', build_config))
 
     dst_dir = os.path.abspath(os.path.join(str(target[0]), os.pardir))
 
@@ -51,16 +58,20 @@ def build(env_mono):
     assert env_mono['tools']
 
     target_filenames = [
-        'GodotSharp.dll', 'GodotSharp.pdb', 'GodotSharp.xml',
-        'GodotSharpEditor.dll', 'GodotSharpEditor.pdb', 'GodotSharpEditor.xml'
+        'GodotSharp.dll', 'GodotSharp.pdb', 'GodotSharp.xml', 'GodotSharpEditor.dll',
+        'GodotSharpEditor.pdb', 'GodotSharpEditor.xml'
     ]
 
     for build_config in ['Debug', 'Release']:
         output_dir = Dir('#bin').abspath
         editor_api_dir = os.path.join(output_dir, 'GodotSharp', 'Api', build_config)
 
-        targets = [os.path.join(editor_api_dir, filename) for filename in target_filenames]
+        targets = [
+            os.path.join(editor_api_dir, filename) for filename in target_filenames
+        ]
 
-        cmd = env_mono.CommandNoCache(targets, [], build_api_solution,
-                                      module_dir=os.getcwd(), solution_build_config=build_config)
+        cmd = env_mono.CommandNoCache(targets, [],
+                                      build_api_solution,
+                                      module_dir=os.getcwd(),
+                                      solution_build_config=build_config)
         env_mono.AlwaysBuild(cmd)

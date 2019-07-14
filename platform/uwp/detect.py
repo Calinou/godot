@@ -25,7 +25,9 @@ def can_build():
 
 def get_opts():
     return [
-        ('msvc_version', 'MSVC version to use (ignored if the VCINSTALLDIR environment variable is set)', None),
+        ('msvc_version',
+         'MSVC version to use (ignored if the VCINSTALLDIR environment variable is set)',
+         None),
     ]
 
 
@@ -73,7 +75,9 @@ def configure(env):
     ## Compiler configuration
 
     env['ENV'] = os.environ
-    vc_base_path = os.environ['VCTOOLSINSTALLDIR'] if "VCTOOLSINSTALLDIR" in os.environ else os.environ['VCINSTALLDIR']
+    vc_base_path = os.environ[
+        'VCTOOLSINSTALLDIR'] if "VCTOOLSINSTALLDIR" in os.environ else os.environ[
+            'VCINSTALLDIR']
 
     # ANGLE
     angle_root = os.getenv("ANGLE_SRC_PATH")
@@ -89,7 +93,9 @@ def configure(env):
     arch = ""
     if str(os.getenv('Platform')).lower() == "arm":
 
-        print("Compiled program architecture will be an ARM executable. (forcing bits=32).")
+        print(
+            "Compiled program architecture will be an ARM executable. (forcing bits=32)."
+        )
 
         arch = "arm"
         env["bits"] = "32"
@@ -103,14 +109,20 @@ def configure(env):
     else:
         compiler_version_str = methods.detect_visual_c_compiler_version(env['ENV'])
 
-        if(compiler_version_str == "amd64" or compiler_version_str == "x86_amd64"):
+        if (compiler_version_str == "amd64" or compiler_version_str == "x86_amd64"):
             env["bits"] = "64"
-            print("Compiled program architecture will be a x64 executable (forcing bits=64).")
+            print(
+                "Compiled program architecture will be a x64 executable (forcing bits=64)."
+            )
         elif (compiler_version_str == "x86" or compiler_version_str == "amd64_x86"):
             env["bits"] = "32"
-            print("Compiled program architecture will be a x86 executable. (forcing bits=32).")
+            print(
+                "Compiled program architecture will be a x86 executable. (forcing bits=32)."
+            )
         else:
-            print("Failed to detect MSVC compiler architecture version... Defaulting to 32-bit executable settings (forcing bits=32). Compilation attempt will continue, but SCons can not detect for what architecture this build is compiled for. You should check your settings/compilation setup.")
+            print(
+                "Failed to detect MSVC compiler architecture version... Defaulting to 32-bit executable settings (forcing bits=32). Compilation attempt will continue, but SCons can not detect for what architecture this build is compiled for. You should check your settings/compilation setup."
+            )
             env["bits"] = "32"
 
         if (env["bits"] == "32"):
@@ -139,8 +151,10 @@ def configure(env):
 
     env.Prepend(CPPPATH=['#platform/uwp', '#drivers/windows'])
     env.Append(CPPDEFINES=['UWP_ENABLED', 'WINDOWS_ENABLED', 'TYPED_METHOD_BIND'])
-    env.Append(CPPDEFINES=['GLES_ENABLED', 'GL_GLEXT_PROTOTYPES', 'EGL_EGLEXT_PROTOTYPES', 'ANGLE_ENABLED'])
-    winver = "0x0602" # Windows 8 is the minimum target for UWP build
+    env.Append(CPPDEFINES=[
+        'GLES_ENABLED', 'GL_GLEXT_PROTOTYPES', 'EGL_EGLEXT_PROTOTYPES', 'ANGLE_ENABLED'
+    ])
+    winver = "0x0602"  # Windows 8 is the minimum target for UWP build
     env.Append(CPPDEFINES=[('WINVER', winver), ('_WIN32_WINNT', winver), 'WIN32'])
 
     env.Append(CPPDEFINES=['__WRL_NO_DEFAULT_LIB__', ('PNG_ABORT', 'abort')])
@@ -148,14 +162,25 @@ def configure(env):
     env.Append(CPPFLAGS=['/AI', vc_base_path + 'lib/store/references'])
     env.Append(CPPFLAGS=['/AI', vc_base_path + 'lib/x86/store/references'])
 
-    env.Append(CCFLAGS='/FS /MP /GS /wd"4453" /wd"28204" /wd"4291" /Zc:wchar_t /Gm- /fp:precise /errorReport:prompt /WX- /Zc:forScope /Gd /EHsc /nologo'.split())
-    env.Append(CPPDEFINES=['_UNICODE', 'UNICODE', ('WINAPI_FAMILY', 'WINAPI_FAMILY_APP')])
+    env.Append(
+        CCFLAGS=
+        '/FS /MP /GS /wd"4453" /wd"28204" /wd"4291" /Zc:wchar_t /Gm- /fp:precise /errorReport:prompt /WX- /Zc:forScope /Gd /EHsc /nologo'
+        .split())
+    env.Append(
+        CPPDEFINES=['_UNICODE', 'UNICODE', ('WINAPI_FAMILY', 'WINAPI_FAMILY_APP')])
     env.Append(CXXFLAGS=['/ZW'])
-    env.Append(CCFLAGS=['/AI', vc_base_path + '\\vcpackages', '/AI', os.environ['WINDOWSSDKDIR'] + '\\References\\CommonConfiguration\\Neutral'])
+    env.Append(CCFLAGS=[
+        '/AI', vc_base_path + '\\vcpackages', '/AI', os.environ['WINDOWSSDKDIR'] +
+        '\\References\\CommonConfiguration\\Neutral'
+    ])
 
     ## Link flags
 
-    env.Append(LINKFLAGS=['/MANIFEST:NO', '/NXCOMPAT', '/DYNAMICBASE', '/WINMD', '/APPCONTAINER', '/ERRORREPORT:PROMPT', '/NOLOGO', '/TLBID:1', '/NODEFAULTLIB:"kernel32.lib"', '/NODEFAULTLIB:"ole32.lib"'])
+    env.Append(LINKFLAGS=[
+        '/MANIFEST:NO', '/NXCOMPAT', '/DYNAMICBASE', '/WINMD', '/APPCONTAINER',
+        '/ERRORREPORT:PROMPT', '/NOLOGO', '/TLBID:1', '/NODEFAULTLIB:"kernel32.lib"',
+        '/NODEFAULTLIB:"ole32.lib"'
+    ])
 
     LIBS = [
         'WindowsApp',

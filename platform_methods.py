@@ -14,7 +14,6 @@ else:
 
 
 def run_in_subprocess(builder_function):
-
     @functools.wraps(builder_function)
     def wrapper(target, source, env):
 
@@ -38,11 +37,8 @@ def run_in_subprocess(builder_function):
         subprocess_env['PYTHONPATH'] = os.pathsep.join([os.getcwd()] + sys.path)
 
         # Keep only JSON serializable environment items
-        filtered_env = dict(
-            (key, value)
-            for key, value in env.items()
-            if isinstance(value, JSON_SERIALIZABLE_TYPES)
-        )
+        filtered_env = dict((key, value) for key, value in env.items()
+                            if isinstance(value, JSON_SERIALIZABLE_TYPES))
 
         # Save parameters
         args = (target, source, filtered_env)
@@ -52,11 +48,13 @@ def run_in_subprocess(builder_function):
             json.dump(data, json_file, indent=2)
         json_file_size = os.stat(json_path).st_size
 
-        print('Executing builder function in subprocess: '
-              'module_path=%r, parameter_file=%r, parameter_file_size=%r, target=%r, source=%r' % (
-               module_path, json_path, json_file_size, target, source))
+        print(
+            'Executing builder function in subprocess: '
+            'module_path=%r, parameter_file=%r, parameter_file_size=%r, target=%r, source=%r'
+            % (module_path, json_path, json_file_size, target, source))
         try:
-            exit_code = subprocess.call([sys.executable, module_path, json_path], env=subprocess_env)
+            exit_code = subprocess.call([sys.executable, module_path, json_path],
+                                        env=subprocess_env)
         finally:
             try:
                 os.remove(json_path)
@@ -68,7 +66,8 @@ def run_in_subprocess(builder_function):
         # Must succeed
         if exit_code:
             raise RuntimeError(
-                'Failed to run builder function in subprocess: module_path=%r; data=%r' % (module_path, data))
+                'Failed to run builder function in subprocess: module_path=%r; data=%r'
+                % (module_path, data))
 
     return wrapper
 

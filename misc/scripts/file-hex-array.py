@@ -46,6 +46,7 @@ def usage():
 ========================================================")
     exit(1)
 
+
 if len(sys.argv) != 3:
     usage()
 if sys.argv[1] == "toa" and os.path.isfile(sys.argv[2]):

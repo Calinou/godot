@@ -13,7 +13,8 @@ import xml.etree.ElementTree as ET
 ################################################################################
 
 flags = {
-    'c': platform.platform() != 'Windows',  # Disable by default on windows, since we use ANSI escape codes
+    'c': platform.platform() !=
+    'Windows',  # Disable by default on windows, since we use ANSI escape codes
     'b': False,
     'g': False,
     's': False,
@@ -41,36 +42,31 @@ flag_descriptions = {
 long_flags = {
     'colors': 'c',
     'use-colors': 'c',
-
     'bad': 'b',
     'only-bad': 'b',
-
     'good': 'g',
     'only-good': 'g',
-
     'comments': 's',
     'status': 's',
-
     'urls': 'u',
     'gen-url': 'u',
-
     'help': 'h',
-
     'percent': 'p',
     'use-percentages': 'p',
-
     'overall': 'o',
     'use-overall': 'o',
-
     'items': 'i',
     'collapse': 'i',
-
     'all': 'a',
-
     'empty': 'e',
 }
-table_columns = ['name', 'brief_description', 'description', 'methods', 'constants', 'members', 'signals']
-table_column_names = ['Name', 'Brief Desc.', 'Desc.', 'Methods', 'Constants', 'Members', 'Signals']
+table_columns = [
+    'name', 'brief_description', 'description', 'methods', 'constants', 'members',
+    'signals'
+]
+table_column_names = [
+    'Name', 'Brief Desc.', 'Desc.', 'Methods', 'Constants', 'Members', 'Signals'
+]
 colors = {
     'name': [36],  # cyan
     'part_big_problem': [4, 31],  # underline, red
@@ -84,10 +80,10 @@ colors = {
 }
 overall_progress_description_weigth = 10
 
-
 ################################################################################
 #                                    Utils                                     #
 ################################################################################
+
 
 def validate_tag(elem, tag):
     if elem.tag != tag:
@@ -104,34 +100,37 @@ def color(color, string):
     else:
         return string
 
+
 ansi_escape = re.compile(r'\x1b[^m]*m')
 
 
 def nonescape_len(s):
     return len(ansi_escape.sub('', s))
 
+
 def terminal_supports_color():
     p = sys.platform
-    supported_platform = p != 'Pocket PC' and (p != 'win32' or
-                                           'ANSICON' in os.environ)
+    supported_platform = p != 'Pocket PC' and (p != 'win32' or 'ANSICON' in os.environ)
 
     is_a_tty = hasattr(sys.stdout, 'isatty') and sys.stdout.isatty()
     if not supported_platform or not is_a_tty:
         return False
     return True
 
+
 ################################################################################
 #                                   Classes                                    #
 ################################################################################
 
-class ClassStatusProgress:
 
+class ClassStatusProgress:
     def __init__(self, described=0, total=0):
         self.described = described
         self.total = total
 
     def __add__(self, other):
-        return ClassStatusProgress(self.described + other.described, self.total + other.total)
+        return ClassStatusProgress(self.described + other.described,
+                                   self.total + other.total)
 
     def increment(self, described):
         if described:
@@ -143,14 +142,19 @@ class ClassStatusProgress:
 
     def to_configured_colored_string(self):
         if flags['p']:
-            return self.to_colored_string('{percent}% ({has}/{total})', '{pad_percent}{pad_described}{s}{pad_total}')
+            return self.to_colored_string('{percent}% ({has}/{total})',
+                                          '{pad_percent}{pad_described}{s}{pad_total}')
         else:
             return self.to_colored_string()
 
-    def to_colored_string(self, format='{has}/{total}', pad_format='{pad_described}{s}{pad_total}'):
+    def to_colored_string(self,
+                          format='{has}/{total}',
+                          pad_format='{pad_described}{s}{pad_total}'):
         ratio = float(self.described) / float(self.total) if self.total != 0 else 1
         percent = int(round(100 * ratio))
-        s = format.format(has=str(self.described), total=str(self.total), percent=str(percent))
+        s = format.format(has=str(self.described),
+                          total=str(self.total),
+                          percent=str(percent))
         if self.described >= self.total:
             s = color('part_good', s)
         elif self.described >= self.total / 4 * 3:
@@ -163,11 +167,13 @@ class ClassStatusProgress:
         pad_described = ''.ljust(pad_size - len(str(self.described)))
         pad_percent = ''.ljust(3 - len(str(percent)))
         pad_total = ''.ljust(pad_size - len(str(self.total)))
-        return pad_format.format(pad_described=pad_described, pad_total=pad_total, pad_percent=pad_percent, s=s)
+        return pad_format.format(pad_described=pad_described,
+                                 pad_total=pad_total,
+                                 pad_percent=pad_percent,
+                                 s=s)
 
 
 class ClassStatus:
-
     def __init__(self, name=''):
         self.name = name
         self.has_brief_description = True
@@ -211,13 +217,14 @@ class ClassStatus:
         ok_string = color('part_good', 'OK')
         missing_string = color('part_big_problem', 'MISSING')
 
-        output['brief_description'] = ok_string if self.has_brief_description else missing_string
+        output[
+            'brief_description'] = ok_string if self.has_brief_description else missing_string
         output['description'] = ok_string if self.has_description else missing_string
 
         description_progress = ClassStatusProgress(
-            (self.has_brief_description + self.has_description) * overall_progress_description_weigth,
-            2 * overall_progress_description_weigth
-        )
+            (self.has_brief_description + self.has_description) *
+            overall_progress_description_weigth,
+            2 * overall_progress_description_weigth)
         items_progress = ClassStatusProgress()
 
         for k in ['methods', 'constants', 'members', 'signals']:
@@ -226,14 +233,19 @@ class ClassStatus:
 
         output['items'] = items_progress.to_configured_colored_string()
 
-        output['overall'] = (description_progress + items_progress).to_colored_string('{percent}%', '{pad_percent}{s}')
+        output['overall'] = (description_progress + items_progress).to_colored_string(
+            '{percent}%', '{pad_percent}{s}')
 
         if self.name.startswith('Total'):
-            output['url'] = color('url', 'https://docs.godotengine.org/en/latest/classes/')
+            output['url'] = color('url',
+                                  'https://docs.godotengine.org/en/latest/classes/')
             if flags['s']:
                 output['comment'] = color('part_good', 'ALL OK')
         else:
-            output['url'] = color('url', 'https://docs.godotengine.org/en/latest/classes/class_{name}.html'.format(name=self.name.lower()))
+            output['url'] = color(
+                'url',
+                'https://docs.godotengine.org/en/latest/classes/class_{name}.html'.
+                format(name=self.name.lower()))
 
             if flags['s'] and not flags['g'] and self.is_ok():
                 output['comment'] = color('part_good', 'ALL OK')
@@ -291,7 +303,7 @@ for arg in sys.argv[1:]:
         elif os.path.isdir(arg):
             for f in os.listdir(arg):
                 if f.endswith('.xml'):
-                    input_file_list.append(os.path.join(arg, f));
+                    input_file_list.append(os.path.join(arg, f))
         else:
             input_class_list.append(arg)
     except KeyError:
@@ -314,16 +326,20 @@ if flags['u']:
     table_column_names.append('Docs URL')
     table_columns.append('url')
 
-
 ################################################################################
 #                                     Help                                     #
 ################################################################################
 
 if len(input_file_list) < 1 or flags['h']:
     if not flags['h']:
-        print(color('section', 'Invalid usage') + ': Please specify a classes directory')
-    print(color('section', 'Usage') + ': doc_status.py [flags] <classes_dir> [class names]')
-    print('\t< and > signify required parameters, while [ and ] signify optional parameters.')
+        print(
+            color('section', 'Invalid usage') + ': Please specify a classes directory')
+    print(
+        color('section', 'Usage') +
+        ': doc_status.py [flags] <classes_dir> [class names]')
+    print(
+        '\t< and > signify required parameters, while [ and ] signify optional parameters.'
+    )
     print(color('section', 'Available flags') + ':')
     possible_synonym_list = list(long_flags)
     possible_synonym_list.sort()
@@ -335,13 +351,12 @@ if len(input_file_list) < 1 or flags['h']:
             if long_flags[synonym] == flag:
                 synonyms.append(color('name', '--' + synonym))
 
-        print(('{synonyms} (Currently ' + color('state_' + ('on' if flags[flag] else 'off'), '{value}') + ')\n\t{description}').format(
-            synonyms=', '.join(synonyms),
-            value=('on' if flags[flag] else 'off'),
-            description=flag_descriptions[flag]
-        ))
+        print(('{synonyms} (Currently ' +
+               color('state_' + ('on' if flags[flag] else 'off'), '{value}') +
+               ')\n\t{description}').format(synonyms=', '.join(synonyms),
+                                            value=('on' if flags[flag] else 'off'),
+                                            description=flag_descriptions[flag]))
     sys.exit(0)
-
 
 ################################################################################
 #                               Parse class list                               #
@@ -394,7 +409,8 @@ for cn in filtered_classes:
 
     total_status = total_status + status
 
-    if (flags['b'] and status.is_ok()) or (flags['g'] and not status.is_ok()) or (not flags['a']):
+    if (flags['b'] and status.is_ok()) or (flags['g']
+                                           and not status.is_ok()) or (not flags['a']):
         continue
 
     if flags['e'] and status.is_empty():
@@ -412,7 +428,6 @@ for cn in filtered_classes:
         row.append(out['comment'])
 
     table.append(row)
-
 
 ################################################################################
 #                              Print output table                              #
@@ -439,11 +454,13 @@ for row in table:
         if cell_i >= len(table_column_sizes):
             table_column_sizes.append(0)
 
-        table_column_sizes[cell_i] = max(nonescape_len(cell), table_column_sizes[cell_i])
+        table_column_sizes[cell_i] = max(nonescape_len(cell),
+                                         table_column_sizes[cell_i])
 
 divider_string = table_row_chars[0]
 for cell_i in range(len(table[0])):
-    divider_string += table_row_chars[1] + table_row_chars[2] * (table_column_sizes[cell_i]) + table_row_chars[1] + table_row_chars[0]
+    divider_string += table_row_chars[1] + table_row_chars[2] * (
+        table_column_sizes[cell_i]) + table_row_chars[1] + table_row_chars[0]
 print(divider_string)
 
 for row_i, row in enumerate(table):
@@ -451,9 +468,12 @@ for row_i, row in enumerate(table):
     for cell_i, cell in enumerate(row):
         padding_needed = table_column_sizes[cell_i] - nonescape_len(cell) + 2
         if cell_i == 0:
-            row_string += table_row_chars[3] + cell + table_row_chars[3] * (padding_needed - 1)
+            row_string += table_row_chars[3] + cell + table_row_chars[3] * (
+                padding_needed - 1)
         else:
-            row_string += table_row_chars[3] * int(math.floor(float(padding_needed) / 2)) + cell + table_row_chars[3] * int(math.ceil(float(padding_needed) / 2))
+            row_string += table_row_chars[3] * int(math.floor(
+                float(padding_needed) / 2)) + cell + table_row_chars[3] * int(
+                    math.ceil(float(padding_needed) / 2))
         row_string += table_column_chars
 
     print(row_string)

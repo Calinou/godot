@@ -13,7 +13,7 @@ def build_godot_tools(source, target, env):
     solution_path = os.path.join(module_dir, 'editor/GodotTools/GodotTools.sln')
     build_config = 'Debug' if env['target'] == 'debug' else 'Release'
 
-    from . solution_builder import build_solution, nuget_restore
+    from .solution_builder import build_solution, nuget_restore
     nuget_restore(env, solution_path)
     build_solution(env, solution_path, build_config)
 
@@ -48,11 +48,11 @@ def build_godot_tools_project_editor(source, target, env):
     csproj_path = os.path.join(csproj_dir, project_name + '.csproj')
     build_config = 'Debug' if env['target'] == 'debug' else 'Release'
 
-    from . solution_builder import build_solution, nuget_restore
+    from .solution_builder import build_solution, nuget_restore
 
     # Make sure to restore NuGet packages in the project directory for the project to find it
-    nuget_restore(env, os.path.join(csproj_dir, 'packages.config'), '-PackagesDirectory',
-                  os.path.join(csproj_dir, 'packages'))
+    nuget_restore(env, os.path.join(csproj_dir, 'packages.config'),
+                  '-PackagesDirectory', os.path.join(csproj_dir, 'packages'))
 
     build_solution(env, csproj_path, build_config)
 
@@ -84,14 +84,25 @@ def build(env_mono):
     source_filenames = ['GodotSharp.dll', 'GodotSharpEditor.dll']
     sources = [os.path.join(editor_api_dir, filename) for filename in source_filenames]
 
-    target_filenames = ['GodotTools.dll', 'GodotTools.BuildLogger.dll', 'GodotTools.ProjectEditor.dll', 'DotNet.Glob.dll', 'GodotTools.Core.dll']
+    target_filenames = [
+        'GodotTools.dll', 'GodotTools.BuildLogger.dll', 'GodotTools.ProjectEditor.dll',
+        'DotNet.Glob.dll', 'GodotTools.Core.dll'
+    ]
 
     if env_mono['target'] == 'debug':
-        target_filenames += ['GodotTools.pdb', 'GodotTools.BuildLogger.pdb', 'GodotTools.ProjectEditor.pdb', 'GodotTools.Core.pdb']
+        target_filenames += [
+            'GodotTools.pdb', 'GodotTools.BuildLogger.pdb',
+            'GodotTools.ProjectEditor.pdb', 'GodotTools.Core.pdb'
+        ]
 
-    targets = [os.path.join(editor_tools_dir, filename) for filename in target_filenames]
+    targets = [
+        os.path.join(editor_tools_dir, filename) for filename in target_filenames
+    ]
 
-    cmd = env_mono.CommandNoCache(targets, sources, build_godot_tools, module_dir=os.getcwd())
+    cmd = env_mono.CommandNoCache(targets,
+                                  sources,
+                                  build_godot_tools,
+                                  module_dir=os.getcwd())
     env_mono.AlwaysBuild(cmd)
 
 
@@ -101,12 +112,18 @@ def build_project_editor_only(env_mono):
     output_dir = Dir('#bin').abspath
     editor_tools_dir = os.path.join(output_dir, 'GodotSharp', 'Tools')
 
-    target_filenames = ['GodotTools.ProjectEditor.dll', 'DotNet.Glob.dll', 'GodotTools.Core.dll']
+    target_filenames = [
+        'GodotTools.ProjectEditor.dll', 'DotNet.Glob.dll', 'GodotTools.Core.dll'
+    ]
 
     if env_mono['target'] == 'debug':
         target_filenames += ['GodotTools.ProjectEditor.pdb', 'GodotTools.Core.pdb']
 
-    targets = [os.path.join(editor_tools_dir, filename) for filename in target_filenames]
+    targets = [
+        os.path.join(editor_tools_dir, filename) for filename in target_filenames
+    ]
 
-    cmd = env_mono.CommandNoCache(targets, [], build_godot_tools_project_editor, module_dir=os.getcwd())
+    cmd = env_mono.CommandNoCache(targets, [],
+                                  build_godot_tools_project_editor,
+                                  module_dir=os.getcwd())
     env_mono.AlwaysBuild(cmd)

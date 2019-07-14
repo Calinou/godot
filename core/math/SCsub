@@ -2,7 +2,7 @@
 
 Import('env')
 
-env_math = env.Clone() # Maybe make one specific for crypto?
+env_math = env.Clone()  # Maybe make one specific for crypto?
 
 is_builtin = env["builtin_mbedtls"]
 has_module = env["module_mbedtls_enabled"]
@@ -22,17 +22,17 @@ if not has_module:
     env_thirdparty = env_math.Clone()
     env_thirdparty.disable_warnings()
     # Custom config file
-    env_thirdparty.Append(CPPDEFINES=[('MBEDTLS_CONFIG_FILE', '\\"thirdparty/mbedtls/include/godot_core_mbedtls_config.h\\"')])
+    env_thirdparty.Append(
+        CPPDEFINES=[('MBEDTLS_CONFIG_FILE',
+                     '\\"thirdparty/mbedtls/include/godot_core_mbedtls_config.h\\"')])
     thirdparty_mbedtls_dir = "#thirdparty/mbedtls/library/"
     thirdparty_mbedtls_sources = [
-        "aes.c",
-        "base64.c",
-        "md5.c",
-        "sha1.c",
-        "sha256.c",
+        "aes.c", "base64.c", "md5.c", "sha1.c", "sha256.c",
         "godot_core_mbedtls_platform.c"
     ]
-    thirdparty_mbedtls_sources = [thirdparty_mbedtls_dir + file for file in thirdparty_mbedtls_sources]
+    thirdparty_mbedtls_sources = [
+        thirdparty_mbedtls_dir + file for file in thirdparty_mbedtls_sources
+    ]
     env_thirdparty.add_source_files(env.core_sources, thirdparty_mbedtls_sources)
 
 env_math.add_source_files(env.core_sources, "*.cpp")

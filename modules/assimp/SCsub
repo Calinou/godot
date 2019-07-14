@@ -77,19 +77,20 @@ if (not env.msvc):
 elif (env.msvc == False and env['platform'] == 'windows'):
     env_assimp.Append(LDFLAGS=['-pthread'])
 
-if(env['platform'] == 'windows'):
+if (env['platform'] == 'windows'):
     env_assimp.Append(CPPDEFINES=['PLATFORM_WINDOWS'])
     env_assimp.Append(CPPDEFINES=[('PLATFORM', 'WINDOWS')])
-elif(env['platform'] == 'x11'):
+elif (env['platform'] == 'x11'):
     env_assimp.Append(CPPDEFINES=['PLATFORM_LINUX'])
     env_assimp.Append(CPPDEFINES=[('PLATFORM', 'LINUX')])
-elif(env['platform'] == 'osx'):
+elif (env['platform'] == 'osx'):
     env_assimp.Append(CPPDEFINES=['PLATFORM_DARWIN'])
     env_assimp.Append(CPPDEFINES=[('PLATFORM', 'DARWIN')])
-    
+
 env_thirdparty = env_assimp.Clone()
 env_thirdparty.disable_warnings()
-env_thirdparty.add_source_files(env.modules_sources, Glob('#thirdparty/assimp/code/*.cpp'))
+env_thirdparty.add_source_files(env.modules_sources,
+                                Glob('#thirdparty/assimp/code/*.cpp'))
 
 # Godot's own source files
 env_assimp.add_source_files(env.modules_sources, "*.cpp")
