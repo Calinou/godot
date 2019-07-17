@@ -836,9 +836,12 @@ void SpatialEditorViewport::_surface_focus_exit() {
 
 	view_menu->set_disable_shortcuts(true);
 }
-bool SpatialEditorViewport ::_is_node_locked(const Node *p_node) {
+
+bool SpatialEditorViewport::_is_node_locked(const Node *p_node) {
+
 	return p_node->has_meta("_edit_lock_") && p_node->get_meta("_edit_lock_");
 }
+
 void SpatialEditorViewport::_list_select(Ref<InputEventMouseButton> b) {
 
 	_find_items_at_pos(b->get_position(), clicked_includes_current, selection_results, b->get_shift());
@@ -3990,6 +3993,11 @@ void SpatialEditor::select_gizmo_highlight_axis(int p_axis) {
 	}
 }
 
+bool SpatialEditor::_is_node_locked(const Node *p_node) {
+
+	return p_node->has_meta("_edit_lock_") && p_node->get_meta("_edit_lock_");
+}
+
 void SpatialEditor::update_transform_gizmo() {
 
 	List<Node *> &selection = editor_selection->get_selected_node_list();
@@ -3998,6 +4006,7 @@ void SpatialEditor::update_transform_gizmo() {
 
 	Basis gizmo_basis;
 	bool local_gizmo_coords = are_local_coords_enabled();
+	bool all_locked = true;
 
 	for (List<Node *>::Element *E = selection.front(); E; E = E->next()) {
 
@@ -4011,21 +4020,24 @@ void SpatialEditor::update_transform_gizmo() {
 
 		Transform xf = se->sp->get_global_gizmo_transform();
 
-		if (first) {
-			center.position = xf.origin;
-			first = false;
-			if (local_gizmo_coords) {
-				gizmo_basis = xf.basis;
-				gizmo_basis.orthonormalize();
+		if (!_is_node_locked(sp)) {
+			all_locked = false;
+			if (first) {
+				center.position = xf.origin;
+				first = false;
+				if (local_gizmo_coords) {
+					gizmo_basis = xf.basis;
+					gizmo_basis.orthonormalize();
+				}
+			} else {
+				center.expand_to(xf.origin);
+				gizmo_basis = Basis();
 			}
-		} else {
-			center.expand_to(xf.origin);
-			gizmo_basis = Basis();
 		}
 	}
 
 	Vector3 pcenter = center.position + center.size * 0.5;
-	gizmo.visible = !first;
+	gizmo.visible = !all_locked && !first;
 	gizmo.transform.origin = pcenter;
 	gizmo.transform.basis = gizmo_basis;
 

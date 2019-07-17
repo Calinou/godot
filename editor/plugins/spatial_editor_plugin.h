@@ -651,6 +651,7 @@ private:
 
 	SpatialEditor();
 
+	bool _is_node_locked(const Node *p_node);
 	bool is_any_freelook_active() const;
 
 	void _refresh_menu_icons();
