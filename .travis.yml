@@ -1,7 +1,7 @@
 language: cpp
 
 # OS config, depends on actual 'os' in build matrix
-dist: xenial
+dist: bionic
 sudo: false
 
 env:
@@ -24,7 +24,7 @@ matrix:
       addons:
         apt:
           sources:
-            - llvm-toolchain-xenial-8
+            - llvm-toolchain-bionic-8
           packages:
             - clang-format-8
 
