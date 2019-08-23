@@ -1933,12 +1933,12 @@ public:
 			{ //test that installed build version is alright
 				FileAccessRef f = FileAccess::open("res://android/.build_version", FileAccess::READ);
 				if (!f) {
-					EditorNode::get_singleton()->show_warning(TTR("Trying to build from a custom built template, but no version info for it exists. Please reinstall from the 'Project' menu."));
+					EditorNode::get_singleton()->show_error(TTR("Trying to build from a custom built template, but no version information for it exists. Please reinstall the Android build template from the \"Project\" menu."));
 					return ERR_UNCONFIGURED;
 				}
 				String version = f->get_line().strip_edges();
 				if (version != VERSION_FULL_CONFIG) {
-					EditorNode::get_singleton()->show_warning(vformat(TTR("Android build version mismatch:\n   Template installed: %s\n   Godot Version: %s\nPlease reinstall Android build template from 'Project' menu."), version, VERSION_FULL_CONFIG));
+					EditorNode::get_singleton()->show_error(vformat(TTR("Android build version mismatch:\n   Template installed: %s\n   Godot Version: %s\nPlease reinstall Android build template from the \"Project\" menu."), version, VERSION_FULL_CONFIG));
 					return ERR_UNCONFIGURED;
 				}
 			}
@@ -1975,7 +1975,7 @@ public:
 			*/
 			int result = EditorNode::get_singleton()->execute_and_show_output(TTR("Building Android Project (gradle)"), build_command, cmdline);
 			if (result != 0) {
-				EditorNode::get_singleton()->show_warning(TTR("Building of Android project failed, check output for the error.\nAlternatively visit docs.godotengine.org for Android build documentation."));
+				EditorNode::get_singleton()->show_error(TTR("Building the Android project has failed, check the output for the error.\nAlternatively, visit docs.godotengine.org for Android build documentation."));
 				return ERR_CANT_CREATE;
 			}
 			if (p_debug) {
@@ -1985,7 +1985,7 @@ public:
 			}
 
 			if (!FileAccess::exists(src_apk)) {
-				EditorNode::get_singleton()->show_warning(TTR("No build apk generated at: ") + "\n" + src_apk);
+				EditorNode::get_singleton()->show_error(TTR("No build APK generated at: ") + "\n" + src_apk);
 				return ERR_CANT_CREATE;
 			}
 

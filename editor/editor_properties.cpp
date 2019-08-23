@@ -2049,7 +2049,7 @@ void EditorPropertyResource::_file_selected(const String &p_path) {
 		}
 
 		if (!any_type_matches)
-			EditorNode::get_singleton()->show_warning(vformat(TTR("The selected resource (%s) does not match any type expected for this property (%s)."), res->get_class(), property_types));
+			EditorNode::get_singleton()->show_warning(vformat(TTR("The selected resource's type (%s) does not match any type expected for this property (%s)."), res->get_class(), property_types));
 	}
 
 	emit_changed(get_edited_property(), res);
@@ -2210,12 +2210,12 @@ void EditorPropertyResource::_menu_option(int p_which) {
 
 				Resource *r = Object::cast_to<Resource>(get_edited_object());
 				if (r && r->get_path().is_resource_file()) {
-					EditorNode::get_singleton()->show_warning(TTR("Can't create a ViewportTexture on resources saved as a file.\nResource needs to belong to a scene."));
+					EditorNode::get_singleton()->show_error(TTR("Can't create a ViewportTexture on resources saved as a file.\nResource needs to belong to a scene."));
 					return;
 				}
 
 				if (r && !r->is_local_to_scene()) {
-					EditorNode::get_singleton()->show_warning(TTR("Can't create a ViewportTexture on this resource because it's not set as local to scene.\nPlease switch on the 'local to scene' property on it (and all resources containing it up to a node)."));
+					EditorNode::get_singleton()->show_error(TTR("Can't create a ViewportTexture on this resource because it's not set as local to scene.\nPlease enable the \"Local to Scene\" property on it (and all resources containing it up to a node)."));
 					return;
 				}
 
@@ -2691,7 +2691,7 @@ void EditorPropertyResource::_viewport_selected(const NodePath &p_path) {
 
 	Node *to_node = get_node(p_path);
 	if (!Object::cast_to<Viewport>(to_node)) {
-		EditorNode::get_singleton()->show_warning(TTR("Selected node is not a Viewport!"));
+		EditorNode::get_singleton()->show_error(vformat(TTR("%s is not a Viewport."), to_node->get_name()));
 		return;
 	}
 

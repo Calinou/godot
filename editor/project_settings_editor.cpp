@@ -871,19 +871,19 @@ void ProjectSettingsEditor::_item_del() {
 
 	String path = globals_editor->get_inspector()->get_selected_path();
 	if (path == String()) {
-		EditorNode::get_singleton()->show_warning(TTR("Select a setting item first!"));
+		EditorNode::get_singleton()->show_error(TTR("Select a setting item first."));
 		return;
 	}
 
 	String property = globals_editor->get_current_section().plus_file(path);
 
 	if (!ProjectSettings::get_singleton()->has_setting(property)) {
-		EditorNode::get_singleton()->show_warning(vformat(TTR("No property '%s' exists."), property));
+		EditorNode::get_singleton()->show_error(vformat(TTR("The property \"%s\" doesn't exist."), property));
 		return;
 	}
 
 	if (ProjectSettings::get_singleton()->get_order(property) < ProjectSettings::NO_BUILTIN_ORDER_BASE) {
-		EditorNode::get_singleton()->show_warning(vformat(TTR("Setting '%s' is internal, and it can't be deleted."), property));
+		EditorNode::get_singleton()->show_error(vformat(TTR("Setting \"%s\" is internal and can't be deleted."), property));
 		return;
 	}
 
@@ -1047,7 +1047,7 @@ void ProjectSettingsEditor::_copy_to_platform(int p_which) {
 
 	String path = globals_editor->get_inspector()->get_selected_path();
 	if (path == String()) {
-		EditorNode::get_singleton()->show_warning(TTR("Select a setting item first!"));
+		EditorNode::get_singleton()->show_error(TTR("Select a setting item first."));
 		return;
 	}
 

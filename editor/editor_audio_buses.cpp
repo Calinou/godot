@@ -1101,7 +1101,7 @@ void EditorAudioBuses::_delete_bus(Object *p_which) {
 	EditorAudioBus *bus = Object::cast_to<EditorAudioBus>(p_which);
 	int index = bus->get_index();
 	if (index == 0) {
-		EditorNode::get_singleton()->show_warning(TTR("Master bus can't be deleted!"));
+		EditorNode::get_singleton()->show_error(TTR("The master bus can't be deleted."));
 		return;
 	}
 
@@ -1233,7 +1233,7 @@ void EditorAudioBuses::_load_default_layout() {
 
 	Ref<AudioBusLayout> state = ResourceLoader::load(layout_path);
 	if (state.is_null()) {
-		EditorNode::get_singleton()->show_warning(vformat(TTR("There is no '%s' file."), layout_path));
+		EditorNode::get_singleton()->show_error(vformat(TTR("There is no '%s' file."), layout_path));
 		return;
 	}
 
@@ -1250,7 +1250,7 @@ void EditorAudioBuses::_file_dialog_callback(const String &p_string) {
 	if (file_dialog->get_mode() == EditorFileDialog::MODE_OPEN_FILE) {
 		Ref<AudioBusLayout> state = ResourceLoader::load(p_string);
 		if (state.is_null()) {
-			EditorNode::get_singleton()->show_warning(TTR("Invalid file, not an audio bus layout."));
+			EditorNode::get_singleton()->show_error(TTR("Invalid file, not an audio bus layout."));
 			return;
 		}
 
@@ -1272,7 +1272,7 @@ void EditorAudioBuses::_file_dialog_callback(const String &p_string) {
 		Error err = ResourceSaver::save(p_string, AudioServer::get_singleton()->generate_bus_layout());
 
 		if (err != OK) {
-			EditorNode::get_singleton()->show_warning("Error saving file: " + p_string);
+			EditorNode::get_singleton()->show_error("Error saving file: " + p_string);
 			return;
 		}
 
@@ -1387,7 +1387,7 @@ void EditorAudioBuses::open_layout(const String &p_path) {
 
 	Ref<AudioBusLayout> state = ResourceLoader::load(p_path);
 	if (state.is_null()) {
-		EditorNode::get_singleton()->show_warning(TTR("Invalid file, not an audio bus layout."));
+		EditorNode::get_singleton()->show_error(TTR("Invalid file, not an audio bus layout."));
 		return;
 	}
 

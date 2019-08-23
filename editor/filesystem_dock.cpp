@@ -1196,11 +1196,11 @@ void FileSystemDock::_make_dir_confirm() {
 	String dir_name = make_dir_dialog_text->get_text().strip_edges();
 
 	if (dir_name.length() == 0) {
-		EditorNode::get_singleton()->show_warning(TTR("No name provided."));
+		EditorNode::get_singleton()->show_error(TTR("No name provided."));
 		return;
 	} else if (dir_name.find("/") != -1 || dir_name.find("\\") != -1 || dir_name.find(":") != -1 || dir_name.find("*") != -1 ||
 			   dir_name.find("|") != -1 || dir_name.find(">") != -1 || dir_name.ends_with(".") || dir_name.ends_with(" ")) {
-		EditorNode::get_singleton()->show_warning(TTR("Provided name contains invalid characters."));
+		EditorNode::get_singleton()->show_error(vformat(TTR("The name \"%s\" contains invalid characters."), dir_name));
 		return;
 	}
 
@@ -1220,7 +1220,7 @@ void FileSystemDock::_make_dir_confirm() {
 		print_verbose("FileSystem: calling rescan.");
 		_rescan();
 	} else {
-		EditorNode::get_singleton()->show_warning(TTR("Could not create folder."));
+		EditorNode::get_singleton()->show_error(vformat(TTR("Couldn't create the folder \"%s\"."), dir_name));
 	}
 }
 
@@ -1228,7 +1228,7 @@ void FileSystemDock::_make_scene_confirm() {
 	String scene_name = make_scene_dialog_text->get_text().strip_edges();
 
 	if (scene_name.length() == 0) {
-		EditorNode::get_singleton()->show_warning(TTR("No name provided."));
+		EditorNode::get_singleton()->show_error(TTR("No name provided."));
 		return;
 	}
 
@@ -1256,7 +1256,7 @@ void FileSystemDock::_make_scene_confirm() {
 
 	DirAccess *da = DirAccess::create(DirAccess::ACCESS_RESOURCES);
 	if (da->file_exists(scene_name)) {
-		EditorNode::get_singleton()->show_warning(TTR("A file or folder with this name already exists."));
+		EditorNode::get_singleton()->show_error(vformat(TTR("A file or folder with the name \"%s\" already exists."), scene_name));
 		memdelete(da);
 		return;
 	}
@@ -1277,10 +1277,10 @@ void FileSystemDock::_folder_deleted(String p_folder) {
 void FileSystemDock::_rename_operation_confirm() {
 	String new_name = rename_dialog_text->get_text().strip_edges();
 	if (new_name.length() == 0) {
-		EditorNode::get_singleton()->show_warning(TTR("No name provided."));
+		EditorNode::get_singleton()->show_error(TTR("No name provided."));
 		return;
 	} else if (new_name.find("/") != -1 || new_name.find("\\") != -1 || new_name.find(":") != -1) {
-		EditorNode::get_singleton()->show_warning(TTR("Name contains invalid characters."));
+		EditorNode::get_singleton()->show_error(vformat(TTR("The name \"%s\" contains invalid characters."), new_name));
 		return;
 	}
 
@@ -1294,7 +1294,7 @@ void FileSystemDock::_rename_operation_confirm() {
 		EditorFileSystem::get_singleton()->move_group_file(old_path, new_path);
 	}
 
-	// Present a more user friendly warning for name conflict.
+	// Present a more user-friendly error for name conflict.
 	DirAccess *da = DirAccess::create(DirAccess::ACCESS_RESOURCES);
 #if defined(WINDOWS_ENABLED) || defined(UWP_ENABLED)
 	// Workaround case insensitivity on Windows.
@@ -1302,7 +1302,7 @@ void FileSystemDock::_rename_operation_confirm() {
 #else
 	if (da->file_exists(new_path) || da->dir_exists(new_path)) {
 #endif
-		EditorNode::get_singleton()->show_warning(TTR("A file or folder with this name already exists."));
+		EditorNode::get_singleton()->show_error(vformat(TTR("A file or folder with the name \"%s\" already exists."), new_path));
 		memdelete(da);
 		return;
 	}
@@ -1331,10 +1331,10 @@ void FileSystemDock::_rename_operation_confirm() {
 void FileSystemDock::_duplicate_operation_confirm() {
 	String new_name = duplicate_dialog_text->get_text().strip_edges();
 	if (new_name.length() == 0) {
-		EditorNode::get_singleton()->show_warning(TTR("No name provided."));
+		EditorNode::get_singleton()->show_error(TTR("No name provided."));
 		return;
 	} else if (new_name.find("/") != -1 || new_name.find("\\") != -1 || new_name.find(":") != -1) {
-		EditorNode::get_singleton()->show_warning(TTR("Name contains invalid characters."));
+		EditorNode::get_singleton()->show_error(vformat(TTR("The name \"%s\" contains invalid characters."), new_name));
 		return;
 	}
 
@@ -1346,10 +1346,10 @@ void FileSystemDock::_duplicate_operation_confirm() {
 
 	String new_path = base_dir.plus_file(new_name);
 
-	// Present a more user friendly warning for name conflict
+	// Present a more user-friendly error for name conflict
 	DirAccess *da = DirAccess::create(DirAccess::ACCESS_RESOURCES);
 	if (da->file_exists(new_path) || da->dir_exists(new_path)) {
-		EditorNode::get_singleton()->show_warning(TTR("A file or folder with this name already exists."));
+		EditorNode::get_singleton()->show_error(vformat(TTR("A file or folder with the name \"%s\" already exists."), new_path));
 		memdelete(da);
 		return;
 	}

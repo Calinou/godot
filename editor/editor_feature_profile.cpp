@@ -445,12 +445,12 @@ void EditorFeatureProfileManager::_erase_selected_profile() {
 void EditorFeatureProfileManager::_create_new_profile() {
 	String name = new_profile_name->get_text().strip_edges();
 	if (!name.is_valid_filename() || name.find(".") != -1) {
-		EditorNode::get_singleton()->show_warning(TTR("Profile must be a valid filename and must not contain '.'"));
+		EditorNode::get_singleton()->show_error(TTR("Profile must be a valid filename and must not contain \".\"."));
 		return;
 	}
 	String file = EditorSettings::get_singleton()->get_feature_profiles_dir().plus_file(name + ".profile");
 	if (FileAccess::exists(file)) {
-		EditorNode::get_singleton()->show_warning(TTR("Profile with this name already exists."));
+		EditorNode::get_singleton()->show_error(TTR("A profile with this name already exists."));
 		return;
 	}
 
@@ -718,14 +718,14 @@ void EditorFeatureProfileManager::_import_profiles(const Vector<String> &p_paths
 		Error err = profile->load_from_file(p_paths[i]);
 		String basefile = p_paths[i].get_file();
 		if (err != OK) {
-			EditorNode::get_singleton()->show_warning(vformat(TTR("File '%s' format is invalid, import aborted."), basefile));
+			EditorNode::get_singleton()->show_error(vformat(TTR("File \"%s\" format is invalid, import aborted."), basefile));
 			return;
 		}
 
 		String dst_file = EditorSettings::get_singleton()->get_feature_profiles_dir().plus_file(basefile);
 
 		if (FileAccess::exists(dst_file)) {
-			EditorNode::get_singleton()->show_warning(vformat(TTR("Profile '%s' already exists. Remove it first before importing, import aborted."), basefile.get_basename()));
+			EditorNode::get_singleton()->show_error(vformat(TTR("A profile with the name \"%s\" already exists. Remove it first before importing."), basefile.get_basename()));
 			return;
 		}
 	}
@@ -749,7 +749,7 @@ void EditorFeatureProfileManager::_export_profile(const String &p_path) {
 	ERR_FAIL_COND(edited.is_null());
 	Error err = edited->save_to_file(p_path);
 	if (err != OK) {
-		EditorNode::get_singleton()->show_warning(vformat(TTR("Error saving profile to path: '%s'."), p_path));
+		EditorNode::get_singleton()->show_error(vformat(TTR("An error occurred while saving the profile to \"%s\"."), p_path));
 	}
 }
 

@@ -3636,7 +3636,7 @@ void AnimationTrackEditor::insert_node_value_key(Node *p_node, const String &p_p
 
 	if (Object::cast_to<AnimationPlayer>(node) && p_property == "current_animation") {
 		if (node == AnimationPlayerEditor::singleton->get_player()) {
-			EditorNode::get_singleton()->show_warning(TTR("AnimationPlayer can't animate itself, only other players."));
+			EditorNode::get_singleton()->show_error(TTR("AnimationPlayer can't animate itself, only other players."));
 			return;
 		}
 		_insert_animation_key(path, p_value);
@@ -3732,7 +3732,7 @@ void AnimationTrackEditor::insert_value_key(const String &p_property, const Vari
 
 	if (Object::cast_to<AnimationPlayer>(node) && p_property == "current_animation") {
 		if (node == AnimationPlayerEditor::singleton->get_player()) {
-			EditorNode::get_singleton()->show_warning(TTR("AnimationPlayer can't animate itself, only other players."));
+			EditorNode::get_singleton()->show_error(TTR("AnimationPlayer can't animate itself, only other players."));
 			return;
 		}
 		_insert_animation_key(path, p_value);
@@ -4436,7 +4436,7 @@ void AnimationTrackEditor::_new_track_node_selected(NodePath p_path) {
 	NodePath path_to = root->get_path_to(node);
 
 	if (adding_track_type == Animation::TYPE_TRANSFORM && !node->is_class("Spatial")) {
-		EditorNode::get_singleton()->show_warning(TTR("Transform tracks only apply to Spatial-based nodes."));
+		EditorNode::get_singleton()->show_error(TTR("Transform tracks only apply to Spatial-based nodes."));
 		return;
 	}
 
@@ -4474,7 +4474,7 @@ void AnimationTrackEditor::_new_track_node_selected(NodePath p_path) {
 		case Animation::TYPE_AUDIO: {
 
 			if (!node->is_class("AudioStreamPlayer") && !node->is_class("AudioStreamPlayer2D") && !node->is_class("AudioStreamPlayer3D")) {
-				EditorNode::get_singleton()->show_warning(TTR("Audio tracks can only point to nodes of type:\n-AudioStreamPlayer\n-AudioStreamPlayer2D\n-AudioStreamPlayer3D"));
+				EditorNode::get_singleton()->show_error(TTR("Audio tracks can only point to nodes of type:\n-AudioStreamPlayer\n-AudioStreamPlayer2D\n-AudioStreamPlayer3D"));
 				return;
 			}
 
@@ -4488,12 +4488,12 @@ void AnimationTrackEditor::_new_track_node_selected(NodePath p_path) {
 		case Animation::TYPE_ANIMATION: {
 
 			if (!node->is_class("AnimationPlayer")) {
-				EditorNode::get_singleton()->show_warning(TTR("Animation tracks can only point to AnimationPlayer nodes."));
+				EditorNode::get_singleton()->show_error(TTR("Animation tracks can only point to AnimationPlayer nodes."));
 				return;
 			}
 
 			if (node == AnimationPlayerEditor::singleton->get_player()) {
-				EditorNode::get_singleton()->show_warning(TTR("An animation player can't animate itself, only other players."));
+				EditorNode::get_singleton()->show_error(TTR("An animation player can't animate itself, only other players."));
 				return;
 			}
 
@@ -4509,7 +4509,7 @@ void AnimationTrackEditor::_new_track_node_selected(NodePath p_path) {
 
 void AnimationTrackEditor::_add_track(int p_type) {
 	if (!root) {
-		EditorNode::get_singleton()->show_warning(TTR("Not possible to add a new track without a root"));
+		EditorNode::get_singleton()->show_error(TTR("Can't add a new track without a root."));
 		return;
 	}
 	adding_track_type = p_type;
@@ -4567,7 +4567,7 @@ void AnimationTrackEditor::_new_track_property_selected(String p_name) {
 			bool valid;
 			subindices = _get_bezier_subindices_for_type(h.type, &valid);
 			if (!valid) {
-				EditorNode::get_singleton()->show_warning("Invalid track for Bezier (no suitable sub-properties)");
+				EditorNode::get_singleton()->show_error("Invalid track for Bezier (no suitable sub-properties).");
 				return;
 			}
 		}
@@ -4624,13 +4624,13 @@ void AnimationTrackEditor::_insert_key_from_track(float p_ofs, int p_track) {
 	switch (animation->track_get_type(p_track)) {
 		case Animation::TYPE_TRANSFORM: {
 			if (!root->has_node(animation->track_get_path(p_track))) {
-				EditorNode::get_singleton()->show_warning(TTR("Track path is invalid, so can't add a key."));
+				EditorNode::get_singleton()->show_error(TTR("Track path is invalid, can't insert key."));
 				return;
 			}
 			Spatial *base = Object::cast_to<Spatial>(root->get_node(animation->track_get_path(p_track)));
 
 			if (!base) {
-				EditorNode::get_singleton()->show_warning(TTR("Track is not of type Spatial, can't insert key"));
+				EditorNode::get_singleton()->show_error(TTR("Track is not of type Spatial, can't insert key."));
 				return;
 			}
 
@@ -4660,7 +4660,7 @@ void AnimationTrackEditor::_insert_key_from_track(float p_ofs, int p_track) {
 		} break;
 		case Animation::TYPE_METHOD: {
 			if (!root->has_node(animation->track_get_path(p_track))) {
-				EditorNode::get_singleton()->show_warning(TTR("Track path is invalid, so can't add a method key."));
+				EditorNode::get_singleton()->show_error(TTR("Track path is invalid, can't add a method key."));
 				return;
 			}
 			Node *base = root->get_node(animation->track_get_path(p_track));
@@ -4717,7 +4717,7 @@ void AnimationTrackEditor::_insert_key_from_track(float p_ofs, int p_track) {
 void AnimationTrackEditor::_add_method_key(const String &p_method) {
 
 	if (!root->has_node(animation->track_get_path(insert_key_from_track_call_track))) {
-		EditorNode::get_singleton()->show_warning(TTR("Track path is invalid, so can't add a method key."));
+		EditorNode::get_singleton()->show_error(TTR("Track path is invalid, can't add a method key."));
 		return;
 	}
 	Node *base = root->get_node(animation->track_get_path(insert_key_from_track_call_track));
@@ -4755,7 +4755,7 @@ void AnimationTrackEditor::_add_method_key(const String &p_method) {
 		}
 	}
 
-	EditorNode::get_singleton()->show_warning(TTR("Method not found in object: ") + p_method);
+	EditorNode::get_singleton()->show_error(TTR("Method not found in object: ") + p_method);
 }
 
 void AnimationTrackEditor::_key_selected(int p_key, bool p_single, int p_track) {
@@ -5353,7 +5353,7 @@ void AnimationTrackEditor::_edit_menu_pressed(int p_option) {
 		case EDIT_PASTE_TRACKS: {
 
 			if (track_clipboard.size() == 0) {
-				EditorNode::get_singleton()->show_warning(TTR("Clipboard is empty"));
+				EditorNode::get_singleton()->show_error(TTR("Clipboard is empty."));
 				break;
 			}
 
@@ -5513,7 +5513,7 @@ void AnimationTrackEditor::_edit_menu_pressed(int p_option) {
 		} break;
 		case EDIT_DUPLICATE_TRANSPOSED: {
 			if (bezier_edit->is_visible()) {
-				EditorNode::get_singleton()->show_warning(TTR("This option does not work for Bezier editing, as it's only a single track."));
+				EditorNode::get_singleton()->show_error(TTR("This option does not work for Bezier editing, as it's only a single track."));
 				break;
 			}
 			_anim_duplicate_keys(true);

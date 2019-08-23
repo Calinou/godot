@@ -5239,7 +5239,7 @@ void SpatialEditor::snap_selected_nodes_to_floor() {
 
 			undo_redo->commit_action();
 		} else {
-			EditorNode::get_singleton()->show_warning(TTR("Couldn't find a solid floor to snap the selection to."));
+			EditorNode::get_singleton()->show_error(TTR("Couldn't find a solid floor to snap the selection to."));
 		}
 	}
 }

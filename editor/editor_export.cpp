@@ -1567,7 +1567,7 @@ Error EditorExportPlatformPC::export_project(const Ref<EditorExportPreset> &p_pr
 	}
 
 	if (template_path != String() && !FileAccess::exists(template_path)) {
-		EditorNode::get_singleton()->show_warning(TTR("Template file not found:") + "\n" + template_path);
+		EditorNode::get_singleton()->show_error(TTR("Template file not found:") + "\n" + template_path);
 		return ERR_FILE_NOT_FOUND;
 	}
 
@@ -1591,7 +1591,7 @@ Error EditorExportPlatformPC::export_project(const Ref<EditorExportPreset> &p_pr
 		if (err == OK && p_preset->get("binary_format/embed_pck")) {
 
 			if (embedded_size >= 0x100000000 && !p_preset->get("binary_format/64_bits")) {
-				EditorNode::get_singleton()->show_warning(TTR("On 32-bit exports the embedded PCK cannot be bigger than 4 GiB."));
+				EditorNode::get_singleton()->show_error(TTR("On 32-bit exports, the embedded PCK cannot be larger than 4 GiB."));
 				return ERR_UNAVAILABLE;
 			}
 

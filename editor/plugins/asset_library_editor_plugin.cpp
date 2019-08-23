@@ -654,7 +654,7 @@ void EditorAssetLibrary::_install_asset() {
 		if (d && d->get_asset_id() == description->get_asset_id()) {
 
 			if (EditorNode::get_singleton() != NULL)
-				EditorNode::get_singleton()->show_warning(TTR("Download for this asset is already in progress!"));
+				EditorNode::get_singleton()->show_error(TTR("A download for this asset is already in progress."));
 			return;
 		}
 	}

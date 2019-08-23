@@ -315,7 +315,7 @@ void AnimationNodeBlendTreeEditor::_add_node(int p_idx) {
 
 	Ref<AnimationNodeOutput> out = anode;
 	if (out.is_valid()) {
-		EditorNode::get_singleton()->show_warning(TTR("Output node can't be added to the blend tree."));
+		EditorNode::get_singleton()->show_error(TTR("The output node can't be added to the blend tree."));
 		return;
 	}
 
@@ -360,7 +360,7 @@ void AnimationNodeBlendTreeEditor::_connection_request(const String &p_from, int
 	AnimationNodeBlendTree::ConnectionError err = blend_tree->can_connect_node(p_to, p_to_index, p_from);
 
 	if (err != AnimationNodeBlendTree::CONNECTION_OK) {
-		EditorNode::get_singleton()->show_warning(TTR("Unable to connect, port may be in use or connection may be invalid."));
+		EditorNode::get_singleton()->show_error(TTR("Unable to connect. The port may be in use or the connection may be invalid."));
 		return;
 	}
 
@@ -513,20 +513,20 @@ bool AnimationNodeBlendTreeEditor::_update_filters(const Ref<AnimationNode> &ano
 	NodePath player_path = AnimationTreeEditor::get_singleton()->get_tree()->get_animation_player();
 
 	if (!AnimationTreeEditor::get_singleton()->get_tree()->has_node(player_path)) {
-		EditorNode::get_singleton()->show_warning(TTR("No animation player set, so unable to retrieve track names."));
+		EditorNode::get_singleton()->show_error(TTR("No animation player is set, unable to retrieve track names."));
 		return false;
 	}
 
 	AnimationPlayer *player = Object::cast_to<AnimationPlayer>(AnimationTreeEditor::get_singleton()->get_tree()->get_node(player_path));
 	if (!player) {
-		EditorNode::get_singleton()->show_warning(TTR("Player path set is invalid, so unable to retrieve track names."));
+		EditorNode::get_singleton()->show_error(TTR("The defined player path is invalid, unable to retrieve track names."));
 		return false;
 	}
 
 	Node *base = player->get_node(player->get_root());
 
 	if (!base) {
-		EditorNode::get_singleton()->show_warning(TTR("Animation player has no valid root node path, so unable to retrieve track names."));
+		EditorNode::get_singleton()->show_error(TTR("The AnimationPlayer has no valid root node path, unable to retrieve track names."));
 		return false;
 	}
 

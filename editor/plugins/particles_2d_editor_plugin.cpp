@@ -153,7 +153,7 @@ void Particles2DEditorPlugin::_generate_emission_mask() {
 
 	Ref<ParticlesMaterial> pm = particles->get_process_material();
 	if (!pm.is_valid()) {
-		EditorNode::get_singleton()->show_warning(TTR("Can only set point into a ParticlesMaterial process material"));
+		EditorNode::get_singleton()->show_error(TTR("Emission points can only be set into a ParticlesMaterial process material."));
 		return;
 	}
 

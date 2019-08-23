@@ -150,13 +150,13 @@ void EditorAutoloadSettings::_autoload_edited() {
 		String error;
 		if (!_autoload_name_is_valid(name, &error)) {
 			ti->set_text(0, old_name);
-			EditorNode::get_singleton()->show_warning(error);
+			EditorNode::get_singleton()->show_error(error);
 			return;
 		}
 
 		if (ProjectSettings::get_singleton()->has_setting("autoload/" + name)) {
 			ti->set_text(0, old_name);
-			EditorNode::get_singleton()->show_warning(vformat(TTR("Autoload '%s' already exists!"), name));
+			EditorNode::get_singleton()->show_error(vformat(TTR("An autoload with the name \"%s\" already exists."), name));
 			return;
 		}
 
@@ -639,18 +639,18 @@ bool EditorAutoloadSettings::autoload_add(const String &p_name, const String &p_
 
 	String error;
 	if (!_autoload_name_is_valid(name, &error)) {
-		EditorNode::get_singleton()->show_warning(error);
+		EditorNode::get_singleton()->show_error(error);
 		return false;
 	}
 
 	const String &path = p_path;
 	if (!FileAccess::exists(path)) {
-		EditorNode::get_singleton()->show_warning(TTR("Invalid path.") + "\n" + TTR("File does not exist."));
+		EditorNode::get_singleton()->show_error(TTR("Invalid path.") + "\n" + TTR("File does not exist."));
 		return false;
 	}
 
 	if (!path.begins_with("res://")) {
-		EditorNode::get_singleton()->show_warning(TTR("Invalid path.") + "\n" + TTR("Not in resource path."));
+		EditorNode::get_singleton()->show_error(TTR("Invalid path.") + "\n" + TTR("Not in resource path."));
 		return false;
 	}
 

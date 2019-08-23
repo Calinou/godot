@@ -396,7 +396,7 @@ void AnimationNodeBlendSpace1DEditor::_add_menu_type(int p_index) {
 	}
 
 	if (!node.is_valid()) {
-		EditorNode::get_singleton()->show_warning(TTR("This type of node can't be used. Only root nodes are allowed."));
+		EditorNode::get_singleton()->show_error(TTR("This type of node can't be used. Only root nodes are allowed."));
 		return;
 	}
 

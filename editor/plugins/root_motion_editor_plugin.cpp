@@ -50,19 +50,19 @@ void EditorPropertyRootMotion::_node_assign() {
 
 	AnimationTree *atree = Object::cast_to<AnimationTree>(get_edited_object());
 	if (!atree->has_node(atree->get_animation_player())) {
-		EditorNode::get_singleton()->show_warning(TTR("AnimationTree has no path set to an AnimationPlayer"));
+		EditorNode::get_singleton()->show_error(TTR("AnimationTree must have a path to an AnimationPlayer defined."));
 		return;
 	}
 	AnimationPlayer *player = Object::cast_to<AnimationPlayer>(atree->get_node(atree->get_animation_player()));
 	if (!player) {
-		EditorNode::get_singleton()->show_warning(TTR("Path to AnimationPlayer is invalid"));
+		EditorNode::get_singleton()->show_error(TTR("The path to the AnimationPlayer is invalid."));
 		return;
 	}
 
 	Node *base = player->get_node(player->get_root());
 
 	if (!base) {
-		EditorNode::get_singleton()->show_warning(TTR("Animation player has no valid root node path, so unable to retrieve track names."));
+		EditorNode::get_singleton()->show_error(TTR("The AnimationPlayer doesn't have a valid root node path, unable to retrieve track names."));
 		return;
 	}
 

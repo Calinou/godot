@@ -1481,7 +1481,7 @@ void ScriptTextEditor::drop_data_fw(const Point2 &p_point, const Variant &p_data
 		}
 
 		if (res->get_path().is_resource_file()) {
-			EditorNode::get_singleton()->show_warning(TTR("Only resources from filesystem can be dropped."));
+			EditorNode::get_singleton()->show_error(TTR("Only resources from the filesystem can be dropped."));
 			return;
 		}
 
@@ -1512,7 +1512,7 @@ void ScriptTextEditor::drop_data_fw(const Point2 &p_point, const Variant &p_data
 		Node *sn = _find_script_node(get_tree()->get_edited_scene_root(), get_tree()->get_edited_scene_root(), script);
 
 		if (!sn) {
-			EditorNode::get_singleton()->show_warning("Can't drop nodes because script '" + get_name() + "' is not used in this scene.");
+			EditorNode::get_singleton()->show_error(vformat(TTR("Can't drop nodes because the script \"%s\" isn't used in this scene."), get_name()));
 			return;
 		}
 

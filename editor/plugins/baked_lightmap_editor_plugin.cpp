@@ -42,13 +42,13 @@ void BakedLightmapEditorPlugin::_bake() {
 
 		switch (err) {
 			case BakedLightmap::BAKE_ERROR_NO_SAVE_PATH:
-				EditorNode::get_singleton()->show_warning(TTR("Can't determine a save path for lightmap images.\nSave your scene (for images to be saved in the same dir), or pick a save path from the BakedLightmap properties."));
+				EditorNode::get_singleton()->show_error(TTR("Can't determine a save path for lightmap images.\nSave your scene (for images to be saved in the same dir), or pick a save path from the BakedLightmap properties."));
 				break;
 			case BakedLightmap::BAKE_ERROR_NO_MESHES:
-				EditorNode::get_singleton()->show_warning(TTR("No meshes to bake. Make sure they contain an UV2 channel and that the 'Bake Light' flag is on."));
+				EditorNode::get_singleton()->show_error(TTR("No meshes to bake. Make sure they contain an UV2 channel and that the \"Bake Light\" flag is on."));
 				break;
 			case BakedLightmap::BAKE_ERROR_CANT_CREATE_IMAGE:
-				EditorNode::get_singleton()->show_warning(TTR("Failed creating lightmap images, make sure path is writable."));
+				EditorNode::get_singleton()->show_error(TTR("Failed creating lightmap images. Make sure the path is writable."));
 				break;
 			default: {
 			}

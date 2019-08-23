@@ -195,7 +195,7 @@ void AnimationNodeBlendSpace2DEditor::_blend_space_gui_input(const Ref<InputEven
 					//add triangle!
 					if (blend_space->has_triangle(making_triangle[0], making_triangle[1], making_triangle[2])) {
 						making_triangle.clear();
-						EditorNode::get_singleton()->show_warning(TTR("Triangle already exists."));
+						EditorNode::get_singleton()->show_error(TTR("Triangle already exists."));
 						return;
 					}
 
@@ -328,7 +328,7 @@ void AnimationNodeBlendSpace2DEditor::_add_menu_type(int p_index) {
 	}
 
 	if (!node.is_valid()) {
-		EditorNode::get_singleton()->show_warning(TTR("This type of node can't be used. Only root nodes are allowed."));
+		EditorNode::get_singleton()->show_error(TTR("This type of node can't be used. Only root nodes are allowed."));
 		return;
 	}
 

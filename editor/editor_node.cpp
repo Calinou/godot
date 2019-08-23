@@ -695,7 +695,7 @@ void EditorNode::save_resource_as(const Ref<Resource> &p_resource, const String 
 		if (srpos != -1) {
 			String base = path.substr(0, srpos);
 			if (!get_edited_scene() || get_edited_scene()->get_filename() != base) {
-				show_warning(TTR("This resource can't be saved because it does not belong to the edited scene. Make it unique first."));
+				show_error(TTR("This resource can't be saved because it does not belong to the edited scene. Make it unique first."));
 				return;
 			}
 		}
@@ -1351,7 +1351,7 @@ void EditorNode::_dialog_action(String p_file) {
 				}
 
 				if (same_open_scene) {
-					show_warning(TTR("Can't overwrite scene that is still open!"));
+					show_error(TTR("Can't overwrite a scene that is still open."));
 					return;
 				}
 
@@ -1448,7 +1448,7 @@ void EditorNode::_dialog_action(String p_file) {
 			if (err == ERR_CANT_OPEN) {
 				config.instance(); // new config
 			} else if (err != OK) {
-				show_warning(TTR("Error trying to save layout!"));
+				show_error(TTR("An error occurred while trying to save the editor layout."));
 				return;
 			}
 
@@ -1460,7 +1460,7 @@ void EditorNode::_dialog_action(String p_file) {
 			_update_layouts_menu();
 
 			if (p_file == "Default") {
-				show_warning(TTR("Default editor layout overridden."));
+				show_warning(TTR("The default editor layout was overridden."));
 			}
 
 		} break;
@@ -1474,7 +1474,7 @@ void EditorNode::_dialog_action(String p_file) {
 			Error err = config->load(EditorSettings::get_singleton()->get_editor_layouts_config());
 
 			if (err != OK || !config->has_section(p_file)) {
-				show_warning(TTR("Layout name not found!"));
+				show_error(TTR("Layout name not found."));
 				return;
 			}
 
@@ -1491,7 +1491,7 @@ void EditorNode::_dialog_action(String p_file) {
 			_update_layouts_menu();
 
 			if (p_file == "Default") {
-				show_warning(TTR("Restored default layout to base settings."));
+				show_warning(TTR("Restored the default layout to base settings."));
 			}
 
 		} break;
@@ -2221,7 +2221,7 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 			String filename = scene->get_filename();
 
 			if (filename == String()) {
-				show_warning(TTR("Can't reload a scene that was never saved."));
+				show_error(TTR("Can't reload a scene that was never saved."));
 				break;
 			}
 
@@ -2912,12 +2912,12 @@ void EditorNode::set_addon_plugin_enabled(const String &p_addon, bool p_enabled,
 	}
 	Error err = cf->load(addon_path);
 	if (err != OK) {
-		show_warning(vformat(TTR("Unable to enable addon plugin at: '%s' parsing of config failed."), addon_path));
+		show_error(vformat(TTR("Unable to enable the addon plugin at \"%s\".\nAn error occurred while parsing the configuration."), addon_path));
 		return;
 	}
 
 	if (!cf->has_section_key("plugin", "script")) {
-		show_warning(vformat(TTR("Unable to find script field for addon plugin at: 'res://addons/%s'."), p_addon));
+		show_error(vformat(TTR("Unable to find a \"script\" field for the addon plugin at: \"res://addons/%s\"."), p_addon));
 		return;
 	}
 
@@ -2930,24 +2930,24 @@ void EditorNode::set_addon_plugin_enabled(const String &p_addon, bool p_enabled,
 		script = ResourceLoader::load(script_path);
 
 		if (script.is_null()) {
-			show_warning(vformat(TTR("Unable to load addon script from path: '%s'."), script_path));
+			show_error(vformat(TTR("Unable to load addon script from \"%s\"."), script_path));
 			return;
 		}
 
 		// Errors in the script cause the base_type to be an empty string.
 		if (String(script->get_instance_base_type()) == "") {
-			show_warning(vformat(TTR("Unable to load addon script from path: '%s' There seems to be an error in the code, please check the syntax."), script_path));
+			show_error(vformat(TTR("Unable to load addon script from \"%s\".\nThere seems to be an error in the script, please check the syntax."), script_path));
 			return;
 		}
 
 		// Plugin init scripts must inherit from EditorPlugin and be tools.
 		if (String(script->get_instance_base_type()) != "EditorPlugin") {
-			show_warning(vformat(TTR("Unable to load addon script from path: '%s' Base type is not EditorPlugin."), script_path));
+			show_error(vformat(TTR("Unable to load addon script from \"%s\".\nThe script's base type is not EditorPlugin."), script_path));
 			return;
 		}
 
 		if (!script->is_tool()) {
-			show_warning(vformat(TTR("Unable to load addon script from path: '%s' Script is not in tool mode."), script_path));
+			show_error(vformat(TTR("Unable to load addon script from \"%s\".\nThe script is not in tool mode."), script_path));
 			return;
 		}
 	}
@@ -3833,6 +3833,17 @@ void EditorNode::show_warning(const String &p_text, const String &p_title) {
 		warning->popup_centered_minsize();
 	} else {
 		WARN_PRINTS(p_title + " " + p_text);
+	}
+}
+
+void EditorNode::show_error(const String &p_text, const String &p_title) {
+
+	if (warning->is_inside_tree()) {
+		warning->set_text(p_text);
+		warning->set_title(p_title);
+		warning->popup_centered_minsize();
+	} else {
+		ERR_PRINTS(p_title + " " + p_text);
 	}
 }
 

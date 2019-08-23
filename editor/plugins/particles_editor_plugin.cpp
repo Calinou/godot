@@ -55,7 +55,7 @@ bool ParticlesEditorBase::_generate(PoolVector<Vector3> &points, PoolVector<Vect
 
 		if (!triangle_area_map.size() || area_accum == 0) {
 
-			EditorNode::get_singleton()->show_warning(TTR("The geometry's faces don't contain any area."));
+			EditorNode::get_singleton()->show_error(TTR("The geometry's faces don't contain any area."));
 			return false;
 		}
 
@@ -89,7 +89,7 @@ bool ParticlesEditorBase::_generate(PoolVector<Vector3> &points, PoolVector<Vect
 
 		if (gcount == 0) {
 
-			EditorNode::get_singleton()->show_warning(TTR("The geometry doesn't contain any faces."));
+			EditorNode::get_singleton()->show_error(TTR("The geometry doesn't contain any faces."));
 			return false;
 		}
 
@@ -169,14 +169,14 @@ void ParticlesEditorBase::_node_selected(const NodePath &p_path) {
 
 	if (!sel->is_class("Spatial")) {
 
-		EditorNode::get_singleton()->show_warning(vformat(TTR("\"%s\" doesn't inherit from Spatial."), sel->get_name()));
+		EditorNode::get_singleton()->show_error(vformat(TTR("\"%s\" doesn't inherit from Spatial."), sel->get_name()));
 		return;
 	}
 
 	VisualInstance *vi = Object::cast_to<VisualInstance>(sel);
 	if (!vi) {
 
-		EditorNode::get_singleton()->show_warning(vformat(TTR("\"%s\" doesn't contain geometry."), sel->get_name()));
+		EditorNode::get_singleton()->show_error(vformat(TTR("\"%s\" doesn't contain geometry."), sel->get_name()));
 		return;
 	}
 
@@ -184,7 +184,7 @@ void ParticlesEditorBase::_node_selected(const NodePath &p_path) {
 
 	if (geometry.size() == 0) {
 
-		EditorNode::get_singleton()->show_warning(vformat(TTR("\"%s\" doesn't contain face geometry."), sel->get_name()));
+		EditorNode::get_singleton()->show_error(vformat(TTR("\"%s\" doesn't contain face geometry."), sel->get_name()));
 		return;
 	}
 
@@ -285,7 +285,7 @@ void ParticlesEditor::_menu_option(int p_option) {
 
 			Ref<ParticlesMaterial> material = node->get_process_material();
 			if (material.is_null()) {
-				EditorNode::get_singleton()->show_warning(TTR("A processor material of type 'ParticlesMaterial' is required."));
+				EditorNode::get_singleton()->show_error(TTR("A processor material of type \"ParticlesMaterial\" is required."));
 				return;
 			}
 			emission_file_dialog->popup_centered_ratio();
@@ -295,7 +295,7 @@ void ParticlesEditor::_menu_option(int p_option) {
 		case MENU_OPTION_CREATE_EMISSION_VOLUME_FROM_NODE: {
 			Ref<ParticlesMaterial> material = node->get_process_material();
 			if (material.is_null()) {
-				EditorNode::get_singleton()->show_warning(TTR("A processor material of type 'ParticlesMaterial' is required."));
+				EditorNode::get_singleton()->show_error(TTR("A processor material of type \"ParticlesMaterial\" is required."));
 				return;
 			}
 

@@ -891,7 +891,7 @@ void ScriptEditor::_file_dialog_action(String p_file) {
 			FileAccess *file = FileAccess::open(p_file, FileAccess::WRITE, &err);
 			if (err) {
 				memdelete(file);
-				editor->show_warning(TTR("Error writing TextFile:") + "\n" + p_file, TTR("Error!"));
+				editor->show_error(vformat(TTR("Error writing TextFile:\n\n%s"), p_file));
 				break;
 			}
 			file->close();
@@ -905,7 +905,7 @@ void ScriptEditor::_file_dialog_action(String p_file) {
 			if (extensions.find(p_file.get_extension())) {
 				Ref<Script> scr = ResourceLoader::load(p_file);
 				if (!scr.is_valid()) {
-					editor->show_warning(TTR("Could not load file at:") + "\n\n" + p_file, TTR("Error!"));
+					editor->show_error(vformat(TTR("Couldn't load the file at:\n\n%s"), p_file));
 					file_dialog_option = -1;
 					return;
 				}
@@ -918,7 +918,7 @@ void ScriptEditor::_file_dialog_action(String p_file) {
 			Error error;
 			Ref<TextFile> text_file = _load_text_file(p_file, &error);
 			if (error != OK) {
-				editor->show_warning(TTR("Could not load file at:") + "\n\n" + p_file, TTR("Error!"));
+				editor->show_error(vformat(TTR("Couldn't load the file at:\n\n%s"), p_file));
 			}
 
 			if (text_file.is_valid()) {
@@ -934,7 +934,7 @@ void ScriptEditor::_file_dialog_action(String p_file) {
 			Error err = _save_text_file(current->get_edited_resource(), path);
 
 			if (err != OK) {
-				editor->show_accept(TTR("Error saving file!"), TTR("OK"));
+				editor->show_error(TTR("An error occurred while saving the file."));
 				return;
 			}
 
@@ -943,12 +943,12 @@ void ScriptEditor::_file_dialog_action(String p_file) {
 		} break;
 		case THEME_SAVE_AS: {
 			if (!EditorSettings::get_singleton()->save_text_editor_theme_as(p_file)) {
-				editor->show_warning(TTR("Error while saving theme."), TTR("Error Saving"));
+				editor->show_error(TTR("An error occurred while saving the theme."));
 			}
 		} break;
 		case THEME_IMPORT: {
 			if (!EditorSettings::get_singleton()->import_text_editor_theme(p_file)) {
-				editor->show_warning(TTR("Error importing theme."), TTR("Error Importing"));
+				editor->show_error(TTR("An error occurred while importing the theme."));
 			}
 		} break;
 	}
@@ -1035,7 +1035,7 @@ void ScriptEditor::_menu_option(int p_option) {
 
 				Ref<Script> scr = ResourceLoader::load(path);
 				if (!scr.is_valid()) {
-					editor->show_warning(TTR("Could not load file at:") + "\n\n" + path, TTR("Error!"));
+					editor->show_error(vformat(TTR("Couldn't load the file at:\n\n%s"), path));
 					file_dialog_option = -1;
 					return;
 				}
@@ -1047,7 +1047,7 @@ void ScriptEditor::_menu_option(int p_option) {
 				Error error;
 				Ref<TextFile> text_file = _load_text_file(path, &error);
 				if (error != OK)
-					editor->show_warning(TTR("Could not load file at:") + "\n\n" + path, TTR("Error!"));
+					editor->show_error(vformat(TTR("Couldn't load the file at:\n\n%s"), path));
 
 				if (text_file.is_valid()) {
 					edit(text_file);
@@ -1195,7 +1195,7 @@ void ScriptEditor::_menu_option(int p_option) {
 
 				Ref<Script> scr = current->get_edited_resource();
 				if (scr == NULL || scr.is_null()) {
-					EditorNode::get_singleton()->show_warning("Can't obtain the script for running.");
+					EditorNode::get_singleton()->show_error(TTR("Can't obtain the script for running."));
 					break;
 				}
 
@@ -1203,18 +1203,18 @@ void ScriptEditor::_menu_option(int p_option) {
 				Error err = scr->reload(false); //hard reload script before running always
 
 				if (err != OK) {
-					EditorNode::get_singleton()->show_warning("Script failed reloading, check console for errors.");
+					EditorNode::get_singleton()->show_error(TTR("The script failed reloading, check console for errors."));
 					return;
 				}
 				if (!scr->is_tool()) {
 
-					EditorNode::get_singleton()->show_warning("Script is not in tool mode, will not be able to run.");
+					EditorNode::get_singleton()->show_error(TTR("The script is not in tool mode.\nAdd the \"tool\" keyword at the top of the script before running it."));
 					return;
 				}
 
 				if (!ClassDB::is_parent_class(scr->get_instance_base_type(), "EditorScript")) {
 
-					EditorNode::get_singleton()->show_warning("To run this script, it must inherit EditorScript and be set to tool mode.");
+					EditorNode::get_singleton()->show_error(TTR("To run this script, it must inherit EditorScript and be set to tool mode."));
 					return;
 				}
 
@@ -1364,7 +1364,7 @@ void ScriptEditor::_theme_option(int p_option) {
 			if (EditorSettings::get_singleton()->is_default_text_editor_theme()) {
 				ScriptEditor::_show_save_theme_as_dialog();
 			} else if (!EditorSettings::get_singleton()->save_text_editor_theme()) {
-				editor->show_warning(TTR("Error while saving theme"), TTR("Error saving"));
+				editor->show_error(TTR("An error occurred while saving the theme."));
 			}
 		} break;
 		case THEME_SAVE_AS: {

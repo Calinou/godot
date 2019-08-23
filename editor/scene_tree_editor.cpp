@@ -751,17 +751,17 @@ void SceneTreeEditor::_renamed() {
 	Node *n = get_node(np);
 	ERR_FAIL_COND(!n);
 
-	// Empty node names are not allowed, so resets it to previous text and show warning
+	// Empty node names are not allowed, so reset it to previous text and show an error
 	if (which->get_text(0).strip_edges().empty()) {
 		which->set_text(0, n->get_name());
-		EditorNode::get_singleton()->show_warning(TTR("No name provided."));
+		EditorNode::get_singleton()->show_error(TTR("No name provided."));
 		return;
 	}
 
 	String new_name = which->get_text(0);
 	if (!Node::_validate_node_name(new_name)) {
 
-		error->set_text(TTR("Invalid node name, the following characters are not allowed:") + "\n" + Node::invalid_character);
+		error->set_text(TTR("Invalid node name. The following characters are not allowed:") + "\n" + Node::invalid_character);
 		error->popup_centered_minsize();
 
 		if (new_name.empty()) {
@@ -1183,7 +1183,7 @@ SceneTreeEditor::SceneTreeEditor(bool p_label, bool p_can_rename, bool p_can_ope
 
 	warning = memnew(AcceptDialog);
 	add_child(warning);
-	warning->set_title(TTR("Node Configuration Warning!"));
+	warning->set_title(TTR("Node Configuration Warning"));
 
 	show_enabled_subscene = false;
 

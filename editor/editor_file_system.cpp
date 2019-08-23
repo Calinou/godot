@@ -1556,7 +1556,7 @@ Error EditorFileSystem::_reimport_group(const String &p_group_file, const Vector
 
 		if (importer_name != String() && importer_name != file_importer_name) {
 			print_line("one importer: " + importer_name + " the other: " + file_importer_name);
-			EditorNode::get_singleton()->show_warning(vformat(TTR("There are multiple importers for different types pointing to file %s, import aborted"), p_group_file));
+			EditorNode::get_singleton()->show_error(vformat(TTR("There are multiple importers for different types pointing to file \"%s\". Import aborted."), p_group_file));
 			ERR_FAIL_V(ERR_FILE_CORRUPT);
 		}
 

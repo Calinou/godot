@@ -915,7 +915,7 @@ void VisualScriptEditor::_member_edited() {
 
 	if (!new_name.is_valid_identifier()) {
 
-		EditorNode::get_singleton()->show_warning(TTR("Name is not a valid identifier:") + " " + new_name);
+		EditorNode::get_singleton()->show_error(TTR("Name is not a valid identifier:") + " " + new_name);
 		updating_members = true;
 		ti->set_text(0, name);
 		updating_members = false;
@@ -924,7 +924,7 @@ void VisualScriptEditor::_member_edited() {
 
 	if (script->has_function(new_name) || script->has_variable(new_name) || script->has_custom_signal(new_name)) {
 
-		EditorNode::get_singleton()->show_warning(TTR("Name already in use by another func/var/signal:") + " " + new_name);
+		EditorNode::get_singleton()->show_error(TTR("Name already in use by another func/var/signal:") + " " + new_name);
 		updating_members = true;
 		ti->set_text(0, name);
 		updating_members = false;
@@ -1739,7 +1739,7 @@ void VisualScriptEditor::drop_data_fw(const Point2 &p_point, const Variant &p_da
 		Node *sn = _find_script_node(get_tree()->get_edited_scene_root(), get_tree()->get_edited_scene_root(), script);
 
 		if (!sn) {
-			EditorNode::get_singleton()->show_warning("Can't drop nodes because script '" + get_name() + "' is not used in this scene.");
+			EditorNode::get_singleton()->show_error(vformat(TTR("Can't drop nodes because the script \"%s\" is not used in this scene."), get_name()));
 			return;
 		}
 
@@ -1809,7 +1809,7 @@ void VisualScriptEditor::drop_data_fw(const Point2 &p_point, const Variant &p_da
 		Node *sn = _find_script_node(get_tree()->get_edited_scene_root(), get_tree()->get_edited_scene_root(), script);
 
 		if (!sn && !Input::get_singleton()->is_key_pressed(KEY_SHIFT)) {
-			EditorNode::get_singleton()->show_warning("Can't drop properties because script '" + get_name() + "' is not used in this scene.\nDrop holding 'Shift' to just copy the signature.");
+			EditorNode::get_singleton()->show_error(vformat(TTR("Can't drop properties because the script \"%s\" is not used in this scene.\nHold Shift while dropping to copy the signature only."), get_name()));
 			return;
 		}
 
@@ -2883,7 +2883,7 @@ void VisualScriptEditor::_selected_new_virtual_method(const String &p_text, cons
 
 	String name = p_text;
 	if (script->has_function(name)) {
-		EditorNode::get_singleton()->show_warning(vformat(TTR("Script already has function '%s'"), name));
+		EditorNode::get_singleton()->show_error(vformat(TTR("The script already has a function called \"%s\"."), name));
 		return;
 	}
 
@@ -3185,7 +3185,7 @@ void VisualScriptEditor::_menu_option(int p_what) {
 						int id = String(gn->get_name()).to_int();
 						Ref<VisualScriptNode> node = script->get_node(edited_func, id);
 						if (Object::cast_to<VisualScriptFunction>(*node)) {
-							EditorNode::get_singleton()->show_warning(TTR("Can't copy the function node."));
+							EditorNode::get_singleton()->show_error(TTR("Can't copy the function node."));
 							return;
 						}
 						if (node.is_valid()) {
@@ -3233,7 +3233,7 @@ void VisualScriptEditor::_menu_option(int p_what) {
 				break;
 
 			if (clipboard->nodes.empty()) {
-				EditorNode::get_singleton()->show_warning(TTR("Clipboard is empty!"));
+				EditorNode::get_singleton()->show_error(TTR("The clipboard is empty."));
 				break;
 			}
 

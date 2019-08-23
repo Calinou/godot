@@ -193,7 +193,7 @@ bool ExportTemplateManager::_install_from_file(const String &p_file, bool p_use_
 	unzFile pkg = unzOpen2(p_file.utf8().get_data(), &io);
 	if (!pkg) {
 
-		EditorNode::get_singleton()->show_warning(TTR("Can't open export templates zip."));
+		EditorNode::get_singleton()->show_error(TTR("Can't open export templates ZIP."));
 		return false;
 	}
 	int ret = unzGoToFirstFile(pkg);
@@ -227,7 +227,7 @@ bool ExportTemplateManager::_install_from_file(const String &p_file, bool p_use_
 			// Version number should be of the form major.minor[.patch].status[.module_config]
 			// so it can in theory have 3 or more slices.
 			if (data_str.get_slice_count(".") < 3) {
-				EditorNode::get_singleton()->show_warning(vformat(TTR("Invalid version.txt format inside templates: %s."), data_str));
+				EditorNode::get_singleton()->show_error(vformat(TTR("Invalid version.txt format inside templates: \"%s\"."), data_str));
 				unzClose(pkg);
 				return false;
 			}
@@ -244,7 +244,7 @@ bool ExportTemplateManager::_install_from_file(const String &p_file, bool p_use_
 	}
 
 	if (version == String()) {
-		EditorNode::get_singleton()->show_warning(TTR("No version.txt found inside templates."));
+		EditorNode::get_singleton()->show_error(TTR("No version.txt found inside templates."));
 		unzClose(pkg);
 		return false;
 	}
@@ -254,7 +254,7 @@ bool ExportTemplateManager::_install_from_file(const String &p_file, bool p_use_
 	DirAccess *d = DirAccess::create(DirAccess::ACCESS_FILESYSTEM);
 	Error err = d->make_dir_recursive(template_path);
 	if (err != OK) {
-		EditorNode::get_singleton()->show_warning(TTR("Error creating path for templates:") + "\n" + template_path);
+		EditorNode::get_singleton()->show_error(TTR("Error creating path for templates:") + "\n" + template_path);
 		unzClose(pkg);
 		return false;
 	}
@@ -361,7 +361,7 @@ void ExportTemplateManager::ok_pressed() {
 void ExportTemplateManager::_http_download_mirror_completed(int p_status, int p_code, const PoolStringArray &headers, const PoolByteArray &p_data) {
 
 	if (p_status != HTTPRequest::RESULT_SUCCESS || p_code != 200) {
-		EditorNode::get_singleton()->show_warning("Error getting the list of mirrors.");
+		EditorNode::get_singleton()->show_error("Error getting the list of mirrors.");
 		return;
 	}
 
@@ -379,7 +379,7 @@ void ExportTemplateManager::_http_download_mirror_completed(int p_status, int p_
 	int errline;
 	Error err = JSON::parse(mirror_str, r, errs, errline);
 	if (err != OK) {
-		EditorNode::get_singleton()->show_warning("Error parsing JSON of mirror list. Please report this issue!");
+		EditorNode::get_singleton()->show_error("Error parsing JSON of mirror list. Please report this issue!");
 		return;
 	}
 
@@ -400,7 +400,7 @@ void ExportTemplateManager::_http_download_mirror_completed(int p_status, int p_
 	}
 
 	if (!mirrors_found) {
-		EditorNode::get_singleton()->show_warning(TTR("No download links found for this version. Direct download is only available for official releases."));
+		EditorNode::get_singleton()->show_error(TTR("No download links found for this version. Direct download is only available for official releases."));
 		return;
 	}
 }
@@ -472,7 +472,7 @@ void ExportTemplateManager::_begin_template_download(const String &p_url) {
 
 	Error err = download_templates->request(p_url);
 	if (err != OK) {
-		EditorNode::get_singleton()->show_warning(TTR("Error requesting URL:") + " " + p_url);
+		EditorNode::get_singleton()->show_error(TTR("Error requesting URL:") + " " + p_url);
 		return;
 	}
 
