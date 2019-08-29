@@ -5503,41 +5503,48 @@ EditorNode::EditorNode() {
 	{
 		int display_scale = EditorSettings::get_singleton()->get("interface/editor/display_scale");
 		float custom_display_scale = EditorSettings::get_singleton()->get("interface/editor/custom_display_scale");
+		bool display_shrink_2x = EditorSettings::get_singleton()->get("interface/editor/display_shrink_2x");
 
-		switch (display_scale) {
-			case 0: {
-				// Try applying a suitable display scale automatically
-				const int screen = OS::get_singleton()->get_current_screen();
-				editor_set_scale(OS::get_singleton()->get_screen_dpi(screen) >= 192 && OS::get_singleton()->get_screen_size(screen).x > 2000 ? 2.0 : 1.0);
-			} break;
+		if (display_shrink_2x) {
+			// Always use an editor scale of 100% when shrinking the display,
+			// as that will make UI elements larger on its own
+			editor_set_scale(1.0);
+		} else {
+			switch (display_scale) {
+				case 0: {
+					// Try applying a suitable display scale automatically
+					const int screen = OS::get_singleton()->get_current_screen();
+					editor_set_scale(OS::get_singleton()->get_screen_dpi(screen) >= 192 && OS::get_singleton()->get_screen_size(screen).x > 2000 ? 2.0 : 1.0);
+				} break;
 
-			case 1: {
-				editor_set_scale(0.75);
-			} break;
+				case 1: {
+					editor_set_scale(0.75);
+				} break;
 
-			case 2: {
-				editor_set_scale(1.0);
-			} break;
+				case 2: {
+					editor_set_scale(1.0);
+				} break;
 
-			case 3: {
-				editor_set_scale(1.25);
-			} break;
+				case 3: {
+					editor_set_scale(1.25);
+				} break;
 
-			case 4: {
-				editor_set_scale(1.5);
-			} break;
+				case 4: {
+					editor_set_scale(1.5);
+				} break;
 
-			case 5: {
-				editor_set_scale(1.75);
-			} break;
+				case 5: {
+					editor_set_scale(1.75);
+				} break;
 
-			case 6: {
-				editor_set_scale(2.0);
-			} break;
+				case 6: {
+					editor_set_scale(2.0);
+				} break;
 
-			default: {
-				editor_set_scale(custom_display_scale);
-			} break;
+				default: {
+					editor_set_scale(custom_display_scale);
+				} break;
+			}
 		}
 	}
 

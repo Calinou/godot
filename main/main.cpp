@@ -1800,12 +1800,20 @@ bool Main::start() {
 		}
 
 		if (project_manager || editor) {
-			// Hide console window if requested (Windows-only).
-			bool hide_console = EditorSettings::get_singleton()->get_setting("interface/editor/hide_console_window");
-			OS::get_singleton()->set_console_visible(!hide_console);
-		}
+			// Use shrink if requested to speed up editor rendering.
+			// This feature is only available if the screen is large enough to accomodate it, as everything will be twice as large.
+			const int screen = OS::get_singleton()->get_current_screen();
+			const bool can_shrink_2x = OS::get_singleton()->get_screen_size(screen).x > 2000;
+			const bool display_shrink_2x = EditorSettings::get_singleton()->get_setting("interface/editor/display_shrink_2x");
 
-		if (project_manager || editor) {
+			if (can_shrink_2x && display_shrink_2x) {
+				sml->set_screen_stretch(SceneTree::STRETCH_MODE_DISABLED, SceneTree::STRETCH_ASPECT_IGNORE, Size2(), 2);
+			}
+
+			// Hide console window if requested (Windows-only).
+			const bool hide_console = EditorSettings::get_singleton()->get_setting("interface/editor/hide_console_window");
+			OS::get_singleton()->set_console_visible(!hide_console);
+
 			// Load SSL Certificates from Editor Settings (or builtin)
 			Crypto::load_default_certificates(EditorSettings::get_singleton()->get_setting("network/ssl/editor_ssl_certificates").operator String());
 		}
