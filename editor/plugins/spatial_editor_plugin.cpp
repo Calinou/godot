@@ -543,12 +543,11 @@ void SpatialEditorViewport::_update_name() {
 
 	String view_mode = orthogonal ? TTR("Orthogonal") : TTR("Perspective");
 
-	if (name != "")
-		view_menu->set_text(name + " " + view_mode);
-	else
-		view_menu->set_text(view_mode);
-
-	view_menu->set_size(Vector2(0, 0)); // resets the button size
+	if (name != "") {
+		view_label->set_text(name + " " + view_mode);
+	} else {
+		view_label->set_text(view_mode);
+	}
 }
 
 void SpatialEditorViewport::_compute_edit(const Point2 &p_point) {
@@ -3516,10 +3515,17 @@ SpatialEditorViewport::SpatialEditorViewport(SpatialEditor *p_spatial_editor, Ed
 	surface->add_child(vbox);
 	vbox->set_position(Point2(10, 10) * EDSCALE);
 
+	HBoxContainer *hbox = memnew(HBoxContainer);
+	vbox->add_child(hbox);
+
 	view_menu = memnew(MenuButton);
+	view_menu->set_text(TTR("Viewport"));
 	view_menu->set_flat(false);
-	vbox->add_child(view_menu);
+	hbox->add_child(view_menu);
 	view_menu->set_h_size_flags(0);
+
+	view_label = memnew(Label());
+	hbox->add_child(view_label);
 
 	view_menu->get_popup()->add_shortcut(ED_GET_SHORTCUT("spatial_editor/top_view"), VIEW_TOP);
 	view_menu->get_popup()->add_shortcut(ED_GET_SHORTCUT("spatial_editor/bottom_view"), VIEW_BOTTOM);

@@ -203,6 +203,7 @@ private:
 	ViewportContainer *viewport_container;
 
 	MenuButton *view_menu;
+	Label *view_label;
 
 	Control *surface;
 	Viewport *viewport;
