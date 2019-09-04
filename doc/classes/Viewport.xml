@@ -280,7 +280,7 @@
 		<member name="shadow_atlas_quad_3" type="int" setter="set_shadow_atlas_quadrant_subdiv" getter="get_shadow_atlas_quadrant_subdiv" enum="Viewport.ShadowAtlasQuadrantSubdiv" default="4">
 			The subdivision amount of fourth quadrant on shadow atlas.
 		</member>
-		<member name="shadow_atlas_size" type="int" setter="set_shadow_atlas_size" getter="get_shadow_atlas_size" default="0">
+		<member name="shadow_atlas_size" type="int" setter="set_shadow_atlas_size" getter="get_shadow_atlas_size" default="4096">
 			The resolution of shadow atlas. Both width and height is equal to one value.
 		</member>
 		<member name="size" type="Vector2" setter="set_size" getter="get_size" default="Vector2( 0, 0 )">

@@ -115,7 +115,7 @@ public:
 			transparent_bg = false;
 			disable_environment = false;
 			viewport_to_screen = 0;
-			shadow_atlas_size = 0;
+			shadow_atlas_size = 4096;
 			disable_3d = false;
 			disable_3d_by_usage = false;
 			keep_3d_linear = false;

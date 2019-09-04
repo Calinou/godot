@@ -1214,8 +1214,8 @@ Viewport::ClearMode Viewport::get_clear_mode() const {
 
 void Viewport::set_shadow_atlas_size(int p_size) {
 
-	if (shadow_atlas_size == p_size)
-		return;
+	// Always call `VisualServer::viewport_set_shadow_atlas_size()` to make sure
+	// the shadow atlas is recreated properly, even if the value didn't change
 
 	shadow_atlas_size = p_size;
 	VS::get_singleton()->viewport_set_shadow_atlas_size(viewport, p_size);
@@ -3192,7 +3192,7 @@ Viewport::Viewport() {
 	physics_has_last_mousepos = false;
 	physics_last_mousepos = Vector2(Math_INF, Math_INF);
 
-	shadow_atlas_size = 0;
+	shadow_atlas_size = 4096;
 	for (int i = 0; i < 4; i++) {
 		shadow_atlas_quadrant_subdiv[i] = SHADOW_ATLAS_QUADRANT_SUBDIV_MAX;
 	}
