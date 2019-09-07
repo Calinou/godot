@@ -172,6 +172,7 @@ public:
 	virtual void warp_mouse_position(const Point2 &p_to) {}
 	virtual Point2 get_mouse_position() const = 0;
 	virtual int get_mouse_button_state() const = 0;
+	virtual String get_window_title() const { return String(); }
 	virtual void set_window_title(const String &p_title) = 0;
 
 	virtual void set_clipboard(const String &p_text);

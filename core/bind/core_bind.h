@@ -149,6 +149,7 @@ public:
 	void global_menu_clear(const String &p_menu);
 
 	Point2 get_mouse_position() const;
+	String get_window_title() const;
 	void set_window_title(const String &p_title);
 	int get_mouse_button_state() const;
 

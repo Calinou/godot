@@ -1643,6 +1643,23 @@ int OS_Windows::get_mouse_button_state() const {
 	return last_button_state;
 }
 
+String OS_Windows::get_window_title() const {
+
+	LPWSTR buffer = NULL;
+	GetWindowTextW(hWnd, buffer, GetWindowTextLengthA(hWnd));
+
+	const int length = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, NULL, 0, NULL, NULL);
+	char *data = new char[length + 1];
+	WideCharToMultiByte(CP_UTF8, 0, buffer, -1, data, length, NULL, NULL);
+	data[length] = 0;
+	LocalFree(buffer);
+
+	String window_title;
+	window_title.parse_utf8(data);
+
+	return window_title;
+}
+
 void OS_Windows::set_window_title(const String &p_title) {
 
 	SetWindowTextW(hWnd, p_title.c_str());

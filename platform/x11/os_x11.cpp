@@ -945,6 +945,40 @@ void OS_X11::set_window_per_pixel_transparency_enabled(bool p_enabled) {
 	}
 }
 
+String OS_X11::get_window_title() const {
+
+	const Atom property = XInternAtom(x11_display, "_NET_WM_NAME", True);
+	Atom type;
+	int format;
+	unsigned long len;
+	unsigned long remaining;
+	unsigned char *data = NULL;
+
+	int result = XGetWindowProperty(
+			x11_display,
+			x11_window,
+			property,
+			0,
+			32,
+			False,
+			AnyPropertyType,
+			&type,
+			&format,
+			&len,
+			&remaining,
+			&data);
+
+	if (result == Success) {
+		String window_title;
+		window_title.parse_utf8(reinterpret_cast<const char *>(data));
+
+		return window_title;
+	} else {
+		ERR_PRINT("Couldn't retrieve the window title.");
+		return "";
+	}
+}
+
 void OS_X11::set_window_title(const String &p_title) {
 	XStoreName(x11_display, x11_window, p_title.utf8().get_data());
 

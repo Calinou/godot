@@ -210,6 +210,11 @@ Point2 _OS::get_mouse_position() const {
 	return OS::get_singleton()->get_mouse_position();
 }
 
+String _OS::get_window_title() const {
+
+	return OS::get_singleton()->get_window_title();
+}
+
 void _OS::set_window_title(const String &p_title) {
 
 	OS::get_singleton()->set_window_title(p_title);
@@ -1215,6 +1220,7 @@ void _OS::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("has_touchscreen_ui_hint"), &_OS::has_touchscreen_ui_hint);
 
 	ClassDB::bind_method(D_METHOD("set_window_title", "title"), &_OS::set_window_title);
+	ClassDB::bind_method(D_METHOD("get_window_title"), &_OS::get_window_title);
 
 	ClassDB::bind_method(D_METHOD("set_low_processor_usage_mode", "enable"), &_OS::set_low_processor_usage_mode);
 	ClassDB::bind_method(D_METHOD("is_in_low_processor_usage_mode"), &_OS::is_in_low_processor_usage_mode);
@@ -1335,6 +1341,7 @@ void _OS::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "window_resizable"), "set_window_resizable", "is_window_resizable");
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "window_position"), "set_window_position", "get_window_position");
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "window_size"), "set_window_size", "get_window_size");
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "window_title"), "set_window_title", "get_window_title");
 
 	// Those default values need to be specified for the docs generator,
 	// to avoid using values from the documentation writer's own OS instance.
@@ -1355,6 +1362,7 @@ void _OS::_bind_methods() {
 	ADD_PROPERTY_DEFAULT("window_resizable", true);
 	ADD_PROPERTY_DEFAULT("window_position", Vector2());
 	ADD_PROPERTY_DEFAULT("window_size", Vector2());
+	ADD_PROPERTY_DEFAULT("window_title", "");
 
 	BIND_ENUM_CONSTANT(VIDEO_DRIVER_GLES2);
 	BIND_ENUM_CONSTANT(VIDEO_DRIVER_GLES3);
