@@ -951,33 +951,38 @@ void EditorAssetLibrary::_search_text_entered(const String &p_text) {
 	_search();
 }
 
+Button *EditorAssetLibrary::_make_page_button(const int p_current_page, const int p_page) {
+	Button *page_button = memnew(Button);
+	// Add some spaces for extra button padding.
+	// This makes page buttons easier to click.
+	page_button->set_text(vformat(" %d ", p_page + 1));
+
+	if (p_page == p_current_page) {
+		page_button->set_disabled(true);
+		page_button->set_focus_mode(Control::FOCUS_NONE);
+	} else {
+		page_button->connect("pressed", this, "_search", varray(p_page));
+	}
+
+	return page_button;
+}
+
 HBoxContainer *EditorAssetLibrary::_make_pages(int p_page, int p_page_count, int p_page_len, int p_total_items, int p_current_items) {
 
 	HBoxContainer *hbc = memnew(HBoxContainer);
+	hbc->add_constant_override("separation", 0);
 
 	if (p_page_count < 2)
 		return hbc;
 
-	//do the mario
-	int from = p_page - 5;
-	if (from < 0)
-		from = 0;
-	int to = from + 10;
-	if (to > p_page_count)
-		to = p_page_count;
+	int from = p_page - 2;
+	if (from < 2)
+		from = 2;
+	int to = from + 2;
+	if (to > p_page_count - 3)
+		to = p_page_count - 3;
 
 	hbc->add_spacer();
-	hbc->add_constant_override("separation", 5 * EDSCALE);
-
-	Button *first = memnew(Button);
-	first->set_text(TTR("First"));
-	if (p_page != 0) {
-		first->connect("pressed", this, "_search", varray(0));
-	} else {
-		first->set_disabled(true);
-		first->set_focus_mode(Control::FOCUS_NONE);
-	}
-	hbc->add_child(first);
 
 	Button *prev = memnew(Button);
 	prev->set_text(TTR("Previous"));
@@ -990,25 +995,15 @@ HBoxContainer *EditorAssetLibrary::_make_pages(int p_page, int p_page_count, int
 	hbc->add_child(prev);
 	hbc->add_child(memnew(VSeparator));
 
+	hbc->add_child(_make_page_button(p_page, 0));
+	hbc->add_child(_make_page_button(p_page, 1));
+
 	for (int i = from; i < to; i++) {
-
-		if (i == p_page) {
-
-			Button *current = memnew(Button);
-			current->set_text(itos(i + 1));
-			current->set_disabled(true);
-			current->set_focus_mode(Control::FOCUS_NONE);
-
-			hbc->add_child(current);
-		} else {
-
-			Button *current = memnew(Button);
-			current->set_text(itos(i + 1));
-			current->connect("pressed", this, "_search", varray(i));
-
-			hbc->add_child(current);
-		}
+		hbc->add_child(_make_page_button(p_page, i));
 	}
+
+	hbc->add_child(_make_page_button(p_page, p_page_count - 2));
+	hbc->add_child(_make_page_button(p_page, p_page_count - 1));
 
 	Button *next = memnew(Button);
 	next->set_text(TTR("Next"));
@@ -1020,16 +1015,6 @@ HBoxContainer *EditorAssetLibrary::_make_pages(int p_page, int p_page_count, int
 	}
 	hbc->add_child(memnew(VSeparator));
 	hbc->add_child(next);
-
-	Button *last = memnew(Button);
-	last->set_text(TTR("Last"));
-	if (p_page != p_page_count - 1) {
-		last->connect("pressed", this, "_search", varray(p_page_count - 1));
-	} else {
-		last->set_disabled(true);
-		last->set_focus_mode(Control::FOCUS_NONE);
-	}
-	hbc->add_child(last);
 
 	hbc->add_spacer();
 

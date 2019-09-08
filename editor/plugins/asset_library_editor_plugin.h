@@ -256,6 +256,7 @@ class EditorAssetLibrary : public PanelContainer {
 	void _request_image(ObjectID p_for, String p_image_url, ImageType p_type, int p_image_index);
 	void _update_image_queue();
 
+	Button *_make_page_button(const int p_current_page, const int p_page);
 	HBoxContainer *_make_pages(int p_page, int p_page_count, int p_page_len, int p_total_items, int p_current_items);
 
 	//
