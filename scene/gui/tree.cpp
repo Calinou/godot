@@ -2420,7 +2420,17 @@ void Tree::_gui_input(Ref<InputEvent> p_event) {
 		accept_event();
 	}
 
-	if (k.is_valid()) { // Incremental search
+	if (k.is_valid()) {
+
+		if (k->get_scancode_with_modifiers() == (KEY_MASK_CMD | KEY_A) && k->is_pressed()) {
+			select_all();
+		}
+
+		if (k->get_scancode_with_modifiers() == (KEY_MASK_CMD | KEY_MASK_SHIFT | KEY_A) && k->is_pressed()) {
+			deselect_all();
+		}
+
+		// Incremental search
 
 		if (!k->is_pressed())
 			return;
@@ -3202,7 +3212,24 @@ Tree::SelectMode Tree::get_select_mode() const {
 	return select_mode;
 }
 
+void Tree::select_all() {
+
+	print_line("Selecting all");
+
+	TreeItem *item = get_root()->get_children();
+	while (item) {
+		item->select(selected_col);
+		TreeItem *prev_item = item;
+		item = item->get_next();
+		ERR_FAIL_COND(item == prev_item);
+	}
+
+	update();
+}
+
 void Tree::deselect_all() {
+
+	print_line("Deselecting all");
 
 	TreeItem *item = get_next_selected(get_root());
 	while (item) {
@@ -3298,10 +3325,6 @@ int Tree::get_edited_column() const {
 
 TreeItem *Tree::get_next_selected(TreeItem *p_item) {
 
-	/*
-	if (!p_item)
-		return NULL;
-	*/
 	if (!root)
 		return NULL;
 

@@ -555,6 +555,7 @@ public:
 	void set_select_mode(SelectMode p_mode);
 	SelectMode get_select_mode() const;
 	void deselect_all();
+	void select_all();
 	bool is_anything_selected();
 
 	void set_columns(int p_columns);
