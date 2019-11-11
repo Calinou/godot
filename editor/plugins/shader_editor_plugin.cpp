@@ -138,26 +138,34 @@ void ShaderTextEditor::_load_theme_settings() {
 
 	List<String> keywords;
 	ShaderLanguage::get_keyword_list(&keywords);
+	const Color keyword_color = EDITOR_GET("text_editor/highlighting/keyword_color");
 
+	for (List<String>::Element *E = keywords.front(); E; E = E->next()) {
+		get_text_edit()->add_keyword_color(E->get(), keyword_color);
+	}
+
+	// Colorize built-ins differently to make them easier to distinguish from keywords
+	// at a quick glance.
+
+	List<String> built_ins;
 	if (shader.is_valid()) {
 		for (const Map<StringName, ShaderLanguage::FunctionInfo>::Element *E = ShaderTypes::get_singleton()->get_functions(RenderingServer::ShaderMode(shader->get_mode())).front(); E; E = E->next()) {
 			for (const Map<StringName, ShaderLanguage::BuiltInInfo>::Element *F = E->get().built_ins.front(); F; F = F->next()) {
-				keywords.push_back(F->key());
+				built_ins.push_back(F->key());
 			}
 		}
 
 		for (int i = 0; i < ShaderTypes::get_singleton()->get_modes(RenderingServer::ShaderMode(shader->get_mode())).size(); i++) {
-			keywords.push_back(ShaderTypes::get_singleton()->get_modes(RenderingServer::ShaderMode(shader->get_mode()))[i]);
+			built_ins.push_back(ShaderTypes::get_singleton()->get_modes(RenderingServer::ShaderMode(shader->get_mode()))[i]);
 		}
 	}
 
-	const Color keyword_color = EDITOR_GET("text_editor/highlighting/keyword_color");
 	syntax_highlighter->clear_keyword_colors();
-	for (List<String>::Element *E = keywords.front(); E; E = E->next()) {
-		syntax_highlighter->add_keyword_color(E->get(), keyword_color);
+	for (List<String>::Element *E = built_ins.front(); E; E = E->next()) {
+		syntax_highlighter->add_keyword_color(E->get(), member_variable_color);
 	}
 
-	//colorize comments
+	// Colorize comments.
 	const Color comment_color = EDITOR_GET("text_editor/highlighting/comment_color");
 	syntax_highlighter->clear_color_regions();
 	syntax_highlighter->add_color_region("/*", "*/", comment_color, false);
