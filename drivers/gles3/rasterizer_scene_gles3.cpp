@@ -1118,6 +1118,9 @@ bool RasterizerSceneGLES3::_setup_material(RasterizerStorageGLES3::Material *p_m
 		state.current_depth_test = !p_material->shader->spatial.no_depth_test;
 	}
 
+	// FIXME: This should probably be done elsewhere...
+	glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+
 	if (state.current_depth_draw != p_material->shader->spatial.depth_draw_mode) {
 		switch (p_material->shader->spatial.depth_draw_mode) {
 			case RasterizerStorageGLES3::Shader::Spatial::DEPTH_DRAW_ALPHA_PREPASS: {

@@ -1037,6 +1037,9 @@ void SpatialMaterial::_update_shader() {
 
 	if (flags[FLAG_USE_ALPHA_SCISSOR]) {
 		code += "\tALPHA_SCISSOR=alpha_scissor_threshold;\n";
+		// FIXME: The 0.5 cutoff below is hardcoded (the first value in the line).
+		// Should this be changed?
+		code += "ALPHA = (ALPHA - 0.5) / max(fwidth(ALPHA), 0.0001) + 0.5;\n";
 	}
 
 	code += "}\n";
