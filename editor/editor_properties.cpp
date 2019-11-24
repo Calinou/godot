@@ -640,12 +640,20 @@ public:
 		const Ref<InputEventMouseButton> mb = p_ev;
 
 		if (mb.is_valid() && mb->get_button_index() == BUTTON_LEFT && mb->is_pressed()) {
-			// Toggle the flag.
-			// We base our choice on the hovered flag, so that it always matches the hovered flag.
-			if (value & (1 << hovered_index)) {
-				value &= ~(1 << hovered_index);
+			if (mb->get_shift()) {
+				// Enable all flags except the selected one.
+				value = 0b11111111111111111111 & ~(1 << hovered_index);
+			} else if (mb->get_command()) {
+				// Disable all flags except the selected one.
+				value = (1 << hovered_index);
 			} else {
-				value |= (1 << hovered_index);
+				// Toggle the flag.
+				// We base our choice on the hovered flag, so that it always matches the hovered flag.
+				if (value & (1 << hovered_index)) {
+					value &= ~(1 << hovered_index);
+				} else {
+					value |= (1 << hovered_index);
+				}
 			}
 
 			emit_signal("flag_changed", value);
