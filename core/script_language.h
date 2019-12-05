@@ -274,6 +274,7 @@ public:
 	virtual String validate_path(const String &p_path) const { return ""; }
 	virtual Script *create_script() const = 0;
 	virtual bool has_named_classes() const = 0;
+	virtual bool requires_named_classes() { return true; }
 	virtual bool supports_builtin_mode() const = 0;
 	virtual bool can_inherit_from_file() { return false; }
 	virtual int find_function(const String &p_function, const String &p_code) const = 0;

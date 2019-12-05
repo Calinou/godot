@@ -378,6 +378,11 @@ bool CSharpLanguage::has_named_classes() const {
 	return false;
 }
 
+bool CSharpLanguage::requires_named_classes() const {
+
+	return false;
+}
+
 bool CSharpLanguage::supports_builtin_mode() const {
 
 	return false;

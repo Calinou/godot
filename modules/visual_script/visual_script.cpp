@@ -2483,6 +2483,10 @@ bool VisualScriptLanguage::has_named_classes() const {
 
 	return false;
 }
+bool VisualScriptLanguage::requires_named_classes() const {
+
+	return false;
+}
 bool VisualScriptLanguage::supports_builtin_mode() const {
 
 	return true;

@@ -400,6 +400,7 @@ public:
 	virtual String validate_path(const String &p_path) const;
 	virtual Script *create_script() const;
 	virtual bool has_named_classes() const;
+	virtual bool requires_named_classes() const;
 	virtual bool supports_builtin_mode() const;
 	/* TODO? */ virtual int find_function(const String &p_function, const String &p_code) const { return -1; }
 	virtual String make_function(const String &p_class, const String &p_name, const PoolStringArray &p_args) const;

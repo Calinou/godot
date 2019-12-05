@@ -447,13 +447,14 @@ public:
 	virtual void get_reserved_words(List<String> *p_words) const;
 	virtual void get_comment_delimiters(List<String> *p_delimiters) const;
 	virtual void get_string_delimiters(List<String> *p_delimiters) const;
-	virtual String _get_processed_template(const String &p_template, const String &p_base_class_name) const;
+	virtual String _get_processed_template(const String &p_template, const String &p_class_name, const String &p_base_class_name) const;
 	virtual Ref<Script> get_template(const String &p_class_name, const String &p_base_class_name) const;
 	virtual bool is_using_templates();
 	virtual void make_template(const String &p_class_name, const String &p_base_class_name, Ref<Script> &p_script);
 	virtual bool validate(const String &p_script, int &r_line_error, int &r_col_error, String &r_test_error, const String &p_path = "", List<String> *r_functions = NULL, List<ScriptLanguage::Warning> *r_warnings = NULL, Set<int> *r_safe_lines = NULL) const;
 	virtual Script *create_script() const;
 	virtual bool has_named_classes() const;
+	virtual bool requires_named_classes() const;
 	virtual bool supports_builtin_mode() const;
 	virtual bool can_inherit_from_file() { return true; }
 	virtual int find_function(const String &p_function, const String &p_code) const;

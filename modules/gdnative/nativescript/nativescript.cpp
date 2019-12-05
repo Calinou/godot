@@ -1125,6 +1125,9 @@ Script *NativeScriptLanguage::create_script() const {
 bool NativeScriptLanguage::has_named_classes() const {
 	return true;
 }
+bool NativeScriptLanguage::requires_named_classes() const {
+	return true;
+}
 bool NativeScriptLanguage::supports_builtin_mode() const {
 	return true;
 }

@@ -726,6 +726,7 @@ static Dictionary _get_builtin_script_templates() {
 	// No Comments
 	templates["no_comments.gd"] =
 			"extends %BASE%\n"
+			"%CLASS%\n"
 			"\n"
 			"\n"
 			"func _ready()%VOID_RETURN%:\n"
@@ -733,9 +734,8 @@ static Dictionary _get_builtin_script_templates() {
 
 	// Empty
 	templates["empty.gd"] =
-			"extends %BASE%"
-			"\n"
-			"\n";
+			"extends %BASE%\n"
+			"%CLASS%\n";
 
 	return templates;
 }

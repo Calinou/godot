@@ -52,7 +52,7 @@ void GDScriptLanguage::get_string_delimiters(List<String> *p_delimiters) const {
 	p_delimiters->push_back("\"\"\" \"\"\"");
 }
 
-String GDScriptLanguage::_get_processed_template(const String &p_template, const String &p_base_class_name) const {
+String GDScriptLanguage::_get_processed_template(const String &p_template, const String &p_class_name, const String &p_base_class_name) const {
 
 	String processed_template = p_template;
 
@@ -75,6 +75,9 @@ String GDScriptLanguage::_get_processed_template(const String &p_template, const
 	processed_template = processed_template.replace("%VOID_RETURN%", "");
 #endif
 
+	// If a class name is set in the script creation dialog, add a line break
+	// after the `class_name` declaration to follow the GDScript style guide.
+	processed_template = processed_template.replace("%CLASS%", p_class_name != String() ? vformat("class_name %s\n", p_class_name) : "");
 	processed_template = processed_template.replace("%BASE%", p_base_class_name);
 	processed_template = processed_template.replace("%TS%", _get_indentation());
 
@@ -83,7 +86,7 @@ String GDScriptLanguage::_get_processed_template(const String &p_template, const
 
 Ref<Script> GDScriptLanguage::get_template(const String &p_class_name, const String &p_base_class_name) const {
 	String _template = "extends %BASE%\n"
-					   "\n"
+					   "%CLASS%\n"
 					   "\n"
 					   "# Declare member variables here. Examples:\n"
 					   "# var a%INT_TYPE% = 2\n"
@@ -99,7 +102,7 @@ Ref<Script> GDScriptLanguage::get_template(const String &p_class_name, const Str
 					   "#func _process(delta%FLOAT_TYPE%)%VOID_RETURN%:\n"
 					   "#%TS%pass\n";
 
-	_template = _get_processed_template(_template, p_base_class_name);
+	_template = _get_processed_template(_template, p_class_name, p_base_class_name);
 
 	Ref<GDScript> script;
 	script.instance();
@@ -115,7 +118,7 @@ bool GDScriptLanguage::is_using_templates() {
 
 void GDScriptLanguage::make_template(const String &p_class_name, const String &p_base_class_name, Ref<Script> &p_script) {
 
-	String _template = _get_processed_template(p_script->get_source_code(), p_base_class_name);
+	String _template = _get_processed_template(p_script->get_source_code(), p_class_name, p_base_class_name);
 	p_script->set_source_code(_template);
 }
 
@@ -180,6 +183,11 @@ bool GDScriptLanguage::validate(const String &p_script, int &r_line_error, int &
 }
 
 bool GDScriptLanguage::has_named_classes() const {
+
+	return true;
+}
+
+bool GDScriptLanguage::requires_named_classes() const {
 
 	return false;
 }

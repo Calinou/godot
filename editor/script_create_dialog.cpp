@@ -143,7 +143,7 @@ bool ScriptCreateDialog::_validate_parent(const String &p_string) {
 
 bool ScriptCreateDialog::_validate_class(const String &p_string) {
 
-	if (p_string.length() == 0)
+	if (requires_named_classes && p_string.length() == 0)
 		return false;
 
 	for (int i = 0; i < p_string.length(); i++) {
@@ -342,6 +342,7 @@ void ScriptCreateDialog::_lang_changed(int l) {
 	ScriptLanguage *language = ScriptServer::get_language(l);
 
 	has_named_classes = language->has_named_classes();
+	requires_named_classes = language->requires_named_classes();
 	can_inherit_from_file = language->can_inherit_from_file();
 	supports_built_in = language->supports_builtin_mode();
 	if (!supports_built_in)
@@ -882,6 +883,7 @@ ScriptCreateDialog::ScriptCreateDialog() {
 	is_path_valid = false;
 
 	has_named_classes = false;
+	requires_named_classes = true;
 	supports_built_in = false;
 	can_inherit_from_file = false;
 	built_in_enabled = true;
