@@ -1408,6 +1408,205 @@ Variant::operator String() const {
 	return stringify(stack);
 }
 
+String Variant::dump() const {
+	List<const void *> stack;
+
+	switch (type) {
+
+		case NIL: return "Null";
+		case BOOL: return _data._bool ? "true" : "false";
+		case INT: return itos(_data._int);
+		case REAL: return rtos(_data._real);
+		case STRING: {
+			const String string = *reinterpret_cast<const String *>(_data._mem);
+			return vformat("\"%s\" (length: %d)", string, string.length());
+		} break;
+		case VECTOR2: return "(" + operator Vector2() + ")";
+		case RECT2: return "(" + operator Rect2() + ")";
+		case TRANSFORM2D: {
+
+			Transform2D mat32 = operator Transform2D();
+			return "(" + Variant(mat32.elements[0]).operator String() + ", " + Variant(mat32.elements[1]).operator String() + ", " + Variant(mat32.elements[2]).operator String() + ")";
+		} break;
+		case VECTOR3: return "(" + operator Vector3() + ")";
+		case PLANE:
+			return operator Plane();
+		//case QUAT:
+		case AABB: return operator ::AABB();
+		case QUAT: return "(" + operator Quat() + ")";
+		case BASIS: {
+
+			Basis mat3 = operator Basis();
+
+			String mtx("(");
+			for (int i = 0; i < 3; i++) {
+
+				if (i != 0)
+					mtx += ", ";
+
+				mtx += "(";
+
+				for (int j = 0; j < 3; j++) {
+
+					if (j != 0)
+						mtx += ", ";
+
+					mtx += Variant(mat3.elements[i][j]).operator String();
+				}
+
+				mtx += ")";
+			}
+
+			return mtx + ")";
+		} break;
+		case TRANSFORM: return operator Transform();
+		case NODE_PATH: return operator NodePath();
+		case COLOR: return String::num(operator Color().r) + "," + String::num(operator Color().g) + "," + String::num(operator Color().b) + "," + String::num(operator Color().a);
+		case DICTIONARY: {
+
+			const Dictionary &d = *reinterpret_cast<const Dictionary *>(_data._mem);
+			if (stack.find(d.id())) {
+				return "{...}";
+			}
+
+			stack.push_back(d.id());
+
+			//const String *K=NULL;
+			String str("{");
+			List<Variant> keys;
+			d.get_key_list(&keys);
+
+			Vector<_VariantStrPair> pairs;
+
+			for (List<Variant>::Element *E = keys.front(); E; E = E->next()) {
+
+				_VariantStrPair sp;
+				sp.key = E->get().stringify(stack);
+				sp.value = d[E->get()].stringify(stack);
+
+				pairs.push_back(sp);
+			}
+
+			pairs.sort();
+
+			for (int i = 0; i < pairs.size(); i++) {
+				if (i > 0)
+					str += ", ";
+				str += pairs[i].key + ":" + pairs[i].value;
+			}
+			str += "}";
+
+			return str;
+		} break;
+		case POOL_VECTOR2_ARRAY: {
+
+			PoolVector<Vector2> vec = operator PoolVector<Vector2>();
+			String str("[");
+			for (int i = 0; i < vec.size(); i++) {
+
+				if (i > 0)
+					str += ", ";
+				str = str + Variant(vec[i]);
+			}
+			str += "]";
+			return str;
+		} break;
+		case POOL_VECTOR3_ARRAY: {
+
+			PoolVector<Vector3> vec = operator PoolVector<Vector3>();
+			String str("[");
+			for (int i = 0; i < vec.size(); i++) {
+
+				if (i > 0)
+					str += ", ";
+				str = str + Variant(vec[i]);
+			}
+			str += "]";
+			return str;
+		} break;
+		case POOL_STRING_ARRAY: {
+
+			PoolVector<String> vec = operator PoolVector<String>();
+			String str("[");
+			for (int i = 0; i < vec.size(); i++) {
+
+				if (i > 0)
+					str += ", ";
+				str = str + vec[i];
+			}
+			str += "]";
+			return str;
+		} break;
+		case POOL_INT_ARRAY: {
+
+			PoolVector<int> vec = operator PoolVector<int>();
+			String str("[");
+			for (int i = 0; i < vec.size(); i++) {
+
+				if (i > 0)
+					str += ", ";
+				str = str + itos(vec[i]);
+			}
+			str += "]";
+			return str;
+		} break;
+		case POOL_REAL_ARRAY: {
+
+			PoolVector<real_t> vec = operator PoolVector<real_t>();
+			String str("[");
+			for (int i = 0; i < vec.size(); i++) {
+
+				if (i > 0)
+					str += ", ";
+				str = str + rtos(vec[i]);
+			}
+			str += "]";
+			return str;
+		} break;
+		case ARRAY: {
+
+			Array arr = operator Array();
+			if (stack.find(arr.id())) {
+				return "[...]";
+			}
+			stack.push_back(arr.id());
+
+			String str("[");
+			for (int i = 0; i < arr.size(); i++) {
+				if (i)
+					str += ", ";
+
+				str += arr[i].stringify(stack);
+			}
+
+			str += "]";
+			return str;
+
+		} break;
+		case OBJECT: {
+
+			if (_get_obj().obj) {
+#ifdef DEBUG_ENABLED
+				if (ScriptDebugger::get_singleton() && _get_obj().ref.is_null()) {
+					//only if debugging!
+					if (!ObjectDB::instance_validate(_get_obj().obj)) {
+						return "[Deleted Object]";
+					};
+				};
+#endif
+				return _get_obj().obj->to_string();
+			} else
+				return "[Object:null]";
+
+		} break;
+		default: {
+			return "[" + get_type_name(type) + "]";
+		}
+	}
+
+	return "";
+}
+
 String Variant::stringify(List<const void *> &stack) const {
 	switch (type) {
 

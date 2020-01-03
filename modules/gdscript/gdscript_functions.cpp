@@ -116,6 +116,7 @@ const char *GDScriptFunctions::get_func_name(Function p_func) {
 		"print_debug",
 		"push_error",
 		"push_warning",
+		"dump",
 		"var2str",
 		"str2var",
 		"var2bytes",
@@ -816,6 +817,13 @@ void GDScriptFunctions::call(Function p_func, const Variant **p_args, int p_arg_
 			String message = *p_args[0];
 			WARN_PRINTS(message);
 			r_ret = Variant();
+		} break;
+		case DUMP: {
+			VALIDATE_ARG_COUNT(1);
+
+			print_line(p_args[0]->dump());
+			r_ret = *p_args[0];
+
 		} break;
 		case VAR_TO_STR: {
 			VALIDATE_ARG_COUNT(1);
@@ -1934,6 +1942,14 @@ MethodInfo GDScriptFunctions::get_info(Function p_func) {
 
 			MethodInfo mi(Variant::NIL, "push_warning", PropertyInfo(Variant::STRING, "message"));
 			mi.return_val.type = Variant::NIL;
+			return mi;
+
+		} break;
+		case DUMP: {
+
+			MethodInfo mi(Variant::NIL, "dump", PropertyInfo(Variant::NIL, "expression", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_NIL_IS_VARIANT));
+			mi.return_val.type = Variant::NIL;
+			mi.return_val.usage |= PROPERTY_USAGE_NIL_IS_VARIANT;
 			return mi;
 
 		} break;

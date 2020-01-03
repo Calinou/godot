@@ -305,6 +305,15 @@
 				Converts a previously converted instance to a dictionary, back into an instance. Useful for deserializing.
 			</description>
 		</method>
+		<method name="dump">
+			<return type="Variant">
+			</return>
+			<argument index="0" name="expression" type="Variant">
+			</argument>
+			<description>
+				Prints a value with additional information for debugging, while returning the value it's evaluating. This makes it possible to wrap anything in a [method dump] call without having to move stuff around.
+			</description>
+		</method>
 		<method name="ease">
 			<return type="float">
 			</return>
@@ -810,6 +819,7 @@
 				a = [1, 2, 3]
 				print("a", "b", a) # Prints ab[1, 2, 3]
 				[/codeblock]
+				For debugging, [method dump] is preferable as it provides additional information.
 			</description>
 		</method>
 		<method name="print_debug" qualifiers="vararg">
@@ -817,6 +827,7 @@
 			</return>
 			<description>
 				Like [method print], but prints only when used in debug mode.
+				For debugging, [method dump] is preferable as it provides additional information.
 			</description>
 		</method>
 		<method name="print_stack">
