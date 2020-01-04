@@ -267,6 +267,7 @@ void Main::print_help(const char *p_binary) {
 		OS::get_singleton()->print("'%s'", OS::get_singleton()->get_video_driver_name(i));
 	}
 	OS::get_singleton()->print(").\n");
+	OS::get_singleton()->print("  --set <property> <value>         Set a project setting to the given value.\n");
 	OS::get_singleton()->print("\n");
 
 #ifndef SERVER_ENABLED
@@ -537,6 +538,23 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 				N = I->next()->next();
 			} else {
 				OS::get_singleton()->print("Missing video driver argument, aborting.\n");
+				goto error;
+			}
+		} else if (I->get() == "--set") { // set a project setting
+			if (I->next()) {
+				const String property = I->next()->get();
+
+				if (I->next()->next()) {
+					const String value = I->next()->next()->get();
+					ProjectSettings::get_singleton()->set_setting(property, value);
+					print_line(property);
+					print_line(value);
+				} else {
+					OS::get_singleton()->print("Missing property value argument, aborting.\nExample: --set section/key \"Some value\"\n");
+					goto error;
+				}
+			} else {
+				OS::get_singleton()->print("Missing property name argument, aborting.\nExample: --set section/key \"Some value\"\n");
 				goto error;
 			}
 #ifndef SERVER_ENABLED
