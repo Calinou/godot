@@ -1297,9 +1297,13 @@ float AnimationTimelineEdit::get_zoom_scale() const {
 	float zv = zoom->get_max() - zoom->get_value();
 	if (zv < 1) {
 		zv = 1.0 - zv;
-		return Math::pow(1.0f + zv, 8.0f) * 100;
+		float res = Math::pow(1.0f + zv, 8.0f) * 100;
+		print_line(rtos(res));
+		return res;
 	} else {
-		return 1.0 / Math::pow(zv, 8.0f) * 100;
+		float res = 1.0 / Math::pow(zv, 8.0f) * 100;
+		print_line(rtos(res));
+		return res;
 	}
 }
 
@@ -3318,6 +3322,22 @@ void AnimationTrackEditor::_track_grab_focus(int p_track) {
 	// Don't steal focus if not working with the track editor.
 	if (Object::cast_to<AnimationTrackEdit>(get_focus_owner())) {
 		track_edits[p_track]->grab_focus();
+	}
+}
+
+void AnimationTrackEditor::_zoom_fit_to_length() {
+	// Set the zoom level to fit the whole animation on the timeline view.
+	const float zoom_value = Math::pow(animation->get_length() / timeline->get_size().x, 0.125f);
+	print_line(vformat("timeline width: %f, converted zoom value: %f, zoom slider value: %f", timeline->get_size().x, timeline->get_size().x / animation->get_length(), zoom_value));
+	zoom->set_value(zoom_value);
+}
+
+void AnimationTrackEditor::_zoom_gui_input(const Ref<InputEvent> &p_event) {
+	const Ref<InputEventMouseButton> mb = p_event;
+
+	if (mb.is_valid() && mb->is_pressed() && mb->get_button_index() == MOUSE_BUTTON_RIGHT) {
+		print_line("reset!");
+		_zoom_fit_to_length();
 	}
 }
 
@@ -5689,6 +5709,7 @@ void AnimationTrackEditor::_select_all_tracks_for_copy() {
 void AnimationTrackEditor::_bind_methods() {
 	ClassDB::bind_method("_animation_update", &AnimationTrackEditor::_animation_update);
 	ClassDB::bind_method("_track_grab_focus", &AnimationTrackEditor::_track_grab_focus);
+	ClassDB::bind_method("_zoom_gui_input", &AnimationTrackEditor::_zoom_gui_input);
 	ClassDB::bind_method("_update_tracks", &AnimationTrackEditor::_update_tracks);
 	ClassDB::bind_method("_insert_delay", &AnimationTrackEditor::_insert_delay);
 	ClassDB::bind_method("_clear_selection_for_anim", &AnimationTrackEditor::_clear_selection_for_anim);
@@ -5906,6 +5927,7 @@ AnimationTrackEditor::AnimationTrackEditor() {
 	zoom->set_value(1.0);
 	zoom->set_custom_minimum_size(Size2(200, 0) * EDSCALE);
 	zoom->set_v_size_flags(SIZE_SHRINK_CENTER);
+	zoom->connect("gui_input", callable_mp(this, &AnimationTrackEditor::_zoom_gui_input));
 	bottom_hb->add_child(zoom);
 	timeline->set_zoom(zoom);
 

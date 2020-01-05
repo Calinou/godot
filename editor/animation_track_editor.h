@@ -316,6 +316,8 @@ class AnimationTrackEditor : public VBoxContainer {
 	void _timeline_changed(float p_new_pos, bool p_drag, bool p_timeline_only = false);
 	void _track_remove_request(int p_track);
 	void _track_grab_focus(int p_track);
+	void _zoom_fit_to_length();
+	void _zoom_gui_input(const Ref<InputEvent> &p_event);
 
 	UndoRedo *undo_redo;
 
