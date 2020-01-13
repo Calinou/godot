@@ -476,7 +476,7 @@ void Object::set(const StringName &p_name, const Variant &p_value, bool *r_valid
 		*r_valid = false;
 }
 
-Variant Object::get(const StringName &p_name, bool *r_valid) const {
+Variant Object::get_or_null(const StringName &p_name, bool *r_valid) const {
 
 	Variant ret;
 
@@ -546,6 +546,13 @@ Variant Object::get(const StringName &p_name, bool *r_valid) const {
 			*r_valid = false;
 		return Variant();
 	}
+}
+
+Variant Object::get(const StringName &p_name, bool *r_valid) const {
+
+	const Variant ret = get_or_null(p_name, r_valid);
+	ERR_FAIL_COND_V_MSG(ret == Variant(), Variant(), vformat("Property not found: %s.", p_name))
+	return ret;
 }
 
 void Object::set_indexed(const Vector<StringName> &p_names, const Variant &p_value, bool *r_valid) {
@@ -1555,6 +1562,11 @@ Variant Object::_get_bind(const String &p_name) const {
 	return get(p_name);
 }
 
+Variant Object::_get_or_null_bind(const String &p_name) const {
+
+	return get_or_null(p_name);
+}
+
 void Object::_set_indexed_bind(const NodePath &p_name, const Variant &p_value) {
 
 	set_indexed(p_name.get_as_property_path().get_subnames(), p_value);
@@ -1663,6 +1675,7 @@ void Object::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("is_class", "class"), &Object::is_class);
 	ClassDB::bind_method(D_METHOD("set", "property", "value"), &Object::_set_bind);
 	ClassDB::bind_method(D_METHOD("get", "property"), &Object::_get_bind);
+	ClassDB::bind_method(D_METHOD("get_or_null", "property"), &Object::_get_or_null_bind);
 	ClassDB::bind_method(D_METHOD("set_indexed", "property", "value"), &Object::_set_indexed_bind);
 	ClassDB::bind_method(D_METHOD("get_indexed", "property"), &Object::_get_indexed_bind);
 	ClassDB::bind_method(D_METHOD("get_property_list"), &Object::_get_property_list_bind);
