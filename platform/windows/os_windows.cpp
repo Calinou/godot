@@ -57,6 +57,7 @@
 #include <process.h>
 #include <regstr.h>
 #include <shlobj.h>
+#include <strsafe.h>
 
 static const WORD MAX_CONSOLE_LINES = 1500;
 
@@ -2995,6 +2996,35 @@ Error OS_Windows::shell_open(String p_uri) {
 
 	ShellExecuteW(NULL, NULL, p_uri.c_str(), NULL, NULL, SW_SHOWNORMAL);
 	return OK;
+}
+
+void OS_Windows::show_notification(String p_message) {
+
+	NOTIFYICONDATA nid = {};
+	nid.cbSize = sizeof(nid);
+	nid.hWnd = hWnd;
+	nid.uFlags = NIF_INFO | NIF_GUID;
+
+	// FIXME: This is an example GUID only.
+	// TODO: Generate a proper GUID based on the project name or something (MD5 hash?).
+	static const GUID myGUID = { 0x23977b55, 0x10e0, 0x4041, { 0xb8, 0x62, 0xb1, 0x95, 0x41, 0x96, 0x36, 0x69 } };
+	nid.guidItem = myGUID;
+
+	String project_name = ProjectSettings::get_singleton()->get_setting("application/config/name");
+	if (project_name.empty()) {
+		project_name = "Unnamed Project";
+	}
+	StringCchCopy(nid.szInfoTitle, ARRAYSIZE(nid.szInfoTitle), project_name.utf8().get_data());
+	StringCchCopy(nid.szInfo, ARRAYSIZE(nid.szInfo), p_message.utf8().get_data());
+
+	// Show the notification.
+	Shell_NotifyIcon(NIM_ADD, &nid);
+
+	// Delete the notification icon immediately, so another notification can be displayed in the future.
+	// FIXME: This doesn't appear to work. The tray must be opened manually by the user
+	// before another notification can appear successfully (even if the project is shut down then restarted).
+	NOTIFYICONDATA nid_cleanup = {};
+	Shell_NotifyIcon(NIM_DELETE, &nid_cleanup);
 }
 
 String OS_Windows::get_locale() const {

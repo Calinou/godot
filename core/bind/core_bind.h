@@ -231,6 +231,7 @@ public:
 
 	Error kill(int p_pid);
 	Error shell_open(String p_uri);
+	void show_notification(String p_message);
 
 	int get_process_id() const;
 

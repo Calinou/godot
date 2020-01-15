@@ -492,6 +492,11 @@ Error _OS::shell_open(String p_uri) {
 	return OS::get_singleton()->shell_open(p_uri);
 };
 
+void _OS::show_notification(String p_message) {
+
+	return OS::get_singleton()->show_notification(p_message);
+}
+
 int _OS::execute(const String &p_path, const Vector<String> &p_arguments, bool p_blocking, Array p_output, bool p_read_stderr) {
 
 	OS::ProcessID pid = -2;
@@ -1269,6 +1274,7 @@ void _OS::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("execute", "path", "arguments", "blocking", "output", "read_stderr"), &_OS::execute, DEFVAL(Array()), DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("kill", "pid"), &_OS::kill);
 	ClassDB::bind_method(D_METHOD("shell_open", "uri"), &_OS::shell_open);
+	ClassDB::bind_method(D_METHOD("show_notification", "message"), &_OS::show_notification);
 	ClassDB::bind_method(D_METHOD("get_process_id"), &_OS::get_process_id);
 
 	ClassDB::bind_method(D_METHOD("get_environment", "environment"), &_OS::get_environment);

@@ -407,6 +407,7 @@ public:
 	virtual void swap_buffers();
 
 	virtual Error shell_open(String p_uri);
+	virtual void show_notification(String p_message);
 
 	void run();
 

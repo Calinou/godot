@@ -2826,6 +2826,19 @@ Error OS_X11::shell_open(String p_uri) {
 	return ok;
 }
 
+void OS_X11::show_notification(String p_message) {
+	List<String> arguments;
+	String project_name = ProjectSettings::get_singleton()->get_setting("application/config/name");
+	if (project_name.empty()) {
+		project_name = "Unnamed Project";
+	}
+	// Always use the project name as the notification title.
+	arguments.push_back(project_name);
+	arguments.push_back(p_message);
+
+	OS::get_singleton()->execute("notify-send", arguments, false);
+}
+
 bool OS_X11::_check_internal_feature_support(const String &p_feature) {
 
 	return p_feature == "pc";

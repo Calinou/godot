@@ -371,6 +371,9 @@ Error OS::shell_open(String p_uri) {
 	return ERR_UNAVAILABLE;
 };
 
+void OS::show_notification(String p_message) {
+};
+
 // implement these with the canvas?
 Error OS::dialog_show(String p_title, String p_description, Vector<String> p_buttons, Object *p_obj, String p_callback) {
 
