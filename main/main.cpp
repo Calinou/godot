@@ -1452,6 +1452,8 @@ bool Main::start() {
 				test = args[i + 1];
 #ifdef TOOLS_ENABLED
 			} else if (args[i] == "--doctool") {
+				// Needs EditorSettings to be available.
+				editor = true;
 				doc_tool = args[i + 1];
 				for (int j = i + 2; j < args.size(); j++)
 					removal_docs.push_back(args[j]);
@@ -1478,72 +1480,6 @@ bool Main::start() {
 	}
 
 	String main_loop_type;
-#ifdef TOOLS_ENABLED
-	if (doc_tool != "") {
-
-		Engine::get_singleton()->set_editor_hint(true); // Needed to instance editor-only classes for their default values
-
-		{
-			DirAccessRef da = DirAccess::open(doc_tool);
-			ERR_FAIL_COND_V_MSG(!da, false, "Argument supplied to --doctool must be a base Godot build directory.");
-		}
-		DocData doc;
-		doc.generate(doc_base);
-
-		DocData docsrc;
-		Map<String, String> doc_data_classes;
-		Set<String> checked_paths;
-		print_line("Loading docs...");
-
-		for (int i = 0; i < _doc_data_class_path_count; i++) {
-			String path = doc_tool.plus_file(_doc_data_class_paths[i].path);
-			String name = _doc_data_class_paths[i].name;
-			doc_data_classes[name] = path;
-			if (!checked_paths.has(path)) {
-				checked_paths.insert(path);
-
-				// Create the module documentation directory if it doesn't exist
-				DirAccess *da = DirAccess::create_for_path(path);
-				da->make_dir_recursive(path);
-				memdelete(da);
-
-				docsrc.load_classes(path);
-				print_line("Loading docs from: " + path);
-			}
-		}
-
-		String index_path = doc_tool.plus_file("doc/classes");
-		// Create the main documentation directory if it doesn't exist
-		DirAccess *da = DirAccess::create_for_path(index_path);
-		da->make_dir_recursive(index_path);
-		memdelete(da);
-
-		docsrc.load_classes(index_path);
-		checked_paths.insert(index_path);
-		print_line("Loading docs from: " + index_path);
-
-		print_line("Merging docs...");
-		doc.merge_from(docsrc);
-		for (Set<String>::Element *E = checked_paths.front(); E; E = E->next()) {
-			print_line("Erasing old docs at: " + E->get());
-			DocData::erase_classes(E->get());
-		}
-
-		print_line("Generating new docs...");
-		doc.save_classes(index_path, doc_data_classes);
-
-		return false;
-	}
-
-	if (_export_preset != "") {
-		if (positional_arg == "") {
-			String err = "Command line includes export parameter option, but no destination path was given.\n";
-			err += "Please specify the binary's file path to export to. Aborting export.";
-			ERR_PRINT(err);
-			return false;
-		}
-	}
-#endif
 
 	if (script == "" && game_path == "" && String(GLOBAL_DEF("application/run/main_scene", "")) != "") {
 		game_path = GLOBAL_DEF("application/run/main_scene", "");
@@ -1729,6 +1665,71 @@ bool Main::start() {
 			if (_export_preset != "") {
 				editor_node->export_preset(_export_preset, positional_arg, export_debug, export_pack_only);
 				game_path = ""; // Do not load anything.
+			}
+		}
+
+		if (doc_tool != "") {
+			// Needed to instance editor-only classes for their default values.
+			Engine::get_singleton()->set_editor_hint(true);
+
+			{
+				DirAccessRef da = DirAccess::open(doc_tool);
+				ERR_FAIL_COND_V_MSG(!da, false, "Argument supplied to --doctool must be a base Godot build directory.");
+			}
+			DocData doc;
+			doc.generate(doc_base);
+
+			DocData docsrc;
+			Map<String, String> doc_data_classes;
+			Set<String> checked_paths;
+			print_line("Loading docs...");
+
+			for (int i = 0; i < _doc_data_class_path_count; i++) {
+				String path = doc_tool.plus_file(_doc_data_class_paths[i].path);
+				String name = _doc_data_class_paths[i].name;
+				doc_data_classes[name] = path;
+				if (!checked_paths.has(path)) {
+					checked_paths.insert(path);
+
+					// Create the module documentation directory if it doesn't exist
+					DirAccess *da = DirAccess::create_for_path(path);
+					da->make_dir_recursive(path);
+					memdelete(da);
+
+					docsrc.load_classes(path);
+					print_line("Loading docs from: " + path);
+				}
+			}
+
+			String index_path = doc_tool.plus_file("doc/classes");
+			// Create the main documentation directory if it doesn't exist
+			DirAccess *da = DirAccess::create_for_path(index_path);
+			da->make_dir_recursive(index_path);
+			memdelete(da);
+
+			docsrc.load_classes(index_path);
+			checked_paths.insert(index_path);
+			print_line("Loading docs from: " + index_path);
+
+			print_line("Merging docs...");
+			doc.merge_from(docsrc);
+			for (Set<String>::Element *E = checked_paths.front(); E; E = E->next()) {
+				print_line("Erasing old docs at: " + E->get());
+				DocData::erase_classes(E->get());
+			}
+
+			print_line("Generating new docs...");
+			doc.save_classes(index_path, doc_data_classes);
+
+			return false;
+		}
+
+		if (_export_preset != "") {
+			if (positional_arg == "") {
+				String err = "Command line includes export parameter option, but no destination path was given.\n";
+				err += "Please specify the binary's file path to export to. Aborting export.";
+				ERR_PRINT(err);
+				return false;
 			}
 		}
 #endif

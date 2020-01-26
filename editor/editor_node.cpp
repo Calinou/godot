@@ -5588,6 +5588,11 @@ EditorNode::EditorNode() {
 	Physics2DServer::get_singleton()->set_active(false); // no physics by default if editor
 	ScriptServer::set_scripting_enabled(false); // no scripting by default if editor
 
+	// load settings
+	// FIXME: How to load only EditorSettings but not other classes?
+	if (!EditorSettings::get_singleton())
+		EditorSettings::create();
+
 	EditorHelp::generate_doc(); //before any editor classes are created
 	SceneState::set_disable_placeholders(true);
 	ResourceLoader::clear_translation_remaps(); //no remaps using during editor
@@ -5617,9 +5622,6 @@ EditorNode::EditorNode() {
 	script_distraction = false;
 
 	TranslationServer::get_singleton()->set_enabled(false);
-	// load settings
-	if (!EditorSettings::get_singleton())
-		EditorSettings::create();
 
 	FileAccess::set_backup_save(EDITOR_GET("filesystem/on_save/safe_save_on_backup_then_rename"));
 

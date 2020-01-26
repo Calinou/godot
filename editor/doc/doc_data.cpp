@@ -38,6 +38,7 @@
 #include "core/project_settings.h"
 #include "core/script_language.h"
 #include "core/version.h"
+#include "editor/editor_settings.h"
 #include "scene/resources/theme.h"
 
 void DocData::merge_from(const DocData &p_data) {
@@ -233,8 +234,10 @@ void DocData::generate(bool p_basic_types) {
 	List<StringName> classes;
 	ClassDB::get_class_list(&classes);
 	classes.sort_custom<StringName::AlphCompare>();
-	// Move ProjectSettings, so that other classes can register properties there.
+	// Move ProjectSettings and EditorSettings to the end, so that other classes
+	// can register properties there.
 	classes.move_to_back(classes.find("ProjectSettings"));
+	classes.move_to_back(classes.find("EditorSettings"));
 
 	bool skip_setter_getter_methods = true;
 
@@ -255,8 +258,12 @@ void DocData::generate(bool p_basic_types) {
 		List<PropertyInfo> properties;
 		List<PropertyInfo> own_properties;
 		if (name == "ProjectSettings") {
-			//special case for project settings, so settings can be documented
+			// Special case for project settings, so that settings can be documented.
 			ProjectSettings::get_singleton()->get_property_list(&properties);
+			own_properties = properties;
+		} else if (name == "EditorSettings") {
+			// Special case for editor settings, so that settings can be documented.
+			EditorSettings::get_singleton()->get_property_list(&properties);
 			own_properties = properties;
 		} else {
 			ClassDB::get_property_list(name, &properties);
@@ -284,13 +291,19 @@ void DocData::generate(bool p_basic_types) {
 			Variant default_value;
 
 			if (name == "ProjectSettings") {
-				// Special case for project settings, so that settings are not taken from the current project's settings
+				// Special case for project settings, so that settings are not taken from the current project's settings.
 				if (E->get().name == "script" ||
 						ProjectSettings::get_singleton()->get_order(E->get().name) >= ProjectSettings::NO_BUILTIN_ORDER_BASE) {
 					continue;
 				}
+
 				if (E->get().usage & PROPERTY_USAGE_EDITOR) {
 					default_value = ProjectSettings::get_singleton()->property_get_revert(E->get().name);
+					default_value_valid = true;
+				}
+			} else if (name == "EditorSettings") {
+				if (E->get().usage & PROPERTY_USAGE_EDITOR) {
+					default_value = EditorSettings::get_singleton()->property_get_revert(E->get().name);
 					default_value_valid = true;
 				}
 			} else {
