@@ -275,10 +275,10 @@ PrimitiveMesh::~PrimitiveMesh() {
 */
 
 void CapsuleMesh::_create_mesh_array(Array &p_arr) const {
-	int i, j, prevrow, thisrow, point;
+	int i, j, prev_row, this_row, point;
 	float x, y, z, u, v, w;
-	float onethird = 1.0 / 3.0;
-	float twothirds = 2.0 / 3.0;
+	const float one_third = 1.0 / 3.0;
+	const float two_thirds = 2.0 / 3.0;
 
 	// note, this has been aligned with our collision shape but I've left the descriptions as top/middle/bottom
 
@@ -296,121 +296,121 @@ void CapsuleMesh::_create_mesh_array(Array &p_arr) const {
 	tangents.push_back(m_d);
 
 	/* top hemisphere */
-	thisrow = 0;
-	prevrow = 0;
+	this_row = 0;
+	prev_row = 0;
 	for (j = 0; j <= (rings + 1); j++) {
 		v = j;
 
 		v /= (rings + 1);
 		w = sin(0.5 * Math_PI * v);
-		z = radius * cos(0.5 * Math_PI * v);
+		y = radius * cos(0.5 * Math_PI * v);
 
 		for (i = 0; i <= radial_segments; i++) {
 			u = i;
 			u /= radial_segments;
 
 			x = sin(u * (Math_PI * 2.0));
-			y = -cos(u * (Math_PI * 2.0));
+			z = cos(u * (Math_PI * 2.0));
 
-			Vector3 p = Vector3(x * radius * w, y * radius * w, z);
-			points.push_back(p + Vector3(0.0, 0.0, 0.5 * mid_height));
+			const Vector3 p = Vector3(x * radius * w, y, z * radius * w);
+			points.push_back(p + Vector3(0.0, 0.5 * mid_height, 0.0));
 			normals.push_back(p.normalized());
-			ADD_TANGENT(-y, x, 0.0, 1.0)
-			uvs.push_back(Vector2(u, v * onethird));
+			ADD_TANGENT(z, 0.0, -x, 1.0);
+			uvs.push_back(Vector2(u, v * one_third));
 			point++;
 
 			if (i > 0 && j > 0) {
-				indices.push_back(prevrow + i - 1);
-				indices.push_back(prevrow + i);
-				indices.push_back(thisrow + i - 1);
+				indices.push_back(prev_row + i - 1);
+				indices.push_back(prev_row + i);
+				indices.push_back(this_row + i - 1);
 
-				indices.push_back(prevrow + i);
-				indices.push_back(thisrow + i);
-				indices.push_back(thisrow + i - 1);
+				indices.push_back(prev_row + i);
+				indices.push_back(this_row + i);
+				indices.push_back(this_row + i - 1);
 			};
 		};
 
-		prevrow = thisrow;
-		thisrow = point;
+		prev_row = this_row;
+		this_row = point;
 	};
 
 	/* cylinder */
-	thisrow = point;
-	prevrow = 0;
+	this_row = point;
+	prev_row = 0;
 	for (j = 0; j <= (rings + 1); j++) {
 		v = j;
 		v /= (rings + 1);
 
-		z = mid_height * v;
-		z = (mid_height * 0.5) - z;
+		y = mid_height * v;
+		y = (mid_height * 0.5) - y;
 
 		for (i = 0; i <= radial_segments; i++) {
 			u = i;
 			u /= radial_segments;
 
 			x = sin(u * (Math_PI * 2.0));
-			y = -cos(u * (Math_PI * 2.0));
+			z = cos(u * (Math_PI * 2.0));
 
-			Vector3 p = Vector3(x * radius, y * radius, z);
+			const Vector3 p = Vector3(x * radius, y, z * radius);
 			points.push_back(p);
-			normals.push_back(Vector3(x, y, 0.0));
-			ADD_TANGENT(-y, x, 0.0, 1.0)
-			uvs.push_back(Vector2(u, onethird + (v * onethird)));
+			normals.push_back(Vector3(x, 0.0, z));
+			ADD_TANGENT(z, 0.0, -x, 1.0);
+			uvs.push_back(Vector2(u, one_third + (v * one_third)));
 			point++;
 
 			if (i > 0 && j > 0) {
-				indices.push_back(prevrow + i - 1);
-				indices.push_back(prevrow + i);
-				indices.push_back(thisrow + i - 1);
+				indices.push_back(prev_row + i - 1);
+				indices.push_back(prev_row + i);
+				indices.push_back(this_row + i - 1);
 
-				indices.push_back(prevrow + i);
-				indices.push_back(thisrow + i);
-				indices.push_back(thisrow + i - 1);
+				indices.push_back(prev_row + i);
+				indices.push_back(this_row + i);
+				indices.push_back(this_row + i - 1);
 			};
 		};
 
-		prevrow = thisrow;
-		thisrow = point;
+		prev_row = this_row;
+		this_row = point;
 	};
 
 	/* bottom hemisphere */
-	thisrow = point;
-	prevrow = 0;
+	this_row = point;
+	prev_row = 0;
 	for (j = 0; j <= (rings + 1); j++) {
 		v = j;
 
 		v /= (rings + 1);
 		v += 1.0;
 		w = sin(0.5 * Math_PI * v);
-		z = radius * cos(0.5 * Math_PI * v);
+		y = radius * cos(0.5 * Math_PI * v);
 
 		for (i = 0; i <= radial_segments; i++) {
 			float u2 = i;
 			u2 /= radial_segments;
 
 			x = sin(u2 * (Math_PI * 2.0));
-			y = -cos(u2 * (Math_PI * 2.0));
+			z = cos(u2 * (Math_PI * 2.0));
 
-			Vector3 p = Vector3(x * radius * w, y * radius * w, z);
-			points.push_back(p + Vector3(0.0, 0.0, -0.5 * mid_height));
+			const Vector3 p = Vector3(x * radius * w, y, z * radius * w);
+			points.push_back(p + Vector3(0.0, -0.5 * mid_height, 0.0));
 			normals.push_back(p.normalized());
-			ADD_TANGENT(-y, x, 0.0, 1.0)
-			uvs.push_back(Vector2(u2, twothirds + ((v - 1.0) * onethird)));
+			ADD_TANGENT(z, 0.0, -x, 1.0);
+			uvs.push_back(Vector2(u2, two_thirds + ((v - 1.0) * one_third)));
 			point++;
 
 			if (i > 0 && j > 0) {
-				indices.push_back(prevrow + i - 1);
-				indices.push_back(prevrow + i);
-				indices.push_back(thisrow + i - 1);
+				indices.push_back(prev_row + i - 1);
+				indices.push_back(prev_row + i);
+				indices.push_back(this_row + i - 1);
 
-				indices.push_back(prevrow + i);
-				indices.push_back(thisrow + i);
-				indices.push_back(thisrow + i - 1);
+				indices.push_back(prev_row + i);
+				indices.push_back(this_row + i);
+				indices.push_back(this_row + i - 1);
 			};
 		};
 
-		prevrow = thisrow;
-		thisrow = point;
+		prev_row = this_row;
+		this_row = point;
 	};
 
 	p_arr[VS::ARRAY_VERTEX] = points;
