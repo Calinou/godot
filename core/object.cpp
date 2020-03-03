@@ -2103,7 +2103,9 @@ void ObjectDB::cleanup() {
 	if (slot_count > 0) {
 		spin_lock.lock();
 
-		WARN_PRINT("ObjectDB Instances still exist!");
+		WARN_PRINT(vformat(
+				slot_count == 1 ? "%d ObjectDB instance still exists!" : "%d ObjectDB instances still exist!", slot_count));
+
 		if (OS::get_singleton()->is_stdout_verbose()) {
 			for (uint32_t i = 0; i < slot_count; i++) {
 				uint32_t slot = object_slots[i].next_free;
@@ -2111,9 +2113,9 @@ void ObjectDB::cleanup() {
 
 				String node_name;
 				if (obj->is_class("Node"))
-					node_name = " - Node name: " + String(obj->call("get_name"));
+					node_name = "  - Node name: " + String(obj->call("get_name"));
 				if (obj->is_class("Resource"))
-					node_name = " - Resource name: " + String(obj->call("get_name")) + " Path: " + String(obj->call("get_path"));
+					node_name = "  - Resource name: " + String(obj->call("get_name")) + " (path: " + String(obj->call("get_path") + ")");
 
 				uint64_t id = uint64_t(slot) | (uint64_t(object_slots[slot].validator) << OBJECTDB_VALIDATOR_BITS) | (object_slots[slot].is_reference ? OBJECTDB_REFERENCE_BIT : 0);
 				print_line("Leaked instance: " + String(obj->get_class()) + ":" + itos(id) + node_name);
