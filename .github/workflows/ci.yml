@@ -1,0 +1,119 @@
+name: Continuous integration
+on: [push, pull_request]
+
+env:
+  # FIXME: Change the cache path depending on the platform as well.
+  SCONS_CACHE: "$HOME/.scons_cache/${{ github.ref }}"
+  SCONS_CACHE_LIMIT: 1024
+  SCONS_OPTIONS: debug_symbols=no verbose=yes progress=no -j2
+
+jobs:
+  static-checks:
+    name: Run static checks
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run clang-format and check class reference syntax
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -yqq clang-format-9
+          sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-9 100
+          clang --version
+          clang-format --version
+          sh ./misc/travis/clang-format.sh
+          doc/tools/makerst.py --dry-run doc/classes modules
+
+  build:
+    # FIXME: Don't depend on static-checks until we got the build steps right.
+    #needs: static-checks
+    name: Build (${{ matrix.platform }}, ${{ matrix.config }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-18.04
+        platform:
+          - android
+          - javascript
+          - x11
+        config:
+          - tools=yes
+          - tools=no target=release
+
+        exclude:
+          - platform: android
+            config: tools=yes
+          - platform: javascript
+            config: tools=yes
+            
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v1
+        with:
+          path: "$HOME/.scons_cache/${{ github.ref }}"
+          key: "${{ github.ref }}"
+      - name: Build (Android, release_debug)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -yqq \
+            build-essential scons pkg-config libx11-dev libxcursor-dev libxinerama-dev \
+            libgl1-mesa-dev libglu-dev libasound2-dev libpulse-dev libudev-dev libxi-dev \
+            libxrandr-dev yasm
+
+          if [[ "${{ matrix.platform }}" == android ]]; then
+            misc/ci/android-tools-linux.sh
+          fi
+
+          export PATH="$HOME/.local/bin:$PATH"
+          pip install --user scons
+
+          scons platform=${{ matrix.platform }} ${{ matrix.config }} $SCONS_OPTIONS
+
+  # android-release:
+  # 	needs: static-checks
+  # 	runs-on: ubuntu-18.04
+
+  # ios-debug:
+  # 	needs: static-checks
+  # 	runs-on: macos-10.15
+
+  # ios-release:
+  # 	needs: static-checks
+  # 	runs-on: macos-10.15
+
+  # linux-editor:
+  # 	needs: static-checks
+  # 	runs-on: ubuntu-18.04
+
+  # linux-template-debug:
+  # 	needs: static-checks
+  # 	runs-on: ubuntu-18.04
+
+  # linux-template-release:
+  # 	needs: static-checks
+  # 	runs-on: ubuntu-18.04
+
+  # macos-editor:
+  # 	needs: static-checks
+  # 	runs-on: macos-10.15
+
+  # macos-template-debug:
+  # 	needs: static-checks
+  # 	runs-on: macos-10.15
+
+  # macos-template-release:
+  # 	needs: static-checks
+  # 	runs-on: macos-10.15
+
+  # windows-editor:
+  # 	needs: static-checks
+  # 	runs-on: windows-2019
+
+  # windows-template-debug:
+  # 	needs: static-checks
+  # 	runs-on: windows-2019
+
+  # windows-template-release:
+  # 	needs: static-checks
+  # 	runs-on: windows-2019

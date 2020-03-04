@@ -13,6 +13,7 @@ trim_trailing_whitespace = true
 indent_style = space
 indent_size = 4
 
-[.travis.yml]
+[*.yml]
+# YAML requires spaces for indentation.
 indent_style = space
 indent_size = 2
