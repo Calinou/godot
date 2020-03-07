@@ -30,6 +30,45 @@
 
 #include "gi_probe_editor_plugin.h"
 
+void GIProbeEditorPlugin::_fit_button_pressed() {
+
+	fit_dialog->popup_centered_minsize();
+}
+
+void GIProbeEditorPlugin::_fit_node_selected(const NodePath &p_path) {
+
+	Node *selection = get_node(p_path);
+	UndoRedo *ur = EditorNode::get_singleton()->get_undo_redo();
+	AABB aabb;
+
+	const VisualInstance *visual_instance = Object::cast_to<VisualInstance>(selection);
+	if (visual_instance) {
+		// The selected node doesn't have to have a valid AABB. A resulting AABB
+		// can still be valid if at least one of its children has an AABB defined.
+		aabb = visual_instance->get_aabb();
+	}
+
+	// Create an AABB that encompasses the node and its children.
+	for (int i = 0; i < selection->get_child_count(); i++) {
+
+		const VisualInstance *visual_instance = Object::cast_to<VisualInstance>(selection->get_child(i));
+		if (!visual_instance) {
+			continue;
+		}
+
+		print_line(visual_instance->get_transformed_aabb());
+		aabb = aabb.merge(visual_instance->get_transformed_aabb());
+	}
+
+	print_line("Final AABB:");
+	print_line(aabb);
+
+	if (gi_probe) {
+		gi_probe->set_translation(aabb.position);
+		gi_probe->set_extents(aabb.size * 0.5);
+	}
+}
+
 void GIProbeEditorPlugin::_bake() {
 
 	if (gi_probe) {
@@ -152,11 +191,30 @@ GIProbeEditorPlugin::GIProbeEditorPlugin(EditorNode *p_node) {
 	bake_hb = memnew(HBoxContainer);
 	bake_hb->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	bake_hb->hide();
+
+	fit_dialog = memnew(ConfirmationDialog);
+	fit_dialog->set_title(TTR("Fit GIProbe to Selection"));
+	add_child(fit_dialog);
+	VBoxContainer *fit_dialog_vb = memnew(VBoxContainer);
+	fit_dialog->add_child(fit_dialog_vb);
+
+	fit_tree_dialog = memnew(SceneTreeDialog);
+	fit_dialog->add_child(fit_tree_dialog);
+	fit_tree_dialog->connect("selected", callable_mp(this, &GIProbeEditorPlugin::_fit_node_selected));
+
+	fit = memnew(ToolButton);
+	fit->set_icon(editor->get_gui_base()->get_icon("Bake", "EditorIcons"));
+	fit->set_text(TTR("Fit to Selection"));
+	fit->set_tooltip(TTR("Fits the GIProbe's extents to encompass all selected Spatial nodes."));
+	fit->connect("pressed", callable_mp(this, &GIProbeEditorPlugin::_fit_button_pressed));
+	bake_hb->add_child(fit);
+
 	bake = memnew(ToolButton);
 	bake->set_icon(editor->get_gui_base()->get_icon("Bake", "EditorIcons"));
 	bake->set_text(TTR("Bake GI Probe"));
 	bake->connect("pressed", callable_mp(this, &GIProbeEditorPlugin::_bake));
 	bake_hb->add_child(bake);
+
 	bake_info = memnew(Label);
 	bake_info->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	bake_info->set_clip_text(true);

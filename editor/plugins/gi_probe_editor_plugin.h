@@ -44,6 +44,9 @@ class GIProbeEditorPlugin : public EditorPlugin {
 
 	HBoxContainer *bake_hb;
 	Label *bake_info;
+	ConfirmationDialog *fit_dialog;
+	SceneTreeDialog *fit_tree_dialog;
+	ToolButton *fit;
 	ToolButton *bake;
 	EditorNode *editor;
 
@@ -54,6 +57,8 @@ class GIProbeEditorPlugin : public EditorPlugin {
 	static void bake_func_step(int p_step, const String &p_description);
 	static void bake_func_end();
 
+	void _fit_button_pressed();
+	void _fit_node_selected(const NodePath &p_path);
 	void _bake();
 	void _giprobe_save_path_and_bake(const String &p_path);
 
