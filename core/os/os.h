@@ -38,6 +38,7 @@
 #include "core/os/time_enums.h"
 #include "core/string/ustring.h"
 #include "core/templates/list.h"
+#include "core/templates/local_vector.h"
 #include "core/templates/vector.h"
 
 #include <stdarg.h>
@@ -153,6 +154,18 @@ public:
 	virtual void alert(const String &p_alert, const String &p_title = "ALERT!");
 
 	virtual Error open_dynamic_library(const String p_path, void *&p_library_handle, bool p_also_set_library_path = false, String *r_resolved_path = nullptr) { return ERR_UNAVAILABLE; }
+
+#ifdef DEBUG_ENABLED
+	struct StackFrame {
+		String function;
+		String module;
+		unsigned int line;
+		String file;
+	};
+
+	virtual void get_stack_trace(LocalVector<StackFrame> &p_frames, int p_skip_frames, int p_max_frames, void *p_context = nullptr) const {}
+#endif
+
 	virtual Error close_dynamic_library(void *p_library_handle) { return ERR_UNAVAILABLE; }
 	virtual Error get_dynamic_library_symbol_handle(void *p_library_handle, const String p_name, void *&p_symbol_handle, bool p_optional = false) { return ERR_UNAVAILABLE; }
 

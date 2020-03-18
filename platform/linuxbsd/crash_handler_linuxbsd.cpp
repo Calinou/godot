@@ -46,16 +46,11 @@
 #include <execinfo.h>
 #include <link.h>
 #include <signal.h>
-#include <stdlib.h>
 
 static void handle_crash(int sig) {
 	if (OS::get_singleton() == nullptr) {
 		abort();
 	}
-
-	void *bt_buffer[256];
-	size_t size = backtrace(bt_buffer, 256);
-	String _execpath = OS::get_singleton()->get_executable_path();
 
 	String msg;
 	const ProjectSettings *proj_settings = ProjectSettings::get_singleton();
@@ -79,61 +74,16 @@ static void handle_crash(int sig) {
 		print_error(vformat("Engine version: %s (%s)", VERSION_FULL_NAME, VERSION_HASH));
 	}
 	print_error(vformat("Dumping the backtrace. %s", msg));
-	char **strings = backtrace_symbols(bt_buffer, size);
-	// PIE executable relocation, zero for non-PIE executables
-#ifdef __GLIBC__
-	// This is a glibc only thing apparently.
-	uintptr_t relocation = _r_debug.r_map->l_addr;
-#else
-	// Non glibc systems apparently don't give PIE relocation info.
-	uintptr_t relocation = 0;
-#endif //__GLIBC__
-	if (strings) {
-		List<String> args;
-		for (size_t i = 0; i < size; i++) {
-			char str[1024];
-			snprintf(str, 1024, "%p", (void *)((uintptr_t)bt_buffer[i] - relocation));
-			args.push_back(str);
-		}
-		args.push_back("-e");
-		args.push_back(_execpath);
 
-		// Try to get the file/line number using addr2line
-		int ret;
-		String output = "";
-		Error err = OS::get_singleton()->execute(String("addr2line"), args, &output, &ret);
-		Vector<String> addr2line_results;
-		if (err == OK) {
-			addr2line_results = output.substr(0, output.length() - 1).split("\n", false);
-		}
+	LocalVector<OS::StackFrame> stack;
+	OS::get_singleton()->get_stack_trace(stack, 2, 256);
 
-		for (size_t i = 1; i < size; i++) {
-			char fname[1024];
-			Dl_info info;
-
-			snprintf(fname, 1024, "%s", strings[i]);
-
-			// Try to demangle the function name to provide a more readable one
-			if (dladdr(bt_buffer[i], &info) && info.dli_sname) {
-				if (info.dli_sname[0] == '_') {
-					int status = 0;
-					char *demangled = abi::__cxa_demangle(info.dli_sname, nullptr, nullptr, &status);
-
-					if (status == 0 && demangled) {
-						snprintf(fname, 1024, "%s", demangled);
-					}
-
-					if (demangled) {
-						free(demangled);
-					}
-				}
-			}
-
-			print_error(vformat("[%d] %s (%s)", (int64_t)i, fname, err == OK ? addr2line_results[i] : ""));
-		}
-
-		free(strings);
+	int frame_count = stack.size();
+	for (int frame_index = 0; frame_index < frame_count; ++frame_index) {
+		OS::StackFrame const &frame = stack[frame_index];
+		fprintf(stderr, "[%d] %s (%s:%u)\n", frame_index, frame.function.utf8().get_data(), frame.file.utf8().get_data(), frame.line);
 	}
+
 	print_error("-- END OF BACKTRACE --");
 	print_error("================================================================");
 

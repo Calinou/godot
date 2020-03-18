@@ -35,6 +35,7 @@
 #include "core/core_string_names.h"
 #include "core/crypto/crypto.h"
 #include "core/debugger/engine_debugger.h"
+#include "core/error/error_call_stack.h"
 #include "core/extension/extension_api_dump.h"
 #include "core/extension/gdextension_interface_dump.gen.h"
 #include "core/extension/gdextension_manager.h"
@@ -756,6 +757,10 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 	// decrease performance if this is enabled.
 	GLOBAL_DEF_RST("application/run/flush_stdout_on_print", false);
 	GLOBAL_DEF_RST("application/run/flush_stdout_on_print.debug", true);
+
+#ifdef DEBUG_ENABLED
+	ErrorCallStack::initialize();
+#endif
 
 	MAIN_PRINT("Main: Parse CMDLine");
 
@@ -3632,6 +3637,10 @@ void Main::cleanup(bool p_force) {
 	if (camera_server) {
 		memdelete(camera_server);
 	}
+
+#ifdef DEBUG_ENABLED
+	ErrorCallStack::finalize();
+#endif
 
 	OS::get_singleton()->finalize();
 

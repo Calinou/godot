@@ -132,6 +132,10 @@ public:
 	virtual void disable_crash_handler() override;
 	virtual bool is_disable_crash_handler() const override;
 
+#ifdef DEBUG_ENABLED
+	virtual void get_stack_trace(LocalVector<StackFrame> &p_frames, int p_skip_frames, int p_max_frames, void *p_context = nullptr) const override;
+#endif
+
 	virtual Error move_to_trash(const String &p_path) override;
 
 	virtual String get_system_ca_certificates() override;

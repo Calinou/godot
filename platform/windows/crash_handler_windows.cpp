@@ -30,6 +30,8 @@
 
 #include "crash_handler_windows.h"
 
+#include <debugapi.h>
+
 #include "core/config/project_settings.h"
 #include "core/os/os.h"
 #include "core/string/print_string.h"
@@ -115,14 +117,6 @@ public:
 };
 
 DWORD CrashHandlerException(EXCEPTION_POINTERS *ep) {
-	HANDLE process = GetCurrentProcess();
-	HANDLE hThread = GetCurrentThread();
-	DWORD offset_from_symbol = 0;
-	IMAGEHLP_LINE64 line = { 0 };
-	std::vector<module_data> modules;
-	DWORD cbNeeded;
-	std::vector<HMODULE> module_handles(1);
-
 	if (OS::get_singleton() == nullptr || OS::get_singleton()->is_disable_crash_handler() || IsDebuggerPresent()) {
 		return EXCEPTION_CONTINUE_SEARCH;
 	}
@@ -220,10 +214,26 @@ DWORD CrashHandlerException(EXCEPTION_POINTERS *ep) {
 		}
 	} while (frame.AddrReturn.Offset != 0 && n < 256);
 
+	CONTEXT *context = ep->ContextRecord;
+
+	LocalVector<OS::StackFrame> stack;
+	OS::get_singleton()->get_stack_trace(stack, 0, 256, context);
+
+	int frame_count = stack.size();
+	for (int frame_index = 0; frame_index < frame_count; ++frame_index) {
+		OS::StackFrame const &frame = stack[frame_index];
+
+		if (frame.function.empty()) {
+			fprintf(stderr, "[%d] ???\n", frame_index);
+		} else if (frame.file.empty()) {
+			fprintf(stderr, "[%d] %s\n", frame_index, frame.function.utf8().get_data());
+		} else {
+			fprintf(stderr, "[%d] %s (%s:%u)\n", frame_index, frame.function.utf8().get_data(), frame.file.utf8().get_data(), frame.line);
+		}
+	}
+
 	print_error("-- END OF BACKTRACE --");
 	print_error("================================================================");
-
-	SymCleanup(process);
 
 	// Pass the exception to the OS
 	return EXCEPTION_CONTINUE_SEARCH;
