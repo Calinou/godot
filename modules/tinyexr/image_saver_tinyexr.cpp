@@ -30,6 +30,7 @@
 
 #include "image_saver_tinyexr.h"
 #include "core/math/math_funcs.h"
+#include "project_settings.h"
 
 #include "thirdparty/tinyexr/tinyexr.h"
 
@@ -268,7 +269,7 @@ Error save_exr(const String &p_path, const Ref<Image> &p_img, bool p_grayscale) 
 	header.pixel_types = pixel_types;
 	header.requested_pixel_types = requested_pixel_types;
 
-	CharString utf8_filename = p_path.utf8();
+	const CharString utf8_filename = ProjectSettings::get_singleton()->globalize_path(p_path).utf8();
 	const char *err;
 	int ret = SaveEXRImageToFile(&image, &header, utf8_filename.ptr(), &err);
 	if (ret != TINYEXR_SUCCESS) {
