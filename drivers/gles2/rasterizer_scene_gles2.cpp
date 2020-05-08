@@ -48,14 +48,14 @@
 #include <OpenGLES/ES2/glext.h>
 //void *glResolveMultisampleFramebufferAPPLE;
 
-#define GL_READ_FRAMEBUFFER 0x8CA8
-#define GL_DRAW_FRAMEBUFFER 0x8CA9
+constexpr int GL_READ_FRAMEBUFFER = 0x8CA8;
+constexpr int GL_DRAW_FRAMEBUFFER = 0x8CA9;
 #endif
 #endif
 
 #if !defined(GLES_OVER_GL)
-#define GL_TEXTURE_2D_ARRAY 0x8C1A
-#define GL_TEXTURE_3D 0x806F
+constexpr int GL_TEXTURE_2D_ARRAY = 0x8C1A;
+constexpr int GL_TEXTURE_3D = 0x806F;
 #endif
 
 static const GLenum _cube_side_enum[6] = {

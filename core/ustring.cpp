@@ -55,7 +55,7 @@
 #define snprintf _snprintf_s
 #endif
 
-#define MAX_DIGITS 6
+constexpr int MAX_DIGITS = 6;
 #define UPPERCASE(m_c) (((m_c) >= 'a' && (m_c) <= 'z') ? ((m_c) - ('a' - 'A')) : (m_c))
 #define LOWERCASE(m_c) (((m_c) >= 'A' && (m_c) <= 'Z') ? ((m_c) + ('a' - 'A')) : (m_c))
 #define IS_DIGIT(m_d) ((m_d) >= '0' && (m_d) <= '9')
@@ -2111,11 +2111,9 @@ done:
 	return fraction;
 }
 
-#define READING_SIGN 0
-#define READING_INT 1
-#define READING_DEC 2
-#define READING_EXP 3
-#define READING_DONE 4
+constexpr int READING_SIGN = 0;
+constexpr int READING_INT = 1;
+constexpr int READING_DONE = 4;
 
 double String::to_double(const char *p_str) {
 

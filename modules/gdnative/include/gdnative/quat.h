@@ -37,7 +37,7 @@ extern "C" {
 
 #include <stdint.h>
 
-#define GODOT_QUAT_SIZE 16
+constexpr int GODOT_QUAT_SIZE = 16;
 
 #ifndef GODOT_CORE_API_GODOT_QUAT_TYPE_DEFINED
 #define GODOT_CORE_API_GODOT_QUAT_TYPE_DEFINED

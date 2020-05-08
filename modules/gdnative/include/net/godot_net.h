@@ -41,8 +41,8 @@ extern "C" {
 // version info to detect whether a call is available
 
 // Use these to populate version in your plugin
-#define GODOT_NET_API_MAJOR 3
-#define GODOT_NET_API_MINOR 1
+constexpr int GODOT_NET_API_MAJOR = 3;
+constexpr int GODOT_NET_API_MINOR = 1;
 
 typedef struct {
 

@@ -32,7 +32,7 @@
 #define UCAPS_H
 
 //satan invented unicode?
-#define CAPS_LEN 666
+constexpr int CAPS_LEN = 666;
 
 static const int caps_table[CAPS_LEN][2] = {
 	{ 0x0061, 0x0041 },

@@ -53,12 +53,12 @@
 #include "scene/main/window.h"
 #include "scene/resources/packed_scene.h"
 
-#define MIN_ZOOM 0.01
-#define MAX_ZOOM 100
+constexpr float MIN_ZOOM = 0.01;
+constexpr float MAX_ZOOM = 100;
 
 #define RULER_WIDTH (15 * EDSCALE)
-#define SCALE_HANDLE_DISTANCE 25
-#define MOVE_HANDLE_DISTANCE 25
+constexpr int SCALE_HANDLE_DISTANCE = 25;
+constexpr int MOVE_HANDLE_DISTANCE = 25;
 
 class SnapDialog : public ConfirmationDialog {
 

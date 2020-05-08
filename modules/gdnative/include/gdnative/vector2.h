@@ -37,7 +37,7 @@ extern "C" {
 
 #include <stdint.h>
 
-#define GODOT_VECTOR2_SIZE 8
+constexpr int GODOT_VECTOR2_SIZE = 8;
 
 #ifndef GODOT_CORE_API_GODOT_VECTOR2_TYPE_DEFINED
 #define GODOT_CORE_API_GODOT_VECTOR2_TYPE_DEFINED

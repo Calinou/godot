@@ -62,7 +62,7 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
-#define GODOT_API_VERSION 1
+constexpr int GODOT_API_VERSION = 1;
 
 ////// Error
 
@@ -122,8 +122,8 @@ typedef enum {
 
 typedef bool godot_bool;
 
-#define GODOT_TRUE 1
-#define GODOT_FALSE 0
+constexpr int GODOT_TRUE = 1;
+constexpr int GODOT_FALSE = 0;
 
 /////// int
 

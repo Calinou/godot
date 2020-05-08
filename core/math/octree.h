@@ -41,8 +41,8 @@
 
 typedef uint32_t OctreeElementID;
 
-#define OCTREE_ELEMENT_INVALID_ID 0
-#define OCTREE_SIZE_LIMIT 1e15
+constexpr int OCTREE_ELEMENT_INVALID_ID = 0;
+constexpr float OCTREE_SIZE_LIMIT = 1e15;
 
 template <class T, bool use_pairs = false, class AL = DefaultAllocator>
 class Octree {
@@ -419,7 +419,7 @@ int Octree<T, use_pairs, AL>::get_subindex(OctreeElementID p_id) const {
 	return E->get().subindex;
 }
 
-#define OCTREE_DIVISOR 4
+constexpr int OCTREE_DIVISOR = 4;
 
 template <class T, bool use_pairs, class AL>
 void Octree<T, use_pairs, AL>::_insert_element(Element *p_element, Octant *p_octant) {

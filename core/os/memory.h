@@ -37,7 +37,7 @@
 #include <stddef.h>
 
 #ifndef PAD_ALIGN
-#define PAD_ALIGN 16 //must always be greater than this at much
+constexpr int PAD_ALIGN = 16; //must always be greater than this at much
 #endif
 
 class Memory {

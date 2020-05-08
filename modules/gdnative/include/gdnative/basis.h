@@ -37,7 +37,7 @@ extern "C" {
 
 #include <stdint.h>
 
-#define GODOT_BASIS_SIZE 36
+constexpr int GODOT_BASIS_SIZE = 36;
 
 #ifndef GODOT_CORE_API_GODOT_BASIS_TYPE_DEFINED
 #define GODOT_CORE_API_GODOT_BASIS_TYPE_DEFINED

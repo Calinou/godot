@@ -37,8 +37,8 @@
 extern "C" {
 #endif
 
-#define GODOT_NET_WEBRTC_API_MAJOR 3
-#define GODOT_NET_WEBRTC_API_MINOR 2
+constexpr int GODOT_NET_WEBRTC_API_MAJOR = 3;
+constexpr int GODOT_NET_WEBRTC_API_MINOR = 2;
 
 /* Library Interface (used to set default GDNative WebRTC implementation */
 typedef struct {

@@ -320,11 +320,10 @@ Error VariantParser::get_token(Stream *p_stream, Token &r_token, int &line, Stri
 					//a number
 
 					StringBuffer<> num;
-#define READING_SIGN 0
-#define READING_INT 1
-#define READING_DEC 2
-#define READING_EXP 3
-#define READING_DONE 4
+					constexpr int READING_INT = 1;
+					constexpr int READING_DEC = 2;
+					constexpr int READING_EXP = 3;
+					constexpr int READING_DONE = 4;
 					int reading = READING_INT;
 
 					if (cchar == '-') {

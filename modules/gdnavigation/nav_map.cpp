@@ -689,10 +689,10 @@ void NavMap::sync() {
 		}
 
 		const float ecm_squared(edge_connection_margin * edge_connection_margin);
-#define LEN_TOLLERANCE 0.1
-#define DIR_TOLLERANCE 0.9
+		constexpr float LEN_TOLLERANCE = 0.1;
+		constexpr float DIR_TOLLERANCE = 0.9;
 		// In front of tolerance
-#define IFO_TOLLERANCE 0.5
+		constexpr float IFO_TOLLERANCE = 0.5;
 
 		// Find the compatible near edges.
 		//

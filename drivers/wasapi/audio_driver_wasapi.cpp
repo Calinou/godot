@@ -60,10 +60,10 @@ const IID IID_IAudioCaptureClient = __uuidof(IAudioCaptureClient);
 		(memory) = nullptr;    \
 	}
 
-#define REFTIMES_PER_SEC 10000000
-#define REFTIMES_PER_MILLISEC 10000
+constexpr int REFTIMES_PER_SEC = 10000000;
+constexpr int REFTIMES_PER_MILLISEC = 10000;
 
-#define CAPTURE_BUFFER_CHANNELS 2
+constexpr int CAPTURE_BUFFER_CHANNELS = 2;
 
 static bool default_render_device_changed = false;
 static bool default_capture_device_changed = false;

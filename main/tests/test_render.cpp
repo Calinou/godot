@@ -39,7 +39,7 @@
 #include "servers/display_server.h"
 #include "servers/rendering_server.h"
 
-#define OBJECT_COUNT 50
+constexpr int OBJECT_COUNT = 50;
 
 namespace TestRender {
 

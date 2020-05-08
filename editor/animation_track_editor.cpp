@@ -1581,7 +1581,7 @@ void AnimationTimelineEdit::_notification(int p_what) {
 		Color color_time_sec = color;
 		Color color_time_dec = color;
 		color_time_dec.a *= 0.5;
-#define SC_ADJ 100
+		constexpr int SC_ADJ = 100;
 		int min = 30;
 		int dec = 1;
 		int step = 1;

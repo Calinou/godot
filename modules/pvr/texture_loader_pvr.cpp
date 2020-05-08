@@ -234,11 +234,10 @@ ResourceFormatPVR::ResourceFormatPVR() {
 
 /////////////////////////////////////////////////////////
 
-#define PT_INDEX 2
-#define BLK_Y_SIZE 4
-#define BLK_X_MAX 8
-#define BLK_X_2BPP 8
-#define BLK_X_4BPP 4
+constexpr int PT_INDEX = 2;
+constexpr int BLK_Y_SIZE = 4;
+constexpr int BLK_X_2BPP = 8;
+constexpr int BLK_X_4BPP = 4;
 
 #define WRAP_COORD(Val, Size) ((Val) & ((Size)-1))
 

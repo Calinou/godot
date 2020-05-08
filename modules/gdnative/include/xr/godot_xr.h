@@ -41,8 +41,8 @@ extern "C" {
 // version info to detect whether a call is available
 
 // Use these to populate version in your plugin
-#define GODOTVR_API_MAJOR 1
-#define GODOTVR_API_MINOR 1
+constexpr int GODOTVR_API_MAJOR = 1;
+constexpr int GODOTVR_API_MINOR = 1;
 
 typedef struct {
 	godot_gdnative_api_version version; /* version of our API */

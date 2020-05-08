@@ -47,7 +47,7 @@
 #include "../utils/string_utils.h"
 #include "csharp_project.h"
 
-#define CS_INDENT "    " // 4 whitespaces
+constexpr const char *CS_INDENT = "    "; // = 4 whitespaces
 
 #define INDENT1 CS_INDENT
 #define INDENT2 INDENT1 INDENT1

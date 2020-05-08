@@ -291,7 +291,7 @@
 		ss->in_use = false;                                                           \
 	}
 
-#define MAX_CMD_PARAMS 15
+constexpr int MAX_CMD_PARAMS = 15;
 
 class CommandQueueMT {
 

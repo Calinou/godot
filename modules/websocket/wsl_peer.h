@@ -41,7 +41,7 @@
 #include "websocket_peer.h"
 #include "wslay/wslay.h"
 
-#define WSL_MAX_HEADER_SIZE 4096
+constexpr int WSL_MAX_HEADER_SIZE = 4096;
 
 class WSLPeer : public WebSocketPeer {
 

@@ -37,7 +37,7 @@
 #ifdef None
 /// This is required to remove the macro None defined by x11 compiler because this word "None" is used internally by Bullet
 #undef None
-#define x11_None 0L
+constexpr long int x11_None = 0L;
 #endif
 
 #include "BulletSoftBody/btSoftBodyHelpers.h"
@@ -48,7 +48,7 @@
 #ifdef x11_None
 /// This is required to re add the macro None defined by x11 compiler
 #undef x11_None
-#define None 0L
+constexpr long int = 0L;
 #endif
 
 /**

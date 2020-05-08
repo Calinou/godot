@@ -35,8 +35,8 @@
 #include "core/os/os.h"
 #include "core/project_settings.h"
 
-#define kOutputBus 0
-#define kInputBus 1
+constexpr int kOutputBus = 0;
+constexpr int kInputBus = 1;
 
 #ifdef OSX_ENABLED
 OSStatus AudioDriverCoreAudio::input_device_address_cb(AudioObjectID inObjectID,

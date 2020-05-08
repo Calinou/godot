@@ -38,7 +38,7 @@
 #include "scene/main/window.h"
 #include "scene/resources/packed_scene.h"
 
-#define PREVIEW_LIST_MAX_SIZE 10
+constexpr int PREVIEW_LIST_MAX_SIZE = 10;
 
 void EditorAutoloadSettings::_notification(int p_what) {
 

@@ -33,7 +33,7 @@
 #include "core/io/marshalls.h"
 #include "editor_node.h"
 
-#define ITEMS_PER_PAGE 100
+constexpr int ITEMS_PER_PAGE = 100;
 
 Variant ArrayPropertyEdit::get_array() const {
 

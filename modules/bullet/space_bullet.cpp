@@ -826,8 +826,10 @@ void SpaceBullet::check_body_collision() {
 
 			/// Since I don't need report all contacts for these objects,
 			/// So report only the first
-#define REPORT_ALL_CONTACTS 0
-#if REPORT_ALL_CONTACTS
+#if 0
+#define REPORT_ALL_CONTACTS
+#endif
+#ifdef REPORT_ALL_CONTACTS
 			for (int j = 0; j < numContacts; j++) {
 				btManifoldPoint &pt = contactManifold->getContactPoint(j);
 #else
@@ -882,12 +884,14 @@ void SpaceBullet::update_gravity() {
 /// IMPORTANT: Please don't turn it ON this is not managed correctly!!
 /// I'm leaving this here just for future tests.
 /// Debug motion and normal vector drawing
-#define debug_test_motion 0
+#if 0
+#define DEBUG_TEST_MOTION
+#endif
 
-#define RECOVERING_MOVEMENT_SCALE 0.4
-#define RECOVERING_MOVEMENT_CYCLES 4
+constexpr float RECOVERING_MOVEMENT_SCALE = 0.4;
+constexpr int RECOVERING_MOVEMENT_CYCLES = 4;
 
-#if debug_test_motion
+#ifdef DEBUG_TEST_MOTION
 
 #include "scene/3d/immediate_geometry.h"
 
@@ -899,7 +903,7 @@ static Ref<StandardMaterial3D> blue_mat;
 
 bool SpaceBullet::test_body_motion(RigidBodyBullet *p_body, const Transform &p_from, const Vector3 &p_motion, bool p_infinite_inertia, PhysicsServer3D::MotionResult *r_result, bool p_exclude_raycast_shapes) {
 
-#if debug_test_motion
+#ifdef DEBUG_TEST_MOTION
 	/// Yes I know this is not good, but I've used it as fast debugging hack.
 	/// I'm leaving it here just for speedup the other eventual debugs
 	if (!normalLine) {

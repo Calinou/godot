@@ -37,8 +37,8 @@
 extern "C" {
 #endif
 
-#define GODOTAV_API_MAJOR 0
-#define GODOTAV_API_MINOR 1
+constexpr int GODOTAV_API_MAJOR = 0;
+constexpr int GODOTAV_API_MINOR = 1;
 
 typedef struct
 {

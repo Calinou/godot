@@ -737,7 +737,7 @@ static void _scale_nearest(const uint8_t *__restrict p_src, uint8_t *__restrict 
 	}
 }
 
-#define LANCZOS_TYPE 3
+constexpr int LANCZOS_TYPE = 3;
 
 static float _lanczos(float p_x) {
 	return Math::abs(p_x) >= LANCZOS_TYPE ? 0 : Math::sincn(p_x) * Math::sincn(p_x / LANCZOS_TYPE);
@@ -1967,8 +1967,8 @@ void Image::create(const char **p_xpm) {
 		line++;
 	}
 }
-#define DETECT_ALPHA_MAX_THRESHOLD 254
-#define DETECT_ALPHA_MIN_THRESHOLD 2
+constexpr int DETECT_ALPHA_MAX_THRESHOLD = 254;
+constexpr int DETECT_ALPHA_MIN_THRESHOLD = 2;
 
 #define DETECT_ALPHA(m_value)                          \
 	{                                                  \

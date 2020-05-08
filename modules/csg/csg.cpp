@@ -455,7 +455,7 @@ void CSGBrushOperation::merge_brushes(Operation p_operation, const CSGBrush &p_b
 // CSGBrushOperation::MeshMerge
 
 // Use a limit to speed up bvh and limit the depth.
-#define BVH_LIMIT 8
+constexpr int BVH_LIMIT = 8;
 
 int CSGBrushOperation::MeshMerge::_create_bvh(FaceBVH *facebvhptr, FaceBVH **facebvhptrptr, int p_from, int p_size, int p_depth, int &r_max_depth, int &r_max_alloc) {
 

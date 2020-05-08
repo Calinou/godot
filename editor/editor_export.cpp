@@ -58,7 +58,7 @@ static int _get_pad(int p_alignment, int p_n) {
 	return pad;
 }
 
-#define PCK_PADDING 16
+constexpr int PCK_PADDING = 16;
 
 bool EditorExportPreset::_set(const StringName &p_name, const Variant &p_value) {
 

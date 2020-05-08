@@ -40,7 +40,7 @@
 */
 
 // Epsilon to account for floating point inaccuracies
-#define RAY_PENETRATION_DEPTH_EPSILON 0.01
+constexpr float RAY_PENETRATION_DEPTH_EPSILON = 0.01;
 
 GodotRayWorldAlgorithm::CreateFunc::CreateFunc(const btDiscreteDynamicsWorld *world) :
 		m_world(world) {}

@@ -52,29 +52,27 @@
 #include "scene/resources/packed_scene.h"
 #include "scene/resources/surface_tool.h"
 
-#define DISTANCE_DEFAULT 4
+constexpr int DISTANCE_DEFAULT = 4;
 
-#define GIZMO_ARROW_SIZE 0.35
-#define GIZMO_RING_HALF_WIDTH 0.1
-#define GIZMO_SCALE_DEFAULT 0.15
-#define GIZMO_PLANE_SIZE 0.2
-#define GIZMO_PLANE_DST 0.3
-#define GIZMO_CIRCLE_SIZE 1.1
+constexpr float GIZMO_ARROW_SIZE = 0.35;
+constexpr float GIZMO_RING_HALF_WIDTH = 0.1;
+constexpr float GIZMO_PLANE_SIZE = 0.2;
+constexpr float GIZMO_PLANE_DST = 0.3;
+constexpr float GIZMO_CIRCLE_SIZE = 1.1;
 #define GIZMO_SCALE_OFFSET (GIZMO_CIRCLE_SIZE + 0.3)
 #define GIZMO_ARROW_OFFSET (GIZMO_CIRCLE_SIZE + 0.3)
 
-#define ZOOM_MIN_DISTANCE 0.001
-#define ZOOM_MULTIPLIER 1.08
-#define ZOOM_INDICATOR_DELAY_S 1.5
+constexpr float ZOOM_MIN_DISTANCE = 0.001;
+constexpr float ZOOM_MULTIPLIER = 1.08;
+constexpr float ZOOM_INDICATOR_DELAY_S = 1.5;
 
-#define FREELOOK_MIN_SPEED 0.01
-#define FREELOOK_SPEED_MULTIPLIER 1.08
+constexpr float FREELOOK_MIN_SPEED = 0.01;
 
-#define MIN_Z 0.01
-#define MAX_Z 1000000.0
+constexpr float MIN_Z = 0.01;
+constexpr float MAX_Z = 1000000.0;
 
-#define MIN_FOV 0.01
-#define MAX_FOV 179
+constexpr float MIN_FOV = 0.01;
+constexpr float MAX_FOV = 179;
 
 void ViewportRotationControl::_notification(int p_what) {
 

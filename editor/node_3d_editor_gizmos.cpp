@@ -65,7 +65,7 @@
 #include "scene/resources/surface_tool.h"
 #include "scene/resources/world_margin_shape_3d.h"
 
-#define HANDLE_HALF_SIZE 9.5
+constexpr float HANDLE_HALF_SIZE = 9.5;
 
 bool EditorNode3DGizmo::is_editable() const {
 
@@ -3965,8 +3965,8 @@ void NavigationRegion3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 
 //////
 
-#define BODY_A_RADIUS 0.25
-#define BODY_B_RADIUS 0.27
+constexpr float BODY_A_RADIUS = 0.25;
+constexpr float BODY_B_RADIUS = 0.27;
 
 Basis JointGizmosDrawer::look_body(const Transform &p_joint_transform, const Transform &p_body_transform) {
 	const Vector3 &p_eye(p_joint_transform.origin);

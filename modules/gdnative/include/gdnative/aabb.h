@@ -37,7 +37,7 @@ extern "C" {
 
 #include <stdint.h>
 
-#define GODOT_AABB_SIZE 24
+constexpr int GODOT_AABB_SIZE = 24;
 
 #ifndef GODOT_CORE_API_GODOT_AABB_TYPE_DEFINED
 #define GODOT_CORE_API_GODOT_AABB_TYPE_DEFINED
