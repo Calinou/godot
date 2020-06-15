@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="FileSystemDock" inherits="VBoxContainer" version="4.0">
 	<brief_description>
+		An editor-only dock to view and manage files on the local filesystem.
 	</brief_description>
 	<description>
+		Used by the editor to view and manage files on the local filesystem. Only files contained within the project(relative to the project).
 	</description>
 	<tutorials>
 	</tutorials>
@@ -47,18 +49,21 @@
 			<argument index="0" name="arg0" type="String">
 			</argument>
 			<description>
+				Navigates to the path specified in [code]arg0[/code].
 			</description>
 		</method>
 	</methods>
 	<signals>
 		<signal name="display_mode_changed">
 			<description>
+				Emitted when the display mode is changed between the list view and tree view.
 			</description>
 		</signal>
 		<signal name="file_removed">
 			<argument index="0" name="file" type="String">
 			</argument>
 			<description>
+				Emitted when a file was successfully removed.
 			</description>
 		</signal>
 		<signal name="files_moved">
@@ -67,6 +72,7 @@
 			<argument index="1" name="new_file" type="String">
 			</argument>
 			<description>
+				Emitted when a file was successfully moved. This signal is emitted once for each file moved.
 			</description>
 		</signal>
 		<signal name="folder_moved">
@@ -75,12 +81,14 @@
 			<argument index="1" name="new_file" type="String">
 			</argument>
 			<description>
+				Emitted when a folder was successfully moved. This signal is emitted once for each folder moved.
 			</description>
 		</signal>
 		<signal name="folder_removed">
 			<argument index="0" name="folder" type="String">
 			</argument>
 			<description>
+				Emitted when a folder was successfully removed.
 			</description>
 		</signal>
 		<signal name="inherit">
