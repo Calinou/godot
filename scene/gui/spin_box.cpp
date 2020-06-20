@@ -94,13 +94,21 @@ void SpinBox::_gui_input(const Ref<InputEvent> &p_event) {
 		return;
 	}
 
-	Ref<InputEventMouseButton> mb = p_event;
+	updown_status = UPDOWN_NORMAL;
 
+	const Ref<InputEventMouseMotion> mm = p_event;
+	if (mm.is_valid()) {
+		const bool up = mm->get_position().y < (get_size().height / 2);
+		updown_status = up ? UPDOWN_UP_HOVER : UPDOWN_DOWN_HOVER;
+	}
+
+	const Ref<InputEventMouseButton> mb = p_event;
 	if (mb.is_valid() && mb->is_pressed()) {
-		bool up = mb->get_position().y < (get_size().height / 2);
+		const bool up = mb->get_position().y < (get_size().height / 2);
 
 		switch (mb->get_button_index()) {
 			case BUTTON_LEFT: {
+				updown_status = up ? UPDOWN_UP_PRESSED : UPDOWN_DOWN_PRESSED;
 				line_edit->grab_focus();
 
 				set_value(get_value() + (up ? get_step() : -get_step()));
@@ -131,6 +139,9 @@ void SpinBox::_gui_input(const Ref<InputEvent> &p_event) {
 		}
 	}
 
+	// FIXME: Update only when needed to decrease CPU/GPU usage.
+	update();
+
 	if (mb.is_valid() && !mb->is_pressed() && mb->get_button_index() == BUTTON_LEFT) {
 		//set_default_cursor_shape(CURSOR_ARROW);
 		range_click_timer->stop();
@@ -142,8 +153,6 @@ void SpinBox::_gui_input(const Ref<InputEvent> &p_event) {
 		}
 		drag.allowed = false;
 	}
-
-	Ref<InputEventMouseMotion> mm = p_event;
 
 	if (mm.is_valid() && mm->get_button_mask() & BUTTON_MASK_LEFT) {
 		if (drag.enabled) {
@@ -178,17 +187,35 @@ inline void SpinBox::_adjust_width_for_icon(const Ref<Texture2D> &icon) {
 
 void SpinBox::_notification(int p_what) {
 	if (p_what == NOTIFICATION_DRAW) {
-		Ref<Texture2D> updown = get_theme_icon("updown");
+		const Ref<Texture2D> updown = get_theme_icon("updown");
 
+		// All icons must have the same width.
 		_adjust_width_for_icon(updown);
 
-		RID ci = get_canvas_item();
-		Size2i size = get_size();
+		const RID ci = get_canvas_item();
+		const Size2i size = get_size();
 
-		updown->draw(ci, Point2i(size.width - updown->get_width(), (size.height - updown->get_height()) / 2));
+		Ref<Texture2D> icon;
+		switch (updown_status) {
+			case UPDOWN_NORMAL:
+				icon = updown;
+				break;
+			case UPDOWN_UP_HOVER:
+				icon = get_theme_icon("updown_up_hover");
+				break;
+			case UPDOWN_UP_PRESSED:
+				icon = get_theme_icon("updown_up_pressed");
+				break;
+			case UPDOWN_DOWN_HOVER:
+				icon = get_theme_icon("updown_down_hover");
+				break;
+			case UPDOWN_DOWN_PRESSED:
+				icon = get_theme_icon("updown_down_pressed");
+				break;
+		}
 
-	} else if (p_what == NOTIFICATION_FOCUS_EXIT) {
-		//_value_changed(0);
+		icon->draw(ci, Point2i(size.width - updown->get_width(), (size.height - updown->get_height()) / 2));
+
 	} else if (p_what == NOTIFICATION_ENTER_TREE) {
 		_adjust_width_for_icon(get_theme_icon("updown"));
 		_value_changed(0);

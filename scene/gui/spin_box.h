@@ -38,8 +38,18 @@
 class SpinBox : public Range {
 	GDCLASS(SpinBox, Range);
 
+	// Used to choose the icon to display.
+	enum UpDownStatus {
+		UPDOWN_NORMAL,
+		UPDOWN_UP_HOVER,
+		UPDOWN_UP_PRESSED,
+		UPDOWN_DOWN_HOVER,
+		UPDOWN_DOWN_PRESSED,
+	};
+
 	LineEdit *line_edit;
 	int last_w;
+	UpDownStatus updown_status = UPDOWN_NORMAL;
 
 	Timer *range_click_timer;
 	void _range_click_timeout();

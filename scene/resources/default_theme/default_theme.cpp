@@ -488,6 +488,10 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	// SpinBox
 
 	theme->set_icon("updown", "SpinBox", make_icon(spinbox_updown_png));
+	theme->set_icon("updown_up_hover", "SpinBox", make_icon(spinbox_updown_up_hover_png));
+	theme->set_icon("updown_up_pressed", "SpinBox", make_icon(spinbox_updown_up_pressed_png));
+	theme->set_icon("updown_down_hover", "SpinBox", make_icon(spinbox_updown_down_hover_png));
+	theme->set_icon("updown_down_pressed", "SpinBox", make_icon(spinbox_updown_down_pressed_png));
 
 	//scroll container
 	Ref<StyleBoxEmpty> empty;
