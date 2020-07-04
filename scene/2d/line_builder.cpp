@@ -99,6 +99,7 @@ LineBuilder::LineBuilder() {
 	curve = nullptr;
 	default_color = Color(0.4, 0.5, 1);
 	gradient = nullptr;
+	uv_offset = Vector2();
 	sharp_limit = 2.f;
 	round_precision = 8;
 	begin_cap_mode = Line2D::LINE_CAP_NONE;
@@ -451,8 +452,8 @@ void LineBuilder::strip_begin(Vector2 up, Vector2 down, Color color, float uvx) 
 	}
 
 	if (texture_mode != Line2D::LINE_TEXTURE_NONE) {
-		uvs.push_back(Vector2(uvx, 0.f));
-		uvs.push_back(Vector2(uvx, 1.f));
+		uvs.push_back(Vector2(uvx, 0.f) + uv_offset);
+		uvs.push_back(Vector2(uvx, 1.f) + uv_offset);
 	}
 
 	_last_index[UP] = vi;
@@ -475,10 +476,10 @@ void LineBuilder::strip_new_quad(Vector2 up, Vector2 down, Color color, float uv
 	}
 
 	if (texture_mode != Line2D::LINE_TEXTURE_NONE) {
-		uvs.push_back(uvs[_last_index[UP]]);
-		uvs.push_back(uvs[_last_index[DOWN]]);
-		uvs.push_back(Vector2(uvx, UP));
-		uvs.push_back(Vector2(uvx, DOWN));
+		uvs.push_back(uvs[_last_index[UP]] + uv_offset);
+		uvs.push_back(uvs[_last_index[DOWN]] + uv_offset);
+		uvs.push_back(Vector2(uvx, UP) + uv_offset);
+		uvs.push_back(Vector2(uvx, DOWN) + uv_offset);
 	}
 
 	indices.push_back(vi);
@@ -504,8 +505,8 @@ void LineBuilder::strip_add_quad(Vector2 up, Vector2 down, Color color, float uv
 	}
 
 	if (texture_mode != Line2D::LINE_TEXTURE_NONE) {
-		uvs.push_back(Vector2(uvx, 0.f));
-		uvs.push_back(Vector2(uvx, 1.f));
+		uvs.push_back(Vector2(uvx, 0.f) + uv_offset);
+		uvs.push_back(Vector2(uvx, 1.f) + uv_offset);
 	}
 
 	indices.push_back(_last_index[UP]);
@@ -533,7 +534,7 @@ void LineBuilder::strip_add_tri(Vector2 up, Orientation orientation) {
 	if (texture_mode != Line2D::LINE_TEXTURE_NONE) {
 		// UVs are just one slice of the texture all along
 		// (otherwise we can't share the bottom vertice)
-		uvs.push_back(uvs[_last_index[opposite_orientation]]);
+		uvs.push_back(uvs[_last_index[opposite_orientation]] + uv_offset);
 	}
 
 	indices.push_back(_last_index[opposite_orientation]);
@@ -597,7 +598,7 @@ void LineBuilder::new_arc(Vector2 center, Vector2 vbegin, float angle_delta, Col
 		colors.push_back(color);
 	}
 	if (texture_mode != Line2D::LINE_TEXTURE_NONE) {
-		uvs.push_back(interpolate(uv_rect, Vector2(0.5f, 0.5f)));
+		uvs.push_back(interpolate(uv_rect, Vector2(0.5f, 0.5f)) + uv_offset);
 	}
 
 	// Arc vertices
@@ -611,7 +612,7 @@ void LineBuilder::new_arc(Vector2 center, Vector2 vbegin, float angle_delta, Col
 		}
 		if (texture_mode != Line2D::LINE_TEXTURE_NONE) {
 			Vector2 tsc = Vector2(Math::cos(tt), Math::sin(tt));
-			uvs.push_back(interpolate(uv_rect, 0.5f * (tsc + Vector2(1.f, 1.f))));
+			uvs.push_back(interpolate(uv_rect, 0.5f * (tsc + Vector2(1.f, 1.f))) + uv_offset);
 			tt += angle_step;
 		}
 	}
@@ -626,7 +627,7 @@ void LineBuilder::new_arc(Vector2 center, Vector2 vbegin, float angle_delta, Col
 	if (texture_mode != Line2D::LINE_TEXTURE_NONE) {
 		tt = tt_begin + angle_delta;
 		Vector2 tsc = Vector2(Math::cos(tt), Math::sin(tt));
-		uvs.push_back(interpolate(uv_rect, 0.5f * (tsc + Vector2(1.f, 1.f))));
+		uvs.push_back(interpolate(uv_rect, 0.5f * (tsc + Vector2(1.f, 1.f))) + uv_offset);
 	}
 
 	// Make up triangles

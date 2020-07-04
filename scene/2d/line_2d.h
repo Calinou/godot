@@ -94,6 +94,9 @@ public:
 	void set_texture_mode(const LineTextureMode mode);
 	LineTextureMode get_texture_mode() const;
 
+	void set_uv_offset(Vector2 p_uv_offset);
+	Vector2 get_uv_offset() const;
+
 	void set_joint_mode(LineJointMode mode);
 	LineJointMode get_joint_mode() const;
 
@@ -124,18 +127,19 @@ private:
 
 private:
 	Vector<Vector2> _points;
-	LineJointMode _joint_mode;
-	LineCapMode _begin_cap_mode;
-	LineCapMode _end_cap_mode;
-	float _width;
+	LineJointMode _joint_mode = LINE_JOINT_SHARP;
+	LineCapMode _begin_cap_mode = LINE_CAP_NONE;
+	LineCapMode _end_cap_mode = LINE_CAP_NONE;
+	float _width = 10;
 	Ref<Curve> _curve;
-	Color _default_color;
+	Color _default_color = Color(1, 1, 1);
 	Ref<Gradient> _gradient;
 	Ref<Texture2D> _texture;
-	LineTextureMode _texture_mode;
-	float _sharp_limit;
-	int _round_precision;
-	bool _antialiased;
+	LineTextureMode _texture_mode = LINE_TEXTURE_NONE;
+	Vector2 _uv_offset = Vector2();
+	float _sharp_limit = 2.0f;
+	int _round_precision = 8;
+	bool _antialiased = false;
 };
 
 #endif // LINE2D_H
