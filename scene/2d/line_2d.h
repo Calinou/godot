@@ -94,6 +94,9 @@ public:
 	void set_texture_mode(const LineTextureMode mode);
 	LineTextureMode get_texture_mode() const;
 
+	void set_uv_offset(Vector2 p_uv_offset);
+	Vector2 get_uv_offset() const;
+
 	void set_joint_mode(LineJointMode mode);
 	LineJointMode get_joint_mode() const;
 
@@ -133,6 +136,7 @@ private:
 	Ref<Gradient> _gradient;
 	Ref<Texture2D> _texture;
 	LineTextureMode _texture_mode = LINE_TEXTURE_NONE;
+	Vector2 _uv_offset = Vector2();
 	float _sharp_limit = 2.f;
 	int _round_precision = 8;
 	bool _antialiased = false;

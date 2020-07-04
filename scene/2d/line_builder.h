@@ -46,6 +46,7 @@ public:
 	Color default_color = Color(0.4, 0.5, 1);
 	Gradient *gradient = nullptr;
 	Line2D::LineTextureMode texture_mode = Line2D::LineTextureMode::LINE_TEXTURE_NONE;
+	Vector2 uv_offset;
 	float sharp_limit = 2.f;
 	int round_precision = 8;
 	float tile_aspect = 1.f; // w/h

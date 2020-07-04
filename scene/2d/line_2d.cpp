@@ -199,6 +199,16 @@ Line2D::LineTextureMode Line2D::get_texture_mode() const {
 	return _texture_mode;
 }
 
+void Line2D::set_uv_offset(Vector2 p_uv_offset) {
+	_uv_offset = p_uv_offset;
+	update();
+}
+
+Vector2 Line2D::get_uv_offset() const {
+	return _uv_offset;
+}
+
+
 void Line2D::set_joint_mode(LineJointMode p_mode) {
 	_joint_mode = p_mode;
 	update();
@@ -290,6 +300,7 @@ void Line2D::_draw() {
 	lb.default_color = _default_color;
 	lb.gradient = *_gradient;
 	lb.texture_mode = _texture_mode;
+	lb.uv_offset = _uv_offset;
 	lb.joint_mode = _joint_mode;
 	lb.begin_cap_mode = _begin_cap_mode;
 	lb.end_cap_mode = _end_cap_mode;
@@ -314,26 +325,6 @@ void Line2D::_draw() {
 			lb.colors,
 			lb.uvs, Vector<int>(), Vector<float>(),
 			texture_rid);
-
-	// DEBUG
-	// Draw wireframe
-	//	if(lb.indices.size() % 3 == 0) {
-	//		Color col(0,0,0);
-	//		for(int i = 0; i < lb.indices.size(); i += 3) {
-	//			int vi = lb.indices[i];
-	//			int lbvsize = lb.vertices.size();
-	//			Vector2 a = lb.vertices[lb.indices[i]];
-	//			Vector2 b = lb.vertices[lb.indices[i+1]];
-	//			Vector2 c = lb.vertices[lb.indices[i+2]];
-	//			draw_line(a, b, col);
-	//			draw_line(b, c, col);
-	//			draw_line(c, a, col);
-	//		}
-	//		for(int i = 0; i < lb.vertices.size(); ++i) {
-	//			Vector2 p = lb.vertices[i];
-	//			draw_rect(Rect2(p.x-1, p.y-1, 2, 2), Color(0,0,0,0.5));
-	//		}
-	//	}
 }
 
 void Line2D::_gradient_changed() {
@@ -377,6 +368,9 @@ void Line2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_texture_mode", "mode"), &Line2D::set_texture_mode);
 	ClassDB::bind_method(D_METHOD("get_texture_mode"), &Line2D::get_texture_mode);
 
+	ClassDB::bind_method(D_METHOD("set_uv_offset", "uv_offset"), &Line2D::set_uv_offset);
+	ClassDB::bind_method(D_METHOD("get_uv_offset"), &Line2D::get_uv_offset);
+
 	ClassDB::bind_method(D_METHOD("set_joint_mode", "mode"), &Line2D::set_joint_mode);
 	ClassDB::bind_method(D_METHOD("get_joint_mode"), &Line2D::get_joint_mode);
 
@@ -403,6 +397,7 @@ void Line2D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "gradient", PROPERTY_HINT_RESOURCE_TYPE, "Gradient"), "set_gradient", "get_gradient");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D"), "set_texture", "get_texture");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "texture_mode", PROPERTY_HINT_ENUM, "None,Tile,Stretch"), "set_texture_mode", "get_texture_mode");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "uv_offset"), "set_uv_offset", "get_uv_offset");
 	ADD_GROUP("Capping", "");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "joint_mode", PROPERTY_HINT_ENUM, "Sharp,Bevel,Round"), "set_joint_mode", "get_joint_mode");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "begin_cap_mode", PROPERTY_HINT_ENUM, "None,Box,Round"), "set_begin_cap_mode", "get_begin_cap_mode");
