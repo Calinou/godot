@@ -462,7 +462,6 @@ void Viewport::_notification(int p_what) {
 				contact_3d_debug_instance = RenderingServer::get_singleton()->instance_create();
 				RenderingServer::get_singleton()->instance_set_base(contact_3d_debug_instance, contact_3d_debug_multimesh);
 				RenderingServer::get_singleton()->instance_set_scenario(contact_3d_debug_instance, find_world_3d()->get_scenario());
-				//RenderingServer::get_singleton()->instance_geometry_set_flag(contact_3d_debug_instance, RS::INSTANCE_FLAG_VISIBLE_IN_ALL_ROOMS, true);
 			}
 
 		} break;
@@ -495,6 +494,8 @@ void Viewport::_notification(int p_what) {
 				}
 			}
 #endif
+
+			call_deferred("_check_size_nonzero");
 
 			// Enable processing for tooltips, collision debugging, physics object picking, etc.
 			set_process_internal(true);
@@ -822,6 +823,13 @@ void Viewport::_notification(int p_what) {
 				_drop_mouse_focus();
 			}
 		} break;
+	}
+}
+
+void Viewport::_check_size_nonzero() const {
+	// This is done in a dedicated method so it can be called using `call_deferred()` in `NOTIFICATION_READY`.
+	if (size == Vector2i()) {
+		WARN_PRINT(vformat("The \"%s\" viewport's size must be greater than 0x0 to render anything.", get_name()));
 	}
 }
 
@@ -3086,7 +3094,7 @@ String Viewport::get_configuration_warning() const {
 	}*/
 
 	if (size.x == 0 || size.y == 0) {
-		return TTR("Viewport size must be greater than 0 to render anything.");
+		return TTR("The viewport's size must be greater than 0x0 to render anything.");
 	}
 	return String();
 }
@@ -3293,6 +3301,7 @@ void Viewport::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_world_3d", "world_3d"), &Viewport::set_world_3d);
 	ClassDB::bind_method(D_METHOD("get_world_3d"), &Viewport::get_world_3d);
 	ClassDB::bind_method(D_METHOD("find_world_3d"), &Viewport::find_world_3d);
+	ClassDB::bind_method(D_METHOD("_check_size_nonzero"), &Viewport::_check_size_nonzero);
 
 	ClassDB::bind_method(D_METHOD("set_canvas_transform", "xform"), &Viewport::set_canvas_transform);
 	ClassDB::bind_method(D_METHOD("get_canvas_transform"), &Viewport::get_canvas_transform);
