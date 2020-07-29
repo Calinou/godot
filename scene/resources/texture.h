@@ -572,11 +572,20 @@ public:
 		}
 	};
 
+	enum Direction {
+		LEFT_TO_RIGHT,
+		TOP_TO_BOTTOM,
+		RIGHT_TO_LEFT,
+		BOTTOM_TO_TOP,
+	};
+
 private:
 	Ref<Gradient> gradient;
 	bool update_pending;
 	RID texture;
 	int width;
+	int height;
+	Direction direction;
 
 	void _queue_update();
 	void _update();
@@ -591,8 +600,13 @@ public:
 	void set_width(int p_width);
 	int get_width() const override;
 
+	void set_height(int p_height);
+	int get_height() const override;
+
+	void set_direction(Direction p_direction);
+	Direction get_direction() const;
+
 	virtual RID get_rid() const override { return texture; }
-	virtual int get_height() const override { return 1; }
 	virtual bool has_alpha() const override { return true; }
 
 	virtual Ref<Image> get_data() const override;

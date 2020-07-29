@@ -38,6 +38,8 @@
 #include "scene/resources/bit_map.h"
 #include "servers/camera/camera_feed.h"
 
+VARIANT_ENUM_CAST(GradientTexture::Direction);
+
 Size2 Texture2D::get_size() const {
 	return Size2(get_width(), get_height());
 }
@@ -1444,6 +1446,8 @@ CurveTexture::~CurveTexture() {
 GradientTexture::GradientTexture() {
 	update_pending = false;
 	width = 2048;
+	height = 1;
+	direction = LEFT_TO_RIGHT;
 
 	_queue_update();
 }
@@ -1459,11 +1463,15 @@ void GradientTexture::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_gradient"), &GradientTexture::get_gradient);
 
 	ClassDB::bind_method(D_METHOD("set_width", "width"), &GradientTexture::set_width);
+	ClassDB::bind_method(D_METHOD("set_height", "height"), &GradientTexture::set_height);
+	ClassDB::bind_method(D_METHOD("set_direction", "direction"), &GradientTexture::set_direction);
 
 	ClassDB::bind_method(D_METHOD("_update"), &GradientTexture::_update);
 
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "gradient", PROPERTY_HINT_RESOURCE_TYPE, "Gradient"), "set_gradient", "get_gradient");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "width", PROPERTY_HINT_RANGE, "1,2048,1,or_greater"), "set_width", "get_width");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "height", PROPERTY_HINT_RANGE, "1,2048,1,or_greater"), "set_height", "get_height");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "direction", PROPERTY_HINT_ENUM, "Left to Right,Top to Bottom,Right to Left,Bottom to Top"), "set_direction", "get_direction");
 }
 
 void GradientTexture::set_gradient(Ref<Gradient> p_gradient) {
@@ -1502,23 +1510,68 @@ void GradientTexture::_update() {
 	}
 
 	Vector<uint8_t> data;
-	data.resize(width * 4);
+	data.resize(width * height * 4);
 	{
 		uint8_t *wd8 = data.ptrw();
-		Gradient &g = **gradient;
+		Gradient &grad = **gradient;
 
-		for (int i = 0; i < width; i++) {
-			float ofs = float(i) / (width - 1);
-			Color color = g.get_color_at_offset(ofs);
+		switch (direction) {
+			case LEFT_TO_RIGHT:
+				for (int row = 0; row < height; row++) {
+					for (int column = 0; column < width; column++) {
+						const float ofs = float(column) / (width - 1);
+						const Color color = grad.get_color_at_offset(ofs);
 
-			wd8[i * 4 + 0] = uint8_t(CLAMP(color.r * 255.0, 0, 255));
-			wd8[i * 4 + 1] = uint8_t(CLAMP(color.g * 255.0, 0, 255));
-			wd8[i * 4 + 2] = uint8_t(CLAMP(color.b * 255.0, 0, 255));
-			wd8[i * 4 + 3] = uint8_t(CLAMP(color.a * 255.0, 0, 255));
+						wd8[row * width * 4 + column * 4 + 0] = uint8_t(CLAMP(color.r * 255.0, 0, 255));
+						wd8[row * width * 4 + column * 4 + 1] = uint8_t(CLAMP(color.g * 255.0, 0, 255));
+						wd8[row * width * 4 + column * 4 + 2] = uint8_t(CLAMP(color.b * 255.0, 0, 255));
+						wd8[row * width * 4 + column * 4 + 3] = uint8_t(CLAMP(color.a * 255.0, 0, 255));
+					}
+				}
+				break;
+			case TOP_TO_BOTTOM:
+				for (int column = 0; column < width; column++) {
+					for (int row = 0; row < height; row++) {
+						const float ofs = float(column) / (width - 1);
+						const Color color = grad.get_color_at_offset(ofs);
+
+						wd8[row * width * 4 + column * 4 + 0] = uint8_t(CLAMP(color.r * 255.0, 0, 255));
+						wd8[row * width * 4 + column * 4 + 1] = uint8_t(CLAMP(color.g * 255.0, 0, 255));
+						wd8[row * width * 4 + column * 4 + 2] = uint8_t(CLAMP(color.b * 255.0, 0, 255));
+						wd8[row * width * 4 + column * 4 + 3] = uint8_t(CLAMP(color.a * 255.0, 0, 255));
+					}
+				}
+				break;
+			case RIGHT_TO_LEFT:
+				for (int row = height - 1; row >= 0; row--) {
+					for (int column = 0; column < width; column++) {
+						const float ofs = float(column) / (width - 1);
+						const Color color = grad.get_color_at_offset(ofs);
+
+						wd8[row * width * 4 + column * 4 + 0] = uint8_t(CLAMP(color.r * 255.0, 0, 255));
+						wd8[row * width * 4 + column * 4 + 1] = uint8_t(CLAMP(color.g * 255.0, 0, 255));
+						wd8[row * width * 4 + column * 4 + 2] = uint8_t(CLAMP(color.b * 255.0, 0, 255));
+						wd8[row * width * 4 + column * 4 + 3] = uint8_t(CLAMP(color.a * 255.0, 0, 255));
+					}
+				}
+				break;
+			case BOTTOM_TO_TOP:
+				for (int column = width - 1; column >= 0; column--) {
+					for (int row = 0; row < height; row++) {
+						const float ofs = float(column) / (width - 1);
+						const Color color = grad.get_color_at_offset(ofs);
+
+						wd8[row * width * 4 + column * 4 + 0] = uint8_t(CLAMP(color.r * 255.0, 0, 255));
+						wd8[row * width * 4 + column * 4 + 1] = uint8_t(CLAMP(color.g * 255.0, 0, 255));
+						wd8[row * width * 4 + column * 4 + 2] = uint8_t(CLAMP(color.b * 255.0, 0, 255));
+						wd8[row * width * 4 + column * 4 + 3] = uint8_t(CLAMP(color.a * 255.0, 0, 255));
+					}
+				}
+				break;
 		}
 	}
 
-	Ref<Image> image = memnew(Image(width, 1, false, Image::FORMAT_RGBA8, data));
+	const Ref<Image> image = memnew(Image(width, height, false, Image::FORMAT_RGBA8, data));
 
 	if (texture.is_valid()) {
 		RID new_texture = RS::get_singleton()->texture_2d_create(image);
@@ -1537,6 +1590,24 @@ void GradientTexture::set_width(int p_width) {
 
 int GradientTexture::get_width() const {
 	return width;
+}
+
+void GradientTexture::set_height(int p_height) {
+	height = p_height;
+	_queue_update();
+}
+
+int GradientTexture::get_height() const {
+	return height;
+}
+
+void GradientTexture::set_direction(Direction p_direction) {
+	direction = p_direction;
+	_queue_update();
+}
+
+GradientTexture::Direction GradientTexture::get_direction() const {
+	return direction;
 }
 
 Ref<Image> GradientTexture::get_data() const {
