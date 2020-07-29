@@ -94,8 +94,7 @@ public:
 	int get_group_count() const;
 	Array get_names() const;
 
-	RegEx();
-	RegEx(const String &p_pattern);
+	RegEx(const String &p_pattern = "");
 	~RegEx();
 };
 

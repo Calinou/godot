@@ -452,16 +452,6 @@ Array RegEx::get_names() const {
 	return result;
 }
 
-RegEx::RegEx() {
-	if (sizeof(CharType) == 2) {
-		general_ctx = pcre2_general_context_create_16(&_regex_malloc, &_regex_free, nullptr);
-
-	} else {
-		general_ctx = pcre2_general_context_create_32(&_regex_malloc, &_regex_free, nullptr);
-	}
-	code = nullptr;
-}
-
 RegEx::RegEx(const String &p_pattern) {
 	if (sizeof(CharType) == 2) {
 		general_ctx = pcre2_general_context_create_16(&_regex_malloc, &_regex_free, nullptr);
@@ -470,7 +460,10 @@ RegEx::RegEx(const String &p_pattern) {
 		general_ctx = pcre2_general_context_create_32(&_regex_malloc, &_regex_free, nullptr);
 	}
 	code = nullptr;
-	compile(p_pattern);
+
+	if (p_pattern != "") {
+		compile(p_pattern);
+	}
 }
 
 RegEx::~RegEx() {
