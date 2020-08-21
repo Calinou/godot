@@ -6,31 +6,7 @@ import shutil
 import subprocess
 import sys
 
-
 line_nb = False
-
-for arg in sys.argv[1:]:
-    if arg == "--with-line-nb":
-        print("Enabling line numbers in the context locations.")
-        line_nb = True
-    else:
-        os.sys.exit("Non supported argument '" + arg + "'. Aborting.")
-
-
-if not os.path.exists("editor"):
-    os.sys.exit("ERROR: This script should be started from the root of the git repo.")
-
-
-matches = []
-for root, dirnames, filenames in os.walk("."):
-    dirnames[:] = [d for d in dirnames if d not in ["thirdparty"]]
-    for filename in fnmatch.filter(filenames, "*.cpp"):
-        matches.append(os.path.join(root, filename))
-    for filename in fnmatch.filter(filenames, "*.h"):
-        matches.append(os.path.join(root, filename))
-matches.sort()
-
-
 unique_str = []
 unique_loc = {}
 main_po = """
@@ -51,31 +27,53 @@ msgstr ""
 "Content-Transfer-Encoding: 8-bit\\n"
 """
 
+for arg in sys.argv[1:]:
+    if arg == "--with-line-nb":
+        print("Enabling line numbers in the context locations.")
+        line_nb = True
+    else:
+        sys.exit("Non-supported argument '" + arg + "'. Aborting.")
+
 
 def process_file(f, fname):
-
     global main_po, unique_str, unique_loc
 
     l = f.readline()
     lc = 1
     while l:
 
-        patterns = ['RTR("', 'TTR("', 'TTRC("']
+        # Raw strings (`R"(`) are a C++11 feature that allow writing escaped
+        # characters without escaping them using a backslash.
+        patterns = [
+            # pattern, is_raw
+            ('RTR("', False),
+            ('TTR("', False),
+            ('TTRC("', False),
+            ('RTR(R"(', True),
+            ('TTR(R"(', True),
+            ('TTRC(R"(', True),
+        ]
         idx = 0
         pos = 0
         while pos >= 0:
-            pos = l.find(patterns[idx], pos)
+            pos = l.find(patterns[idx][0], pos)
             if pos == -1:
                 if idx < len(patterns) - 1:
                     idx += 1
                     pos = 0
                 continue
-            pos += len(patterns[idx])
+            pos += len(patterns[idx][0])
+            is_raw = patterns[idx][1]
 
             msg = ""
-            while pos < len(l) and (l[pos] != '"' or l[pos - 1] == "\\"):
-                msg += l[pos]
-                pos += 1
+            if is_raw:
+                while pos < len(l) and (l[pos] != '"' and l[pos - 1] != ")"):
+                    msg += l[pos]
+                    pos += 1
+            else:
+                while pos < len(l) and (l[pos] != '"' or l[pos - 1] == "\\"):
+                    msg += l[pos]
+                    pos += 1
 
             location = os.path.relpath(fname).replace("\\", "/")
             if line_nb:
@@ -88,7 +86,7 @@ def process_file(f, fname):
                 unique_str.append(msg)
                 unique_loc[msg] = [location]
             elif not location in unique_loc[msg]:
-                # Add additional location to previous occurrence too
+                # Add additional location to previous occurrence too.
                 msg_pos = main_po.find('\nmsgid "' + msg + '"')
                 if msg_pos == -1:
                     print("Someone apparently thought writing Python was as easy as GDScript. Ping Akien.")
@@ -99,25 +97,48 @@ def process_file(f, fname):
         lc += 1
 
 
-print("Updating the editor.pot template...")
+def main():
+    # Change to the repository's root directory (relative to where the script is located),
+    # so that the script can be run from any location.
+    os.chdir(os.path.dirname(os.path.realpath(__file__)) + "/../..")
 
-for fname in matches:
-    with open(fname, "r") as f:
-        process_file(f, fname)
+    matches = []
+    for root, dirnames, filenames in os.walk("."):
+        dirnames[:] = [d for d in dirnames if d not in ["thirdparty"]]
+        for filename in fnmatch.filter(filenames, "*.cpp"):
+            matches.append(os.path.join(root, filename))
+        for filename in fnmatch.filter(filenames, "*.h"):
+            matches.append(os.path.join(root, filename))
+    matches.sort()
 
-with open("editor.pot", "w") as f:
-    f.write(main_po)
+    if not os.path.exists("editor"):
+        sys.exit("ERROR: Couldn't find the editor/ folder in the repository root folder.")
 
-if os.name == "posix":
-    print("Wrapping template at 79 characters for compatibility with Weblate.")
-    os.system("msgmerge -w79 editor.pot editor.pot > editor.pot.wrap")
-    shutil.move("editor.pot.wrap", "editor.pot")
+    print("Updating the editor.pot template...")
 
-shutil.move("editor.pot", "editor/translations/editor.pot")
+    for fname in matches:
+        with open(fname, "r") as f:
+            process_file(f, fname)
 
-# TODO: Make that in a portable way, if we care; if not, kudos to Unix users
-if os.name == "posix":
-    added = subprocess.check_output(r"git diff editor/translations/editor.pot | grep \+msgid | wc -l", shell=True)
-    removed = subprocess.check_output(r"git diff editor/translations/editor.pot | grep \\\-msgid | wc -l", shell=True)
-    print("\n# Template changes compared to the staged status:")
-    print("#   Additions: %s msgids.\n#   Deletions: %s msgids." % (int(added), int(removed)))
+    with open("editor.pot", "w") as f:
+        f.write(main_po)
+
+    if os.name == "posix":
+        print("Wrapping template at 79 characters for compatibility with Weblate.")
+        os.system("msgmerge -w79 editor.pot editor.pot > editor.pot.wrap")
+        shutil.move("editor.pot.wrap", "editor.pot")
+
+    shutil.move("editor.pot", "editor/translations/editor.pot")
+
+    # TODO: Make that in a portable way, if we care; if not, kudos to Unix users.
+    if os.name == "posix":
+        added = subprocess.check_output(r"git diff editor/translations/editor.pot | grep \+msgid | wc -l", shell=True)
+        removed = subprocess.check_output(
+            r"git diff editor/translations/editor.pot | grep \\\-msgid | wc -l", shell=True
+        )
+        print("\n# Template changes compared to the staged status:")
+        print("#   Additions: %s msgids.\n#   Deletions: %s msgids." % (int(added), int(removed)))
+
+
+if __name__ == "__main__":
+    main()

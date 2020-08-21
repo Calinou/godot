@@ -800,7 +800,7 @@ void ConnectionsDock::_handle_signal_menu_option(int option) {
 		} break;
 		case DISCONNECT_ALL: {
 			StringName signal_name = item->get_metadata(0).operator Dictionary()["name"];
-			disconnect_all_dialog->set_text(vformat(TTR("Are you sure you want to remove all connections from the \"%s\" signal?"), signal_name));
+			disconnect_all_dialog->set_text(vformat(TTR(R"(Are you sure you want to remove all connections from the "%s" signal?)"), signal_name));
 			disconnect_all_dialog->popup_centered();
 		} break;
 	}
