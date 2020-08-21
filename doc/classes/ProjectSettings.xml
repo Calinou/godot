@@ -1094,6 +1094,9 @@
 		<member name="rendering/quality/filters/anisotropic_filter_level" type="int" setter="" getter="" default="4">
 			Maximum anisotropic filter level used for textures with anisotropy enabled. Higher values will result in sharper textures when viewed from oblique angles, at the cost of performance. Only power-of-two values are valid (2, 4, 8, 16).
 		</member>
+		<member name="rendering/quality/filters/fxaa" type="bool" setter="" getter="" default="false">
+			If [code]true[/code], enables fast approximate antialiasing. FXAA is a popular screen-space antialiasing method, which is fast but will make the image look blurry, especially at lower resolutions. It can still work relatively well at large resolutions such as 1440p and 4K.
+		</member>
 		<member name="rendering/quality/filters/msaa" type="int" setter="" getter="" default="0">
 			Sets the number of MSAA samples to use. MSAA is used to reduce aliasing around the edges of polygons. A higher MSAA value results in smoother edges but can be significantly slower on some hardware.
 			[b]Note:[/b] MSAA is not available on HTML5 export using the GLES2 backend.

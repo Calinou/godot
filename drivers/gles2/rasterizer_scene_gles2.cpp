@@ -774,6 +774,14 @@ void RasterizerSceneGLES2::environment_set_dof_blur_near(RID p_env, bool p_enabl
 	env->dof_blur_near_quality = p_quality;
 }
 
+void RasterizerSceneGLES2::environment_set_fxaa(RID p_env, bool p_enable) {
+
+	Environment *env = environment_owner.getornull(p_env);
+	ERR_FAIL_COND(!env);
+
+	env->fxaa_enabled = p_enable;
+}
+
 void RasterizerSceneGLES2::environment_set_glow(RID p_env, bool p_enable, int p_level_flags, float p_intensity, float p_strength, float p_bloom_threshold, VS::EnvironmentGlowBlendMode p_blend_mode, float p_hdr_bleed_threshold, float p_hdr_bleed_scale, float p_hdr_luminance_cap, bool p_bicubic_upscale) {
 
 	Environment *env = environment_owner.getornull(p_env);
@@ -2729,8 +2737,10 @@ void RasterizerSceneGLES2::_post_process(Environment *env, const CameraMatrix &p
 	use_post_process = use_post_process && storage->frame.current_rt->width >= 4 && storage->frame.current_rt->height >= 4;
 	use_post_process = use_post_process && storage->frame.current_rt->mip_maps_allocated;
 
+	const bool fxaa_enabled = GLOBAL_GET("rendering/quality/filters/fxaa");
+
 	if (env) {
-		use_post_process = use_post_process && (env->adjustments_enabled || env->glow_enabled || env->dof_blur_far_enabled || env->dof_blur_near_enabled);
+		use_post_process = use_post_process && (env->adjustments_enabled || env->glow_enabled || env->dof_blur_far_enabled || env->dof_blur_near_enabled || fxaa_enabled);
 	}
 
 	GLuint next_buffer;
@@ -2784,8 +2794,9 @@ void RasterizerSceneGLES2::_post_process(Environment *env, const CameraMatrix &p
 
 	// Order of operation
 	//1) DOF Blur (first blur, then copy to buffer applying the blur) //only on desktop
-	//2) Bloom (Glow) //only on desktop
-	//3) Adjustments
+	//2) FXAA
+	//3) Bloom (Glow) //only on desktop
+	//4) Adjustments
 
 	// DOF Blur
 
@@ -3040,6 +3051,7 @@ void RasterizerSceneGLES2::_post_process(Environment *env, const CameraMatrix &p
 		glBindTexture(GL_TEXTURE_2D, storage->frame.current_rt->mip_maps[0].sizes[0].color);
 	}
 
+	state.tonemap_shader.set_conditional(TonemapShaderGLES2::USE_FXAA, fxaa_enabled);
 	state.tonemap_shader.set_conditional(TonemapShaderGLES2::USE_GLOW_FILTER_BICUBIC, env->glow_bicubic_upscale);
 
 	if (max_glow_level >= 0) {
@@ -3141,9 +3153,16 @@ void RasterizerSceneGLES2::_post_process(Environment *env, const CameraMatrix &p
 		state.tonemap_shader.set_uniform(TonemapShaderGLES2::BCS, Vector3(env->adjustments_brightness, env->adjustments_contrast, env->adjustments_saturation));
 	}
 
+	if (fxaa_enabled) {
+		state.tonemap_shader.set_uniform(
+				TonemapShaderGLES2::PIXEL_SIZE,
+				Vector2(1.0 / storage->frame.current_rt->width, 1.0 / storage->frame.current_rt->height));
+	}
+
 	storage->_copy_screen();
 
 	//turn off everything used
+	state.tonemap_shader.set_conditional(TonemapShaderGLES2::USE_FXAA, false);
 	state.tonemap_shader.set_conditional(TonemapShaderGLES2::USE_GLOW_LEVEL1, false);
 	state.tonemap_shader.set_conditional(TonemapShaderGLES2::USE_GLOW_LEVEL2, false);
 	state.tonemap_shader.set_conditional(TonemapShaderGLES2::USE_GLOW_LEVEL3, false);

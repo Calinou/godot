@@ -861,6 +861,15 @@ void RasterizerSceneGLES3::environment_set_dof_blur_near(RID p_env, bool p_enabl
 	env->dof_blur_near_amount = p_amount;
 	env->dof_blur_near_quality = p_quality;
 }
+
+void RasterizerSceneGLES3::environment_set_fxaa(RID p_env, bool p_enable) {
+
+	Environment *env = environment_owner.getornull(p_env);
+	ERR_FAIL_COND(!env);
+
+	env->fxaa_enabled = p_enable;
+}
+
 void RasterizerSceneGLES3::environment_set_glow(RID p_env, bool p_enable, int p_level_flags, float p_intensity, float p_strength, float p_bloom_threshold, VS::EnvironmentGlowBlendMode p_blend_mode, float p_hdr_bleed_threshold, float p_hdr_bleed_scale, float p_hdr_luminance_cap, bool p_bicubic_upscale) {
 
 	Environment *env = environment_owner.getornull(p_env);
@@ -3646,8 +3655,8 @@ void RasterizerSceneGLES3::_post_process(Environment *env, const CameraMatrix &p
 
 	//order of operation
 	//1) DOF Blur (first blur, then copy to buffer applying the blur)
-	//2) Motion Blur
-	//3) Bloom
+	//2) FXAA
+	//3) Bloom (Glow)
 	//4) Tonemap
 	//5) Adjustments
 
@@ -3984,7 +3993,10 @@ void RasterizerSceneGLES3::_post_process(Environment *env, const CameraMatrix &p
 	state.tonemap_shader.set_conditional(TonemapShaderGLES3::USE_REINHARD_TONEMAPPER, env->tone_mapper == VS::ENV_TONE_MAPPER_REINHARD);
 	state.tonemap_shader.set_conditional(TonemapShaderGLES3::KEEP_3D_LINEAR, storage->frame.current_rt->flags[RasterizerStorage::RENDER_TARGET_KEEP_3D_LINEAR]);
 
+	const bool fxaa_enabled = GLOBAL_GET("rendering/quality/filters/fxaa");
+
 	state.tonemap_shader.set_conditional(TonemapShaderGLES3::USE_AUTO_EXPOSURE, env->auto_exposure);
+	state.tonemap_shader.set_conditional(TonemapShaderGLES3::USE_FXAA, fxaa_enabled);
 	state.tonemap_shader.set_conditional(TonemapShaderGLES3::USE_GLOW_FILTER_BICUBIC, env->glow_bicubic_upscale);
 
 	if (max_glow_level >= 0) {
@@ -4062,9 +4074,16 @@ void RasterizerSceneGLES3::_post_process(Environment *env, const CameraMatrix &p
 		state.tonemap_shader.set_uniform(TonemapShaderGLES3::BCS, Vector3(env->adjustments_brightness, env->adjustments_contrast, env->adjustments_saturation));
 	}
 
+	if (fxaa_enabled) {
+		state.tonemap_shader.set_uniform(
+				TonemapShaderGLES3::PIXEL_SIZE,
+				Vector2(1.0 / storage->frame.current_rt->width, 1.0 / storage->frame.current_rt->height));
+	}
+
 	_copy_screen(true, true);
 
 	//turn off everything used
+	state.tonemap_shader.set_conditional(TonemapShaderGLES3::USE_FXAA, false);
 	state.tonemap_shader.set_conditional(TonemapShaderGLES3::USE_AUTO_EXPOSURE, false);
 	state.tonemap_shader.set_conditional(TonemapShaderGLES3::USE_FILMIC_TONEMAPPER, false);
 	state.tonemap_shader.set_conditional(TonemapShaderGLES3::USE_ACES_TONEMAPPER, false);

@@ -1207,6 +1207,17 @@
 				Sets the variables to be used with the fog height effect. See [Environment] for more details.
 			</description>
 		</method>
+		<method name="environment_set_fxaa">
+			<return type="void">
+			</return>
+			<argument index="0" name="env" type="RID">
+			</argument>
+			<argument index="1" name="enable" type="bool">
+			</argument>
+			<description>
+				Sets the FXAA value of the environment. FXAA is a popular screen-space antialiasing method, which is fast but will make the image look blurry, especially at lower resolutions. It can still work relatively well at large resolutions such as 1440p and 4K. Equivalent to [member ProjectSettings.rendering/quality/filters/fxaa].
+			</description>
+		</method>
 		<method name="environment_set_glow">
 			<return type="void">
 			</return>
