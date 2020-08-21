@@ -338,6 +338,7 @@ void Environment::_validate_property(PropertyInfo &property) const {
 	}
 
 	static const char *hide_prefixes[] = {
+		"fxaa_",
 		"fog_",
 		"auto_exposure_",
 		"ss_reflections_",
@@ -573,6 +574,18 @@ void Environment::set_ssao_edge_sharpness(float p_edge_sharpness) {
 float Environment::get_ssao_edge_sharpness() const {
 
 	return ssao_edge_sharpness;
+}
+
+void Environment::set_fxaa_enabled(bool p_enabled) {
+
+	fxaa_enabled = p_enabled;
+	VS::get_singleton()->environment_set_fxaa(environment, fxaa_enabled);
+	_change_notify();
+}
+
+bool Environment::is_fxaa_enabled() const {
+
+	return fxaa_enabled;
 }
 
 void Environment::set_glow_enabled(bool p_enabled) {
@@ -973,6 +986,12 @@ void Environment::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_ambient_light_energy"), &Environment::get_ambient_light_energy);
 	ClassDB::bind_method(D_METHOD("get_ambient_light_sky_contribution"), &Environment::get_ambient_light_sky_contribution);
 	ClassDB::bind_method(D_METHOD("get_camera_feed_id"), &Environment::get_camera_feed_id);
+
+	ClassDB::bind_method(D_METHOD("set_fxaa_enabled"), &Environment::set_fxaa_enabled);
+	ClassDB::bind_method(D_METHOD("is_fxaa_enabled"), &Environment::is_fxaa_enabled);
+
+	ADD_GROUP("FXAA", "fxaa_"),
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "fxaa_enabled"), "set_fxaa_enabled", "is_fxaa_enabled");
 
 	ADD_GROUP("Background", "background_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "background_mode", PROPERTY_HINT_ENUM, "Clear Color,Custom Color,Sky,Color+Sky,Canvas,Keep,Camera Feed"), "set_background", "get_background");
