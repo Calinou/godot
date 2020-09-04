@@ -2115,8 +2115,6 @@ void Node3DEditorViewport::_nav_orbit(Ref<InputEventWithModifiers> p_event, cons
 	} else {
 		cursor.x_rot += p_relative.y * radians_per_pixel;
 	}
-	// Clamp the Y rotation to roughly -90..90 degrees so the user can't look upside-down and end up disoriented.
-	cursor.x_rot = CLAMP(cursor.x_rot, -1.57, 1.57);
 
 	if (invert_x_axis) {
 		cursor.y_rot -= p_relative.x * radians_per_pixel;
@@ -2149,10 +2147,12 @@ void Node3DEditorViewport::_nav_look(Ref<InputEventWithModifiers> p_event, const
 	} else {
 		cursor.x_rot += p_relative.y * radians_per_pixel;
 	}
-	// Clamp the Y rotation to roughly -90..90 degrees so the user can't look upside-down and end up disoriented.
-	cursor.x_rot = CLAMP(cursor.x_rot, -1.57, 1.57);
 
 	cursor.y_rot += p_relative.x * radians_per_pixel;
+	if (cursor.x_rot <= 1.57 || cursor.x_rot >= 1.57) {
+		// If looking upside-down, invert the horizontal freelook mouse mouvement to match the camera orientation.
+		cursor.y_rot *= -1;
+	}
 
 	// Look is like the opposite of Orbit: the focus point rotates around the camera
 	Transform camera_transform = to_camera_transform(cursor);
