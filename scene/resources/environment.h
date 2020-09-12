@@ -116,8 +116,6 @@ private:
 	float adjustment_brightness;
 	Ref<Texture> adjustment_color_correction;
 
-	bool fxaa_enabled;
-
 	bool ssr_enabled;
 	int ssr_max_steps;
 	float ssr_fade_in;
@@ -304,9 +302,6 @@ public:
 
 	void set_ssao_edge_sharpness(float p_edge_sharpness);
 	float get_ssao_edge_sharpness() const;
-
-	void set_fxaa_enabled(bool p_enabled);
-	bool is_fxaa_enabled() const;
 
 	void set_glow_enabled(bool p_enabled);
 	bool is_glow_enabled() const;

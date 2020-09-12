@@ -364,8 +364,6 @@ public:
 
 		int canvas_max_layer;
 
-		bool fxaa_enabled;
-
 		bool glow_enabled;
 		int glow_levels;
 		float glow_intensity;
@@ -420,7 +418,6 @@ public:
 				ambient_energy(1.0),
 				ambient_sky_contribution(0.0),
 				canvas_max_layer(0),
-				fxaa_enabled(false),
 				glow_enabled(false),
 				glow_levels((1 << 2) | (1 << 4)),
 				glow_intensity(0.8),
@@ -478,8 +475,6 @@ public:
 
 	virtual void environment_set_dof_blur_near(RID p_env, bool p_enable, float p_distance, float p_transition, float p_amount, VS::EnvironmentDOFBlurQuality p_quality);
 	virtual void environment_set_dof_blur_far(RID p_env, bool p_enable, float p_distance, float p_transition, float p_amount, VS::EnvironmentDOFBlurQuality p_quality);
-
-	virtual void environment_set_fxaa(RID p_env, bool p_enable);
 
 	virtual void environment_set_glow(RID p_env, bool p_enable, int p_level_flags, float p_intensity, float p_strength, float p_bloom_threshold, VS::EnvironmentGlowBlendMode p_blend_mode, float p_hdr_bleed_threshold, float p_hdr_bleed_scale, float p_hdr_luminance_cap, bool p_bicubic_upscale);
 	virtual void environment_set_fog(RID p_env, bool p_enable, float p_begin, float p_end, RID p_gradient_texture);

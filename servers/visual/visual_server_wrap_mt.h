@@ -411,6 +411,7 @@ public:
 	FUNC2(viewport_set_shadow_atlas_size, RID, int)
 	FUNC3(viewport_set_shadow_atlas_quadrant_subdivision, RID, int, int)
 	FUNC2(viewport_set_msaa, RID, ViewportMSAA)
+	FUNC2(viewport_set_use_fxaa, RID, bool)
 	FUNC2(viewport_set_hdr, RID, bool)
 	FUNC2(viewport_set_usage, RID, ViewportUsage)
 
@@ -440,8 +441,6 @@ public:
 	FUNC6(environment_set_dof_blur_near, RID, bool, float, float, float, EnvironmentDOFBlurQuality)
 	FUNC6(environment_set_dof_blur_far, RID, bool, float, float, float, EnvironmentDOFBlurQuality)
 	FUNC11(environment_set_glow, RID, bool, int, float, float, float, EnvironmentGlowBlendMode, float, float, float, bool)
-
-	FUNC2(environment_set_fxaa, RID, bool)
 
 	FUNC9(environment_set_tonemap, RID, EnvironmentToneMapper, float, float, bool, float, float, float, float)
 

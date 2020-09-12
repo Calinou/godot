@@ -1207,17 +1207,6 @@
 				Sets the variables to be used with the fog height effect. See [Environment] for more details.
 			</description>
 		</method>
-		<method name="environment_set_fxaa">
-			<return type="void">
-			</return>
-			<argument index="0" name="env" type="RID">
-			</argument>
-			<argument index="1" name="enable" type="bool">
-			</argument>
-			<description>
-				Sets the FXAA value of the environment. FXAA is a popular screen-space antialiasing method, which is fast but will make the image look blurry, especially at lower resolutions. It can still work relatively well at large resolutions such as 1440p and 4K. Equivalent to [member Environment.fxaa_enabled].
-			</description>
-		</method>
 		<method name="environment_set_glow">
 			<return type="void">
 			</return>
@@ -4228,6 +4217,17 @@
 			</argument>
 			<description>
 				If [code]true[/code], the viewport uses augmented or virtual reality technologies. See [ARVRInterface].
+			</description>
+		</method>
+		<method name="viewport_set_use_fxaa">
+			<return type="void">
+			</return>
+			<argument index="0" name="viewport" type="RID">
+			</argument>
+			<argument index="1" name="fxaa" type="bool">
+			</argument>
+			<description>
+				Enables fast approximate antialiasing for this viewport. FXAA is a popular screen-space antialiasing method, which is fast but will make the image look blurry, especially at lower resolutions. It can still work relatively well at large resolutions such as 1440p and 4K.
 			</description>
 		</method>
 		<method name="viewport_set_vflip">

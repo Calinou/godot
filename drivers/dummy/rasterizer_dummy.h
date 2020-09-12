@@ -67,8 +67,6 @@ public:
 	void environment_set_dof_blur_far(RID p_env, bool p_enable, float p_distance, float p_transition, float p_far_amount, VS::EnvironmentDOFBlurQuality p_quality) {}
 	void environment_set_glow(RID p_env, bool p_enable, int p_level_flags, float p_intensity, float p_strength, float p_bloom_threshold, VS::EnvironmentGlowBlendMode p_blend_mode, float p_hdr_bleed_threshold, float p_hdr_bleed_scale, float p_hdr_luminance_cap, bool p_bicubic_upscale) {}
 
-	void environment_set_fxaa(RID p_env, bool p_enable) {}
-
 	void environment_set_fog(RID p_env, bool p_enable, float p_begin, float p_end, RID p_gradient_texture) {}
 
 	void environment_set_ssr(RID p_env, bool p_enable, int p_max_steps, float p_fade_int, float p_fade_out, float p_depth_tolerance, bool p_roughness) {}
@@ -708,6 +706,7 @@ public:
 	bool render_target_was_used(RID p_render_target) { return false; }
 	void render_target_clear_used(RID p_render_target) {}
 	void render_target_set_msaa(RID p_render_target, VS::ViewportMSAA p_msaa) {}
+	void render_target_set_use_fxaa(RID p_render_target, bool p_fxaa) {}
 
 	/* CANVAS SHADOW */
 
