@@ -4066,7 +4066,7 @@ void RasterizerSceneGLES3::_post_process(Environment *env, const CameraMatrix &p
 			state.tonemap_shader.set_uniform(TonemapShaderGLES3::BCS, Vector3(env->adjustments_brightness, env->adjustments_contrast, env->adjustments_saturation));
 		}
 	} else {
-		// no environment, so no exposure
+		// No environment, so no exposure.
 		state.tonemap_shader.set_uniform(TonemapShaderGLES3::EXPOSURE, 1.0);
 	}
 
