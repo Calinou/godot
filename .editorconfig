@@ -6,7 +6,7 @@ end_of_line = lf
 indent_style = tab
 insert_final_newline = true
 
-[*.{cpp,hpp,c,h,mm}]
+[*.{cpp,hpp,c,h,mm,js,yml}]
 trim_trailing_whitespace = true
 
 [{*.gradle,AndroidManifest.xml}]
@@ -17,10 +17,6 @@ indent_size = 4
 indent_style = space
 indent_size = 4
 
-[.travis.yml]
-indent_style = space
-indent_size = 2
-
-[*.{csproj,props,targets,nuspec}]
+[*.{csproj,props,targets,nuspec,yml}]
 indent_style = space
 indent_size = 2
