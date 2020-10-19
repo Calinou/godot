@@ -379,6 +379,57 @@ vec3 screen_space_dither(vec2 frag_coord) {
 	return (dither.rgb - 0.5) / 255.0;
 }
 
+// glslSmartDeNoise filter by @BrutPitt - https://BrutPitt.com
+// (modified to match Godot's code style)
+// Copyright (c) 2018-2019 Michele Morrone
+// https://github.com/BrutPitt/glslSmartDeNoise
+// Distributed under the terms of the BSD 2-Clause license
+
+#define INV_SQRT_OF_2PI 0.39894228040143267793994605993439 // 1.0 / SQRT_OF_2PI
+#define INV_PI 0.31830988618379067153776752674503
+
+// sampler2D tex     - sampler image / texture
+// vec2 uv           - actual fragment coord
+// float sigma  >  0 - sigma Standard Deviation
+// float k_sigma >= 0 - sigma coefficient
+//     k_sigma * sigma  --> radius of the circular kernel
+// float threshold   - edge sharpening threshold
+vec3 smart_denoise(sampler2D tex, vec2 uv, float sigma, float k_sigma, float threshold) {
+	float radius = round(k_sigma * sigma);
+	float rad_q = radius * radius;
+
+	float inv_sigma_qx2 = .5 / (sigma * sigma); // 1.0 / (sigma^2 * 2.0)
+	float inv_sigma_qx2pi = INV_PI * inv_sigma_qx2; // 1/(2 * PI * sigma^2)
+
+	float inv_threshold_sqx2 = .5 / (threshold * threshold); // 1.0 / (sigma^2 * 2.0)
+	float inv_threshold_sqrt2pi = INV_SQRT_OF_2PI / threshold; // 1.0 / (sqrt(2*PI) * sigma^2)
+
+	vec4 center_px = texture(tex, uv);
+
+	float z_buff = 0.0;
+	vec4 a_buff = vec4(0.0);
+	vec2 size = vec2(textureSize(tex, 0));
+
+	vec2 d;
+	for (d.x = -radius; d.x <= radius; d.x++) {
+		// pt = yRadius: have circular trend
+		float pt = sqrt(rad_q - d.x * d.x);
+		for (d.y = -pt; d.y <= pt; d.y++) {
+			float blur_factor = exp(-dot(d, d) * inv_sigma_qx2) * inv_sigma_qx2pi;
+
+			vec4 walk_px = texture(tex, uv + d / size);
+			vec4 dc = walk_px - center_px;
+			float delta_factor = exp(-dot(dc, dc) * inv_threshold_sqx2) * inv_threshold_sqrt2pi * blur_factor;
+
+			z_buff += delta_factor;
+			a_buff += delta_factor * walk_px;
+		}
+	}
+
+	// TODO: Can this be optimized? We only need a vec3 here, not a vec4.
+	return vec3(a_buff.r, a_buff.g, a_buff.b) / z_buff;
+}
+
 void main() {
 #ifdef SUBPASS
 	// SUBPASS and MULTIVIEW can be combined but in that case we're already reading from the correct layer
@@ -420,6 +471,14 @@ void main() {
 	}
 
 	color = apply_tonemapping(color, params.white);
+
+#ifndef SUBPASS
+	// `k_sigma` and `threshold` values taken from the example:
+	// https://brutpitt.github.io/glslSmartDeNoise/WebGL/wglApp.html
+	// `sigma` 1.2 is significantly faster than the default 2.0.
+	// TODO: Figure out even faster values and make denoising optional.
+	color = smart_denoise(source_color, uv_interp, 1.2, 7.0, 0.18);
+#endif
 
 	color = linear_to_srgb(color); // regular linear -> SRGB conversion
 
