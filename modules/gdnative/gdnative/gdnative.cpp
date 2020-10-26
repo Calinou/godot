@@ -127,6 +127,10 @@ void GDAPI godot_free(void *p_ptr) {
 	memfree(p_ptr);
 }
 
+void GDAPI godot_print_info(const char *p_description, const char *p_function, const char *p_file, int p_line) {
+	_err_print_error(p_function, p_file, p_line, p_description, ERR_HANDLER_INFO);
+}
+
 void GDAPI godot_print_error(const char *p_description, const char *p_function, const char *p_file, int p_line) {
 	_err_print_error(p_function, p_file, p_line, p_description, ERR_HANDLER_ERROR);
 }

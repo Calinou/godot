@@ -88,6 +88,9 @@ void WindowsTerminalLogger::log_error(const char *p_function, const char *p_file
 
 		uint32_t basecol = 0;
 		switch (p_type) {
+			case ERR_INFO:
+				basecol = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
+				break;
 			case ERR_ERROR:
 				basecol = FOREGROUND_RED;
 				break;
@@ -106,6 +109,9 @@ void WindowsTerminalLogger::log_error(const char *p_function, const char *p_file
 
 		SetConsoleTextAttribute(hCon, basecol | FOREGROUND_INTENSITY);
 		switch (p_type) {
+			case ERR_INFO:
+				logf("INFO:");
+				break;
 			case ERR_ERROR:
 				logf("ERROR:");
 				break;
@@ -130,6 +136,9 @@ void WindowsTerminalLogger::log_error(const char *p_function, const char *p_file
 		// `FOREGROUND_INTENSITY` alone results in gray text.
 		SetConsoleTextAttribute(hCon, FOREGROUND_INTENSITY);
 		switch (p_type) {
+			case ERR_INFO:
+				// No trace for informational prints (by design).
+				break;
 			case ERR_ERROR:
 				logf("   at: ");
 				break;
@@ -144,7 +153,7 @@ void WindowsTerminalLogger::log_error(const char *p_function, const char *p_file
 				break;
 		}
 
-		if (p_rationale && p_rationale[0]) {
+		if (p_type != ERR_INFO && p_rationale && p_rationale[0]) {
 			logf("(%s:%i)\n", p_file, p_line);
 		} else {
 			logf("%s (%s:%i)\n", p_function, p_file, p_line);

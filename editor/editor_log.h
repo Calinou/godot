@@ -68,13 +68,14 @@ protected:
 
 public:
 	enum MessageType {
-		MSG_TYPE_STD,
+		MSG_TYPE_STANDARD,
+		MSG_TYPE_INFO,
 		MSG_TYPE_ERROR,
 		MSG_TYPE_WARNING,
-		MSG_TYPE_EDITOR
+		MSG_TYPE_EDITOR,
 	};
 
-	void add_message(const String &p_msg, MessageType p_type = MSG_TYPE_STD);
+	void add_message(const String &p_msg, MessageType p_type = MSG_TYPE_STANDARD);
 	void set_tool_button(Button *p_tool_button);
 	void deinit();
 

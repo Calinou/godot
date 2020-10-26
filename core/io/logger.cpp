@@ -49,6 +49,9 @@ void Logger::log_error(const char *p_function, const char *p_file, int p_line, c
 
 	const char *err_type = "ERROR";
 	switch (p_type) {
+		case ERR_INFO:
+			err_type = "INFO";
+			break;
 		case ERR_ERROR:
 			err_type = "ERROR";
 			break;
@@ -74,7 +77,9 @@ void Logger::log_error(const char *p_function, const char *p_file, int p_line, c
 	}
 
 	logf_error("%s: %s\n", err_type, err_details);
-	logf_error("   at: %s (%s:%i) - %s\n", p_function, p_file, p_line, p_code);
+	if (p_type != ERR_INFO) {
+		logf_error("   at: %s (%s:%i) - %s\n", p_function, p_file, p_line, p_code);
+	}
 }
 
 void Logger::logf(const char *p_format, ...) {

@@ -50,7 +50,9 @@ void EditorLog::_error_handler(void *p_self, const char *p_func, const char *p_f
 		err_str = String(p_file) + ":" + itos(p_line) + " - " + String(p_error);
 	}
 
-	if (p_type == ERR_HANDLER_WARNING) {
+	if (p_type == ERR_HANDLER_INFO) {
+		self->add_message(err_str, MSG_TYPE_INFO);
+	} else if (p_type == ERR_HANDLER_WARNING) {
 		self->add_message(err_str, MSG_TYPE_WARNING);
 	} else {
 		self->add_message(err_str, MSG_TYPE_ERROR);
@@ -59,7 +61,6 @@ void EditorLog::_error_handler(void *p_self, const char *p_func, const char *p_f
 
 void EditorLog::_notification(int p_what) {
 	if (p_what == NOTIFICATION_ENTER_TREE) {
-		//button->set_icon(get_icon("Console","EditorIcons"));
 		log->add_theme_font_override("normal_font", get_theme_font("output_source", "EditorFonts"));
 		log->add_theme_color_override("selection_color", get_theme_color("accent_color", "Editor") * Color(1, 1, 1, 0.4));
 	} else if (p_what == NOTIFICATION_THEME_CHANGED) {
@@ -101,10 +102,17 @@ void EditorLog::copy() {
 void EditorLog::add_message(const String &p_msg, MessageType p_type) {
 	log->add_newline();
 
-	bool restore = p_type != MSG_TYPE_STD;
+	bool restore = p_type != MSG_TYPE_STANDARD;
 	switch (p_type) {
-		case MSG_TYPE_STD: {
+		case MSG_TYPE_STANDARD: {
 		} break;
+		case MSG_TYPE_INFO: {
+			log->push_color(get_theme_color("highlighted_font_color", "Editor"));
+			Ref<Texture2D> icon = get_theme_icon("Info", "EditorIcons");
+			log->add_image(icon);
+			log->add_text(" ");
+			tool_button->set_icon(icon);
+		}
 		case MSG_TYPE_ERROR: {
 			log->push_color(get_theme_color("error_color", "Editor"));
 			Ref<Texture2D> icon = get_theme_icon("Error", "EditorIcons");
@@ -120,7 +128,7 @@ void EditorLog::add_message(const String &p_msg, MessageType p_type) {
 			tool_button->set_icon(icon);
 		} break;
 		case MSG_TYPE_EDITOR: {
-			// Distinguish editor messages from messages printed by the project
+			// Distinguish editor messages from messages printed by the project.
 			log->push_color(get_theme_color("font_color", "Editor") * Color(1, 1, 1, 0.6));
 		} break;
 	}

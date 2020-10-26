@@ -36,6 +36,7 @@
 class String;
 
 enum ErrorHandlerType {
+	ERR_HANDLER_INFO,
 	ERR_HANDLER_ERROR,
 	ERR_HANDLER_WARNING,
 	ERR_HANDLER_SCRIPT,
@@ -544,6 +545,13 @@ void _err_print_index_error(const char *p_function, const char *p_file, int p_li
 		}                                                              \
 	} else                                                             \
 		((void)0)
+
+/**
+ * Prints an informational message.
+ * Should be used for "important" messages that are not problematic per se, but should be distinguished from standard `print_line()` statements.
+ */
+#define INFO_PRINT(m_msg) \
+	_err_print_error(FUNCTION_STR, __FILE__, __LINE__, m_msg, ERR_HANDLER_INFO)
 
 // Print warning message macros.
 

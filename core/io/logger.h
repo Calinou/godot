@@ -43,6 +43,7 @@ protected:
 
 public:
 	enum ErrorType {
+		ERR_INFO,
 		ERR_ERROR,
 		ERR_WARNING,
 		ERR_SCRIPT,

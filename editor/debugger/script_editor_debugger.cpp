@@ -409,14 +409,14 @@ void ScriptEditorDebugger::_parse_message(const String &p_msg, const Array &p_da
 			EditorLog::MessageType msg_type;
 			switch (type) {
 				case RemoteDebugger::MESSAGE_TYPE_LOG: {
-					msg_type = EditorLog::MSG_TYPE_STD;
+					msg_type = EditorLog::MSG_TYPE_STANDARD;
 				} break;
 				case RemoteDebugger::MESSAGE_TYPE_ERROR: {
 					msg_type = EditorLog::MSG_TYPE_ERROR;
 				} break;
 				default: {
 					WARN_PRINT("Unhandled script debugger message type: " + itos(type));
-					msg_type = EditorLog::MSG_TYPE_STD;
+					msg_type = EditorLog::MSG_TYPE_STANDARD;
 				} break;
 			}
 			EditorNode::get_log()->add_message(output_strings[i], msg_type);

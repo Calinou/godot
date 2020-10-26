@@ -530,6 +530,7 @@ void UnixTerminalLogger::log_error(const char *p_function, const char *p_file, i
 	// This prevents Godot from writing ANSI escape codes when redirecting
 	// stdout and stderr to a file.
 	const bool tty = isatty(fileno(stdout));
+	const char *bold = tty ? "\E[1m" : "";
 	const char *gray = tty ? "\E[0;90m" : "";
 	const char *red = tty ? "\E[0;91m" : "";
 	const char *red_bold = tty ? "\E[1;31m" : "";
@@ -542,6 +543,9 @@ void UnixTerminalLogger::log_error(const char *p_function, const char *p_file, i
 	const char *reset = tty ? "\E[0m" : "";
 
 	switch (p_type) {
+		case ERR_INFO:
+			logf_error("%sINFO:%s %s\n", bold, reset, err_details);
+			break;
 		case ERR_WARNING:
 			logf_error("%sWARNING:%s %s\n", yellow_bold, yellow, err_details);
 			logf_error("%s     at: %s (%s:%i)%s\n", gray, p_function, p_file, p_line, reset);

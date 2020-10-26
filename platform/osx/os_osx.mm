@@ -59,6 +59,9 @@ public:
 			err_details = p_code;
 
 		switch (p_type) {
+			case ERR_INFO:
+				logf_error("\E[1mINFO:\E[0m %s\n", err_details);
+				break;
 			case ERR_WARNING:
 				os_log_info(OS_LOG_DEFAULT,
 						"WARNING: %{public}s\nat: %{public}s (%{public}s:%i)",

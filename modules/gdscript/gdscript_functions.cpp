@@ -112,6 +112,7 @@ const char *GDScriptFunctions::get_func_name(Function p_func) {
 		"printerr",
 		"printraw",
 		"print_debug",
+		"push_info",
 		"push_error",
 		"push_warning",
 		"var2str",
@@ -753,6 +754,20 @@ void GDScriptFunctions::call(Function p_func, const Variant **p_args, int p_arg_
 			}
 
 			print_line(str);
+			r_ret = Variant();
+		} break;
+		case PUSH_INFO: {
+			VALIDATE_ARG_COUNT(1);
+			if (p_args[0]->get_type() != Variant::STRING) {
+				r_error.error = Callable::CallError::CALL_ERROR_INVALID_ARGUMENT;
+				r_error.argument = 0;
+				r_error.expected = Variant::STRING;
+				r_ret = Variant();
+				break;
+			}
+
+			String message = *p_args[0];
+			INFO_PRINT(message);
 			r_ret = Variant();
 		} break;
 		case PUSH_ERROR: {
@@ -1832,6 +1847,12 @@ MethodInfo GDScriptFunctions::get_info(Function p_func) {
 			MethodInfo mi("print_debug");
 			mi.return_val.type = Variant::NIL;
 			mi.flags |= METHOD_FLAG_VARARG;
+			return mi;
+
+		} break;
+		case PUSH_INFO: {
+			MethodInfo mi(Variant::NIL, "push_info", PropertyInfo(Variant::STRING, "message"));
+			mi.return_val.type = Variant::NIL;
 			return mi;
 
 		} break;
