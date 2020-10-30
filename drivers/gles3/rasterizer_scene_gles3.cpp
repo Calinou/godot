@@ -1025,7 +1025,7 @@ void RasterizerSceneGLES3::light_instance_set_transform(RID p_light_instance, co
 	light_instance->transform = p_transform;
 }
 
-void RasterizerSceneGLES3::light_instance_set_shadow_transform(RID p_light_instance, const CameraMatrix &p_projection, const Transform &p_transform, float p_far, float p_split, int p_pass, float p_bias_scale) {
+void RasterizerSceneGLES3::light_instance_set_shadow_transform(RID p_light_instance, const CameraMatrix &p_projection, const Transform &p_transform, float p_far, float p_split, int p_pass, float p_shadow_texel_size, float p_bias_scale) {
 
 	LightInstance *light_instance = light_instance_owner.getornull(p_light_instance);
 	ERR_FAIL_COND(!light_instance);
@@ -1041,6 +1041,7 @@ void RasterizerSceneGLES3::light_instance_set_shadow_transform(RID p_light_insta
 	light_instance->shadow_transform[p_pass].farplane = p_far;
 	light_instance->shadow_transform[p_pass].split = p_split;
 	light_instance->shadow_transform[p_pass].bias_scale = p_bias_scale;
+	light_instance->shadow_transform[p_pass].shadow_texel_size = p_shadow_texel_size;
 }
 
 void RasterizerSceneGLES3::light_instance_mark_visible(RID p_light_instance) {
@@ -2550,7 +2551,7 @@ void RasterizerSceneGLES3::_draw_sky(RasterizerStorageGLES3::Sky *p_sky, const C
 	storage->shaders.copy.set_conditional(CopyShaderGLES3::USE_PANORAMA, false);
 }
 
-void RasterizerSceneGLES3::_setup_environment(Environment *env, const CameraMatrix &p_cam_projection, const Transform &p_cam_transform, bool p_no_fog) {
+void RasterizerSceneGLES3::_setup_environment(Environment *env, const CameraMatrix &p_cam_projection, const Transform &p_cam_transform, bool p_no_fog, bool p_pancake_shadows) {
 	Transform sky_orientation;
 
 	//store camera into ubo
@@ -2563,6 +2564,7 @@ void RasterizerSceneGLES3::_setup_environment(Environment *env, const CameraMatr
 	state.ubo_data.time = storage->frame.time[0];
 
 	state.ubo_data.z_far = p_cam_projection.get_z_far();
+	state.ubo_data.pancake_shadows = p_pancake_shadows;
 	//bg and ambient
 	if (env) {
 		state.ubo_data.bg_energy = env->bg_energy;
@@ -2755,6 +2757,9 @@ void RasterizerSceneGLES3::_setup_directional_light(int p_index, const Transform
 			}
 
 			ubo_data.shadow_split_offsets[j] = li->shadow_transform[j].split;
+			float bias_scale = light_instance_get_shadow_bias_scale(li, j);
+			ubo_data.shadow_bias[j] = storage->light_get_param(base, VS::LIGHT_PARAM_SHADOW_BIAS) * bias_scale;
+			ubo_data.shadow_normal_bias[j] = storage->light_get_param(base, VS::LIGHT_PARAM_SHADOW_NORMAL_BIAS) * light_instance_get_directional_shadow_texel_size(li, j);
 
 			Transform modelview = (p_camera_inverse_transform * li->shadow_transform[j].transform).affine_inverse();
 
@@ -4142,8 +4147,6 @@ void RasterizerSceneGLES3::render_scene(const Transform &p_cam_transform, const 
 
 	state.ubo_data.subsurface_scatter_width = subsurface_scatter_size;
 
-	state.ubo_data.z_offset = 0;
-	state.ubo_data.z_slope_scale = 0;
 	state.ubo_data.shadow_dual_paraboloid_render_side = 0;
 	state.ubo_data.shadow_dual_paraboloid_render_zfar = 0;
 	state.ubo_data.opaque_prepass_threshold = 0.99;
@@ -4656,7 +4659,7 @@ void RasterizerSceneGLES3::render_scene(const Transform &p_cam_transform, const 
 	//disable all stuff
 }
 
-void RasterizerSceneGLES3::render_shadow(RID p_light, RID p_shadow_atlas, int p_pass, InstanceBase **p_cull_result, int p_cull_count) {
+void RasterizerSceneGLES3::render_shadow(RID p_light, RID p_shadow_atlas, int p_pass, InstanceBase **p_cull_result, int p_cull_count, bool p_use_pancake) {
 
 	render_pass++;
 
@@ -4670,6 +4673,7 @@ void RasterizerSceneGLES3::render_shadow(RID p_light, RID p_shadow_atlas, int p_
 	uint32_t x, y, width, height;
 
 	float dp_direction = 0.0;
+	float znear = 0;
 	float zfar = 0;
 	bool flip_facing = false;
 	int custom_vp_size = 0;
@@ -4677,6 +4681,8 @@ void RasterizerSceneGLES3::render_shadow(RID p_light, RID p_shadow_atlas, int p_
 	int current_cubemap = -1;
 	float bias = 0;
 	float normal_bias = 0;
+
+	bool use_pancake = false;
 
 	state.used_depth_prepass = false;
 
@@ -4709,6 +4715,7 @@ void RasterizerSceneGLES3::render_shadow(RID p_light, RID p_shadow_atlas, int p_
 			}
 		}
 
+		use_pancake = storage->light_get_param(light_instance->light, VS::LIGHT_PARAM_SHADOW_PANCAKE_SIZE) > 0;
 		light_projection = light_instance->shadow_transform[p_pass].camera;
 		light_transform = light_instance->shadow_transform[p_pass].transform;
 
@@ -4742,7 +4749,7 @@ void RasterizerSceneGLES3::render_shadow(RID p_light, RID p_shadow_atlas, int p_
 			}
 		}
 
-		float bias_mult = Math::lerp(1.0f, light_instance->shadow_transform[p_pass].bias_scale, light->param[VS::LIGHT_PARAM_SHADOW_BIAS_SPLIT_SCALE]);
+		float bias_mult = light_instance->shadow_transform[p_pass].bias_scale;
 		zfar = light->param[VS::LIGHT_PARAM_RANGE];
 		bias = light->param[VS::LIGHT_PARAM_SHADOW_BIAS] * bias_mult;
 		normal_bias = light->param[VS::LIGHT_PARAM_SHADOW_NORMAL_BIAS] * bias_mult;
@@ -4830,6 +4837,8 @@ void RasterizerSceneGLES3::render_shadow(RID p_light, RID p_shadow_atlas, int p_
 			zfar = light->param[VS::LIGHT_PARAM_RANGE];
 			bias = light->param[VS::LIGHT_PARAM_SHADOW_BIAS];
 			normal_bias = light->param[VS::LIGHT_PARAM_SHADOW_NORMAL_BIAS];
+
+			znear = light_instance->shadow_transform[0].camera.get_z_near();
 		}
 	}
 
@@ -4859,13 +4868,11 @@ void RasterizerSceneGLES3::render_shadow(RID p_light, RID p_shadow_atlas, int p_
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glDisable(GL_SCISSOR_TEST);
 
-	state.ubo_data.z_offset = bias;
-	state.ubo_data.z_slope_scale = normal_bias;
 	state.ubo_data.shadow_dual_paraboloid_render_side = dp_direction;
 	state.ubo_data.shadow_dual_paraboloid_render_zfar = zfar;
 	state.ubo_data.opaque_prepass_threshold = 0.1;
 
-	_setup_environment(NULL, light_projection, light_transform);
+	_setup_environment(NULL, light_projection, light_transform, false, p_use_pancake);
 
 	state.scene_shader.set_conditional(SceneShaderGLES3::RENDER_DEPTH, true);
 

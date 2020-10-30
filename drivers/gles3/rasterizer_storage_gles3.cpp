@@ -5524,8 +5524,10 @@ RID RasterizerStorageGLES3::light_create(VS::LightType p_type) {
 	light->param[VS::LIGHT_PARAM_SHADOW_SPLIT_1_OFFSET] = 0.1;
 	light->param[VS::LIGHT_PARAM_SHADOW_SPLIT_2_OFFSET] = 0.3;
 	light->param[VS::LIGHT_PARAM_SHADOW_SPLIT_3_OFFSET] = 0.6;
-	light->param[VS::LIGHT_PARAM_SHADOW_NORMAL_BIAS] = 0.1;
-	light->param[VS::LIGHT_PARAM_SHADOW_BIAS_SPLIT_SCALE] = 0.1;
+	light->param[VS::LIGHT_PARAM_SHADOW_FADE_START] = 0.8;
+	light->param[VS::LIGHT_PARAM_SHADOW_BIAS] = 0.02;
+	light->param[VS::LIGHT_PARAM_SHADOW_NORMAL_BIAS] = 1.0;
+	light->param[VS::LIGHT_PARAM_SHADOW_PANCAKE_SIZE] = 20.0;
 
 	light->color = Color(1, 1, 1, 1);
 	light->shadow = false;
@@ -5564,6 +5566,7 @@ void RasterizerStorageGLES3::light_set_param(RID p_light, VS::LightParam p_param
 		case VS::LIGHT_PARAM_SHADOW_SPLIT_2_OFFSET:
 		case VS::LIGHT_PARAM_SHADOW_SPLIT_3_OFFSET:
 		case VS::LIGHT_PARAM_SHADOW_NORMAL_BIAS:
+		case VS::LIGHT_PARAM_SHADOW_PANCAKE_SIZE:
 		case VS::LIGHT_PARAM_SHADOW_BIAS: {
 
 			light->version++;

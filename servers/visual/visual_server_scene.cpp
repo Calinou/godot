@@ -1338,6 +1338,8 @@ bool VisualServerScene::_light_instance_update_shadow(Instance *p_instance, cons
 
 			VS::LightDirectionalShadowDepthRangeMode depth_range_mode = VSG::storage->light_directional_get_shadow_depth_range_mode(p_instance->base);
 
+			real_t pancake_size = VSG::storage->light_get_param(p_instance->base, VS::LIGHT_PARAM_SHADOW_PANCAKE_SIZE);
+
 			if (depth_range_mode == VS::LIGHT_DIRECTIONAL_SHADOW_DEPTH_RANGE_OPTIMIZED) {
 				//optimize min/max
 				Vector<Plane> planes = p_cam_projection.get_projection_planes(p_cam_transform);
@@ -1403,6 +1405,8 @@ bool VisualServerScene::_light_instance_update_shadow(Instance *p_instance, cons
 			bool overlap = VSG::storage->light_directional_get_blend_splits(p_instance->base);
 
 			real_t first_radius = 0.0;
+
+			real_t min_distance_bias_scale = pancake_size > 0 ? distances[1] / 10.0 : 0;
 
 			for (int i = 0; i < splits; i++) {
 
@@ -1563,8 +1567,13 @@ bool VisualServerScene::_light_instance_update_shadow(Instance *p_instance, cons
 					}
 				}
 
-				if (cull_max > z_max)
+				if (cull_max > z_max) {
 					z_max = cull_max;
+				}
+
+				if (pancake_size > 0) {
+					z_max = z_vec.dot(center) + radius + pancake_size;
+				}
 
 				if (aspect != 1.0) {
 
@@ -1587,10 +1596,6 @@ bool VisualServerScene::_light_instance_update_shadow(Instance *p_instance, cons
 							camera_matrix_square.set_frustum(vp_he.x * 2.0, 1.0, Vector2(), distances[(i == 0 || !overlap) ? i : i - 1], distances[i + 1], true);
 						} else {
 							camera_matrix_square.set_frustum(vp_he.y * 2.0, 1.0, Vector2(), distances[(i == 0 || !overlap) ? i : i - 1], distances[i + 1], false);
-						}
-
-						if (i == 0) {
-							//print_line("prev he: " + vp_he + " new he: " + camera_matrix_square.get_viewport_half_extents());
 						}
 					}
 
@@ -1627,12 +1632,17 @@ bool VisualServerScene::_light_instance_update_shadow(Instance *p_instance, cons
 
 					radius_square *= texture_size / (texture_size - 2.0); //add a texel by each side
 
+					if (pancake_size > 0) {
+						z_max_square = z_vec.dot(center_square) + radius_square + pancake_size;
+					}
+
 					real_t z_min_cam_square = z_vec.dot(center_square) - radius_square;
 
 					aspect_bias_scale = (z_max - z_min_cam) / (z_max_square - z_min_cam_square);
 
-					// this is not entirely perfect, because the cull-adjusted z-max may be different
+					// This is not entirely perfect, because the cull-adjusted z-max may be different
 					// but at least it's warranted that it results in a greater bias, so no acne should be present either way.
+					// Pancaking also helps with this.
 				}
 
 				{
@@ -1654,7 +1664,8 @@ bool VisualServerScene::_light_instance_update_shadow(Instance *p_instance, cons
 							z_max - z_min_cam,
 							distances[i + 1],
 							i,
-							radius * 2.0 / texture_size);
+							radius * 2.0 / texture_size,
+							bias_scale * aspect_bias_scale * min_distance_bias_scale);
 				}
 
 				VSG::scene_render->render_shadow(light->instance, p_shadow_atlas, i, (RasterizerScene::InstanceBase **)instance_shadow_cull_result, cull_count);

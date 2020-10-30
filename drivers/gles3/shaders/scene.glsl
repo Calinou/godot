@@ -76,8 +76,6 @@ layout(std140) uniform SceneData { // ubo:0
 	mediump float ambient_energy;
 	mediump float bg_energy;
 
-	mediump float z_offset;
-	mediump float z_slope_scale;
 	highp float shadow_dual_paraboloid_render_zfar;
 	highp float shadow_dual_paraboloid_render_side;
 
@@ -85,6 +83,7 @@ layout(std140) uniform SceneData { // ubo:0
 	highp vec2 screen_pixel_size;
 	highp vec2 shadow_atlas_pixel_size;
 	highp vec2 directional_shadow_pixel_size;
+	bool pancake_shadows;
 
 	highp float time;
 	highp float z_far;
@@ -496,20 +495,13 @@ VERTEX_SHADER_CODE
 
 	//for dual paraboloid shadow mapping, this is the fastest but least correct way, as it curves straight edges
 
-	highp vec3 vtx = vertex_interp + normalize(vertex_interp) * z_offset;
+	highp vec3 vtx = vertex_interp;
 	highp float distance = length(vtx);
 	vtx = normalize(vtx);
 	vtx.xy /= 1.0 - vtx.z;
 	vtx.z = (distance / shadow_dual_paraboloid_render_zfar);
 	vtx.z = vtx.z * 2.0 - 1.0;
-
 	vertex_interp = vtx;
-
-#else
-
-	float z_ofs = z_offset;
-	z_ofs += (1.0 - abs(normal_interp.z)) * z_slope_scale;
-	vertex_interp.z -= z_ofs;
 
 #endif //RENDER_DEPTH_DUAL_PARABOLOID
 
@@ -519,6 +511,15 @@ VERTEX_SHADER_CODE
 	gl_Position = position;
 #else
 	gl_Position = projection_matrix * vec4(vertex_interp, 1.0);
+#endif
+
+#ifdef MODE_RENDER_DEPTH
+	if (scene_data.pancake_shadows) {
+		if (gl_Position.z <= 0.00001) {
+			This conversation was marked as resolved by clayjohn
+					gl_Position.z = 0.00001;
+		}
+	}
 #endif
 
 	position_interp = gl_Position;
@@ -723,6 +724,7 @@ layout(std140) uniform SceneData {
 	highp vec2 screen_pixel_size;
 	highp vec2 shadow_atlas_pixel_size;
 	highp vec2 directional_shadow_pixel_size;
+	bool pancake_shadows;
 
 	highp float time;
 	highp float z_far;
@@ -756,11 +758,18 @@ layout(std140) uniform DirectionalLightData {
 	mediump vec4 light_color_energy;
 	mediump vec4 light_params; // cone attenuation, angle, specular, shadow enabled,
 	mediump vec4 light_clamp;
-	mediump vec4 shadow_color_contact;
+	vec4 shadow_bias;
+	vec4 shadow_normal_bias;
+	vec4 shadow_transmittance_bias;
+	vec4 shadow_transmittance_z_scale;
 	highp mat4 shadow_matrix1;
 	highp mat4 shadow_matrix2;
 	highp mat4 shadow_matrix3;
 	highp mat4 shadow_matrix4;
+	vec4 shadow_color1;
+	vec4 shadow_color2;
+	vec4 shadow_color3;
+	vec4 shadow_color4;
 	mediump vec4 shadow_split_offsets;
 };
 
@@ -783,6 +792,9 @@ struct LightData {
 	mediump vec4 light_clamp;
 	mediump vec4 shadow_color_contact;
 	highp mat4 shadow_matrix;
+	float shadow_bias;
+	float shadow_normal_bias;
+	float transmittance_bias;
 };
 
 layout(std140) uniform OmniLightData { // ubo:4
@@ -1242,9 +1254,19 @@ void light_process_omni(int idx, vec3 vertex, vec3 eye_vec, vec3 normal, vec3 bi
 	if (omni_lights[idx].light_params.w > 0.5) {
 		// there is a shadowmap
 
-		highp vec3 splane = (omni_lights[idx].shadow_matrix * vec4(vertex, 1.0)).xyz;
-		float shadow_len = length(splane);
-		splane = normalize(splane);
+		vec4 v = vec4(vertex, 1.0);
+
+		vec4 splane = (lights.data[idx].shadow_matrix * v);
+		float shadow_len = length(splane.xyz);
+
+		{
+			vec3 nofs = normal_interp * lights.data[idx].shadow_normal_bias / lights.data[idx].inv_radius;
+			nofs *= (1.0 - max(0.0, dot(normalize(light_rel_vec), normalize(normal_interp))));
+			v.xyz += nofs;
+			splane = (lights.data[idx].shadow_matrix * v);
+		}
+
+		splane.xyz = normalize(splane.xyz);
 		vec4 clamp_rect = omni_lights[idx].light_clamp;
 
 		if (splane.z >= 0.0) {
@@ -1267,8 +1289,9 @@ void light_process_omni(int idx, vec3 vertex, vec3 eye_vec, vec3 normal, vec3 bi
 		}
 
 		splane.xy /= splane.z;
+
 		splane.xy = splane.xy * 0.5 + 0.5;
-		splane.z = shadow_len * omni_lights[idx].light_pos_inv_radius.w;
+		splane.z = (shadow_len - lights.data[idx].shadow_bias) * lights.data[idx].inv_radius;
 
 		splane.xy = clamp_rect.xy + splane.xy * clamp_rect.zw;
 		float shadow = sample_shadow(shadow_atlas, shadow_atlas_pixel_size, splane.xy, splane.z, clamp_rect);
@@ -1309,10 +1332,21 @@ void light_process_spot(int idx, vec3 vertex, vec3 eye_vec, vec3 normal, vec3 bi
 #if !defined(SHADOWS_DISABLED)
 #ifdef USE_SHADOW
 	if (spot_lights[idx].light_params.w > 0.5) {
-		//there is a shadowmap
-		highp vec4 splane = (spot_lights[idx].shadow_matrix * vec4(vertex, 1.0));
-		splane.xyz /= splane.w;
+		// There is a shadowmap.
+		vec4 v = vec4(vertex, 1.0);
 
+		v.xyz -= spot_dir * lights.data[idx].shadow_bias;
+
+		// The closer to the light origin, the more you have to offset to reach 1px in the map.
+		float depth_bias_scale = 1.0 / (max(0.0001, dot(spot_dir, -light_rel_vec) * lights.data[idx].inv_radius));
+		vec3 normal_bias = normalize(normal_interp) * (1.0 - max(0.0, dot(spot_dir, -normalize(normal_interp)))) * lights.data[idx].shadow_normal_bias * depth_bias_scale;
+		// Only XY, no Z.
+		normal_bias -= spot_dir * dot(spot_dir, normal_bias);
+		v.xyz += normal_bias;
+
+		vec4 splane = (lights.data[idx].shadow_matrix * v);
+		splane /= splane.w;
+		splane.z = dot(spot_dir, v.xyz - lights.data[idx].position) * lights.data[idx].inv_radius;
 		float shadow = sample_shadow(shadow_atlas, shadow_atlas_pixel_size, splane.xy, splane.z, spot_lights[idx].light_clamp);
 
 #ifdef USE_CONTACT_SHADOWS
@@ -1919,6 +1953,13 @@ FRAGMENT_SHADER_CODE
 
 		vec3 pssm_coord;
 		float pssm_fade = 0.0;
+		vec3 light_dir = directional_lights.data[i].direction;
+
+#define BIAS_FUNC(m_var, m_idx)                                                                                                                                       \
+	m_var.xyz += light_dir * directional_lights.data[i].shadow_bias[m_idx];                                                                                           \
+	vec3 normal_bias = normalize(normal_interp) * (1.0 - max(0.0, dot(light_dir, -normalize(normal_interp)))) * directional_lights.data[i].shadow_normal_bias[m_idx]; \
+	normal_bias -= light_dir * dot(light_dir, normal_bias);                                                                                                           \
+	m_var.xyz += normal_bias;
 
 #ifdef LIGHT_USE_PSSM_BLEND
 		float pssm_blend;
@@ -1931,9 +1972,11 @@ FRAGMENT_SHADER_CODE
 		if (depth_z < shadow_split_offsets.y) {
 
 			if (depth_z < shadow_split_offsets.x) {
+				vec4 v = vec4(vertex, 1.0);
+				BIAS_FUNC(v, 0);
 
-				highp vec4 splane = (shadow_matrix1 * vec4(vertex, 1.0));
-				pssm_coord = splane.xyz / splane.w;
+				pssm_coord = (directional_lights.data[i].shadow_matrix1 * v);
+				shadow_color = directional_lights.data[i].shadow_color1.rgb;
 
 #if defined(LIGHT_USE_PSSM_BLEND)
 
@@ -1943,9 +1986,11 @@ FRAGMENT_SHADER_CODE
 #endif
 
 			} else {
+				vec4 v = vec4(vertex, 1.0);
+				BIAS_FUNC(v, 1);
 
-				highp vec4 splane = (shadow_matrix2 * vec4(vertex, 1.0));
-				pssm_coord = splane.xyz / splane.w;
+				pssm_coord = (directional_lights.data[i].shadow_matrix2 * v);
+				shadow_color = directional_lights.data[i].shadow_color2.rgb;
 
 #if defined(LIGHT_USE_PSSM_BLEND)
 				splane = (shadow_matrix3 * vec4(vertex, 1.0));
@@ -1956,9 +2001,11 @@ FRAGMENT_SHADER_CODE
 		} else {
 
 			if (depth_z < shadow_split_offsets.z) {
+				vec4 v = vec4(vertex, 1.0);
+				BIAS_FUNC(v, 2);
 
-				highp vec4 splane = (shadow_matrix3 * vec4(vertex, 1.0));
-				pssm_coord = splane.xyz / splane.w;
+				pssm_coord = (directional_lights.data[i].shadow_matrix3 * v);
+				shadow_color = directional_lights.data[i].shadow_color3.rgb;
 
 #if defined(LIGHT_USE_PSSM_BLEND)
 				splane = (shadow_matrix4 * vec4(vertex, 1.0));
@@ -1967,9 +2014,11 @@ FRAGMENT_SHADER_CODE
 #endif
 
 			} else {
+				vec4 v = vec4(vertex, 1.0);
+				BIAS_FUNC(v, 3);
 
-				highp vec4 splane = (shadow_matrix4 * vec4(vertex, 1.0));
-				pssm_coord = splane.xyz / splane.w;
+				pssm_coord = (directional_lights.data[i].shadow_matrix4 * v);
+				shadow_color = directional_lights.data[i].shadow_color4.rgb;
 				pssm_fade = smoothstep(shadow_split_offsets.z, shadow_split_offsets.w, depth_z);
 
 #if defined(LIGHT_USE_PSSM_BLEND)
@@ -1985,19 +2034,23 @@ FRAGMENT_SHADER_CODE
 
 		if (depth_z < shadow_split_offsets.x) {
 
-			highp vec4 splane = (shadow_matrix1 * vec4(vertex, 1.0));
-			pssm_coord = splane.xyz / splane.w;
+			vec4 v = vec4(vertex, 1.0);
+			BIAS_FUNC(v, 0);
+			pssm_coord = (directional_lights.data[i].shadow_matrix1 * v);
 
 #if defined(LIGHT_USE_PSSM_BLEND)
 
-			splane = (shadow_matrix2 * vec4(vertex, 1.0));
+			vec4 v = vec4(vertex, 1.0);
+			BIAS_FUNC(v, 1);
+			pssm_coord = (directional_lights.data[i].shadow_matrix2 * v);
 			pssm_coord2 = splane.xyz / splane.w;
 			pssm_blend = smoothstep(0.0, shadow_split_offsets.x, depth_z);
 #endif
 
 		} else {
-			highp vec4 splane = (shadow_matrix2 * vec4(vertex, 1.0));
-			pssm_coord = splane.xyz / splane.w;
+			vec4 v = vec4(vertex, 1.0);
+			BIAS_FUNC(v, 1);
+			pssm_coord = (directional_lights.data[i].shadow_matrix2 * v);
 			pssm_fade = smoothstep(shadow_split_offsets.x, shadow_split_offsets.y, depth_z);
 #if defined(LIGHT_USE_PSSM_BLEND)
 			use_blend = false;
@@ -2017,6 +2070,7 @@ FRAGMENT_SHADER_CODE
 		//one one sample
 
 		float shadow = sample_shadow(directional_shadow, directional_shadow_pixel_size, pssm_coord.xy, pssm_coord.z, light_clamp);
+		shadow_color = mix(shadow_color, shadow_color_blend, pssm_blend);
 
 #if defined(LIGHT_USE_PSSM_BLEND)
 
@@ -2034,6 +2088,8 @@ FRAGMENT_SHADER_CODE
 #endif
 		light_attenuation = mix(mix(shadow_color_contact.rgb, vec3(1.0), shadow), vec3(1.0), pssm_fade);
 	}
+
+#undef BIAS_FUNC
 
 #endif // !defined(SHADOWS_DISABLED)
 #endif //LIGHT_DIRECTIONAL_SHADOW

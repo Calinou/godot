@@ -126,14 +126,13 @@ public:
 
 			float ambient_energy;
 			float bg_energy;
-			float z_offset;
-			float z_slope_scale;
 			float shadow_dual_paraboloid_render_zfar;
 			float shadow_dual_paraboloid_render_side;
 			float viewport_size[2];
 			float screen_pixel_size[2];
 			float shadow_atlas_pixel_size[2];
 			float shadow_directional_pixel_size[2];
+			uint32_t pancake_shadows;
 
 			float time;
 			float z_far;
@@ -589,6 +588,8 @@ public:
 			float matrix[4 * 16];
 		} shadow;
 		float shadow_split_offsets[4];
+		float shadow_bias[4];
+		float shadow_normal_bias[4];
 	};
 
 	struct LightInstance : public RID_Data {
@@ -600,6 +601,7 @@ public:
 			float farplane;
 			float split;
 			float bias_scale;
+			float shadow_texel_size;
 		};
 
 		ShadowTransform shadow_transform[4];
@@ -635,8 +637,110 @@ public:
 
 	virtual RID light_instance_create(RID p_light);
 	virtual void light_instance_set_transform(RID p_light_instance, const Transform &p_transform);
-	virtual void light_instance_set_shadow_transform(RID p_light_instance, const CameraMatrix &p_projection, const Transform &p_transform, float p_far, float p_split, int p_pass, float p_bias_scale = 1.0);
+	virtual void light_instance_set_shadow_transform(RID p_light_instance, const CameraMatrix &p_projection, const Transform &p_transform, float p_far, float p_split, int p_pass, float p_shadow_texel_size, float p_bias_scale = 1.0);
 	virtual void light_instance_mark_visible(RID p_light_instance);
+
+	_FORCE_INLINE_ RID light_instance_get_base_light(RID p_light_instance) {
+		LightInstance *li = light_instance_owner.getornull(p_light_instance);
+		return li->light;
+	}
+
+	_FORCE_INLINE_ Transform light_instance_get_base_transform(RID p_light_instance) {
+		LightInstance *li = light_instance_owner.getornull(p_light_instance);
+		return li->transform;
+	}
+
+	_FORCE_INLINE_ Rect2 light_instance_get_shadow_atlas_rect(RID p_light_instance, RID p_shadow_atlas) {
+		ShadowAtlas *shadow_atlas = shadow_atlas_owner.getornull(p_shadow_atlas);
+		LightInstance *li = light_instance_owner.getornull(p_light_instance);
+		uint32_t key = shadow_atlas->shadow_owners[li->self];
+		uint32_t quadrant = (key >> ShadowAtlas::QUADRANT_SHIFT) & 0x3;
+		uint32_t shadow = key & ShadowAtlas::SHADOW_INDEX_MASK;
+		ERR_FAIL_COND_V(shadow >= (uint32_t)shadow_atlas->quadrants[quadrant].shadows.size(), Rect2());
+		uint32_t atlas_size = shadow_atlas->size;
+		uint32_t quadrant_size = atlas_size >> 1;
+		uint32_t x = (quadrant & 1) * quadrant_size;
+		uint32_t y = (quadrant >> 1) * quadrant_size;
+		uint32_t shadow_size = (quadrant_size / shadow_atlas->quadrants[quadrant].subdivision);
+		x += (shadow % shadow_atlas->quadrants[quadrant].subdivision) * shadow_size;
+		y += (shadow / shadow_atlas->quadrants[quadrant].subdivision) * shadow_size;
+		uint32_t width = shadow_size;
+		uint32_t height = shadow_size;
+		return Rect2(x / float(shadow_atlas->size), y / float(shadow_atlas->size), width / float(shadow_atlas->size), height / float(shadow_atlas->size));
+	}
+
+	_FORCE_INLINE_ CameraMatrix light_instance_get_shadow_camera(RID p_light_instance, int p_index) {
+		LightInstance *li = light_instance_owner.getornull(p_light_instance);
+		return li->shadow_transform[p_index].camera;
+	}
+
+	_FORCE_INLINE_ float light_instance_get_shadow_texel_size(RID p_light_instance, RID p_shadow_atlas) {
+
+#ifdef DEBUG_ENABLED
+		LightInstance *li = light_instance_owner.getornull(p_light_instance);
+		ERR_FAIL_COND_V(!li->shadow_atlases.has(p_shadow_atlas), 0);
+#endif
+		ShadowAtlas *shadow_atlas = shadow_atlas_owner.getornull(p_shadow_atlas);
+		ERR_FAIL_COND_V(!shadow_atlas, 0);
+#ifdef DEBUG_ENABLED
+		ERR_FAIL_COND_V(!shadow_atlas->shadow_owners.has(p_light_instance), 0);
+#endif
+		uint32_t key = shadow_atlas->shadow_owners[p_light_instance];
+
+		uint32_t quadrant = (key >> ShadowAtlas::QUADRANT_SHIFT) & 0x3;
+
+		uint32_t quadrant_size = shadow_atlas->size >> 1;
+
+		uint32_t shadow_size = (quadrant_size / shadow_atlas->quadrants[quadrant].subdivision);
+
+		return float(1.0) / shadow_size;
+	}
+
+	_FORCE_INLINE_ Transform light_instance_get_shadow_transform(RID p_light_instance, int p_index) {
+		LightInstance *li = light_instance_owner.getornull(p_light_instance);
+		return li->shadow_transform[p_index].transform;
+	}
+
+	_FORCE_INLINE_ float light_instance_get_shadow_bias_scale(RID p_light_instance, int p_index) {
+		LightInstance *li = light_instance_owner.getornull(p_light_instance);
+		return li->shadow_transform[p_index].bias_scale;
+	}
+
+	_FORCE_INLINE_ float light_instance_get_shadow_range(RID p_light_instance, int p_index) {
+		LightInstance *li = light_instance_owner.getornull(p_light_instance);
+		return li->shadow_transform[p_index].farplane;
+	}
+
+	_FORCE_INLINE_ float light_instance_get_directional_shadow_split(RID p_light_instance, int p_index) {
+		LightInstance *li = light_instance_owner.getornull(p_light_instance);
+		return li->shadow_transform[p_index].split;
+	}
+
+	_FORCE_INLINE_ float light_instance_get_directional_shadow_texel_size(RID p_light_instance, int p_index) {
+
+		LightInstance *li = light_instance_owner.getornull(p_light_instance);
+		return li->shadow_transform[p_index].shadow_texel_size;
+	}
+
+	_FORCE_INLINE_ void light_instance_set_render_pass(RID p_light_instance, uint64_t p_pass) {
+		LightInstance *li = light_instance_owner.getornull(p_light_instance);
+		li->last_pass = p_pass;
+	}
+
+	_FORCE_INLINE_ uint64_t light_instance_get_render_pass(RID p_light_instance) {
+		LightInstance *li = light_instance_owner.getornull(p_light_instance);
+		return li->last_pass;
+	}
+
+	_FORCE_INLINE_ void light_instance_set_index(RID p_light_instance, uint32_t p_index) {
+		LightInstance *li = light_instance_owner.getornull(p_light_instance);
+		li->light_index = p_index;
+	}
+
+	_FORCE_INLINE_ uint32_t light_instance_get_index(RID p_light_instance) {
+		LightInstance *li = light_instance_owner.getornull(p_light_instance);
+		return li->light_index;
+	}
 
 	/* REFLECTION INSTANCE */
 
@@ -846,7 +950,7 @@ public:
 
 	void _draw_sky(RasterizerStorageGLES3::Sky *p_sky, const CameraMatrix &p_projection, const Transform &p_transform, bool p_vflip, float p_custom_fov, float p_energy, const Basis &p_sky_orientation);
 
-	void _setup_environment(Environment *env, const CameraMatrix &p_cam_projection, const Transform &p_cam_transform, bool p_no_fog = false);
+	void _setup_environment(Environment *env, const CameraMatrix &p_cam_projection, const Transform &p_cam_transform, bool p_no_fog = false, bool p_pancake_shadows = false);
 	void _setup_directional_light(int p_index, const Transform &p_camera_inverse_transform, bool p_use_shadows);
 	void _setup_lights(RID *p_light_cull_result, int p_light_cull_count, const Transform &p_camera_inverse_transform, const CameraMatrix &p_camera_projection, RID p_shadow_atlas);
 	void _setup_reflections(RID *p_reflection_probe_cull_result, int p_reflection_probe_cull_count, const Transform &p_camera_inverse_transform, const CameraMatrix &p_camera_projection, RID p_reflection_atlas, Environment *p_env);
@@ -864,7 +968,7 @@ public:
 	void _bind_depth_texture();
 
 	virtual void render_scene(const Transform &p_cam_transform, const CameraMatrix &p_cam_projection, bool p_cam_ortogonal, InstanceBase **p_cull_result, int p_cull_count, RID *p_light_cull_result, int p_light_cull_count, RID *p_reflection_probe_cull_result, int p_reflection_probe_cull_count, RID p_environment, RID p_shadow_atlas, RID p_reflection_atlas, RID p_reflection_probe, int p_reflection_probe_pass);
-	virtual void render_shadow(RID p_light, RID p_shadow_atlas, int p_pass, InstanceBase **p_cull_result, int p_cull_count);
+	virtual void render_shadow(RID p_light, RID p_shadow_atlas, int p_pass, InstanceBase **p_cull_result, int p_cull_count, bool p_use_pancake);
 	virtual bool free(RID p_rid);
 
 	virtual void set_scene_pass(uint64_t p_pass);
