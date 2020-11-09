@@ -71,7 +71,7 @@ int MainTimerSync::get_average_physics_steps(float &p_min, float &p_max) {
 }
 
 // advance physics clock by p_idle_step, return appropriate number of steps to simulate
-MainFrameTime MainTimerSync::advance_core(float p_frame_slice, int p_iterations_per_second, float p_idle_step) {
+MainFrameTime MainTimerSync::advance_core(float p_frame_slice, float p_iterations_per_second, float p_idle_step) {
 	MainFrameTime ret;
 
 	ret.idle_step = p_idle_step;
@@ -142,7 +142,7 @@ MainFrameTime MainTimerSync::advance_core(float p_frame_slice, int p_iterations_
 }
 
 // calls advance_core, keeps track of deficit it adds to animaption_step, make sure the deficit sum stays close to zero
-MainFrameTime MainTimerSync::advance_checked(float p_frame_slice, int p_iterations_per_second, float p_idle_step) {
+MainFrameTime MainTimerSync::advance_checked(float p_frame_slice, float p_iterations_per_second, float p_idle_step) {
 	if (fixed_fps != -1)
 		p_idle_step = 1.0 / fixed_fps;
 
@@ -220,7 +220,7 @@ void MainTimerSync::set_fixed_fps(int p_fixed_fps) {
 }
 
 // advance one frame, return timesteps to take
-MainFrameTime MainTimerSync::advance(float p_frame_slice, int p_iterations_per_second) {
+MainFrameTime MainTimerSync::advance(float p_frame_slice, float p_iterations_per_second) {
 	float cpu_idle_step = get_cpu_idle_step();
 
 	return advance_checked(p_frame_slice, p_iterations_per_second, cpu_idle_step);
