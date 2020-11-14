@@ -38,6 +38,8 @@
 #include "core/rid.h"
 #include "scene/scene_string_names.h"
 
+#include <functional>
+
 #ifdef TOOLS_ENABLED
 #include "editor/plugins/spatial_editor_plugin.h"
 #endif
@@ -450,9 +452,9 @@ void RigidBody::_direct_state_changed(Object *p_state) {
 #endif
 
 	set_ignore_transform_notification(true);
-	set_global_transform(state->get_transform());
-	linear_velocity = state->get_linear_velocity();
-	angular_velocity = state->get_angular_velocity();
+//	set_global_transform(state->get_transform());
+//	linear_velocity = state->get_linear_velocity();
+//	angular_velocity = state->get_angular_velocity();
 	inverse_inertia_tensor = state->get_inverse_inertia_tensor();
 	if (sleeping != state->is_sleeping()) {
 		sleeping = state->is_sleeping();
@@ -548,6 +550,16 @@ void RigidBody::_direct_state_changed(Object *p_state) {
 	}
 
 	state = NULL;
+}
+
+void RigidBody::flush_transform(PhysicsDirectBodyState *p_state)
+{
+	set_ignore_transform_notification(true);
+	set_global_transform(p_state->get_transform());
+	linear_velocity = p_state->get_linear_velocity();
+	angular_velocity = p_state->get_angular_velocity();	
+	set_ignore_transform_notification(false);
+	//OS::get_singleton()->print("_flush_transform %f %f %f", state->get_transform().origin.x, state->get_transform().origin.y, state->get_transform().origin.z);
 }
 
 void RigidBody::_notification(int p_what) {
@@ -1074,6 +1086,10 @@ RigidBody::RigidBody() :
 	can_sleep = true;
 
 	PhysicsServer::get_singleton()->body_set_force_integration_callback(get_rid(), this, "_direct_state_changed");
+
+    // bind to a pointer to member function
+    auto flush_callback = [this](PhysicsDirectBodyState* state) { this->flush_transform(state); };
+	PhysicsServer::get_singleton()->body_set_flush_transform_callback(get_rid(), this, flush_callback);
 }
 
 RigidBody::~RigidBody() {

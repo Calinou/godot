@@ -243,6 +243,7 @@ public:
 	virtual void body_set_max_contacts_reported(RID p_body, int p_contacts);
 	virtual int body_get_max_contacts_reported(RID p_body) const;
 
+	virtual void body_flush_transform_callback(RID p_body, Object *p_receiver, const StringName &p_method, const Variant &p_udata = Variant()) {}
 	virtual void body_set_force_integration_callback(RID p_body, Object *p_receiver, const StringName &p_method, const Variant &p_udata = Variant());
 	virtual bool body_collide_shape(RID p_body, int p_body_shape, RID p_shape, const Transform2D &p_shape_xform, const Vector2 &p_motion, Vector2 *r_results, int p_result_max, int &r_result_count);
 
@@ -283,6 +284,7 @@ public:
 	virtual void flush_queries();
 	virtual void end_sync();
 	virtual void finish();
+	virtual void flush_transforms() {}
 
 	virtual bool is_flushing_queries() const { return flushing_queries; }
 

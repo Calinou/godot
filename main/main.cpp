@@ -2092,6 +2092,7 @@ bool Main::iteration() {
 		message_queue->flush();
 
 		PhysicsServer::get_singleton()->step(frame_slice);
+		PhysicsServer::get_singleton()->flush_transforms();
 
 		Physics2DServer::get_singleton()->end_sync();
 		Physics2DServer::get_singleton()->step(frame_slice);

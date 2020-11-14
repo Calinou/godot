@@ -1096,9 +1096,20 @@ void SpaceSW::body_add_to_state_query_list(SelfList<BodySW> *p_body) {
 
 	state_query_list.add(p_body);
 }
+
 void SpaceSW::body_remove_from_state_query_list(SelfList<BodySW> *p_body) {
 
 	state_query_list.remove(p_body);
+}
+
+void SpaceSW::body_add_to_flush_transform_list(SelfList<BodySW> *p_body) 
+{
+	flush_transform_list.add(p_body);
+}
+
+void SpaceSW::body_remove_from_flush_transform_list(SelfList<BodySW> *p_body) 
+{
+	flush_transform_list.remove(p_body);
 }
 
 void SpaceSW::area_add_to_monitor_query_list(SelfList<AreaSW> *p_area) {
@@ -1123,6 +1134,16 @@ void SpaceSW::area_remove_from_moved_list(SelfList<AreaSW> *p_area) {
 const SelfList<AreaSW>::List &SpaceSW::get_moved_area_list() const {
 
 	return area_moved_list;
+}
+
+void SpaceSW::flush_transforms() 
+{
+	while (flush_transform_list.first()) 
+	{
+		BodySW *b = flush_transform_list.first()->self();
+		flush_transform_list.remove(flush_transform_list.first());
+		b->flush_transforms();
+	}
 }
 
 void SpaceSW::call_queries() {

@@ -82,6 +82,7 @@ private:
 	SelfList<BodySW>::List active_list;
 	SelfList<BodySW>::List inertia_update_list;
 	SelfList<BodySW>::List state_query_list;
+	SelfList<BodySW>::List flush_transform_list;
 	SelfList<AreaSW>::List monitor_query_list;
 	SelfList<AreaSW>::List area_moved_list;
 
@@ -141,6 +142,8 @@ public:
 
 	void body_add_to_state_query_list(SelfList<BodySW> *p_body);
 	void body_remove_from_state_query_list(SelfList<BodySW> *p_body);
+	void body_add_to_flush_transform_list(SelfList<BodySW> *p_body); 
+	void body_remove_from_flush_transform_list(SelfList<BodySW> *p_body);
 
 	void area_add_to_monitor_query_list(SelfList<AreaSW> *p_area);
 	void area_remove_from_monitor_query_list(SelfList<AreaSW> *p_area);
@@ -165,6 +168,7 @@ public:
 
 	void update();
 	void setup();
+	void flush_transforms();
 	void call_queries();
 
 	bool is_locked() const;

@@ -937,6 +937,13 @@ void PhysicsServerSW::body_set_force_integration_callback(RID p_body, Object *p_
 	body->set_force_integration_callback(p_receiver ? p_receiver->get_instance_id() : ObjectID(0), p_method, p_udata);
 }
 
+void PhysicsServerSW::body_set_flush_transform_callback(RID p_body, Object *p_receiver, std::function<void(PhysicsDirectBodyState*)> callback) {
+
+	BodySW *body = body_owner.get(p_body);
+	ERR_FAIL_COND(!body);
+	body->set_flush_transform_callback(p_receiver ? p_receiver->get_instance_id() : ObjectID(0), callback);
+}
+
 void PhysicsServerSW::body_set_ray_pickable(RID p_body, bool p_enable) {
 
 	BodySW *body = body_owner.get(p_body);
@@ -1501,6 +1508,18 @@ void PhysicsServerSW::flush_queries() {
 		ScriptDebugger::get_singleton()->add_profiling_frame_data("physics", values);
 	}
 #endif
+};
+
+void PhysicsServerSW::flush_transforms() 
+{
+	if (!active)
+		return;
+
+	for (Set<const SpaceSW *>::Element *E = active_spaces.front(); E; E = E->next()) 
+	{
+		SpaceSW *space = (SpaceSW *)E->get();
+		space->flush_transforms();
+	}
 };
 
 void PhysicsServerSW::finish() {

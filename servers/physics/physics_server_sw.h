@@ -37,6 +37,8 @@
 #include "space_sw.h"
 #include "step_sw.h"
 
+#include <functional>
+
 class PhysicsServerSW : public PhysicsServer {
 
 	GDCLASS(PhysicsServerSW, PhysicsServer);
@@ -232,6 +234,7 @@ public:
 	virtual int body_get_max_contacts_reported(RID p_body) const;
 
 	virtual void body_set_force_integration_callback(RID p_body, Object *p_receiver, const StringName &p_method, const Variant &p_udata = Variant());
+	virtual void body_set_flush_transform_callback(RID p_body, Object *p_receiver, std::function<void(PhysicsDirectBodyState*)> callback);
 
 	virtual void body_set_ray_pickable(RID p_body, bool p_enable);
 	virtual bool body_is_ray_pickable(RID p_body) const;
@@ -368,6 +371,7 @@ public:
 	virtual void step(real_t p_step);
 	virtual void sync();
 	virtual void flush_queries();
+	virtual void flush_transforms();
 	virtual void finish();
 
 	virtual bool is_flushing_queries() const { return flushing_queries; }

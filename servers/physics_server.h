@@ -34,6 +34,8 @@
 #include "core/object.h"
 #include "core/resource.h"
 
+#include <functional>
+
 class PhysicsDirectSpaceState;
 
 class PhysicsDirectBodyState : public Object {
@@ -473,6 +475,7 @@ public:
 	virtual bool body_is_omitting_force_integration(RID p_body) const = 0;
 
 	virtual void body_set_force_integration_callback(RID p_body, Object *p_receiver, const StringName &p_method, const Variant &p_udata = Variant()) = 0;
+	virtual void body_set_flush_transform_callback(RID p_body, Object *p_receiver, std::function<void(PhysicsDirectBodyState*)> callback) = 0;
 
 	virtual void body_set_ray_pickable(RID p_body, bool p_enable) = 0;
 	virtual bool body_is_ray_pickable(RID p_body) const = 0;
@@ -760,6 +763,7 @@ public:
 	virtual void sync() = 0;
 	virtual void flush_queries() = 0;
 	virtual void finish() = 0;
+	virtual void flush_transforms() = 0;
 
 	virtual bool is_flushing_queries() const = 0;
 

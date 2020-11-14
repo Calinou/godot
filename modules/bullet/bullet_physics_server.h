@@ -40,6 +40,8 @@
 #include "soft_body_bullet.h"
 #include "space_bullet.h"
 
+#include <functional>
+
 /**
 	@author AndreaCatania
 */
@@ -246,6 +248,7 @@ public:
 	virtual void body_set_omit_force_integration(RID p_body, bool p_omit);
 	virtual bool body_is_omitting_force_integration(RID p_body) const;
 
+	virtual void body_set_flush_transform_callback(RID p_body, Object *p_receiver, std::function<void(PhysicsDirectBodyState*)> callback) {}
 	virtual void body_set_force_integration_callback(RID p_body, Object *p_receiver, const StringName &p_method, const Variant &p_udata = Variant());
 
 	virtual void body_set_ray_pickable(RID p_body, bool p_enable);
@@ -399,6 +402,8 @@ public:
 	virtual void sync();
 	virtual void flush_queries();
 	virtual void finish();
+	virtual void flush_transforms() {};
+
 
 	virtual bool is_flushing_queries() const { return false; }
 

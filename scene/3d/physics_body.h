@@ -190,6 +190,7 @@ protected:
 
 	void _body_inout(int p_status, ObjectID p_instance, int p_body_shape, int p_local_shape);
 	virtual void _direct_state_changed(Object *p_state);
+	virtual void flush_transform(PhysicsDirectBodyState *p_state);
 
 	void _notification(int p_what);
 	static void _bind_methods();

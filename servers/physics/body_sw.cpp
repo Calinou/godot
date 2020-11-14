@@ -30,6 +30,7 @@
 
 #include "body_sw.h"
 #include "area_sw.h"
+#include "core/os/os.h"
 #include "space_sw.h"
 
 void BodySW::_update_inertia() {
@@ -389,10 +390,15 @@ void BodySW::set_space(SpaceSW *p_space) {
 
 		if (inertia_update_list.in_list())
 			get_space()->body_remove_from_inertia_update_list(&inertia_update_list);
+
 		if (active_list.in_list())
 			get_space()->body_remove_from_active_list(&active_list);
+
 		if (direct_state_query_list.in_list())
 			get_space()->body_remove_from_state_query_list(&direct_state_query_list);
+
+		if (flush_transform_list.in_list())
+			get_space()->body_remove_from_flush_transform_list(&flush_transform_list);
 	}
 
 	_set_space(p_space);
@@ -581,6 +587,9 @@ void BodySW::integrate_velocities(real_t p_step) {
 	if (fi_callback)
 		get_space()->body_add_to_state_query_list(&direct_state_query_list);
 
+	if (flush_callback)
+		get_space()->body_add_to_flush_transform_list(&flush_transform_list);
+
 	//apply axis lock linear
 	for (int i = 0; i < 3; i++) {
 		if (is_axis_locked((PhysicsServer::BodyAxis)(1 << i))) {
@@ -720,6 +729,23 @@ void BodySW::call_queries() {
 	}
 }
 
+void BodySW::flush_transforms() {
+	if (flush_callback == nullptr)
+		return;
+
+	PhysicsDirectBodyStateSW *dbs = PhysicsDirectBodyStateSW::singleton;
+	dbs->body = this;
+
+	//Variant v = dbs;
+
+	Object *obj = ObjectDB::get_instance(flush_callback->id);
+	if (!obj) {
+		set_flush_transform_callback(0, nullptr);
+	} else {
+		flush_callback->callback(dbs);
+	}
+}
+
 bool BodySW::sleep_test(real_t p_step) {
 
 	if (mode == PhysicsServer::BODY_MODE_STATIC || mode == PhysicsServer::BODY_MODE_KINEMATIC)
@@ -758,6 +784,21 @@ void BodySW::set_force_integration_callback(ObjectID p_id, const StringName &p_m
 	}
 }
 
+void BodySW::set_flush_transform_callback(ObjectID p_id, std::function<void(PhysicsDirectBodyState *)> callback) {
+
+	if (flush_callback) {
+
+		memdelete(flush_callback);
+		flush_callback = NULL;
+	}
+
+	if (p_id != 0) {
+		flush_callback = memnew(FlushTransformCallback);
+		flush_callback->id = p_id;
+		flush_callback->callback = callback;
+	}
+}
+
 void BodySW::set_kinematic_margin(real_t p_margin) {
 	kinematic_safe_margin = p_margin;
 }
@@ -767,7 +808,8 @@ BodySW::BodySW() :
 		locked_axis(0),
 		active_list(this),
 		inertia_update_list(this),
-		direct_state_query_list(this) {
+		direct_state_query_list(this),
+		flush_transform_list(this) {
 
 	mode = PhysicsServer::BODY_MODE_RIGID;
 	active = true;
@@ -798,12 +840,16 @@ BodySW::BodySW() :
 	continuous_cd = false;
 	can_sleep = true;
 	fi_callback = NULL;
+	flush_callback = nullptr;
 }
 
 BodySW::~BodySW() {
 
 	if (fi_callback)
 		memdelete(fi_callback);
+
+	if (flush_callback)
+		memdelete(flush_callback);
 }
 
 PhysicsDirectBodyStateSW *PhysicsDirectBodyStateSW::singleton = NULL;

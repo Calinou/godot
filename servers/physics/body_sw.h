@@ -82,6 +82,7 @@ class BodySW : public CollisionObjectSW {
 	SelfList<BodySW> active_list;
 	SelfList<BodySW> inertia_update_list;
 	SelfList<BodySW> direct_state_query_list;
+	SelfList<BodySW> flush_transform_list;
 
 	VSet<RID> exceptions;
 	bool omit_force_integration;
@@ -136,7 +137,14 @@ class BodySW : public CollisionObjectSW {
 		Variant udata;
 	};
 
+	struct FlushTransformCallback
+	{
+		ObjectID id;
+		std::function<void(PhysicsDirectBodyState*)> callback;
+	};
+
 	ForceIntegrationCallback *fi_callback;
+	FlushTransformCallback *flush_callback;
 
 	uint64_t island_step;
 	BodySW *island_next;
@@ -150,6 +158,7 @@ class BodySW : public CollisionObjectSW {
 
 public:
 	void set_force_integration_callback(ObjectID p_id, const StringName &p_method, const Variant &p_udata = Variant());
+	void set_flush_transform_callback(ObjectID p_id, std::function<void(PhysicsDirectBodyState*)> callback);
 
 	void set_kinematic_margin(real_t p_margin);
 	_FORCE_INLINE_ real_t get_kinematic_margin() { return kinematic_safe_margin; }
@@ -331,6 +340,7 @@ public:
 
 	//void simulate_motion(const Transform& p_xform,real_t p_step);
 	void call_queries();
+	void flush_transforms();
 	void wakeup_neighbours();
 
 	bool sleep_test(real_t p_step);
