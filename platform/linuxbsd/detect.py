@@ -383,8 +383,8 @@ def configure(env):
             # No pkgconfig file for glslang so far
             env.Append(LIBS=["glslang", "SPIRV"])
 
-        # env.Append(CPPDEFINES=['OPENGL_ENABLED'])
-        env.Append(LIBS=["GL"])
+    env.Append(CPPDEFINES=["OPENGL_ENABLED"])
+    env.Append(LIBS=["GL"])
 
     env.Append(LIBS=["pthread"])
 
