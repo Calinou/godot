@@ -1,12 +1,12 @@
 /*************************************************************************/
-/*  context_gl_x11.h                                                     */
+/*  rasterizer_gles2.h                                                   */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2020 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2020 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -28,53 +28,63 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef CONTEXT_GL_X11_H
-#define CONTEXT_GL_X11_H
+#pragma once
 
-#ifdef X11_ENABLED
+#include "drivers/gles_common/rasterizer_platforms.h"
+#ifdef GLES2_BACKEND_ENABLED
 
-#if defined(OPENGL_ENABLED)
+#include "drivers/gles_common/rasterizer_version.h"
+#include "rasterizer_canvas_gles2.h"
+#include "rasterizer_scene_gles2.h"
+#include "rasterizer_storage_gles2.h"
+#include "servers/rendering/renderer_compositor.h"
 
-#include "core/os/os.h"
-#include <X11/Xlib.h>
-#include <X11/extensions/Xrender.h>
-
-struct ContextGL_X11_Private;
-
-class ContextGL_X11 {
-public:
-	enum ContextType {
-		GLES_2_0_COMPATIBLE,
-	};
-
+class RasterizerGLES2 : public RendererCompositor {
 private:
-	ContextGL_X11_Private *p;
-	OS::VideoMode default_video_mode;
-	::Display *x11_display;
-	::Window &x11_window;
-	bool double_buffer;
-	bool direct_render;
-	int glx_minor, glx_major;
-	bool use_vsync;
-	ContextType context_type;
+	uint64_t frame = 1;
+	float delta = 0;
+
+protected:
+	RasterizerCanvasGLES2 canvas;
+	RasterizerStorageGLES2 storage;
+	RasterizerSceneGLES2 scene;
+
+	void _blit_render_target_to_screen(RID p_render_target, const Rect2 &p_screen_rect);
 
 public:
-	void release_current();
-	void make_current();
-	void swap_buffers();
-	int get_window_width();
-	int get_window_height();
+	RendererStorage *get_storage() { return &storage; }
+	RendererCanvasRender *get_canvas() { return &canvas; }
+	RendererSceneRender *get_scene() { return &scene; }
 
-	Error initialize();
+	void set_boot_image(const Ref<Image> &p_image, const Color &p_color, bool p_scale, bool p_use_filter = true) {}
 
-	void set_use_vsync(bool p_use);
-	bool is_using_vsync() const;
+	void initialize();
+	void begin_frame(double frame_step) {
+		frame++;
+		delta = frame_step;
+	}
 
-	ContextGL_X11(::Display *p_x11_display, ::Window &p_x11_window, const OS::VideoMode &p_default_video_mode, ContextType p_context_type);
-	~ContextGL_X11();
+	void prepare_for_blitting_render_targets();
+	void blit_render_targets_to_screen(DisplayServer::WindowID p_screen, const BlitToScreen *p_render_targets, int p_amount);
+
+	void end_frame(bool p_swap_buffers);
+
+	void finalize() {}
+
+	static RendererCompositor *_create_current() {
+		return memnew(RasterizerGLES2);
+	}
+
+	static void make_current() {
+		_create_func = _create_current;
+	}
+
+	virtual bool is_low_end() const { return true; }
+	uint64_t get_frame_number() const { return frame; }
+	double get_frame_delta_time() const { return delta; }
+
+	RasterizerGLES2();
+	~RasterizerGLES2() {}
 };
 
-#endif
-
-#endif
-#endif
+#endif // GLES2_BACKEND_ENABLED

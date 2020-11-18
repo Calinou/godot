@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  context_gl_windows.h                                                 */
+/*  rasterizer_version.h                                                 */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,49 +28,57 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#if defined(OPENGL_ENABLED) || defined(GLES_ENABLED)
+#pragma once
 
-// Author: Juan Linietsky <reduzio@gmail.com>, (C) 2008
+//#define GLES_OVER_GL
 
-#ifndef CONTEXT_GL_WIN_H
-#define CONTEXT_GL_WIN_H
+//#define GODOT_3
+#define GODOT_4
 
-#include "core/error/error_list.h"
-#include "core/os/os.h"
+#ifdef GODOT_4
+// visual server becomes rendering server
+#define GD_VS RS
 
-#include <windows.h>
+#define GD_RD RenderingDevice
 
-typedef bool(APIENTRY *PFNWGLSWAPINTERVALEXTPROC)(int interval);
-typedef int(APIENTRY *PFNWGLGETSWAPINTERVALEXTPROC)(void);
+//#define GD_COMMAND_LINE CommandPrimitive
+#else
 
-class ContextGL_Windows {
-	HDC hDC;
-	HGLRC hRC;
-	unsigned int pixel_format;
-	HWND hWnd;
-	bool opengl_3_context;
-	bool use_vsync;
+//class ContextGL_Windows {
+//	HDC hDC;
+//	HGLRC hRC;
+//	unsigned int pixel_format;
+//	HWND hWnd;
+//	bool opengl_3_context;
+//	bool use_vsync;
+#define GD_VS VS
 
-	PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
-	PFNWGLGETSWAPINTERVALEXTPROC wglGetSwapIntervalEXT;
+// no rendering device in 3.2?
+#define GD_RD VS
 
-public:
-	void release_current();
+//public:
+//	void release_current();
 
-	void make_current();
+//	void make_current();
 
-	int get_window_width();
-	int get_window_height();
-	void swap_buffers();
+//	int get_window_width();
+//	int get_window_height();
+//	void swap_buffers();
 
-	Error initialize();
+//	Error initialize();
 
-	void set_use_vsync(bool p_use);
-	bool is_using_vsync() const;
+//	void set_use_vsync(bool p_use);
+//	bool is_using_vsync() const;
 
-	ContextGL_Windows(HWND hwnd, bool p_opengl_3_context);
-	~ContextGL_Windows();
-};
+//	ContextGL_Windows(HWND hwnd, bool p_opengl_3_context);
+//	~ContextGL_Windows();
+//};
 
-#endif
+//#endif
+//#define GD_COMMAND_LINE CommandLine
+
+#define GD_TYPE_LINE TYPE_LINE
+#define GD_TYPE_POLYLINE TYPE_POLYLINE
+#define GD_TYPE_POLYGON TYPE_POLYGON
+#define GD_TYPE_CIRCLE TYPE_CIRCLE
 #endif
