@@ -67,7 +67,7 @@ class ProjectManager : public Control {
 
 	FileDialog *scan_dir;
 	ConfirmationDialog *language_restart_ask;
-
+	ConfirmationDialog *check_updates_dialog;
 	ConfirmationDialog *erase_ask;
 	Label *erase_ask_label;
 	CheckBox *delete_project_contents;
@@ -85,7 +85,12 @@ class ProjectManager : public Control {
 	AcceptDialog *dialog_error;
 	ProjectDialog *npdialog;
 
+	Button *check_updates_btn;
+	HTTPRequest *check_updates_http;
 	OptionButton *language_btn;
+
+	// The URL to open when clicking the "Open in Browser" button in the update checker.
+	String new_version_url;
 
 	void _open_asset_library();
 	void _scan_projects();
@@ -101,6 +106,9 @@ class ProjectManager : public Control {
 	void _erase_project_confirm();
 	void _erase_missing_projects_confirm();
 	void _update_project_buttons();
+	void _check_for_updates();
+	void _check_for_updates_http_request_completed(int p_status, int p_code, const PackedStringArray &p_headers, const PackedByteArray &p_data, bool p_quiet = false);
+	void _check_for_updates_open_in_browser();
 	void _language_selected(int p_id);
 	void _restart_confirm();
 	void _confirm_update_settings();

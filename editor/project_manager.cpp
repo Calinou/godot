@@ -31,6 +31,7 @@
 #include "project_manager.h"
 
 #include "core/io/config_file.h"
+#include "core/io/json.h"
 #include "core/io/resource_saver.h"
 #include "core/io/stream_peer_ssl.h"
 #include "core/io/zip_io.h"
@@ -1844,6 +1845,12 @@ void ProjectManager::_notification(int p_what) {
 				// to search without having to reach for their mouse
 				search_box->grab_focus();
 			}
+
+			if (EDITOR_DEF("project_manager/check_for_updates_on_startup", false)) {
+				_check_for_updates();
+				// Don't show the update check button since update checks are automatic.
+				check_updates_btn->hide();
+			}
 		} break;
 		case NOTIFICATION_VISIBILITY_CHANGED: {
 			set_process_unhandled_key_input(is_visible_in_tree());
@@ -2254,6 +2261,96 @@ void ProjectManager::_erase_missing_projects() {
 	erase_missing_ask->popup_centered();
 }
 
+void ProjectManager::_check_for_updates() {
+	// TODO: Use a fixed godotengine.org URL JSON endpoint.
+	check_updates_http->request("https://gist.githubusercontent.com/Calinou/349f211b6181d9a76525b3aa1defc59b/raw/versions.json");
+	// Prevent multiple simultaneous requests by disabling the button after it has been pressed.
+	check_updates_btn->set_disabled(true);
+}
+
+void ProjectManager::_check_for_updates_http_request_completed(int p_status, int p_code, const PackedStringArray &p_headers, const PackedByteArray &p_data, bool p_quiet) {
+	check_updates_btn->set_disabled(false);
+
+	if (p_code < 400) {
+		String release_json;
+		{
+			const uint8_t *r = p_data.ptr();
+			release_json.parse_utf8((const char *)r, p_data.size());
+		}
+		Variant r;
+		String errs;
+		int errline;
+		const Error err = JSON::parse(release_json, r, errs, errline);
+		if (err != OK) {
+			check_updates_dialog->set_title(TTR("Error While Checking for Updates"));
+			check_updates_dialog->set_text(vformat(TTR("Couldn't check for an update (JSON failed parsing). Please report this issue."), p_code));
+			ERR_FAIL_MSG(vformat("JSON error at line %d: %s", errline, errs));
+		}
+
+		const Dictionary releases = Dictionary(r)["releases"];
+		const Array release_versions = releases.keys();
+		String selected_version;
+		Vector<int> versions_hex;
+		for (int i = 0; i < release_versions.size(); i++) {
+			print_line(release_versions[i]);
+			const Vector<int> version_parsed = String(release_versions[i]).split_ints(".");
+			ERR_FAIL_COND_MSG(version_parsed.size() <= 1, "Version identifier in JSON has incorrect format (not major.minor.patch or major.minor). Please report.");
+			if (version_parsed.size() >= 3) {
+				// major.minor.patch
+				versions_hex.push_back(0x10000 * version_parsed[0] + 0x100 * version_parsed[1] + version_parsed[2]);
+			} else {
+				// major.minor
+				versions_hex.push_back(0x10000 * version_parsed[0] + 0x100 * version_parsed[1]);
+			}
+		}
+
+		// Sort from oldest to newest, then compare the current engine version against the most recent version.
+		versions_hex.sort();
+		const int latest_version_hex = versions_hex[versions_hex.size() - 1];
+
+		if (latest_version_hex > VERSION_HEX) {
+			// Reconstruct the version string and select it as the version to display.
+			if (latest_version_hex % 0x10 >= 0) {
+				// major.minor.patch
+				print_line("Yes patch");
+				selected_version = vformat("%d.%d.%d", latest_version_hex % 0x10000, latest_version_hex % 0x100, latest_version_hex % 0x10);
+			} else {
+				// major.minor
+				print_line("No patch");
+				selected_version = vformat("%d.%d", latest_version_hex % 0x10000, latest_version_hex % 0x100);
+			}
+			print_line(selected_version);
+
+			const Dictionary version_dict = releases[selected_version];
+			const String release_date = version_dict["date"];
+			const String release_description = version_dict["description"];
+			new_version_url = version_dict["news_url"];
+			check_updates_dialog->set_title(TTR("New Version Available"));
+			check_updates_dialog->set_text(
+					vformat(TTR("A new stable Godot version is available (%s, released on %s).\nImportant: Make backups of your existing projects before upgrading!\n\nDescription:\n%s"),
+							selected_version,
+							release_date,
+							release_description.word_wrap(80)));
+			check_updates_dialog->popup_centered();
+		} else if (!p_quiet) {
+			check_updates_dialog->set_title(TTR("Already Up-to-date"));
+			check_updates_dialog->set_text(TTR("You are already using the latest stable Godot version."));
+			check_updates_dialog->popup_centered();
+			check_updates_btn->hide();
+		}
+		// When using quiet mode (automatic update checks), the "Check for updates" button is automatically hidden in `NOTIFICATION_READY`.
+	} else if (!p_quiet) {
+		// Client or server error.
+		check_updates_dialog->set_title(TTR("Error While Checking for Updates"));
+		check_updates_dialog->set_text(vformat(TTR("Couldn't check for an update (HTTP response code %d)."), p_code));
+		check_updates_dialog->popup_centered();
+	}
+}
+
+void ProjectManager::_check_for_updates_open_in_browser() {
+	OS::get_singleton()->shell_open(new_version_url);
+}
+
 void ProjectManager::_language_selected(int p_id) {
 	String lang = language_btn->get_item_metadata(p_id);
 	EditorSettings::get_singleton()->set("interface/editor/editor_language", lang);
@@ -2601,6 +2698,18 @@ ProjectManager::ProjectManager() {
 		version_label->set_align(Label::ALIGN_CENTER);
 		settings_hb->add_child(version_label);
 
+		check_updates_btn = memnew(Button);
+		check_updates_btn->set_icon(get_theme_icon("Reload", "EditorIcons"));
+		check_updates_btn->set_tooltip(TTR("Check for updates (requires an Internet connection)"));
+		check_updates_btn->connect("pressed", callable_mp(this, &ProjectManager::_check_for_updates));
+		settings_hb->add_child(check_updates_btn);
+
+		check_updates_http = memnew(HTTPRequest);
+		Vector<Variant> binds;
+		binds.push_back(EDITOR_DEF("project_manager/check_for_updates_on_startup", false));
+		check_updates_http->connect("request_completed", callable_mp(this, &ProjectManager::_check_for_updates_http_request_completed), binds);
+		settings_hb->add_child(check_updates_http);
+
 		language_btn = memnew(OptionButton);
 		language_btn->set_flat(true);
 		language_btn->set_icon(get_theme_icon("Environment", "EditorIcons"));
@@ -2651,6 +2760,12 @@ ProjectManager::ProjectManager() {
 		language_restart_ask->get_ok_button()->connect("pressed", callable_mp(this, &ProjectManager::_restart_confirm));
 		language_restart_ask->get_cancel_button()->set_text(TTR("Continue"));
 		add_child(language_restart_ask);
+
+		check_updates_dialog = memnew(ConfirmationDialog);
+		check_updates_dialog->get_ok_button()->set_text(TTR("Open in Browser"));
+		check_updates_dialog->get_ok_button()->connect("pressed", callable_mp(this, &ProjectManager::_check_for_updates_open_in_browser));
+		check_updates_dialog->get_cancel_button()->set_text(TTR("Close"));
+		add_child(check_updates_dialog);
 
 		scan_dir = memnew(FileDialog);
 		scan_dir->set_access(FileDialog::ACCESS_FILESYSTEM);
