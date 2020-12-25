@@ -2,9 +2,20 @@
 <html xmlns='http://www.w3.org/1999/xhtml' lang='' xml:lang=''>
 <head>
 	<meta charset='utf-8' />
-	<meta name='viewport' content='width=device-width, user-scalable=no' />
+	<meta name='viewport' content='width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no' />
+	<meta name="mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="application-name" content="Godot" />
+	<meta name="apple-mobile-web-app-title" content="Godot" />
+	<meta name="theme-color" content="#478cbf" />
+	<meta name="msapplication-navbutton-color" content="#478cbf" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	<meta name="msapplication-starturl" content="/latest" />
 	<link id='-gd-engine-icon' rel='icon' type='image/png' href='favicon.png' />
-	<title></title>
+	<link rel="apple-touch-icon" type="image/png" href="favicon.png" />
+	<link rel="manifest" href="manifest.json" />
+	<title>Godot Engine Editor</title>
+
 	<style type='text/css'>
 
 		body {
@@ -169,7 +180,7 @@
 					<option value="GLES3">WebGL 2</option>
 				</select>
 				<br />
-				<img src="logo.svg">
+				<img src="logo.svg" width="1024" height="414" style="width: auto; height: auto; max-width: 85%; max-height: 250px" />
 				<br />
 				<label for="zip-file" style="margin-right: 1rem">Preload project ZIP:</label> <input id="zip-file" type="file" id="files" name="files" style="margin-bottom: 1rem"/>
 				<br />
@@ -207,6 +218,13 @@
 	</div>
 
 	<script type='text/javascript' src='godot.tools.js'></script>
+	<script>
+		window.addEventListener("load", () => {
+			if ("serviceWorker" in navigator) {
+				navigator.serviceWorker.register("service-worker.js");
+			}
+		});
+	</script>
 	<script type='text/javascript'>//<![CDATA[
 
 		var engine = new Engine;
