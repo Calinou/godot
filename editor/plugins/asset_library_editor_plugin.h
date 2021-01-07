@@ -53,15 +53,16 @@ class EditorAssetLibraryItem : public PanelContainer {
 	GDCLASS(EditorAssetLibraryItem, PanelContainer);
 
 	TextureButton *icon;
+	Label *support_label;
 	LinkButton *title;
 	LinkButton *category;
 	LinkButton *author;
-	TextureRect *stars[5];
 	Label *price;
 
 	int asset_id;
 	int category_id;
 	int author_id;
+	String support_level;
 
 	void _asset_clicked();
 	void _category_clicked();
@@ -74,7 +75,7 @@ protected:
 	static void _bind_methods();
 
 public:
-	void configure(const String &p_title, int p_asset_id, const String &p_category, int p_category_id, const String &p_author, int p_author_id, const String &p_cost);
+	void configure(const String &p_title, int p_asset_id, const String &p_category, int p_category_id, const String &p_author, int p_author_id, const String &p_cost, const String &p_support_level);
 
 	EditorAssetLibraryItem();
 };
@@ -115,7 +116,7 @@ protected:
 	static void _bind_methods();
 
 public:
-	void configure(const String &p_title, int p_asset_id, const String &p_category, int p_category_id, const String &p_author, int p_author_id, const String &p_cost, int p_version, const String &p_version_string, const String &p_description, const String &p_download_url, const String &p_browse_url, const String &p_sha256_hash);
+	void configure(const String &p_title, int p_asset_id, const String &p_category, int p_category_id, const String &p_author, int p_author_id, const String &p_cost, int p_version, const String &p_version_string, const String &p_description, const String &p_download_url, const String &p_browse_url, const String &p_sha256_hash, const String &p_support_level);
 	void add_preview(int p_id, bool p_video, const String &p_url);
 
 	String get_title() { return title; }

@@ -2361,7 +2361,11 @@ void ProjectManager::_bind_methods() {
 	ClassDB::bind_method("_update_project_buttons", &ProjectManager::_update_project_buttons);
 }
 
+/**
+ * Called when the user confirms the dialog that tells them they have no projects yet.
+ */
 void ProjectManager::_open_asset_library() {
+	// Display only official demos/templates.
 	asset_library->disable_community_support();
 	tabs->set_current_tab(1);
 }

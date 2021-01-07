@@ -39,13 +39,22 @@
 #include "editor/editor_settings.h"
 #include "editor/project_settings_editor.h"
 
-void EditorAssetLibraryItem::configure(const String &p_title, int p_asset_id, const String &p_category, int p_category_id, const String &p_author, int p_author_id, const String &p_cost) {
+void EditorAssetLibraryItem::configure(const String &p_title, int p_asset_id, const String &p_category, int p_category_id, const String &p_author, int p_author_id, const String &p_cost, const String &p_support_level) {
 	title->set_text(p_title);
 	asset_id = p_asset_id;
 	category->set_text(p_category);
 	category_id = p_category_id;
 	author->set_text(p_author);
 	author_id = p_author_id;
+	support_level = p_support_level;
+
+	if (support_level == "official") {
+		support_label->add_theme_color_override("font_color", get_theme_color("success_color", "Editor"));
+	} else if (support_level == "testing") {
+		support_label->add_theme_color_override("font_color", get_theme_color("warning_color", "Editor"));
+	}
+
+	support_label->set_text(support_level.capitalize());
 	price->set_text(p_cost);
 }
 
@@ -115,10 +124,22 @@ EditorAssetLibraryItem::EditorAssetLibraryItem() {
 	title->connect("pressed", callable_mp(this, &EditorAssetLibraryItem::_asset_clicked));
 	vb->add_child(title);
 
+	HBoxContainer *hb_category_support = memnew(HBoxContainer);
+	// Required to make the LinkButton and Label appear visually aligned.
+	// Otherwise, the Label is vertically offset downwards from the LinkButton.
+	//hb_category_support->set_custom_minimum_size(Size2(0, 0));
+	vb->add_child(hb_category_support);
+
 	category = memnew(LinkButton);
 	category->set_underline_mode(LinkButton::UNDERLINE_MODE_ON_HOVER);
 	category->connect("pressed", callable_mp(this, &EditorAssetLibraryItem::_category_clicked));
-	vb->add_child(category);
+	hb_category_support->add_child(category);
+
+	support_label = memnew(Label);
+	support_label->set_v_size_flags(SIZE_EXPAND_FILL);
+	// Fade out the label slightly as it's not so primary.
+	support_label->set_modulate(Color(1, 1, 1, 0.85));
+	hb_category_support->add_child(support_label);
 
 	author = memnew(LinkButton);
 	author->set_underline_mode(LinkButton::UNDERLINE_MODE_ON_HOVER);
@@ -217,12 +238,12 @@ void EditorAssetLibraryItemDescription::_preview_click(int p_id) {
 	}
 }
 
-void EditorAssetLibraryItemDescription::configure(const String &p_title, int p_asset_id, const String &p_category, int p_category_id, const String &p_author, int p_author_id, const String &p_cost, int p_version, const String &p_version_string, const String &p_description, const String &p_download_url, const String &p_browse_url, const String &p_sha256_hash) {
+void EditorAssetLibraryItemDescription::configure(const String &p_title, int p_asset_id, const String &p_category, int p_category_id, const String &p_author, int p_author_id, const String &p_cost, int p_version, const String &p_version_string, const String &p_description, const String &p_download_url, const String &p_browse_url, const String &p_sha256_hash, const String &p_support_level) {
 	asset_id = p_asset_id;
 	title = p_title;
 	download_url = p_download_url;
 	sha256 = p_sha256_hash;
-	item->configure(p_title, p_asset_id, p_category, p_category_id, p_author, p_author_id, p_cost);
+	item->configure(p_title, p_asset_id, p_category, p_category_id, p_author, p_author_id, p_cost, p_support_level);
 	description->clear();
 	description->add_text(TTR("Version:") + " " + p_version_string + "\n");
 	description->add_text(TTR("Contents:") + " ");
@@ -1178,7 +1199,7 @@ void EditorAssetLibrary::_http_request_completed(int p_status, int p_code, const
 
 				EditorAssetLibraryItem *item = memnew(EditorAssetLibraryItem);
 				asset_items->add_child(item);
-				item->configure(r["title"], r["asset_id"], category_map[r["category_id"]], r["category_id"], r["author"], r["author_id"], r["cost"]);
+				item->configure(r["title"], r["asset_id"], category_map[r["category_id"]], r["category_id"], r["author"], r["author_id"], r["cost"], r["support_level"]);
 				item->connect("asset_selected", callable_mp(this, &EditorAssetLibrary::_select_asset));
 				item->connect("author_selected", callable_mp(this, &EditorAssetLibrary::_select_author));
 				item->connect("category_selected", callable_mp(this, &EditorAssetLibrary::_select_category));
@@ -1218,7 +1239,7 @@ void EditorAssetLibrary::_http_request_completed(int p_status, int p_code, const
 			description->popup_centered();
 			description->connect("confirmed", callable_mp(this, &EditorAssetLibrary::_install_asset));
 
-			description->configure(r["title"], r["asset_id"], category_map[r["category_id"]], r["category_id"], r["author"], r["author_id"], r["cost"], r["version"], r["version_string"], r["description"], r["download_url"], r["browse_url"], r["download_hash"]);
+			description->configure(r["title"], r["asset_id"], category_map[r["category_id"]], r["category_id"], r["author"], r["author_id"], r["cost"], r["version"], r["version_string"], r["description"], r["download_url"], r["browse_url"], r["download_hash"], r["support_level"]);
 
 			if (r.has("icon_url") && r["icon_url"] != "") {
 				_request_image(description->get_instance_id(), r["icon_url"], IMAGE_QUEUE_ICON, 0);
@@ -1280,6 +1301,9 @@ void EditorAssetLibrary::_install_external_asset(String p_zip_path, String p_tit
 	emit_signal("install_asset", p_zip_path, p_title);
 }
 
+/**
+ * This method is used in the project manager to show only official demos/templates.
+ */
 void EditorAssetLibrary::disable_community_support() {
 	support->get_popup()->set_item_checked(SUPPORT_COMMUNITY, false);
 }
