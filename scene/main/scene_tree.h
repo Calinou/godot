@@ -43,6 +43,7 @@
 
 class PackedScene;
 class Node;
+class Label;
 class Window;
 class Material;
 class Mesh;
@@ -137,6 +138,8 @@ private:
 	Array _get_nodes_in_group(const StringName &p_group);
 
 	Node *current_scene;
+	// Initialized lazily to decrase RAM usage, since it contains a lot of text.
+	Label *license_label;
 
 	Color debug_collisions_color;
 	Color debug_collision_contact_color;
@@ -343,9 +346,10 @@ public:
 	void set_refuse_new_network_connections(bool p_refuse);
 	bool is_refusing_new_network_connections() const;
 
-	static void add_idle_callback(IdleCallback p_callback);
+	void set_license_notices_visible(bool p_visible);
+	bool is_license_notices_visible() const;
 
-	//default texture settings
+	static void add_idle_callback(IdleCallback p_callback);
 
 	SceneTree();
 	~SceneTree();

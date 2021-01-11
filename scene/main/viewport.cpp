@@ -2353,6 +2353,11 @@ void Viewport::_gui_input_event(Ref<InputEvent> p_event) {
 	}
 
 	if (mm.is_null() && mb.is_null() && p_event->is_action_type()) {
+		if (p_event->is_pressed() && p_event->is_action_pressed("ui_toggle_license_notices")) {
+			print_line("ui_toggle_license_notices pressed");
+			SceneTree::get_singleton()->set_license_notices_visible(!SceneTree::get_singleton()->is_license_notices_visible());
+		}
+
 		if (gui.key_focus && !gui.key_focus->is_visible_in_tree()) {
 			gui.key_focus->release_focus();
 		}

@@ -42,6 +42,7 @@
 #include "core/string/print_string.h"
 #include "node.h"
 #include "scene/debugger/scene_debugger.h"
+#include "scene/gui/label.h"
 #include "scene/resources/font.h"
 #include "scene/resources/material.h"
 #include "scene/resources/mesh.h"
@@ -1170,6 +1171,42 @@ bool SceneTree::is_refusing_new_network_connections() const {
 	return multiplayer->is_refusing_new_network_connections();
 }
 
+void SceneTree::set_license_notices_visible(bool p_visible) {
+	print_line(itos(bool(license_label)));
+
+	if (p_visible) {
+		if (!license_label) {
+			print_line("Creating license label");
+			// Only initialize the label if not done already (lazy loading to decrease resource usage).
+			license_label = memnew(Label);
+			// Begin name with an underscore to avoid conflict with project nodes.
+			license_label->set_name("_LicenseInformation");
+			license_label->set_text("Hello world!");
+			get_root()->add_child(license_label);
+		} else {
+			ERR_PRINT("License notice GUI already exists.");
+		}
+	} else {
+		if (license_label) {
+			print_line("Removing license label");
+			license_label->queue_delete();
+		} else {
+			ERR_PRINT("Couldn't find license notice GUI to hide.");
+		}
+	}
+
+	get_root()->print_tree_pretty();
+}
+
+bool SceneTree::is_license_notices_visible() const {
+	if (license_label) {
+		return license_label->is_visible();
+	} else {
+		// License label isn't created yet. Therefore, it's not visible.
+		return false;
+	}
+}
+
 void SceneTree::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_root"), &SceneTree::get_root);
 	ClassDB::bind_method(D_METHOD("has_group", "name"), &SceneTree::has_group);
@@ -1421,6 +1458,8 @@ SceneTree::SceneTree() {
 #ifdef TOOLS_ENABLED
 	edited_scene_root = nullptr;
 #endif
+
+	license_label = nullptr;
 }
 
 SceneTree::~SceneTree() {

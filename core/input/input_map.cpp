@@ -335,6 +335,13 @@ void InputMap::load_default() {
 	key->set_keycode(KEY_END);
 	action_add_event("ui_end", key);
 
+	add_action("ui_toggle_license_notices");
+	key.instance();
+	key->set_command(true);
+	key->set_shift(true);
+	key->set_keycode(KEY_L);
+	action_add_event("ui_toggle_license_notices", key);
+
 	//set("display/window/handheld/orientation", "landscape");
 }
 
