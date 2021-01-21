@@ -4,12 +4,13 @@ on: [push, pull_request]
 # Global Cache Settings
 env:
   GODOT_BASE_BRANCH: 3.2
+  SCONSFLAGS: platform=server verbose=yes warnings=all werror=yes --jobs=2
   SCONS_CACHE_LIMIT: 4096
 
 jobs:
   linux-editor:
-    runs-on: "ubuntu-20.04"
-    name: Linux Headless w/ Mono (target=release_debug, tools=yes)
+    runs-on: ubuntu-20.04
+    name: Linux headless editor with Mono (tools=yes)
 
     steps:
       - uses: actions/checkout@v2
@@ -28,6 +29,8 @@ jobs:
 
       # Upload cache on completion and check it out now
       - name: Load .scons_cache directory
+        # Don't use cache for optimized builds.
+        if: github.event_name != 'push'
         id: linux-headless-cache
         uses: actions/cache@v2
         with:
@@ -60,11 +63,16 @@ jobs:
         env:
           SCONS_CACHE: ${{github.workspace}}/.scons_cache/
         run: |
-          scons -j2 verbose=yes warnings=all werror=yes platform=server tools=yes target=release_debug module_mono_enabled=yes mono_glue=no
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            unset SCONS_CACHE
+            scons tools=yes target=release_debug module_mono_enabled=yes mono_glue=no use_lto=yes debug_symbols=no
+          else
+            scons tools=yes target=debug module_mono_enabled=yes mono_glue=no
+          fi
 
   linux-server:
-    runs-on: "ubuntu-20.04"
-    name: Linux Server w/ Mono (target=release, tools=no)
+    runs-on: ubuntu-20.04
+    name: Linux server with Mono (tools=no)
 
     steps:
       - uses: actions/checkout@v2
@@ -83,6 +91,8 @@ jobs:
 
       # Upload cache on completion and check it out now
       - name: Load .scons_cache directory
+        # Don't use cache for optimized builds.
+        if: github.event_name != 'push'
         id: linux-server-cache
         uses: actions/cache@v2
         with:
@@ -114,4 +124,10 @@ jobs:
         env:
           SCONS_CACHE: ${{github.workspace}}/.scons_cache/
         run: |
-          scons -j2 verbose=yes warnings=all werror=yes platform=server target=release tools=no module_mono_enabled=yes mono_glue=no
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            unset SCONS_CACHE
+            scons tools=no target=release module_mono_enabled=yes mono_glue=no use_lto=yes debug_symbols=no
+          else
+            scons tools=no target=debug module_mono_enabled=yes mono_glue=no
+
+          fi

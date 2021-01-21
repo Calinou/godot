@@ -1,5 +1,14 @@
+# =====
+# FIXME: Replace 'push' with 'schedule' in `if` conditions before opening a pull request!
+# =====
 name: 🌐 JavaScript Builds
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  schedule:
+    # Every day at midnight (UTC).
+    # This keeps the class reference status page fresh.
+    - cron: '0 0 * * *'
 
 # Global Settings
 env:
@@ -11,8 +20,8 @@ env:
 
 jobs:
   javascript-template:
-    runs-on: "ubuntu-20.04"
-    name: Template (target=release, tools=no)
+    runs-on: ubuntu-20.04
+    name: Export template (tools=no)
 
     steps:
       - uses: actions/checkout@v2
@@ -26,6 +35,8 @@ jobs:
 
       # Upload cache on completion and check it out now
       - name: Load .scons_cache directory
+        # Don't use cache for optimized builds.
+        if: github.event_name != 'push'
         id: javascript-template-cache
         uses: actions/cache@v2
         with:
@@ -75,11 +86,17 @@ jobs:
         env:
           SCONS_CACHE: ${{github.workspace}}/.scons_cache/
         run: |
-          scons target=release tools=no use_closure_compiler=yes
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            unset SCONS_CACHE
+            scons tools=no target=release use_closure_compiler=yes use_lto=yes
+          else
+            scons tools=no target=debug
+          fi
           ls -l bin/
 
       - uses: actions/upload-artifact@v2
         with:
-          name: ${{ github.job }}
+          name: ${{ github.job }}-${{ github.event_name == 'push' && 'release' || 'debug' }}
           path: bin/*
           retention-days: 14
+          if-no-files-found: error

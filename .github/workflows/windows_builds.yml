@@ -1,5 +1,14 @@
+# =====
+# FIXME: Replace 'push' with 'schedule' in `if` conditions before opening a pull request!
+# =====
 name: 🏁 Windows Builds
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  schedule:
+    # Every day at midnight (UTC).
+    # This schedule is used to compile fully optimized builds every day.
+    - cron: '0 0 * * *'
 
 # Global Settings
 # SCONS_CACHE for windows must be set in the build environment
@@ -12,10 +21,10 @@ env:
 jobs:
   windows-editor:
     # Windows 10 with latest image
-    runs-on: "windows-latest"
+    runs-on: windows-2019
 
     # Windows Editor - checkout with the plugin
-    name: Editor (target=release_debug, tools=yes)
+    name: Editor (tools=yes)
 
     steps:
     - uses: actions/checkout@v2
@@ -23,6 +32,8 @@ jobs:
       # Upload cache on completion and check it out now
       # Editing this is pretty dangerous for Windows since it can break and needs to be properly tested with a fresh cache.
     - name: Load .scons_cache directory
+      # Don't use cache for optimized builds.
+      if: github.event_name != 'push'
       id: windows-editor-cache
       uses: RevoluPowered/cache@v2.1
       with:
@@ -55,18 +66,24 @@ jobs:
       env:
         SCONS_CACHE: /.scons_cache/
       run: |
-        scons tools=yes target=release_debug
+        If ($env:GITHUB_EVENT_NAME -eq "push") {
+          $env:SCONS_CACHE = $null
+          scons tools=yes target=release_debug use_lto=yes debug_symbols=no
+        } Else {
+          scons tools=yes target=debug
+        }
         ls -l bin/
 
     - uses: actions/upload-artifact@v2
       with:
-        name: ${{ github.job }}
+        name: ${{ github.job }}-${{ github.event_name == 'push' && 'release' || 'debug' }}
         path: bin/*
         retention-days: 14
+        if-no-files-found: error
 
   windows-template:
-    runs-on: "windows-latest"
-    name: Template (target=release, tools=no)
+    runs-on: windows-2019
+    name: Export template (tools=no)
 
     steps:
     - uses: actions/checkout@v2
@@ -74,6 +91,8 @@ jobs:
     # Upload cache on completion and check it out now
     # Editing this is pretty dangerous for Windows since it can break and needs to be properly tested with a fresh cache.
     - name: Load .scons_cache directory
+      # Don't use cache for optimized builds.
+      if: github.event_name != 'push'
       id: windows-template-cache
       uses: RevoluPowered/cache@v2.1
       with:
@@ -105,11 +124,17 @@ jobs:
       env:
         SCONS_CACHE: /.scons_cache/
       run: |
-        scons target=release tools=no debug_symbols=no
+        If ($env:GITHUB_EVENT_NAME -eq "push") {
+          $env:SCONS_CACHE = $null
+          scons tools=no target=release target=release use_lto=yes debug_symbols=no
+        } Else {
+          scons tools=no target=debug
+        }
         ls -l bin/
 
     - uses: actions/upload-artifact@v2
       with:
-        name: ${{ github.job }}
+        name: ${{ github.job }}-${{ github.event_name == 'push' && 'release' || 'debug' }}
         path: bin/*
         retention-days: 14
+        if-no-files-found: error
