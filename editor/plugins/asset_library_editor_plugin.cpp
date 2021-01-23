@@ -224,13 +224,24 @@ void EditorAssetLibraryItemDescription::configure(const String &p_title, int p_a
 	sha256 = p_sha256_hash;
 	item->configure(p_title, p_asset_id, p_category, p_category_id, p_author, p_author_id, p_cost);
 	description->clear();
-	description->add_text(TTR("Version:") + " " + p_version_string + "\n");
-	description->add_text(TTR("Contents:") + " ");
-	description->push_meta(p_browse_url);
-	description->add_text(TTR("View Files"));
-	description->pop();
-	description->add_text("\n" + TTR("Description:") + "\n\n");
+
+	description->push_bold();
+	description->add_text(TTR("Version:"));
+	description->pop(); // bold
+	description->add_text(" " + p_version_string + "\n\n");
+
 	description->append_bbcode(p_description);
+
+	description->add_text("\n\n");
+	description->push_meta(vformat("https://godotengine.org/asset-library/asset/%d", p_asset_id));
+	description->add_text(TTR("Open in Browser"));
+	description->pop(); // meta
+
+	description->add_text(" - ");
+	description->push_meta(p_browse_url);
+	description->add_text(TTR("View Repository"));
+	description->pop(); // meta
+
 	set_title(p_title);
 }
 
@@ -271,6 +282,7 @@ EditorAssetLibraryItemDescription::EditorAssetLibraryItemDescription() {
 	description->set_v_size_flags(Control::SIZE_EXPAND_FILL);
 	description->connect("meta_clicked", callable_mp(this, &EditorAssetLibraryItemDescription::_link_click));
 	description->add_theme_constant_override("line_separation", Math::round(5 * EDSCALE));
+	description->add_theme_font_override("bold_font", get_theme_font("bold", "EditorFonts"));
 
 	VBoxContainer *previews_vbox = memnew(VBoxContainer);
 	hbox->add_child(previews_vbox);
