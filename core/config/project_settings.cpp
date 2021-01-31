@@ -1000,6 +1000,18 @@ bool ProjectSettings::has_custom_feature(const String &p_feature) const {
 	return custom_features.has(p_feature);
 }
 
+bool ProjectSettings::has_editor_feature(const String &p_feature) const {
+	return editor_features.has(p_feature);
+}
+
+Set<String> ProjectSettings::get_editor_features() const {
+	return editor_features;
+}
+
+void ProjectSettings::set_editor_features(const Set<String> &p_editor_features) {
+	editor_features = p_editor_features;
+}
+
 Map<StringName, ProjectSettings::AutoloadInfo> ProjectSettings::get_autoload_list() const {
 	return autoloads;
 }
@@ -1072,6 +1084,9 @@ ProjectSettings::ProjectSettings() {
 		extensions.push_back("cs");
 	}
 	extensions.push_back("shader");
+
+	GLOBAL_DEF("editor/custom_feature_tags", PackedStringArray());
+	custom_prop_info["editor/custom_feature_tags"] = PropertyInfo(Variant::PACKED_STRING_ARRAY, "editor/custom_feature_tags");
 
 	GLOBAL_DEF("editor/search_in_file_extensions", extensions);
 	custom_prop_info["editor/search_in_file_extensions"] = PropertyInfo(Variant::PACKED_STRING_ARRAY, "editor/search_in_file_extensions");

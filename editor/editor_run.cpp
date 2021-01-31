@@ -42,7 +42,7 @@ String EditorRun::get_running_scene() const {
 	return running_scene;
 }
 
-Error EditorRun::run(const String &p_scene, const String &p_custom_args, const List<String> &p_breakpoints, const bool &p_skip_breakpoints) {
+Error EditorRun::run(const String &p_scene, const String &p_custom_args, const List<String> &p_breakpoints, const bool &p_skip_breakpoints, const Set<String> &p_custom_features) {
 	List<String> args;
 
 	String resource_path = ProjectSettings::get_singleton()->get_resource_path();

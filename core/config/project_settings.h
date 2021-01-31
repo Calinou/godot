@@ -86,6 +86,7 @@ protected:
 	List<String> input_presets;
 
 	Set<String> custom_features;
+	Set<String> editor_features;
 	Map<StringName, StringName> feature_overrides;
 
 	Map<StringName, AutoloadInfo> autoloads;
@@ -160,6 +161,9 @@ public:
 	bool is_using_datapack() const;
 
 	bool has_custom_feature(const String &p_feature) const;
+	bool has_editor_feature(const String &p_feature) const;
+	Set<String> get_editor_features() const;
+	void set_editor_features(const Set<String> &p_editor_features);
 
 	Map<StringName, AutoloadInfo> get_autoload_list() const;
 	void add_autoload(const AutoloadInfo &p_autoload);

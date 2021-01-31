@@ -2181,8 +2181,15 @@ void EditorNode::_run(bool p_current, const String &p_custom) {
 	args = ProjectSettings::get_singleton()->get("editor/main_run_args");
 	skip_breakpoints = EditorDebuggerNode::get_singleton()->is_skip_breakpoints();
 
+	const PackedStringArray custom_features = ProjectSettings::get_singleton()->get("editor/custom_feature_tags");
+	// Convert the list of features to a Set.
+	Set<String> custom_features_set;
+	for (int i = 0; i < custom_features.size(); i++) {
+		custom_features_set.insert(custom_features[i]);
+	}
+
 	EditorDebuggerNode::get_singleton()->start();
-	Error error = editor_run.run(run_filename, args, breakpoints, skip_breakpoints);
+	Error error = editor_run.run(run_filename, args, breakpoints, skip_breakpoints, custom_features_set);
 	if (error != OK) {
 		EditorDebuggerNode::get_singleton()->stop();
 		show_accept(TTR("Could not start subprocess!"), TTR("OK"));

@@ -428,6 +428,10 @@ bool OS::has_feature(const String &p_feature) {
 		return true;
 	}
 
+	if (ProjectSettings::get_singleton()->has_editor_feature(p_feature)) {
+		return true;
+	}
+
 	return false;
 }
 
