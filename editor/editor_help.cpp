@@ -1340,6 +1340,9 @@ static void _add_text_to_rt(const String &p_bbcode, RichTextLabel *p_rt) {
 
 	String bbcode = p_bbcode.dedent().replace("\t", "").replace("\r", "").strip_edges();
 
+	constexpr int SNAKEPASCAL_OPEN_TAG_SIZE = 13; // "[snakepascal]"
+	constexpr int SNAKEPASCAL_CLOSE_TAG_SIZE = 14; // "[/snakepascal]"
+
 	// Select the correct code examples
 	switch ((int)EDITOR_GET("text_editor/help/class_reference_examples")) {
 		case 0: // GDScript
@@ -1357,6 +1360,27 @@ static void _add_text_to_rt(const String &p_bbcode, RichTextLabel *p_rt) {
 					bbcode.erase(pos, 1);
 				}
 			}
+
+			// Handle inline code literals.
+
+			// Filter the code literal we want to display (and erase the other one).
+			for (int pos = bbcode.find("[snakepascal]"); pos != -1; pos = bbcode.find("[snakepascal]")) {
+				if (bbcode.find("[/snakepascal]") == -1) {
+					WARN_PRINT("Unclosed [snakepascal] block or parse fail in code (search for tag errors).");
+					break;
+				}
+
+				int from = pos;
+				int to = bbcode.find(";;") + 2 - pos;
+				print_line(vformat("Erasing BBCode from %d to %d (%d characters)", from, from + to, to));
+				bbcode.erase(from, to);
+				//bbcode.erase(pos, bbcode.find(";;") + 2 - pos);
+			}
+
+			// Replace with `code` tags to get proper formatting.
+			bbcode = bbcode.replace("[snakepascal]", "[code]");
+			bbcode = bbcode.replace("[/snakepascal]", "[/code]");
+
 			break;
 		case 1: // C#
 			bbcode = bbcode.replace("[csharp]", "[codeblock]");
@@ -1373,6 +1397,10 @@ static void _add_text_to_rt(const String &p_bbcode, RichTextLabel *p_rt) {
 					bbcode.erase(pos, 1);
 				}
 			}
+
+			// Inline code literals.
+			// TODO
+
 			break;
 		case 2: // GDScript and C#
 			bbcode = bbcode.replace("[csharp]", "[b]C#:[/b]\n[codeblock]");
@@ -1380,6 +1408,11 @@ static void _add_text_to_rt(const String &p_bbcode, RichTextLabel *p_rt) {
 
 			bbcode = bbcode.replace("[/csharp]", "[/codeblock]");
 			bbcode = bbcode.replace("[/gdscript]", "[/codeblock]");
+
+			// Inline code literals.
+			bbcode = bbcode.replace("[snakepascal]", "[code]");
+			bbcode = bbcode.replace("[/snakepascal]", "[/code] [i](C#)[/i]");
+			bbcode = bbcode.replace(";;", "[/code] [i](GDScript)[/i] or [code]");
 			break;
 	}
 

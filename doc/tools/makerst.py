@@ -726,7 +726,7 @@ def rstize_text(text, state):  # type: (str, State) -> str
                 # Strip newline if the tag was alone on one
                 if pre_text[-1] == "\n":
                     pre_text = pre_text[:-1]
-            elif cmd == "/code":
+            elif cmd == "/code" or cmd == "/snakepascal":
                 tag_text = "``"
                 tag_depth -= 1
                 inside_code = False
@@ -873,7 +873,7 @@ def rstize_text(text, state):  # type: (str, State) -> str
                 else:
                     tag_depth += 1
                 tag_text = ""
-            elif cmd == "code":
+            elif cmd == "code" or cmd == "snakepascal":
                 tag_text = "``"
                 tag_depth += 1
                 inside_code = True

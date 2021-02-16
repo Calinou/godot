@@ -625,7 +625,9 @@
 			</argument>
 			<description>
 				Adds, changes or removes a given entry in the object's metadata. Metadata are serialized and can take any [Variant] value.
-				To remove a given entry from the object's metadata, use [method remove_meta]. Metadata is also removed if its value is set to [code]null[/code]. This means you can also use [code]set_meta("name", null)[/code] to remove metadata for [code]"name"[/code].
+				To remove a given entry from the object's metadata, use [method remove_meta]. Metadata is also removed if its value is set to [code]null[/code]. This means you can also use [snakepascal]set_meta("name", null);;SetMeta("name", null)[/snakepascal] to remove metadata for [code]"name"[/code].
+				Other test: [snakepascal]set_meta("name", null);;SetMeta("name", null)[/snakepascal]
+				Yet another test: [snakepascal]set_meta("name", null);;SetMeta("name", null)[/snakepascal]
 			</description>
 		</method>
 		<method name="set_script">
