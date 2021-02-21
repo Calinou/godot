@@ -4,7 +4,7 @@ on: [push, pull_request]
 # Global Settings
 env:
   GODOT_BASE_BRANCH: master
-  SCONSFLAGS: platform=linuxbsd verbose=yes warnings=extra werror=yes --jobs=2 module_text_server_fb_enabled=yes
+  SCONSFLAGS: platform=linuxbsd verbose=yes warnings=extra werror=yes --jobs=2 module_text_server_fb_enabled=yes separate_debug_symbols=yes
   SCONS_CACHE_LIMIT: 4096
 
 jobs:
@@ -73,7 +73,16 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: ${{ github.job }}
-          path: bin/*
+          path: bin/*.mono
+          retention-days: 14
+
+      # Upload debug symbols in a separate artifact to make the main download smaller.
+      # Users will have to download those and extract them next to the binary to get
+      # useful backtraces.
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.job }}-debug-symbols
+          path: bin/*.debug
           retention-days: 14
 
   linux-editor-sanitizers-mono:
