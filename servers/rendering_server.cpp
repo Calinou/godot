@@ -2855,6 +2855,9 @@ RenderingServer::RenderingServer() {
 	ProjectSettings::get_singleton()->set_custom_property_info("rendering/anti_aliasing/screen_space_roughness_limiter/amount", PropertyInfo(Variant::FLOAT, "rendering/anti_aliasing/screen_space_roughness_limiter/amount", PROPERTY_HINT_RANGE, "0.01,4.0,0.01"));
 	ProjectSettings::get_singleton()->set_custom_property_info("rendering/anti_aliasing/screen_space_roughness_limiter/limit", PropertyInfo(Variant::FLOAT, "rendering/anti_aliasing/screen_space_roughness_limiter/limit", PROPERTY_HINT_RANGE, "0.01,1.0,0.01"));
 
+	GLOBAL_DEF("rendering/anti_aliasing/quality/sharpen_intensity", 0.0);
+	ProjectSettings::get_singleton()->set_custom_property_info("rendering/anti_aliasing/quality/sharpen_intensity", PropertyInfo(Variant::FLOAT, "rendering/anti_aliasing/quality/sharpen_intensity", PROPERTY_HINT_RANGE, "0,1"));
+
 	GLOBAL_DEF("rendering/textures/decals/filter", DECAL_FILTER_LINEAR_MIPMAPS);
 	ProjectSettings::get_singleton()->set_custom_property_info("rendering/textures/decals/filter", PropertyInfo(Variant::INT, "rendering/textures/decals/filter", PROPERTY_HINT_ENUM, "Nearest (Fast),Nearest+Mipmaps,Linear,Linear+Mipmaps,Linear+Mipmaps Anisotropic (Slow)"));
 	GLOBAL_DEF("rendering/textures/light_projectors/filter", LIGHT_PROJECTOR_FILTER_LINEAR_MIPMAPS);
