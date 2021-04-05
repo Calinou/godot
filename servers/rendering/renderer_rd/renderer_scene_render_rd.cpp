@@ -807,6 +807,17 @@ RID RendererSceneRenderRD::reflection_probe_instance_get_depth_framebuffer(RID p
 
 ///////////////////////////////////////////////////////////
 
+RS::ShadowDepthBufferSize RendererSceneRenderRD::_get_shadow_data_format(RS::ShadowDepthBufferSize p_shadow_depth_buffer_size) const {
+	ERR_FAIL_INDEX_V(p_shadow_depth_buffer_size, RS::SHADOW_DEPTH_BUFFER_SIZE_MAX, RS::DATA_FORMAT_D16_UNORM);
+
+	switch (p_shadow_depth_buffer_size) {
+		case RS::SHADOW_DEPTH_16_BITS:
+			return RS::DATA_FORMAT_D16_UNORM;
+		case RS::SHADOW_DEPTH_32_BITS:
+			return RS::DATA_FORMAT_D32_SFLOAT;
+	}
+}
+
 RID RendererSceneRenderRD::shadow_atlas_create() {
 	return shadow_atlas_owner.make_rid(ShadowAtlas());
 }
@@ -814,7 +825,7 @@ RID RendererSceneRenderRD::shadow_atlas_create() {
 void RendererSceneRenderRD::_update_shadow_atlas(ShadowAtlas *shadow_atlas) {
 	if (shadow_atlas->size > 0 && shadow_atlas->depth.is_null()) {
 		RD::TextureFormat tf;
-		tf.format = shadow_atlas->use_16_bits ? RD::DATA_FORMAT_D16_UNORM : RD::DATA_FORMAT_D32_SFLOAT;
+		tf.format = _get_shadow_data_format(shadow_atlas->shadow_depth_buffer_size);
 		tf.width = shadow_atlas->size;
 		tf.height = shadow_atlas->size;
 		tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
@@ -826,13 +837,13 @@ void RendererSceneRenderRD::_update_shadow_atlas(ShadowAtlas *shadow_atlas) {
 	}
 }
 
-void RendererSceneRenderRD::shadow_atlas_set_size(RID p_atlas, int p_size, bool p_16_bits) {
+void RendererSceneRenderRD::shadow_atlas_set_size(RID p_atlas, int p_size, RS::ShadowDepthBufferSizeBufferSize p_shadow_depth_buffer_size) {
 	ShadowAtlas *shadow_atlas = shadow_atlas_owner.getornull(p_atlas);
 	ERR_FAIL_COND(!shadow_atlas);
 	ERR_FAIL_COND(p_size < 0);
 	p_size = next_power_of_2(p_size);
 
-	if (p_size == shadow_atlas->size && p_16_bits == shadow_atlas->use_16_bits) {
+	if (p_size == shadow_atlas->size && p_shadow_depth_buffer_size == shadow_atlas->shadow_depth_buffer_size) {
 		return;
 	}
 
@@ -858,7 +869,7 @@ void RendererSceneRenderRD::shadow_atlas_set_size(RID p_atlas, int p_size, bool 
 	shadow_atlas->shadow_owners.clear();
 
 	shadow_atlas->size = p_size;
-	shadow_atlas->use_16_bits = p_size;
+	shadow_atlas->shadow_depth_buffer_size = p_shadow_depth_buffer_size;
 }
 
 void RendererSceneRenderRD::shadow_atlas_set_quadrant_subdivision(RID p_atlas, int p_quadrant, int p_subdivision) {
@@ -1116,7 +1127,7 @@ bool RendererSceneRenderRD::shadow_atlas_update_light(RID p_atlas, RID p_light_i
 void RendererSceneRenderRD::_update_directional_shadow_atlas() {
 	if (directional_shadow.depth.is_null() && directional_shadow.size > 0) {
 		RD::TextureFormat tf;
-		tf.format = directional_shadow.use_16_bits ? RD::DATA_FORMAT_D16_UNORM : RD::DATA_FORMAT_D32_SFLOAT;
+		tf.format = _get_shadow_data_format(directional_shadow.shadow_depth_buffer_size);
 		tf.width = directional_shadow.size;
 		tf.height = directional_shadow.size;
 		tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
@@ -1127,10 +1138,10 @@ void RendererSceneRenderRD::_update_directional_shadow_atlas() {
 		directional_shadow.fb = RD::get_singleton()->framebuffer_create(fb_tex);
 	}
 }
-void RendererSceneRenderRD::directional_shadow_atlas_set_size(int p_size, bool p_16_bits) {
+void RendererSceneRenderRD::directional_shadow_atlas_set_size(int p_size, RS::ShadowDepthBufferSize p_shadow_depth_buffer_size) {
 	p_size = nearest_power_of_2_templated(p_size);
 
-	if (directional_shadow.size == p_size && directional_shadow.use_16_bits == p_16_bits) {
+	if (directional_shadow.size == p_size && directional_shadow.shadow_depth_buffer_size == p_shadow_depth_buffer_size) {
 		return;
 	}
 
@@ -4118,7 +4129,7 @@ RendererSceneRenderRD::RendererSceneRenderRD(RendererStorageRD *p_storage) {
 	singleton = this;
 
 	directional_shadow.size = GLOBAL_GET("rendering/shadows/directional_shadow/size");
-	directional_shadow.use_16_bits = GLOBAL_GET("rendering/shadows/directional_shadow/16_bits");
+	directional_shadow.depth_quality = RS::ShadowDepthBufferSizeQuality(GLOBAL_GET("rendering/shadows/directional_shadow/depth_quality"));
 
 	uint32_t textures_per_stage = RD::get_singleton()->limit_get(RD::LIMIT_MAX_TEXTURES_PER_SHADER_STAGE);
 

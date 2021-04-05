@@ -218,7 +218,7 @@ private:
 		uint32_t smallest_subdiv = 0;
 
 		int size = 0;
-		bool use_16_bits = false;
+		RS::ShadowDepthBufferSize shadow_depth_buffer_size = RS::SHADOW_DEPTH_16_BITS;
 
 		RID depth;
 		RID fb; //for copying
@@ -254,11 +254,12 @@ private:
 
 		int light_count = 0;
 		int size = 0;
-		bool use_16_bits = false;
+		RS::ShadowDepthBufferSize shadow_depth_buffer_size = RS::SHADOW_DEPTH_16_BITS;
 		int current_light = 0;
 
 	} directional_shadow;
 
+	RS::ShadowDepthBufferSize _get_shadow_data_format(RS::ShadowDepthBufferSize p_shadow_depth_buffer_size) const;
 	void _update_directional_shadow_atlas();
 
 	/* SHADOW CUBEMAPS */
@@ -727,7 +728,7 @@ public:
 	/* SHADOW ATLAS API */
 
 	RID shadow_atlas_create();
-	void shadow_atlas_set_size(RID p_atlas, int p_size, bool p_16_bits = false);
+	void shadow_atlas_set_size(RID p_atlas, int p_size, RS::ShadowDepthBufferSize p_shadow_depth_buffer_size = RS::SHADOW_DEPTH_16_BITS);
 	void shadow_atlas_set_quadrant_subdivision(RID p_atlas, int p_quadrant, int p_subdivision);
 	bool shadow_atlas_update_light(RID p_atlas, RID p_light_intance, float p_coverage, uint64_t p_light_version);
 	_FORCE_INLINE_ bool shadow_atlas_owns_light_instance(RID p_atlas, RID p_light_intance) {
@@ -748,7 +749,7 @@ public:
 		return Size2(atlas->size, atlas->size);
 	}
 
-	void directional_shadow_atlas_set_size(int p_size, bool p_16_bits = false);
+	void directional_shadow_atlas_set_size(int p_size, RS::ShadowDepthBufferSize p_shadow_depth_buffer_size = RS::SHADOW_DEPTH_16_BITS);
 	int get_directional_light_shadow_size(RID p_light_intance);
 	void set_directional_shadow_count(int p_count);
 

@@ -1418,25 +1418,26 @@ Ref<ViewportTexture> Viewport::get_texture() const {
 
 void Viewport::set_shadow_atlas_size(int p_size) {
 	shadow_atlas_size = p_size;
-	RS::get_singleton()->viewport_set_shadow_atlas_size(viewport, p_size, shadow_atlas_16_bits);
+	RS::get_singleton()->viewport_set_shadow_atlas_size(viewport, p_size, shadow_atlas_depth_buffer_size);
 }
 
 int Viewport::get_shadow_atlas_size() const {
 	return shadow_atlas_size;
 }
 
-void Viewport::set_shadow_atlas_16_bits(bool p_16_bits) {
-	if (shadow_atlas_16_bits == p_16_bits) {
+void Viewport::set_shadow_atlas_depth_buffer_size(ShadowDepthBufferSize p_depth_buffer_size) {
+	if (shadow_atlas_depth_buffer_size == p_depth_buffer_size) {
 		return;
 	}
 
-	shadow_atlas_16_bits = p_16_bits;
-	RS::get_singleton()->viewport_set_shadow_atlas_size(viewport, shadow_atlas_size, shadow_atlas_16_bits);
+	shadow_atlas_depth_buffer_size = p_depth_buffer_size;
+	RS::get_singleton()->viewport_set_shadow_atlas_size(viewport, shadow_atlas_size, shadow_atlas_depth_buffer_size);
 }
 
-bool Viewport::get_shadow_atlas_16_bits() const {
-	return shadow_atlas_16_bits;
+ShadowDepthBufferSize Viewport::get_shadow_atlas_depth_buffer_size() const {
+	return shadow_atlas_depth_buffer_size;
 }
+
 void Viewport::set_shadow_atlas_quadrant_subdiv(int p_quadrant, ShadowAtlasQuadrantSubdiv p_subdiv) {
 	ERR_FAIL_INDEX(p_quadrant, 4);
 	ERR_FAIL_INDEX(p_subdiv, SHADOW_ATLAS_QUADRANT_SUBDIV_MAX);

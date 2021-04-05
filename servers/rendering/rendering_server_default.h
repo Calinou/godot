@@ -584,7 +584,7 @@ public:
 
 	FUNC2(viewport_set_global_canvas_transform, RID, const Transform2D &)
 	FUNC4(viewport_set_canvas_stacking, RID, RID, int, int)
-	FUNC3(viewport_set_shadow_atlas_size, RID, int, bool)
+	FUNC3(viewport_set_shadow_atlas_size, RID, int, RS::ShadowDepthBufferSize)
 	FUNC3(viewport_set_sdf_oversize_and_scale, RID, ViewportSDFOversize, ViewportSDFScale)
 	FUNC3(viewport_set_shadow_atlas_quadrant_subdivision, RID, int, int)
 	FUNC2(viewport_set_msaa, RID, ViewportMSAA)
@@ -609,7 +609,7 @@ public:
 #define ServerName RendererScene
 #define server_name RSG::scene
 
-	FUNC2(directional_shadow_atlas_set_size, int, bool)
+	FUNC2(directional_shadow_atlas_set_size, int, ShadowDepthBufferSize)
 	FUNC1(gi_probe_set_quality, GIProbeQuality)
 
 	/* SKY API */

@@ -464,8 +464,8 @@ void EditorNode::_update_from_settings() {
 	RS::get_singleton()->sub_surface_scattering_set_scale(sss_scale, sss_depth_scale);
 
 	uint32_t directional_shadow_size = GLOBAL_GET("rendering/shadows/directional_shadow/size");
-	uint32_t directional_shadow_16_bits = GLOBAL_GET("rendering/shadows/directional_shadow/16_bits");
-	RS::get_singleton()->directional_shadow_atlas_set_size(directional_shadow_size, directional_shadow_16_bits);
+	RS::ShadowDepthBufferSize directional_shadow_depth_buffer_size = RS::ShadowDepthBufferSize(GLOBAL_GET("rendering/shadows/directional_shadow/depth_buffer_size"));
+	RS::get_singleton()->directional_shadow_atlas_set_size(directional_shadow_size, directional_shadow_depth_buffer_size);
 
 	RS::ShadowQuality shadows_quality = RS::ShadowQuality(int(GLOBAL_GET("rendering/shadows/shadows/soft_shadow_quality")));
 	RS::get_singleton()->shadows_quality_set(shadows_quality);

@@ -800,7 +800,7 @@ public:
 
 	virtual void viewport_set_sdf_oversize_and_scale(RID p_viewport, ViewportSDFOversize p_oversize, ViewportSDFScale p_scale) = 0;
 
-	virtual void viewport_set_shadow_atlas_size(RID p_viewport, int p_size, bool p_16_bits = false) = 0;
+	virtual void viewport_set_shadow_atlas_size(RID p_viewport, int p_size, ShadowDepthBufferSize p_shadow_depth_buffer_size = SHADOW_DEPTH_16_BITS) = 0;
 	virtual void viewport_set_shadow_atlas_quadrant_subdivision(RID p_viewport, int p_quadrant, int p_subdiv) = 0;
 
 	enum ViewportMSAA {
@@ -870,7 +870,13 @@ public:
 	virtual float viewport_get_measured_render_time_cpu(RID p_viewport) const = 0;
 	virtual float viewport_get_measured_render_time_gpu(RID p_viewport) const = 0;
 
-	virtual void directional_shadow_atlas_set_size(int p_size, bool p_16_bits = false) = 0;
+	enum ShadowDepthBufferSize {
+		SHADOW_DEPTH_16_BITS,
+		SHADOW_DEPTH_32_BITS,
+		SHADOW_DEPTH_MAX,
+	};
+
+	virtual void directional_shadow_atlas_set_size(int p_size, ShadowDepthBufferSize p_shadow_depth_buffer_size = SHADOW_DEPTH_16_BITS) = 0;
 
 	/* SKY API */
 
@@ -1517,6 +1523,7 @@ VARIANT_ENUM_CAST(RenderingServer::SubSurfaceScatteringQuality);
 VARIANT_ENUM_CAST(RenderingServer::DOFBlurQuality);
 VARIANT_ENUM_CAST(RenderingServer::DOFBokehShape);
 VARIANT_ENUM_CAST(RenderingServer::ShadowQuality);
+VARIANT_ENUM_CAST(RenderingServer::ShadowDepthBufferSize);
 VARIANT_ENUM_CAST(RenderingServer::ScenarioDebugMode);
 VARIANT_ENUM_CAST(RenderingServer::InstanceType);
 VARIANT_ENUM_CAST(RenderingServer::InstanceFlags);

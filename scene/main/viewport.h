@@ -107,6 +107,12 @@ public:
 		MSAA_MAX
 	};
 
+	enum ShadowDepthBufferSize {
+		SHADOW_DEPTH_16_BITS,
+		SHADOW_DEPTH_32_BITS,
+		SHADOW_DEPTH_MAX,
+	};
+
 	enum ScreenSpaceAA {
 		SCREEN_SPACE_AA_DISABLED,
 		SCREEN_SPACE_AA_FXAA,
@@ -297,7 +303,7 @@ private:
 	DebugDraw debug_draw = DEBUG_DRAW_DISABLED;
 
 	int shadow_atlas_size = 2048;
-	bool shadow_atlas_16_bits = true;
+	ShadowDepthBufferSize shadow_atlas_depth_buffer_size = SHADOW_DEPTH_16_BITS;
 	ShadowAtlasQuadrantSubdiv shadow_atlas_quadrant_subdiv[4];
 
 	MSAA msaa = MSAA_DISABLED;
@@ -538,8 +544,8 @@ public:
 	void set_shadow_atlas_size(int p_size);
 	int get_shadow_atlas_size() const;
 
-	void set_shadow_atlas_16_bits(bool p_16_bits);
-	bool get_shadow_atlas_16_bits() const;
+	void set_shadow_atlas_depth_buffer_size(ShadowDepthBufferSize p_depth_buffer_size);
+	ShadowDepthBufferSize get_shadow_atlas_depth_buffer_size() const;
 
 	void set_shadow_atlas_quadrant_subdiv(int p_quadrant, ShadowAtlasQuadrantSubdiv p_subdiv);
 	ShadowAtlasQuadrantSubdiv get_shadow_atlas_quadrant_subdiv(int p_quadrant) const;

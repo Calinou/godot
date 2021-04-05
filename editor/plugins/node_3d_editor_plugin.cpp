@@ -2335,14 +2335,14 @@ void Node3DEditorPlugin::edited_scene_changed() {
 void Node3DEditorViewport::_project_settings_changed() {
 	//update shadow atlas if changed
 	int shadowmap_size = ProjectSettings::get_singleton()->get("rendering/shadows/shadow_atlas/size");
-	bool shadowmap_16_bits = ProjectSettings::get_singleton()->get("rendering/shadows/shadow_atlas/16_bits");
+	RS::ShadowDepthBufferSize shadowmap_depth_buffer_size = RS::ShadowDepthBufferSize(int(ProjectSettings::get_singleton()->get("rendering/shadows/shadow_atlas/depth_buffer_size")));
 	int atlas_q0 = ProjectSettings::get_singleton()->get("rendering/shadows/shadow_atlas/quadrant_0_subdiv");
 	int atlas_q1 = ProjectSettings::get_singleton()->get("rendering/shadows/shadow_atlas/quadrant_1_subdiv");
 	int atlas_q2 = ProjectSettings::get_singleton()->get("rendering/shadows/shadow_atlas/quadrant_2_subdiv");
 	int atlas_q3 = ProjectSettings::get_singleton()->get("rendering/shadows/shadow_atlas/quadrant_3_subdiv");
 
 	viewport->set_shadow_atlas_size(shadowmap_size);
-	viewport->set_shadow_atlas_16_bits(shadowmap_16_bits);
+	viewport->set_shadow_atlas_depth_buffer_size(shadowmap_depth_buffer_size);
 	viewport->set_shadow_atlas_quadrant_subdiv(0, Viewport::ShadowAtlasQuadrantSubdiv(atlas_q0));
 	viewport->set_shadow_atlas_quadrant_subdiv(1, Viewport::ShadowAtlasQuadrantSubdiv(atlas_q1));
 	viewport->set_shadow_atlas_quadrant_subdiv(2, Viewport::ShadowAtlasQuadrantSubdiv(atlas_q2));
