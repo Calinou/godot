@@ -490,10 +490,15 @@ Ref<Texture2D> EditorScriptPreviewPlugin::generate(const RES &p_from, const Size
 	List<String> kwors;
 	scr->get_language()->get_reserved_words(&kwors);
 
+	Set<String> control_flow_keywords;
 	Set<String> keywords;
 
 	for (List<String>::Element *E = kwors.front(); E; E = E->next()) {
-		keywords.insert(E->get());
+		if (scr->get_language()->is_control_flow_keyword(E->get())) {
+			control_flow_keywords.insert(E->get());
+		} else {
+			keywords.insert(E->get());
+		}
 	}
 
 	int line = 0;
@@ -505,6 +510,7 @@ Ref<Texture2D> EditorScriptPreviewPlugin::generate(const RES &p_from, const Size
 
 	Color bg_color = EditorSettings::get_singleton()->get("text_editor/highlighting/background_color");
 	Color keyword_color = EditorSettings::get_singleton()->get("text_editor/highlighting/keyword_color");
+	Color control_flow_keyword_color = EditorSettings::get_singleton()->get("text_editor/highlighting/control_flow_keyword_color");
 	Color text_color = EditorSettings::get_singleton()->get("text_editor/highlighting/text_color");
 	Color symbol_color = EditorSettings::get_singleton()->get("text_editor/highlighting/symbol_color");
 
@@ -525,6 +531,7 @@ Ref<Texture2D> EditorScriptPreviewPlugin::generate(const RES &p_from, const Size
 	col = x0;
 
 	bool prev_is_text = false;
+	bool in_control_flow_keyword = false;
 	bool in_keyword = false;
 	for (int i = 0; i < code.length(); i++) {
 		char32_t c = code[i];
@@ -535,6 +542,7 @@ Ref<Texture2D> EditorScriptPreviewPlugin::generate(const RES &p_from, const Size
 				if (c != '_' && ((c >= '!' && c <= '/') || (c >= ':' && c <= '@') || (c >= '[' && c <= '`') || (c >= '{' && c <= '~') || c == '\t')) {
 					//make symbol a little visible
 					color = symbol_color;
+					in_control_flow_keyword = false;
 					in_keyword = false;
 				} else if (!prev_is_text && _is_text_char(c)) {
 					int pos = i;
@@ -543,7 +551,10 @@ Ref<Texture2D> EditorScriptPreviewPlugin::generate(const RES &p_from, const Size
 						pos++;
 					}
 					String word = code.substr(i, pos - i);
-					if (keywords.has(word)) {
+
+					if (control_flow_keywords.has(word)) {
+						in_control_flow_keyword = true;
+					} else if (keywords.has(word)) {
 						in_keyword = true;
 					}
 
@@ -551,10 +562,11 @@ Ref<Texture2D> EditorScriptPreviewPlugin::generate(const RES &p_from, const Size
 					in_keyword = false;
 				}
 
-				if (in_keyword) {
+				if (in_control_flow_keyword) {
+					color = control_flow_keyword_color;
+				} else if (in_keyword) {
 					color = keyword_color;
 				}
-
 				Color ul = color;
 				ul.a *= 0.5;
 				img->set_pixel(col, y0 + line * 2, bg_color.blend(ul));
@@ -564,6 +576,7 @@ Ref<Texture2D> EditorScriptPreviewPlugin::generate(const RES &p_from, const Size
 			}
 		} else {
 			prev_is_text = false;
+			in_control_flow_keyword = false;
 			in_keyword = false;
 
 			if (c == '\n') {
