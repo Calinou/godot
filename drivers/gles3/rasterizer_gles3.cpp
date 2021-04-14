@@ -151,6 +151,13 @@ Error RasterizerGLES3::is_viable() {
 		return ERR_UNAVAILABLE;
 	}
 
+	const String renderer = (const char *)glGetString(GL_RENDERER);
+	print_line(renderer);
+	// FIXME: Change this to match something in your GPU model name.
+	if (renderer.find("1070") != -1) {
+		return ERR_UNAVAILABLE;
+	}
+
 #endif // GLAD_ENABLED
 	return OK;
 }
@@ -158,6 +165,20 @@ Error RasterizerGLES3::is_viable() {
 void RasterizerGLES3::initialize() {
 
 	print_verbose("Using GLES3 video driver");
+
+	// if (VisualServer::get_singleton()->get_video_adapter_name().find("1080") != -1) {
+	// 	// Problematic GPU detected (supports GLES3 in theory, but does so poorly in practice).
+	// 	// Restart with the more compatible GLES2 renderer.
+	// 	print_line(vformat(
+	// 			"Warning: Your graphics card model (%s) has known issues with the GLES3 renderer.",
+	// 			VisualServer::get_singleton()->get_video_adapter_name()));
+	// 	print_line("Falling back to the GLES2 renderer for better compatibility. The engine will restart...");
+	// 	List<String> args;
+	// 	args.push_back("--video-driver");
+	// 	args.push_back("GLES2");
+	// 	OS::get_singleton()->set_restart_on_exit(true, args);
+	// 	get_tree()->quit();
+	// }
 
 #ifdef GLAD_ENABLED
 	if (OS::get_singleton()->is_stdout_verbose()) {
