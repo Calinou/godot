@@ -1530,6 +1530,8 @@ public:
 	virtual String get_video_adapter_name() const;
 	virtual String get_video_adapter_vendor() const;
 
+	virtual int get_shader_precision_bits(RasterizerStorage::GLShaderType p_shader_type, RasterizerStorage::GLShaderPrecision p_precision_type) const;
+
 	void buffer_orphan_and_upload(unsigned int p_buffer_size, unsigned int p_offset, unsigned int p_data_size, const void *p_data, GLenum p_target = GL_ARRAY_BUFFER, GLenum p_usage = GL_DYNAMIC_DRAW, bool p_optional_orphan = false) const;
 	bool safe_buffer_sub_data(unsigned int p_total_buffer_size, GLenum p_target, unsigned int p_offset, unsigned int p_data_size, const void *p_data, unsigned int &r_offset_after) const;
 

@@ -8409,6 +8409,20 @@ String RasterizerStorageGLES3::get_video_adapter_name() const {
 	return (const char *)glGetString(GL_RENDERER);
 }
 
+int RasterizerStorageGLES3::get_shader_precision_bits(RasterizerStorage::GLShaderType p_shader_type, RasterizerStorage::GLShaderPrecision p_precision_type) const {
+#ifndef GLES_OVER_GL
+	GLsizei range = 0;
+	GLsizei precision = 0;
+	glGetShaderPrecisionFormat(p_shader_type, p_precision_type, *range, *precision);
+	return precision;
+#else
+	// Assume high precision shaders are always supported on desktop platforms.
+	// `glGetShaderPrecisionFormat()` isn't available on desktop OpenGL.
+	// It's only available in OpenGL ES.
+	return 32;
+#endif
+}
+
 String RasterizerStorageGLES3::get_video_adapter_vendor() const {
 
 	return (const char *)glGetString(GL_VENDOR);

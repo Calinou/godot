@@ -237,6 +237,22 @@ public:
 
 	/* SHADER API */
 
+	enum GLShaderType {
+		SHADER_TYPE_VERTEX,
+		SHADER_TYPE_FRAGMENT,
+		SHADER_TYPE_MAX,
+	};
+
+	enum GLShaderPrecision {
+		SHADER_PRECISION_INT_LOW,
+		SHADER_PRECISION_INT_MEDIUM,
+		SHADER_PRECISION_INT_HIGH,
+		SHADER_PRECISION_FLOAT_LOW,
+		SHADER_PRECISION_FLOAT_MEDIUM,
+		SHADER_PRECISION_FLOAT_HIGH,
+		SHADER_PRECISION_MAX,
+	};
+
 	virtual RID shader_create() = 0;
 
 	virtual void shader_set_code(RID p_shader, const String &p_code) = 0;
