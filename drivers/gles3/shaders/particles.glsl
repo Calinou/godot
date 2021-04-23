@@ -29,6 +29,7 @@ uniform float explosiveness;
 uniform float randomness;
 uniform float time;
 uniform float delta;
+uniform float frame_remainder;
 
 uniform int attractor_count;
 uniform Attractor attractors[MAX_ATTRACTORS];
@@ -78,6 +79,9 @@ void main() {
 	out_color = color;
 	out_velocity_active = velocity_active;
 	out_custom = custom;
+	xform_1.w += velocity.x * frame_remainder;
+	xform_2.w += velocity.y * frame_remainder;
+	xform_3.w += velocity.z * frame_remainder;
 	out_xform_1 = xform_1;
 	out_xform_2 = xform_2;
 	out_xform_3 = xform_3;
@@ -166,7 +170,11 @@ void main() {
 		out_color = color;
 		out_velocity_active = velocity_active;
 		out_custom = custom;
-		xform = transpose(mat4(xform_1, xform_2, xform_3, vec4(vec3(0.0), 1.0)));
+		xform = transpose(mat4(
+				vec4(xform_1.x, xform_1.y, xform_1.z, xform_1.w + velocity_active.x * frame_remainder),
+				vec4(xform_2.x, xform_2.y, xform_2.z, xform_2.w + velocity_active.y * frame_remainder),
+				vec4(xform_3.x, xform_3.y, xform_3.z, xform_3.w + velocity_active.z * frame_remainder),
+				vec4(vec3(0.0), 1.0)));
 	}
 
 	if (shader_active) {

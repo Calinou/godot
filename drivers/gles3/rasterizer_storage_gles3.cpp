@@ -6943,6 +6943,7 @@ void RasterizerStorageGLES3::update_particles() {
 		shaders.particles.set_uniform(ParticlesShaderGLES3::ATTRACTOR_COUNT, 0);
 		shaders.particles.set_uniform(ParticlesShaderGLES3::EMITTING, particles->emitting);
 		shaders.particles.set_uniform(ParticlesShaderGLES3::RANDOMNESS, particles->randomness);
+		shaders.particles.set_uniform(ParticlesShaderGLES3::FRAME_REMAINDER, particles->frame_remainder);
 
 		bool zero_time_scale = Engine::get_singleton()->get_time_scale() <= 0.0;
 
