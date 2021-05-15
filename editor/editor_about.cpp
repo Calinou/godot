@@ -70,6 +70,10 @@ void EditorAbout::_version_button_pressed() {
 	DisplayServer::get_singleton()->clipboard_set(version_btn->get_meta(META_TEXT_TO_COPY));
 }
 
+void EditorAbout::_support_godot_development_pressed() {
+	OS::get_singleton()->shell_open("https://godotengine.org/donate");
+}
+
 void EditorAbout::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_version_button_pressed"), &EditorAbout::_version_button_pressed);
 }
@@ -78,7 +82,7 @@ TextureRect *EditorAbout::get_logo() const {
 	return _logo;
 }
 
-ScrollContainer *EditorAbout::_populate_list(const String &p_name, const List<String> &p_sections, const char *const *const p_src[], const int p_flag_single_column) {
+ScrollContainer *EditorAbout::_populate_list(const String &p_name, const List<String> &p_sections, const char *const *const p_src[], const int p_flag_single_column, bool p_support_button) {
 	ScrollContainer *sc = memnew(ScrollContainer);
 	sc->set_name(p_name);
 	sc->set_v_size_flags(Control::SIZE_EXPAND);
@@ -86,6 +90,18 @@ ScrollContainer *EditorAbout::_populate_list(const String &p_name, const List<St
 	VBoxContainer *vbc = memnew(VBoxContainer);
 	vbc->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	sc->add_child(vbc);
+
+	if (p_support_button) {
+		// FIXME: Neither of these nodes appear when the label above is added.
+		HBoxContainer *hbc = memnew(HBoxContainer);
+		hbc->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+		hbc->add_theme_constant_override("hseparation", 16 * EDSCALE);
+		hbc->add_child(memnew(Label(TTR("Want to be listed here?"))));
+		Button *btn = memnew(Button);
+		btn->set_text(TTR("Support Godot Development"));
+		btn->connect("pressed", callable_mp(this, &EditorAbout::_support_godot_development_pressed));
+		hbc->add_child(btn);
+	}
 
 	for (int i = 0; i < p_sections.size(); i++) {
 		bool single_column = p_flag_single_column & 1 << i;
@@ -192,7 +208,7 @@ EditorAbout::EditorAbout() {
 	const char *const *donor_src[] = { DONORS_SPONSOR_PLATINUM, DONORS_SPONSOR_GOLD,
 		DONORS_SPONSOR_SILVER, DONORS_SPONSOR_BRONZE, DONORS_SPONSOR_MINI,
 		DONORS_GOLD, DONORS_SILVER, DONORS_BRONZE };
-	tc->add_child(_populate_list(TTR("Donors"), donor_sections, donor_src, 3));
+	tc->add_child(_populate_list(TTR("Donors"), donor_sections, donor_src, 3, true));
 
 	// License
 

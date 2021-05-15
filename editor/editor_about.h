@@ -55,7 +55,8 @@ class EditorAbout : public AcceptDialog {
 private:
 	void _license_tree_selected();
 	void _version_button_pressed();
-	ScrollContainer *_populate_list(const String &p_name, const List<String> &p_sections, const char *const *const p_src[], const int p_flag_single_column = 0);
+	void _support_godot_development_pressed();
+	ScrollContainer *_populate_list(const String &p_name, const List<String> &p_sections, const char *const *const p_src[], const int p_flag_single_column = 0, bool p_support_button = false);
 
 	LinkButton *version_btn;
 	Tree *_tpl_tree;
