@@ -365,6 +365,7 @@ void Main::print_help(const char *p_binary) {
 	OS::get_singleton()->print("                                               <path> should be absolute or relative to the project directory, and include the filename for the binary (e.g. 'builds/game.exe'). The target directory should exist.\n");
 	OS::get_singleton()->print("  --export-debug <preset> <path>               Same as --export, but using the debug template.\n");
 	OS::get_singleton()->print("  --export-pack <preset> <path>                Same as --export, but only export the game pack for the given preset. The <path> extension determines whether it will be in PCK or ZIP format.\n");
+	OS::get_singleton()->print("  --install-export-templates                   Downloads and installs the export templates for the current Godot version..\n");
 	OS::get_singleton()->print("  --doctool [<path>]                           Dump the engine API reference to the given <path> (defaults to current dir) in XML format, merging if existing files are found.\n");
 	OS::get_singleton()->print("  --no-docbase                                 Disallow dumping the base types (used with --doctool).\n");
 	OS::get_singleton()->print("  --build-solutions                            Build the scripting solutions (e.g. for C# projects). Implies --editor and requires a valid project to edit.\n");
@@ -1840,6 +1841,7 @@ bool Main::start() {
 
 #ifdef TOOLS_ENABLED
 	bool doc_base = true;
+	bool install_export_templates = false;
 	String _export_preset;
 	bool export_debug = false;
 	bool export_pack_only = false;
@@ -1914,6 +1916,10 @@ bool Main::start() {
 		} else if (args[i] == "--doctool") {
 			// Handle case where no path is given to --doctool.
 			doc_tool_path = ".";
+		} else if (args[i] == "--install-export-templates") {
+			// Needs editor functionality.
+			editor = true;
+			install_export_templates = true;
 		}
 	}
 
@@ -2164,6 +2170,11 @@ bool Main::start() {
 			if (_export_preset != "") {
 				editor_node->export_preset(_export_preset, positional_arg, export_debug, export_pack_only);
 				game_path = ""; // Do not load anything.
+			}
+
+			if (install_export_templates) {
+				print_line(vformat("Installing export templates for %s %s...", VERSION_NAME, VERSION_FULL_CONFIG));
+				editor_node->download_and_install_export_templates();
 			}
 		}
 #endif

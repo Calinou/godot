@@ -5411,6 +5411,10 @@ void EditorNode::open_export_template_manager() {
 	export_template_manager->popup_manager();
 }
 
+void EditorNode::download_and_install_export_templates() {
+	export_template_manager->download_export_template
+}
+
 void EditorNode::add_resource_conversion_plugin(const Ref<EditorResourceConversionPlugin> &p_plugin) {
 	resource_conversion_plugins.push_back(p_plugin);
 }

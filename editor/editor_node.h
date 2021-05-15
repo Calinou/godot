@@ -829,6 +829,7 @@ public:
 	void save_layout();
 
 	void open_export_template_manager();
+	void download_and_install_export_templates();
 
 	void reload_scene(const String &p_path);
 
