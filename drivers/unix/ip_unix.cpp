@@ -150,6 +150,8 @@ void IPUnix::get_local_interfaces(Map<String, Interface_Info> *r_interfaces) con
 			info.name = name;
 			info.name_friendly = hostname->DisplayName->Data();
 			info.index = String::num_uint64(0);
+			// TODO: Implement netmask and broadcast for UWP.
+
 			E = r_interfaces->insert(name, info);
 			ERR_CONTINUE(!E);
 		}
@@ -189,6 +191,7 @@ void IPUnix::get_local_interfaces(Map<String, Interface_Info> *r_interfaces) con
 		info.name = adapter->AdapterName;
 		info.name_friendly = adapter->FriendlyName;
 		info.index = String::num_uint64(adapter->IfIndex);
+		// TODO: Implement netmask and broadcast for Windows.
 
 		IP_ADAPTER_UNICAST_ADDRESS *address = adapter->FirstUnicastAddress;
 		while (address != nullptr) {
@@ -235,6 +238,8 @@ void IPUnix::get_local_interfaces(Map<String, Interface_Info> *r_interfaces) con
 			info.name = ifa->ifa_name;
 			info.name_friendly = ifa->ifa_name;
 			info.index = String::num_uint64(if_nametoindex(ifa->ifa_name));
+			info.netmask = _sockaddr2ip(ifa->ifa_netmask);
+			info.broadcast = _sockaddr2ip(ifa->ifa_ifu.ifu_broadaddr);
 			E = r_interfaces->insert(ifa->ifa_name, info);
 			ERR_CONTINUE(!E);
 		}

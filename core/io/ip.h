@@ -80,6 +80,8 @@ public:
 		String name;
 		String name_friendly;
 		String index;
+		IPAddress netmask;
+		IPAddress broadcast;
 		List<IPAddress> ip_addresses;
 	};
 

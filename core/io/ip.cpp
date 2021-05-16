@@ -220,6 +220,8 @@ Array IP::_get_local_interfaces() const {
 		rc["name"] = c.name;
 		rc["friendly"] = c.name_friendly;
 		rc["index"] = c.index;
+		rc["netmask"] = String(c.netmask);
+		rc["broadcast"] = String(c.broadcast);
 
 		Array ips;
 		for (const List<IPAddress>::Element *F = c.ip_addresses.front(); F; F = F->next()) {
