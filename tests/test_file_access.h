@@ -36,6 +36,50 @@
 
 namespace TestFileAccess {
 
+// TEST_CASE("[FileAccess] Read binary file") {
+// 	const String path = OS::get_singleton()->get_executable_path().get_base_dir().plus_file("tests/data/test_file_access_read.bin");
+// 	FileAccess *f = FileAccess::open(path, FileAccess::READ);
+// }
+
+TEST_CASE("[FileAccess] Write binary file") {
+	const String path = OS::get_singleton()->get_cache_path().plus_file("test_file_access_write.bin");
+	FileAccess *f = FileAccess::open(path, FileAccess::WRITE);
+
+	f->store_8(0xdd);
+	f->store_16(0xffff);
+	f->store_32(0x0006'0d07);
+	f->store_64(0xdead'beef'cafe'c0de);
+	f->store_pascal_string("This string has its length encoded next to it.\tUnicode characters for testing: × é ❤ 😛\n");
+	f->store_float(Math_PI);
+	f->store_double(Math_TAU);
+	f->store_real(Math_E);
+
+	Vector<uint8_t> buf;
+	buf.push_back(0);
+	buf.push_back(1);
+	buf.push_back(2);
+	buf.push_back(3);
+	buf.push_back(4);
+	buf.push_back(5);
+	uint8_t *w = buf.ptrw();
+	// Store the buffer length first so it can be determined in the binary file when reading it back.
+	f->store_8(buf.size());
+	f->store_buffer(w, buf.size());
+
+	f->close();
+	memdelete(f);
+}
+
+// TEST_CASE("[FileAccess] Read text file") {
+// 	const String path = OS::get_singleton()->get_executable_path().get_base_dir().plus_file("tests/data/test_file_access_read.txt");
+// 	FileAccess *f = FileAccess::open(path, FileAccess::READ);
+// }
+
+TEST_CASE("[FileAccess] Write text file") {
+	const String path = OS::get_singleton()->get_cache_path().plus_file("test_file_access_write.txt");
+	FileAccess *f = FileAccess::open(path, FileAccess::WRITE);
+}
+
 TEST_CASE("[FileAccess] CSV read") {
 	FileAccess *f = FileAccess::open(TestUtils::get_data_path("translations.csv"), FileAccess::READ);
 
