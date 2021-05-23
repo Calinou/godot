@@ -30,6 +30,8 @@
 
 #include "csg_gizmos.h"
 
+#include "core/os/keyboard.h"
+
 ///////////
 
 CSGShape3DGizmoPlugin::CSGShape3DGizmoPlugin() {
@@ -99,12 +101,11 @@ Variant CSGShape3DGizmoPlugin::get_handle_value(EditorNode3DGizmo *p_gizmo, int 
 void CSGShape3DGizmoPlugin::set_handle(EditorNode3DGizmo *p_gizmo, int p_idx, Camera3D *p_camera, const Point2 &p_point) {
 	CSGShape3D *cs = Object::cast_to<CSGShape3D>(p_gizmo->get_spatial_node());
 
-	Transform gt = cs->get_global_transform();
-	//gt.orthonormalize();
-	Transform gi = gt.affine_inverse();
+	const Transform gt = cs->get_global_transform();
+	const Transform gi = gt.affine_inverse();
 
-	Vector3 ray_from = p_camera->project_ray_origin(p_point);
-	Vector3 ray_dir = p_camera->project_ray_normal(p_point);
+	const Vector3 ray_from = p_camera->project_ray_origin(p_point);
+	const Vector3 ray_dir = p_camera->project_ray_normal(p_point);
 
 	Vector3 sg[2] = { gi.xform(ray_from), gi.xform(ray_from + ray_dir * 16384) };
 
@@ -141,9 +142,23 @@ void CSGShape3DGizmoPlugin::set_handle(EditorNode3DGizmo *p_gizmo, int p_idx, Ca
 			d = 0.001;
 		}
 
-		Vector3 h = s->get_size();
-		h[p_idx] = d * 2;
-		s->set_size(h);
+		if (Input::get_singleton()->is_key_pressed(KEY_ALT)) {
+			// Adjust the shape from the center.
+			Vector3 h = s->get_size();
+			h[p_idx] = d * 2;
+			s->set_size(h);
+		} else {
+			// Adjust the shape from a face.
+			Vector3 h = s->get_size();
+			const float old_length = h[p_idx];
+			h[p_idx] = d;
+			s->set_size(h);
+
+			// Move by the difference between the old and new axis length.
+			Vector3 displace = (d - old_length) * axis;
+			print_line(String(displace));
+			s->translate_object_local(displace);
+		}
 	}
 
 	if (Object::cast_to<CSGCylinder3D>(cs)) {
