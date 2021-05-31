@@ -32,6 +32,8 @@
 
 #include "core/os/os.h"
 #include "default_font.gen.h"
+#include "default_theme_icons.gen.h"
+#include "modules/svg/image_loader_svg.h"
 #include "scene/resources/font.h"
 #include "scene/resources/theme.h"
 #include "servers/text_server.h"
@@ -74,13 +76,25 @@ static Ref<StyleBoxTexture> make_stylebox(T p_src, float p_left, float p_top, fl
 	return style;
 }
 
-static Ref<StyleBoxFlat> make_flat_stylebox(Color p_color, float p_margin_left = -1, float p_margin_top = -1, float p_margin_right = -1, float p_margin_bottom = -1) {
+static const int default_margin = 4;
+static const int default_corner_radius = 3;
+
+static Ref<StyleBoxFlat> make_flat_stylebox(Color p_color, float p_margin_left = default_margin, float p_margin_top = default_margin, float p_margin_right = default_margin, float p_margin_bottom = default_margin, int p_corner_radius = default_corner_radius, bool p_draw_center = true, int p_border_width = 0) {
 	Ref<StyleBoxFlat> style(memnew(StyleBoxFlat));
 	style->set_bg_color(p_color);
 	style->set_default_margin(SIDE_LEFT, p_margin_left * scale);
 	style->set_default_margin(SIDE_RIGHT, p_margin_right * scale);
 	style->set_default_margin(SIDE_BOTTOM, p_margin_bottom * scale);
 	style->set_default_margin(SIDE_TOP, p_margin_top * scale);
+
+	style->set_corner_radius_all(p_corner_radius);
+	// Adjust level of detail based on the corners' effective sizes.
+	style->set_corner_detail(Math::ceil(1.5 * p_corner_radius));
+	// Work around issue about antialiased edges being blurrier with rounded corners (GH-35279).
+	style->set_anti_aliased(false);
+
+	style->set_draw_center(p_draw_center);
+	style->set_border_width_all(p_border_width);
 
 	return style;
 }
@@ -91,6 +105,21 @@ static Ref<StyleBoxTexture> sb_expand(Ref<StyleBoxTexture> p_sbox, float p_left,
 	p_sbox->set_expand_margin_size(SIDE_RIGHT, p_right * scale);
 	p_sbox->set_expand_margin_size(SIDE_BOTTOM, p_bottom * scale);
 	return p_sbox;
+}
+
+// See also `editor_generate_icon()` in `editor/editor_themes.cpp`.
+static Ref<ImageTexture> generate_icon(int p_index) {
+	Ref<ImageTexture> icon = memnew(ImageTexture);
+	Ref<Image> img = memnew(Image);
+
+	// Upsample icon generation only if the scale isn't an integer multiplier.
+	// Generating upsampled icons is slower, and the benefit is hardly visible
+	// with integer scales.
+	const bool upsample = !Math::is_equal_approx(Math::round(scale), scale);
+	ImageLoaderSVG::create_image_from_string(img, default_theme_icons_sources[p_index], scale, upsample, false);
+	icon->create_from_image(img);
+
+	return icon;
 }
 
 template <class T>
@@ -141,42 +170,53 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 
 	tex_cache = memnew(TexCacheMap);
 
-	// Font Colors
+	// Font colors
+	const Color control_font_color = Color(0.875, 0.875, 0.875);
+	const Color control_font_low_color = Color(0.7, 0.7, 0.7);
+	const Color control_font_lower_color = Color(0.65, 0.65, 0.65);
+	const Color control_font_hover_color = Color(0.95, 0.95, 0.95);
+	const Color control_font_disabled_color = control_font_color * Color(1, 1, 1, 0.5);
+	const Color control_font_pressed_color = Color(1, 1, 1);
+	const Color control_selection_color = Color(0.5, 0.5, 0.5);
 
-	Color control_font_color = Color(0.88, 0.88, 0.88);
-	Color control_font_lower_color = Color(0.63, 0.63, 0.63);
-	Color control_font_low_color = Color(0.69, 0.69, 0.69);
-	Color control_font_hover_color = Color(0.94, 0.94, 0.94);
-	Color control_font_disabled_color = Color(0.9, 0.9, 0.9, 0.2);
-	Color control_font_pressed_color = Color(1, 1, 1);
+	// StyleBox colors
+	const Color style_normal_color = Color(0.1, 0.1, 0.1, 0.5);
+	const Color style_hover_color = Color(0.225, 0.225, 0.225, 0.5);
+	const Color style_pressed_color = Color(0, 0, 0, 0.5);
+	const Color style_disabled_color = Color(0.1, 0.1, 0.1, 0.25);
+	const Color style_focus_color = Color(1, 1, 1, 0.75);
+	const Color style_popup_color = Color(0.25, 0.25, 0.25, 1);
+	const Color style_popup_border_color = Color(0.175, 0.175, 0.175, 1);
+	const Color style_popup_hover_color = Color(0.4, 0.4, 0.4, 1);
+	const Color style_selected_color = Color(1, 1, 1, 0.25);
+	// Don't use a color too bright to keep the percentage readable.
+	const Color style_progress_color = Color(1, 1, 1, 0.4);
+	const Color style_separator_color = Color(0.5, 0.5, 0.5);
 
-	Color control_selection_color = Color(0.49, 0.49, 0.49);
+	// Convert the generated icon sources to a dictionary for easier access.
+	// Unlike the editor icons, there is no central repository of icons in the Theme resource itself to keep it tidy.
+	Dictionary icons;
+	for (int i = 0; i < default_theme_icons_count; i++) {
+		icons[default_theme_icons_names[i]] = generate_icon(i);
+	}
 
 	// Panel
-
-	theme->set_stylebox("panel", "Panel", make_stylebox(panel_bg_png, 0, 0, 0, 0));
-	theme->set_stylebox("panel_fg", "Panel", make_stylebox(panel_bg_png, 0, 0, 0, 0));
-
-	// Focus
-
-	Ref<StyleBoxTexture> focus = make_stylebox(focus_png, 5, 5, 5, 5);
-	for (int i = 0; i < 4; i++) {
-		focus->set_expand_margin_size(Side(i), 1 * scale);
-	}
+	theme->set_stylebox("panel", "Panel", make_flat_stylebox(style_normal_color, 0, 0, 0, 0));
+	theme->set_stylebox("panel_fg", "Panel", make_flat_stylebox(style_normal_color, 0, 0, 0, 0));
 
 	// Button
 
-	Ref<StyleBox> sb_button_normal = sb_expand(make_stylebox(button_normal_png, 4, 4, 4, 4, 6, 3, 6, 3), 2, 2, 2, 2);
-	Ref<StyleBox> sb_button_pressed = sb_expand(make_stylebox(button_pressed_png, 4, 4, 4, 4, 6, 3, 6, 3), 2, 2, 2, 2);
-	Ref<StyleBox> sb_button_hover = sb_expand(make_stylebox(button_hover_png, 4, 4, 4, 4, 6, 2, 6, 2), 2, 2, 2, 2);
-	Ref<StyleBox> sb_button_disabled = sb_expand(make_stylebox(button_disabled_png, 4, 4, 4, 4, 6, 2, 6, 2), 2, 2, 2, 2);
-	Ref<StyleBox> sb_button_focus = sb_expand(make_stylebox(button_focus_png, 4, 4, 4, 4, 6, 2, 6, 2), 2, 2, 2, 2);
+	Ref<StyleBox> button_normal = make_flat_stylebox(style_normal_color);
+	Ref<StyleBox> button_hover = make_flat_stylebox(style_hover_color);
+	Ref<StyleBox> button_pressed = make_flat_stylebox(style_pressed_color);
+	Ref<StyleBox> button_disabled = make_flat_stylebox(style_disabled_color);
+	Ref<StyleBox> focus = make_flat_stylebox(style_focus_color, default_margin, default_margin, default_margin, default_margin, default_corner_radius, false, 2);
 
-	theme->set_stylebox("normal", "Button", sb_button_normal);
-	theme->set_stylebox("pressed", "Button", sb_button_pressed);
-	theme->set_stylebox("hover", "Button", sb_button_hover);
-	theme->set_stylebox("disabled", "Button", sb_button_disabled);
-	theme->set_stylebox("focus", "Button", sb_button_focus);
+	theme->set_stylebox("normal", "Button", button_normal);
+	theme->set_stylebox("hover", "Button", button_hover);
+	theme->set_stylebox("pressed", "Button", button_pressed);
+	theme->set_stylebox("disabled", "Button", button_disabled);
+	theme->set_stylebox("focus", "Button", focus);
 
 	theme->set_font("font", "Button", Ref<Font>());
 	theme->set_font_size("font_size", "Button", -1);
@@ -214,11 +254,11 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 
 	// ColorPickerButton
 
-	theme->set_stylebox("normal", "ColorPickerButton", sb_button_normal);
-	theme->set_stylebox("pressed", "ColorPickerButton", sb_button_pressed);
-	theme->set_stylebox("hover", "ColorPickerButton", sb_button_hover);
-	theme->set_stylebox("disabled", "ColorPickerButton", sb_button_disabled);
-	theme->set_stylebox("focus", "ColorPickerButton", sb_button_focus);
+	theme->set_stylebox("normal", "ColorPickerButton", button_normal);
+	theme->set_stylebox("pressed", "ColorPickerButton", button_pressed);
+	theme->set_stylebox("hover", "ColorPickerButton", button_hover);
+	theme->set_stylebox("disabled", "ColorPickerButton", button_disabled);
+	theme->set_stylebox("focus", "ColorPickerButton", focus);
 
 	theme->set_font("font", "ColorPickerButton", Ref<Font>());
 	theme->set_font_size("font_size", "ColorPickerButton", -1);
@@ -233,28 +273,26 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	theme->set_constant("outline_size", "ColorPickerButton", 0);
 
 	// OptionButton
+	theme->set_stylebox("focus", "OptionButton", focus);
 
-	Ref<StyleBox> sb_optbutton_focus = sb_expand(make_stylebox(button_focus_png, 4, 4, 4, 4, 6, 2, 6, 2), 2, 2, 2, 2);
-	theme->set_stylebox("focus", "OptionButton", sb_optbutton_focus);
-
-	Ref<StyleBox> sb_optbutton_normal = sb_expand(make_stylebox(option_button_normal_png, 4, 4, 21, 4, 6, 3, 9, 3), 2, 2, 2, 2);
-	Ref<StyleBox> sb_optbutton_pressed = sb_expand(make_stylebox(option_button_pressed_png, 4, 4, 21, 4, 6, 3, 9, 3), 2, 2, 2, 2);
-	Ref<StyleBox> sb_optbutton_hover = sb_expand(make_stylebox(option_button_hover_png, 4, 4, 21, 4, 6, 2, 9, 2), 2, 2, 2, 2);
-	Ref<StyleBox> sb_optbutton_disabled = sb_expand(make_stylebox(option_button_disabled_png, 4, 4, 21, 4, 6, 2, 9, 2), 2, 2, 2, 2);
+	Ref<StyleBox> sb_optbutton_normal = make_flat_stylebox(style_normal_color, 2 * default_margin, default_margin, 21, default_margin);
+	Ref<StyleBox> sb_optbutton_hover = make_flat_stylebox(style_hover_color, 2 * default_margin, default_margin, 21, default_margin);
+	Ref<StyleBox> sb_optbutton_pressed = make_flat_stylebox(style_pressed_color, 2 * default_margin, default_margin, 21, default_margin);
+	Ref<StyleBox> sb_optbutton_disabled = make_flat_stylebox(style_disabled_color, 2 * default_margin, default_margin, 21, default_margin);
 
 	theme->set_stylebox("normal", "OptionButton", sb_optbutton_normal);
-	theme->set_stylebox("pressed", "OptionButton", sb_optbutton_pressed);
 	theme->set_stylebox("hover", "OptionButton", sb_optbutton_hover);
+	theme->set_stylebox("pressed", "OptionButton", sb_optbutton_pressed);
 	theme->set_stylebox("disabled", "OptionButton", sb_optbutton_disabled);
 
-	Ref<StyleBox> sb_optbutton_normal_mirrored = sb_expand(make_stylebox(option_button_normal_mirrored_png, 21, 4, 4, 4, 9, 3, 6, 3), 2, 2, 2, 2);
-	Ref<StyleBox> sb_optbutton_pressed_mirrored = sb_expand(make_stylebox(option_button_pressed_mirrored_png, 21, 4, 4, 4, 9, 3, 6, 3), 2, 2, 2, 2);
-	Ref<StyleBox> sb_optbutton_hover_mirrored = sb_expand(make_stylebox(option_button_hover_mirrored_png, 21, 4, 4, 4, 9, 2, 6, 2), 2, 2, 2, 2);
-	Ref<StyleBox> sb_optbutton_disabled_mirrored = sb_expand(make_stylebox(option_button_disabled_mirrored_png, 21, 4, 4, 4, 9, 2, 6, 2), 2, 2, 2, 2);
+	Ref<StyleBox> sb_optbutton_normal_mirrored = make_flat_stylebox(style_normal_color, 21, default_margin, 2 * default_margin, default_margin);
+	Ref<StyleBox> sb_optbutton_hover_mirrored = make_flat_stylebox(style_hover_color, 21, default_margin, 2 * default_margin, default_margin);
+	Ref<StyleBox> sb_optbutton_pressed_mirrored = make_flat_stylebox(style_pressed_color, 21, default_margin, 2 * default_margin, default_margin);
+	Ref<StyleBox> sb_optbutton_disabled_mirrored = make_flat_stylebox(style_disabled_color, 21, default_margin, 2 * default_margin, default_margin);
 
 	theme->set_stylebox("normal_mirrored", "OptionButton", sb_optbutton_normal_mirrored);
-	theme->set_stylebox("pressed_mirrored", "OptionButton", sb_optbutton_pressed_mirrored);
 	theme->set_stylebox("hover_mirrored", "OptionButton", sb_optbutton_hover_mirrored);
+	theme->set_stylebox("pressed_mirrored", "OptionButton", sb_optbutton_pressed_mirrored);
 	theme->set_stylebox("disabled_mirrored", "OptionButton", sb_optbutton_disabled_mirrored);
 
 	theme->set_icon("arrow", "OptionButton", make_icon(option_arrow_png));
@@ -274,11 +312,11 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 
 	// MenuButton
 
-	theme->set_stylebox("normal", "MenuButton", sb_button_normal);
-	theme->set_stylebox("pressed", "MenuButton", sb_button_pressed);
-	theme->set_stylebox("hover", "MenuButton", sb_button_hover);
-	theme->set_stylebox("disabled", "MenuButton", sb_button_disabled);
-	theme->set_stylebox("focus", "MenuButton", sb_button_focus);
+	theme->set_stylebox("normal", "MenuButton", button_normal);
+	theme->set_stylebox("pressed", "MenuButton", button_pressed);
+	theme->set_stylebox("hover", "MenuButton", button_hover);
+	theme->set_stylebox("disabled", "MenuButton", button_disabled);
+	theme->set_stylebox("focus", "MenuButton", focus);
 
 	theme->set_font("font", "MenuButton", Ref<Font>());
 	theme->set_font_size("font_size", "MenuButton", -1);
@@ -312,14 +350,14 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	theme->set_stylebox("hover_pressed", "CheckBox", cbx_empty);
 	theme->set_stylebox("focus", "CheckBox", cbx_focus);
 
-	theme->set_icon("checked", "CheckBox", make_icon(checked_png));
-	theme->set_icon("checked_disabled", "CheckBox", make_icon(checked_disabled_png));
-	theme->set_icon("unchecked", "CheckBox", make_icon(unchecked_png));
-	theme->set_icon("unchecked_disabled", "CheckBox", make_icon(unchecked_disabled_png));
-	theme->set_icon("radio_checked", "CheckBox", make_icon(radio_checked_png));
-	theme->set_icon("radio_checked_disabled", "CheckBox", make_icon(radio_checked_disabled_png));
-	theme->set_icon("radio_unchecked", "CheckBox", make_icon(radio_unchecked_png));
-	theme->set_icon("radio_unchecked_disabled", "CheckBox", make_icon(radio_unchecked_disabled_png));
+	theme->set_icon("checked", "CheckBox", icons["checked"]);
+	theme->set_icon("checked_disabled", "CheckBox", icons["checked"]);
+	theme->set_icon("unchecked", "CheckBox", icons["unchecked"]);
+	theme->set_icon("unchecked_disabled", "CheckBox", icons["unchecked"]);
+	theme->set_icon("radio_checked", "CheckBox", icons["radio_checked"]);
+	theme->set_icon("radio_checked_disabled", "CheckBox", icons["radio_checked"]);
+	theme->set_icon("radio_unchecked", "CheckBox", icons["radio_unchecked"]);
+	theme->set_icon("radio_unchecked_disabled", "CheckBox", icons["radio_unchecked"]);
 
 	theme->set_font("font", "CheckBox", Ref<Font>());
 	theme->set_font_size("font_size", "CheckBox", -1);
@@ -350,15 +388,15 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	theme->set_stylebox("hover_pressed", "CheckButton", cb_empty);
 	theme->set_stylebox("focus", "CheckButton", focus);
 
-	theme->set_icon("on", "CheckButton", make_icon(toggle_on_png));
-	theme->set_icon("on_disabled", "CheckButton", make_icon(toggle_on_disabled_png));
-	theme->set_icon("off", "CheckButton", make_icon(toggle_off_png));
-	theme->set_icon("off_disabled", "CheckButton", make_icon(toggle_off_disabled_png));
+	theme->set_icon("on", "CheckButton", icons["toggle_on"]);
+	theme->set_icon("on_disabled", "CheckButton", icons["toggle_on_disabled"]);
+	theme->set_icon("off", "CheckButton", icons["toggle_off"]);
+	theme->set_icon("off_disabled", "CheckButton", icons["toggle_off_disabled"]);
 
-	theme->set_icon("on_mirrored", "CheckButton", make_icon(toggle_on_mirrored_png));
-	theme->set_icon("on_disabled_mirrored", "CheckButton", make_icon(toggle_on_disabled_mirrored_png));
-	theme->set_icon("off_mirrored", "CheckButton", make_icon(toggle_off_mirrored_png));
-	theme->set_icon("off_disabled_mirrored", "CheckButton", make_icon(toggle_off_disabled_mirrored_png));
+	theme->set_icon("on_mirrored", "CheckButton", icons["toggle_on_mirrored"]);
+	theme->set_icon("on_disabled_mirrored", "CheckButton", icons["toggle_on_disabled_mirrored"]);
+	theme->set_icon("off_mirrored", "CheckButton", icons["toggle_off_mirrored"]);
+	theme->set_icon("off_disabled_mirrored", "CheckButton", icons["toggle_off_disabled_mirrored"]);
 
 	theme->set_font("font", "CheckButton", Ref<Font>());
 	theme->set_font_size("font_size", "CheckButton", -1);
@@ -392,16 +430,26 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 
 	// LineEdit
 
-	theme->set_stylebox("normal", "LineEdit", make_stylebox(line_edit_png, 5, 5, 5, 5));
+	Ref<StyleBoxFlat> style_line_edit = make_flat_stylebox(style_normal_color);
+	// Add a line at the bottom to make LineEdits distinguishable from Buttons.
+	style_line_edit->set_border_width(SIDE_BOTTOM, 2);
+	style_line_edit->set_border_color(style_pressed_color);
+	theme->set_stylebox("normal", "LineEdit", style_line_edit);
+
 	theme->set_stylebox("focus", "LineEdit", focus);
-	theme->set_stylebox("read_only", "LineEdit", make_stylebox(line_edit_disabled_png, 6, 6, 6, 6));
+
+	Ref<StyleBoxFlat> style_line_edit_read_only = make_flat_stylebox(style_disabled_color);
+	// Add a line at the bottom to make LineEdits distinguishable from Buttons.
+	style_line_edit_read_only->set_border_width(SIDE_BOTTOM, 2);
+	style_line_edit_read_only->set_border_color(style_pressed_color * Color(1, 1, 1, 0.5));
+	theme->set_stylebox("read_only", "LineEdit", style_line_edit_read_only);
 
 	theme->set_font("font", "LineEdit", Ref<Font>());
 	theme->set_font_size("font_size", "LineEdit", -1);
 
 	theme->set_color("font_color", "LineEdit", control_font_color);
-	theme->set_color("font_selected_color", "LineEdit", Color(0, 0, 0));
-	theme->set_color("font_uneditable_color", "LineEdit", Color(control_font_color.r, control_font_color.g, control_font_color.b, 0.5f));
+	theme->set_color("font_selected_color", "LineEdit", control_font_pressed_color);
+	theme->set_color("font_uneditable_color", "LineEdit", control_font_disabled_color);
 	theme->set_color("font_outline_color", "LineEdit", Color(1, 1, 1));
 	theme->set_color("caret_color", "LineEdit", control_font_hover_color);
 	theme->set_color("selection_color", "LineEdit", control_selection_color);
@@ -415,8 +463,8 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 
 	// ProgressBar
 
-	theme->set_stylebox("bg", "ProgressBar", make_stylebox(progress_bar_png, 4, 4, 4, 4, 0, 0, 0, 0));
-	theme->set_stylebox("fg", "ProgressBar", make_stylebox(progress_fill_png, 6, 6, 6, 6, 2, 1, 2, 1));
+	theme->set_stylebox("bg", "ProgressBar", make_flat_stylebox(style_disabled_color, 2, 2, 2, 2));
+	theme->set_stylebox("fg", "ProgressBar", make_flat_stylebox(style_progress_color, 2, 2, 2, 2));
 
 	theme->set_font("font", "ProgressBar", Ref<Font>());
 	theme->set_font_size("font_size", "ProgressBar", -1);
@@ -429,9 +477,9 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 
 	// TextEdit
 
-	theme->set_stylebox("normal", "TextEdit", make_stylebox(tree_bg_png, 3, 3, 3, 3, 0, 0, 0, 0));
+	theme->set_stylebox("normal", "TextEdit", style_line_edit);
 	theme->set_stylebox("focus", "TextEdit", focus);
-	theme->set_stylebox("read_only", "TextEdit", make_stylebox(tree_bg_disabled_png, 4, 4, 4, 4, 0, 0, 0, 0));
+	theme->set_stylebox("read_only", "TextEdit", style_line_edit_read_only);
 
 	theme->set_icon("tab", "TextEdit", make_icon(tab_png));
 	theme->set_icon("space", "TextEdit", make_icon(space_png));
@@ -441,15 +489,15 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 
 	theme->set_color("background_color", "TextEdit", Color(0, 0, 0, 0));
 	theme->set_color("font_color", "TextEdit", control_font_color);
-	theme->set_color("font_selected_color", "TextEdit", Color(0, 0, 0));
-	theme->set_color("font_readonly_color", "TextEdit", Color(control_font_color.r, control_font_color.g, control_font_color.b, 0.5f));
+	theme->set_color("font_selected_color", "TextEdit", control_font_pressed_color);
+	theme->set_color("font_readonly_color", "TextEdit", control_font_disabled_color);
 	theme->set_color("font_outline_color", "TextEdit", Color(1, 1, 1));
 	theme->set_color("selection_color", "TextEdit", control_selection_color);
 	theme->set_color("current_line_color", "TextEdit", Color(0.25, 0.25, 0.26, 0.8));
 	theme->set_color("caret_color", "TextEdit", control_font_color);
 	theme->set_color("caret_background_color", "TextEdit", Color(0, 0, 0));
-	theme->set_color("brace_mismatch_color", "TextEdit", Color(1, 0.2, 0.2));
-	theme->set_color("word_highlighted_color", "TextEdit", Color(0.8, 0.9, 0.9, 0.15));
+	theme->set_color("brace_mismatch_color", "TextEdit", Color(1, 0.363, 0.363)); // Matches the error icon color.
+	theme->set_color("word_highlighted_color", "TextEdit", Color(0.5, 0.5, 0.5, 0.25));
 
 	theme->set_constant("line_spacing", "TextEdit", 4 * scale);
 	theme->set_constant("outline_size", "TextEdit", 0);
@@ -583,7 +631,7 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	theme->set_constant("close_h_ofs", "Window", 18 * scale);
 	theme->set_constant("close_v_ofs", "Window", 18 * scale);
 
-	// File Dialog
+	// FileDialog
 
 	theme->set_icon("parent_folder", "FileDialog", make_icon(icon_parent_folder_png));
 	theme->set_icon("back_folder", "FileDialog", make_icon(arrow_left_png));
@@ -593,33 +641,46 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 
 	// Popup
 
-	Ref<StyleBoxTexture> style_pp = sb_expand(make_stylebox(popup_bg_png, 5, 5, 5, 5, 4, 4, 4, 4), 2, 2, 2, 2);
-
-	Ref<StyleBoxTexture> selected = make_stylebox(selection_png, 6, 6, 6, 6);
-	for (int i = 0; i < 4; i++) {
-		selected->set_expand_margin_size(Side(i), 2 * scale);
-	}
-
-	theme->set_stylebox("panel", "PopupPanel", style_pp);
+	theme->set_stylebox("panel", "PopupPanel", make_flat_stylebox(style_normal_color));
 
 	// PopupDialog
 
-	Ref<StyleBoxTexture> style_pd = make_stylebox(popup_bg_png, 4, 4, 4, 4, 10, 10, 10, 10);
-	theme->set_stylebox("panel", "PopupDialog", style_pd);
+	theme->set_stylebox("panel", "PopupDialog", make_flat_stylebox(style_normal_color));
 
 	// PopupMenu
 
-	theme->set_stylebox("panel", "PopupMenu", style_pd);
-	theme->set_stylebox("panel_disabled", "PopupMenu", make_stylebox(popup_bg_disabled_png, 4, 4, 4, 4));
-	theme->set_stylebox("hover", "PopupMenu", selected);
-	theme->set_stylebox("separator", "PopupMenu", make_stylebox(vseparator_png, 3, 3, 3, 3));
-	theme->set_stylebox("labeled_separator_left", "PopupMenu", make_stylebox(vseparator_png, 0, 0, 0, 0));
-	theme->set_stylebox("labeled_separator_right", "PopupMenu", make_stylebox(vseparator_png, 0, 0, 0, 0));
+	Ref<StyleBoxLine> separator_horizontal = memnew(StyleBoxLine);
+	separator_horizontal->set_thickness(Math::round(scale));
+	separator_horizontal->set_color(style_separator_color);
+	separator_horizontal->set_default_margin(SIDE_LEFT, default_margin);
+	separator_horizontal->set_default_margin(SIDE_TOP, 0);
+	separator_horizontal->set_default_margin(SIDE_RIGHT, default_margin);
+	separator_horizontal->set_default_margin(SIDE_BOTTOM, 0);
+	Ref<StyleBoxLine> separator_vertical = separator_horizontal->duplicate();
+	separator_vertical->set_vertical(true);
+	separator_vertical->set_default_margin(SIDE_LEFT, 0);
+	separator_vertical->set_default_margin(SIDE_TOP, default_margin);
+	separator_vertical->set_default_margin(SIDE_RIGHT, 0);
+	separator_vertical->set_default_margin(SIDE_BOTTOM, default_margin);
 
-	theme->set_icon("checked", "PopupMenu", make_icon(checked_png));
-	theme->set_icon("unchecked", "PopupMenu", make_icon(unchecked_png));
-	theme->set_icon("radio_checked", "PopupMenu", make_icon(radio_checked_png));
-	theme->set_icon("radio_unchecked", "PopupMenu", make_icon(radio_unchecked_png));
+	// Always display a border for PopupMenus so they can be distinguished from their background.
+	Ref<StyleBoxFlat> style_popup_panel = make_flat_stylebox(style_popup_color);
+	style_popup_panel->set_border_width_all(2);
+	style_popup_panel->set_border_color(style_popup_border_color);
+	Ref<StyleBoxFlat> style_popup_panel_disabled = style_popup_panel->duplicate();
+	style_popup_panel_disabled->set_bg_color(style_disabled_color);
+
+	theme->set_stylebox("panel", "PopupMenu", style_popup_panel);
+	theme->set_stylebox("panel_disabled", "PopupMenu", style_popup_panel_disabled);
+	theme->set_stylebox("hover", "PopupMenu", make_flat_stylebox(style_popup_hover_color));
+	theme->set_stylebox("separator", "PopupMenu", separator_horizontal);
+	theme->set_stylebox("labeled_separator_left", "PopupMenu", separator_horizontal);
+	theme->set_stylebox("labeled_separator_right", "PopupMenu", separator_horizontal);
+
+	theme->set_icon("checked", "PopupMenu", icons["checked"]);
+	theme->set_icon("unchecked", "PopupMenu", icons["unchecked"]);
+	theme->set_icon("radio_checked", "PopupMenu", icons["radio_checked"]);
+	theme->set_icon("radio_unchecked", "PopupMenu", icons["radio_unchecked"]);
 	theme->set_icon("submenu", "PopupMenu", make_icon(submenu_png));
 	theme->set_icon("submenu_mirrored", "PopupMenu", make_icon(submenu_mirrored_png));
 
@@ -650,8 +711,6 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	Ref<StyleBoxTexture> graph_bpoint = make_stylebox(graph_node_breakpoint_png, 6, 24, 6, 5, 16, 24, 16, 6);
 	Ref<StyleBoxTexture> graph_position = make_stylebox(graph_node_position_png, 6, 24, 6, 5, 16, 24, 16, 6);
 
-	//graphsb->set_expand_margin_size(SIDE_LEFT,10);
-	//graphsb->set_expand_margin_size(SIDE_RIGHT,10);
 	theme->set_stylebox("frame", "GraphNode", graphsb);
 	theme->set_stylebox("selectedframe", "GraphNode", graphsbselected);
 	theme->set_stylebox("defaultframe", "GraphNode", graphsbdefault);
@@ -674,25 +733,22 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 
 	// Tree
 
-	Ref<StyleBoxTexture> tree_selected = make_stylebox(selection_png, 4, 4, 4, 4, 8, 0, 8, 0);
-	Ref<StyleBoxTexture> tree_selected_oof = make_stylebox(selection_oof_png, 4, 4, 4, 4, 8, 0, 8, 0);
-
 	theme->set_stylebox("bg", "Tree", make_stylebox(tree_bg_png, 4, 4, 4, 5));
 	theme->set_stylebox("bg_focus", "Tree", focus);
-	theme->set_stylebox("selected", "Tree", tree_selected_oof);
-	theme->set_stylebox("selected_focus", "Tree", tree_selected);
+	theme->set_stylebox("selected", "Tree", make_flat_stylebox(style_selected_color));
+	theme->set_stylebox("selected_focus", "Tree", make_flat_stylebox(style_selected_color));
 	theme->set_stylebox("cursor", "Tree", focus);
 	theme->set_stylebox("cursor_unfocused", "Tree", focus);
-	theme->set_stylebox("button_pressed", "Tree", make_stylebox(button_pressed_png, 4, 4, 4, 4));
+	theme->set_stylebox("button_pressed", "Tree", button_pressed);
 	theme->set_stylebox("title_button_normal", "Tree", make_stylebox(tree_title_png, 4, 4, 4, 4));
 	theme->set_stylebox("title_button_pressed", "Tree", make_stylebox(tree_title_pressed_png, 4, 4, 4, 4));
 	theme->set_stylebox("title_button_hover", "Tree", make_stylebox(tree_title_png, 4, 4, 4, 4));
-	theme->set_stylebox("custom_button", "Tree", sb_button_normal);
-	theme->set_stylebox("custom_button_pressed", "Tree", sb_button_pressed);
-	theme->set_stylebox("custom_button_hover", "Tree", sb_button_hover);
+	theme->set_stylebox("custom_button", "Tree", button_normal);
+	theme->set_stylebox("custom_button_pressed", "Tree", button_pressed);
+	theme->set_stylebox("custom_button_hover", "Tree", button_hover);
 
-	theme->set_icon("checked", "Tree", make_icon(checked_png));
-	theme->set_icon("unchecked", "Tree", make_icon(unchecked_png));
+	theme->set_icon("checked", "Tree", icons["checked"]);
+	theme->set_icon("unchecked", "Tree", icons["unchecked"]);
 	theme->set_icon("updown", "Tree", make_icon(updown_png));
 	theme->set_icon("select_arrow", "Tree", make_icon(dropdown_png));
 	theme->set_icon("arrow", "Tree", make_icon(arrow_down_png));
@@ -730,10 +786,7 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 
 	// ItemList
 
-	Ref<StyleBoxTexture> item_selected = make_stylebox(selection_png, 4, 4, 4, 4, 8, 2, 8, 2);
-	Ref<StyleBoxTexture> item_selected_oof = make_stylebox(selection_oof_png, 4, 4, 4, 4, 8, 2, 8, 2);
-
-	theme->set_stylebox("bg", "ItemList", make_stylebox(tree_bg_png, 4, 4, 4, 5));
+	theme->set_stylebox("bg", "ItemList", make_flat_stylebox(style_normal_color));
 	theme->set_stylebox("bg_focus", "ItemList", focus);
 	theme->set_constant("hseparation", "ItemList", 4);
 	theme->set_constant("vseparation", "ItemList", 2);
@@ -747,8 +800,8 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	theme->set_color("font_selected_color", "ItemList", control_font_pressed_color);
 	theme->set_color("font_outline_color", "ItemList", Color(1, 1, 1));
 	theme->set_color("guide_color", "ItemList", Color(0, 0, 0, 0.1));
-	theme->set_stylebox("selected", "ItemList", item_selected_oof);
-	theme->set_stylebox("selected_focus", "ItemList", item_selected);
+	theme->set_stylebox("selected", "ItemList", make_flat_stylebox(style_selected_color));
+	theme->set_stylebox("selected_focus", "ItemList", make_flat_stylebox(style_selected_color));
 	theme->set_stylebox("cursor", "ItemList", focus);
 	theme->set_stylebox("cursor_unfocused", "ItemList", focus);
 
@@ -761,10 +814,21 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	tc_sb->set_expand_margin_size(SIDE_TOP, 2 * scale);
 	tc_sb->set_default_margin(SIDE_TOP, 8 * scale);
 
-	theme->set_stylebox("tab_selected", "TabContainer", sb_expand(make_stylebox(tab_current_png, 4, 4, 4, 1, 16, 4, 16, 4), 2, 2, 2, 2));
-	theme->set_stylebox("tab_unselected", "TabContainer", sb_expand(make_stylebox(tab_behind_png, 5, 5, 5, 1, 16, 6, 16, 4), 3, 0, 3, 3));
-	theme->set_stylebox("tab_disabled", "TabContainer", sb_expand(make_stylebox(tab_disabled_png, 5, 5, 5, 1, 16, 6, 16, 4), 3, 0, 3, 3));
-	theme->set_stylebox("panel", "TabContainer", tc_sb);
+	Ref<StyleBoxFlat> style_tab_selected = make_flat_stylebox(style_normal_color, 10, 4, 10, 4, 0);
+	style_tab_selected->set_border_width(SIDE_TOP, Math::round(2 * scale));
+	style_tab_selected->set_border_color(style_focus_color);
+	Ref<StyleBoxFlat> style_tab_unselected = make_flat_stylebox(style_pressed_color, 10, 4, 10, 4, 0);
+	// Add some spacing between unselected tabs to make them easier to distinguish from each other.
+	style_tab_unselected->set_border_width(SIDE_LEFT, Math::round(scale));
+	style_tab_unselected->set_border_width(SIDE_RIGHT, Math::round(scale));
+	style_tab_unselected->set_border_color(style_popup_border_color);
+	Ref<StyleBoxFlat> style_tab_disabled = style_tab_unselected->duplicate();
+	style_tab_disabled->set_bg_color(style_disabled_color);
+
+	theme->set_stylebox("tab_selected", "TabContainer", style_tab_selected);
+	theme->set_stylebox("tab_unselected", "TabContainer", style_tab_unselected);
+	theme->set_stylebox("tab_disabled", "TabContainer", style_tab_disabled);
+	theme->set_stylebox("panel", "TabContainer", make_flat_stylebox(style_normal_color, 0, 0, 0, 0));
 
 	theme->set_icon("increment", "TabContainer", make_icon(scroll_button_right_png));
 	theme->set_icon("increment_highlight", "TabContainer", make_icon(scroll_button_right_hl_png));
@@ -790,8 +854,8 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	theme->set_stylebox("tab_selected", "Tabs", sb_expand(make_stylebox(tab_current_png, 4, 3, 4, 1, 16, 3, 16, 2), 2, 2, 2, 2));
 	theme->set_stylebox("tab_unselected", "Tabs", sb_expand(make_stylebox(tab_behind_png, 5, 4, 5, 1, 16, 5, 16, 2), 3, 3, 3, 3));
 	theme->set_stylebox("tab_disabled", "Tabs", sb_expand(make_stylebox(tab_disabled_png, 5, 5, 5, 1, 16, 6, 16, 4), 3, 0, 3, 3));
-	theme->set_stylebox("button_pressed", "Tabs", make_stylebox(button_pressed_png, 4, 4, 4, 4));
-	theme->set_stylebox("button", "Tabs", make_stylebox(button_normal_png, 4, 4, 4, 4));
+	theme->set_stylebox("button_pressed", "Tabs", button_pressed);
+	theme->set_stylebox("button", "Tabs", button_normal);
 
 	theme->set_icon("increment", "Tabs", make_icon(scroll_button_right_png));
 	theme->set_icon("increment_highlight", "Tabs", make_icon(scroll_button_right_hl_png));
@@ -812,8 +876,8 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 
 	// Separators
 
-	theme->set_stylebox("separator", "HSeparator", make_stylebox(vseparator_png, 3, 3, 3, 3));
-	theme->set_stylebox("separator", "VSeparator", make_stylebox(hseparator_png, 3, 3, 3, 3));
+	theme->set_stylebox("separator", "HSeparator", separator_horizontal);
+	theme->set_stylebox("separator", "VSeparator", separator_vertical);
 
 	theme->set_icon("close", "Icons", make_icon(icon_close_png));
 	theme->set_font("normal", "Fonts", Ref<Font>());
@@ -854,21 +918,17 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 
 	theme->set_icon("bg", "ColorPickerButton", make_icon(mini_checkerboard_png));
 
-	// TooltipPanel
+	// TooltipPanel + TooltipLabel
 
-	Ref<StyleBoxTexture> style_tt = make_stylebox(tooltip_bg_png, 4, 4, 4, 4);
-	for (int i = 0; i < 4; i++) {
-		style_tt->set_expand_margin_size((Side)i, 4 * scale);
-	}
-
-	theme->set_stylebox("panel", "TooltipPanel", style_tt);
+	theme->set_stylebox("panel", "TooltipPanel",
+			make_flat_stylebox(Color(0, 0, 0, 0.5), 2 * default_margin, 0.5 * default_margin, 2 * default_margin, 0.5 * default_margin));
 
 	theme->set_font("font", "TooltipLabel", Ref<Font>());
 	theme->set_font_size("font_size", "TooltipLabel", -1);
 
-	theme->set_color("font_color", "TooltipLabel", Color(0, 0, 0));
-	theme->set_color("font_shadow_color", "TooltipLabel", Color(0, 0, 0, 0.1));
-	theme->set_color("font_outline_color", "TooltipLabel", Color(1, 1, 1));
+	theme->set_color("font_color", "TooltipLabel", control_font_color);
+	theme->set_color("font_shadow_color", "TooltipLabel", Color(0, 0, 0, 0));
+	theme->set_color("font_outline_color", "TooltipLabel", Color(0, 0, 0, 0));
 
 	theme->set_constant("shadow_offset_x", "TooltipLabel", 1);
 	theme->set_constant("shadow_offset_y", "TooltipLabel", 1);
@@ -934,8 +994,7 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	theme->set_constant("autohide", "HSplitContainer", 1 * scale);
 	theme->set_constant("autohide", "VSplitContainer", 1 * scale);
 
-	Ref<StyleBoxTexture> sb_pc = make_stylebox(tab_container_bg_png, 4, 4, 4, 4, 7, 7, 7, 7);
-	theme->set_stylebox("panel", "PanelContainer", sb_pc);
+	theme->set_stylebox("panel", "PanelContainer", make_flat_stylebox(style_normal_color, 0, 0, 0, 0));
 
 	theme->set_icon("minus", "GraphEdit", make_icon(icon_zoom_less_png));
 	theme->set_icon("reset", "GraphEdit", make_icon(icon_zoom_reset_png));
@@ -956,12 +1015,12 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	theme->set_constant("port_grab_distance_horizontal", "GraphEdit", 48 * scale);
 	theme->set_constant("port_grab_distance_vertical", "GraphEdit", 6 * scale);
 
-	theme->set_stylebox("bg", "GraphEditMinimap", make_flat_stylebox(Color(0.24, 0.24, 0.24), 0, 0, 0, 0));
-	Ref<StyleBoxFlat> style_minimap_camera = make_flat_stylebox(Color(0.65, 0.65, 0.65, 0.2), 0, 0, 0, 0);
+	theme->set_stylebox("bg", "GraphEditMinimap", make_flat_stylebox(Color(0.24, 0.24, 0.24), true, 0, 0, 0, 0, 0));
+	Ref<StyleBoxFlat> style_minimap_camera = make_flat_stylebox(Color(0.65, 0.65, 0.65, 0.2), true, 0, 0, 0, 0, 0);
 	style_minimap_camera->set_border_color(Color(0.65, 0.65, 0.65, 0.45));
 	style_minimap_camera->set_border_width_all(1);
 	theme->set_stylebox("camera", "GraphEditMinimap", style_minimap_camera);
-	Ref<StyleBoxFlat> style_minimap_node = make_flat_stylebox(Color(1, 1, 1), 0, 0, 0, 0);
+	Ref<StyleBoxFlat> style_minimap_node = make_flat_stylebox(Color(1, 1, 1), true, 0, 0, 0, 0, 0);
 	style_minimap_node->set_corner_radius_all(2);
 	theme->set_stylebox("node", "GraphEditMinimap", style_minimap_node);
 
@@ -971,13 +1030,14 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 
 	// Theme
 
-	default_icon = make_icon(error_icon_png);
-	default_style = make_stylebox(error_icon_png, 2, 2, 2, 2);
+	default_icon = icons["error_icon"];
+	// Same color as the error icon.
+	default_style = make_flat_stylebox(Color(1, 0.365, 0.365), 4, 4, 4, 4, 0, false, 2);
 
 	memdelete(tex_cache);
 }
 
-void make_default_theme(bool p_hidpi, Ref<Font> p_font) {
+void make_default_theme(float p_scale, Ref<Font> p_font) {
 	Ref<Theme> t;
 	t.instantiate();
 
@@ -1004,7 +1064,7 @@ void make_default_theme(bool p_hidpi, Ref<Font> p_font) {
 	}
 
 	Ref<Font> large_font = default_font;
-	fill_default_theme(t, default_font, large_font, default_icon, default_style, p_hidpi ? 2.0 : 1.0);
+	fill_default_theme(t, default_font, large_font, default_icon, default_style, p_scale);
 
 	Theme::set_default(t);
 	Theme::set_default_icon(default_icon);
