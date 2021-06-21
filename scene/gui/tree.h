@@ -112,8 +112,10 @@ private:
 
 		Vector<Button> buttons;
 
+		Ref<Font> custom_font;
+
 		Cell() {
-			text_buf.instance();
+			text_buf.instantiate();
 		}
 
 		Size2 get_icon_size() const;
@@ -291,6 +293,9 @@ public:
 	Color get_custom_color(int p_column) const;
 	void clear_custom_color(int p_column);
 
+	void set_custom_font(int p_column, const Ref<Font> &p_font);
+	Ref<Font> get_custom_font(int p_column) const;
+
 	void set_custom_bg_color(int p_column, const Color &p_color, bool p_bg_outline = false);
 	void clear_custom_bg_color(int p_column);
 	Color get_custom_bg_color(int p_column) const;
@@ -411,7 +416,7 @@ private:
 		String language;
 		Control::TextDirection text_direction = Control::TEXT_DIRECTION_INHERITED;
 		ColumnInfo() {
-			text_buf.instance();
+			text_buf.instantiate();
 		}
 	};
 
@@ -444,7 +449,7 @@ private:
 	int draw_item(const Point2i &p_pos, const Point2 &p_draw_ofs, const Size2 &p_draw_size, TreeItem *p_item);
 	void select_single_item(TreeItem *p_selected, TreeItem *p_current, int p_col, TreeItem *p_prev = nullptr, bool *r_in_range = nullptr, bool p_force_deselect = false);
 	int propagate_mouse_event(const Point2i &p_pos, int x_ofs, int y_ofs, bool p_double_click, TreeItem *p_item, int p_button, const Ref<InputEventWithModifiers> &p_mod);
-	void _text_editor_enter(String p_text);
+	void _text_editor_submit(String p_text);
 	void _text_editor_modal_close();
 	void value_editor_changed(double p_value);
 

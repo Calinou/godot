@@ -35,6 +35,7 @@
 #include "core/object/message_queue.h"
 #include "core/string/print_string.h"
 #include "instance_placeholder.h"
+#include "scene/animation/tween.h"
 #include "scene/debugger/scene_debugger.h"
 #include "scene/resources/packed_scene.h"
 #include "scene/scene_string_names.h"
@@ -292,7 +293,7 @@ void Node::_propagate_exit_tree() {
 
 void Node::move_child(Node *p_child, int p_pos) {
 	ERR_FAIL_NULL(p_child);
-	ERR_FAIL_INDEX_MSG(p_pos, data.children.size() + 1, "Invalid new child position: " + itos(p_pos) + ".");
+	ERR_FAIL_INDEX_MSG(p_pos, data.children.size() + 1, vformat("Invalid new child position: %d.", p_pos));
 	ERR_FAIL_COND_MSG(p_child->data.parent != this, "Child is not a child of this node.");
 	ERR_FAIL_COND_MSG(data.blocked > 0, "Parent node is busy setting up children, move_child() failed. Consider using call_deferred(\"move_child\") instead (or \"popup\" if this is from a popup).");
 
@@ -491,36 +492,24 @@ bool Node::is_network_master() const {
 
 /***** RPC CONFIG ********/
 
-uint16_t Node::rpc_config(const StringName &p_method, MultiplayerAPI::RPCMode p_mode) {
-	uint16_t mid = get_node_rpc_method_id(p_method);
-	if (mid == UINT16_MAX) {
-		// It's new
-		NetData nd;
-		nd.name = p_method;
-		nd.mode = p_mode;
-		data.rpc_methods.push_back(nd);
-		return ((uint16_t)data.rpc_methods.size() - 1) | (1 << 15);
-	} else {
-		int c_mid = (~(1 << 15)) & mid;
-		data.rpc_methods.write[c_mid].mode = p_mode;
-		return mid;
+uint16_t Node::rpc_config(const StringName &p_method, MultiplayerAPI::RPCMode p_rpc_mode, NetworkedMultiplayerPeer::TransferMode p_transfer_mode, int p_channel) {
+	for (int i = 0; i < data.rpc_methods.size(); i++) {
+		if (data.rpc_methods[i].name == p_method) {
+			MultiplayerAPI::RPCConfig &nd = data.rpc_methods.write[i];
+			nd.rpc_mode = p_rpc_mode;
+			nd.transfer_mode = p_transfer_mode;
+			nd.channel = p_channel;
+			return i | (1 << 15);
+		}
 	}
-}
-
-uint16_t Node::rset_config(const StringName &p_property, MultiplayerAPI::RPCMode p_mode) {
-	uint16_t pid = get_node_rset_property_id(p_property);
-	if (pid == UINT16_MAX) {
-		// It's new
-		NetData nd;
-		nd.name = p_property;
-		nd.mode = p_mode;
-		data.rpc_properties.push_back(nd);
-		return ((uint16_t)data.rpc_properties.size() - 1) | (1 << 15);
-	} else {
-		int c_pid = (~(1 << 15)) & pid;
-		data.rpc_properties.write[c_pid].mode = p_mode;
-		return pid;
-	}
+	// New method
+	MultiplayerAPI::RPCConfig nd;
+	nd.name = p_method;
+	nd.rpc_mode = p_rpc_mode;
+	nd.transfer_mode = p_transfer_mode;
+	nd.channel = p_channel;
+	data.rpc_methods.push_back(nd);
+	return ((uint16_t)data.rpc_methods.size() - 1) | (1 << 15);
 }
 
 /***** RPC FUNCTIONS ********/
@@ -536,7 +525,7 @@ void Node::rpc(const StringName &p_method, VARIANT_ARG_DECLARE) {
 		argc++;
 	}
 
-	rpcp(0, false, p_method, argptr, argc);
+	rpcp(0, p_method, argptr, argc);
 }
 
 void Node::rpc_id(int p_peer_id, const StringName &p_method, VARIANT_ARG_DECLARE) {
@@ -550,35 +539,7 @@ void Node::rpc_id(int p_peer_id, const StringName &p_method, VARIANT_ARG_DECLARE
 		argc++;
 	}
 
-	rpcp(p_peer_id, false, p_method, argptr, argc);
-}
-
-void Node::rpc_unreliable(const StringName &p_method, VARIANT_ARG_DECLARE) {
-	VARIANT_ARGPTRS;
-
-	int argc = 0;
-	for (int i = 0; i < VARIANT_ARG_MAX; i++) {
-		if (argptr[i]->get_type() == Variant::NIL) {
-			break;
-		}
-		argc++;
-	}
-
-	rpcp(0, true, p_method, argptr, argc);
-}
-
-void Node::rpc_unreliable_id(int p_peer_id, const StringName &p_method, VARIANT_ARG_DECLARE) {
-	VARIANT_ARGPTRS;
-
-	int argc = 0;
-	for (int i = 0; i < VARIANT_ARG_MAX; i++) {
-		if (argptr[i]->get_type() == Variant::NIL) {
-			break;
-		}
-		argc++;
-	}
-
-	rpcp(p_peer_id, true, p_method, argptr, argc);
+	rpcp(p_peer_id, p_method, argptr, argc);
 }
 
 Variant Node::_rpc_bind(const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
@@ -597,7 +558,7 @@ Variant Node::_rpc_bind(const Variant **p_args, int p_argcount, Callable::CallEr
 
 	StringName method = *p_args[0];
 
-	rpcp(0, false, method, &p_args[1], p_argcount - 1);
+	rpcp(0, method, &p_args[1], p_argcount - 1);
 
 	r_error.error = Callable::CallError::CALL_OK;
 	return Variant();
@@ -627,92 +588,17 @@ Variant Node::_rpc_id_bind(const Variant **p_args, int p_argcount, Callable::Cal
 	int peer_id = *p_args[0];
 	StringName method = *p_args[1];
 
-	rpcp(peer_id, false, method, &p_args[2], p_argcount - 2);
+	rpcp(peer_id, method, &p_args[2], p_argcount - 2);
 
 	r_error.error = Callable::CallError::CALL_OK;
 	return Variant();
 }
 
-Variant Node::_rpc_unreliable_bind(const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
-	if (p_argcount < 1) {
-		r_error.error = Callable::CallError::CALL_ERROR_TOO_FEW_ARGUMENTS;
-		r_error.argument = 1;
-		return Variant();
-	}
-
-	if (p_args[0]->get_type() != Variant::STRING_NAME) {
-		r_error.error = Callable::CallError::CALL_ERROR_INVALID_ARGUMENT;
-		r_error.argument = 0;
-		r_error.expected = Variant::STRING_NAME;
-		return Variant();
-	}
-
-	StringName method = *p_args[0];
-
-	rpcp(0, true, method, &p_args[1], p_argcount - 1);
-
-	r_error.error = Callable::CallError::CALL_OK;
-	return Variant();
-}
-
-Variant Node::_rpc_unreliable_id_bind(const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
-	if (p_argcount < 2) {
-		r_error.error = Callable::CallError::CALL_ERROR_TOO_FEW_ARGUMENTS;
-		r_error.argument = 2;
-		return Variant();
-	}
-
-	if (p_args[0]->get_type() != Variant::INT) {
-		r_error.error = Callable::CallError::CALL_ERROR_INVALID_ARGUMENT;
-		r_error.argument = 0;
-		r_error.expected = Variant::INT;
-		return Variant();
-	}
-
-	if (p_args[1]->get_type() != Variant::STRING_NAME) {
-		r_error.error = Callable::CallError::CALL_ERROR_INVALID_ARGUMENT;
-		r_error.argument = 1;
-		r_error.expected = Variant::STRING_NAME;
-		return Variant();
-	}
-
-	int peer_id = *p_args[0];
-	StringName method = *p_args[1];
-
-	rpcp(peer_id, true, method, &p_args[2], p_argcount - 2);
-
-	r_error.error = Callable::CallError::CALL_OK;
-	return Variant();
-}
-
-void Node::rpcp(int p_peer_id, bool p_unreliable, const StringName &p_method, const Variant **p_arg, int p_argcount) {
+void Node::rpcp(int p_peer_id, const StringName &p_method, const Variant **p_arg, int p_argcount) {
 	ERR_FAIL_COND(!is_inside_tree());
-	get_multiplayer()->rpcp(this, p_peer_id, p_unreliable, p_method, p_arg, p_argcount);
+	get_multiplayer()->rpcp(this, p_peer_id, true, p_method, p_arg, p_argcount);
 }
 
-void Node::rsetp(int p_peer_id, bool p_unreliable, const StringName &p_property, const Variant &p_value) {
-	ERR_FAIL_COND(!is_inside_tree());
-	get_multiplayer()->rsetp(this, p_peer_id, p_unreliable, p_property, p_value);
-}
-
-/******** RSET *********/
-void Node::rset(const StringName &p_property, const Variant &p_value) {
-	rsetp(0, false, p_property, p_value);
-}
-
-void Node::rset_id(int p_peer_id, const StringName &p_property, const Variant &p_value) {
-	rsetp(p_peer_id, false, p_property, p_value);
-}
-
-void Node::rset_unreliable(const StringName &p_property, const Variant &p_value) {
-	rsetp(0, true, p_property, p_value);
-}
-
-void Node::rset_unreliable_id(int p_peer_id, const StringName &p_property, const Variant &p_value) {
-	rsetp(p_peer_id, true, p_property, p_value);
-}
-
-//////////// end of rpc
 Ref<MultiplayerAPI> Node::get_multiplayer() const {
 	if (multiplayer.is_valid()) {
 		return multiplayer;
@@ -731,99 +617,11 @@ void Node::set_custom_multiplayer(Ref<MultiplayerAPI> p_multiplayer) {
 	multiplayer = p_multiplayer;
 }
 
-uint16_t Node::get_node_rpc_method_id(const StringName &p_method) const {
-	for (int i = 0; i < data.rpc_methods.size(); i++) {
-		if (data.rpc_methods[i].name == p_method) {
-			// Returns `i` with the high bit set to 1 so we know that this id comes
-			// from the node and not the script.
-			return i | (1 << 15);
-		}
-	}
-	return UINT16_MAX;
+Vector<MultiplayerAPI::RPCConfig> Node::get_node_rpc_methods() const {
+	return data.rpc_methods;
 }
 
-StringName Node::get_node_rpc_method(const uint16_t p_rpc_method_id) const {
-	// Make sure this is a node generated ID.
-	if (((1 << 15) & p_rpc_method_id) > 0) {
-		int mid = (~(1 << 15)) & p_rpc_method_id;
-		if (mid < data.rpc_methods.size()) {
-			return data.rpc_methods[mid].name;
-		}
-	}
-	return StringName();
-}
-
-MultiplayerAPI::RPCMode Node::get_node_rpc_mode_by_id(const uint16_t p_rpc_method_id) const {
-	// Make sure this is a node generated ID.
-	if (((1 << 15) & p_rpc_method_id) > 0) {
-		int mid = (~(1 << 15)) & p_rpc_method_id;
-		if (mid < data.rpc_methods.size()) {
-			return data.rpc_methods[mid].mode;
-		}
-	}
-	return MultiplayerAPI::RPC_MODE_DISABLED;
-}
-
-MultiplayerAPI::RPCMode Node::get_node_rpc_mode(const StringName &p_method) const {
-	return get_node_rpc_mode_by_id(get_node_rpc_method_id(p_method));
-}
-
-uint16_t Node::get_node_rset_property_id(const StringName &p_property) const {
-	for (int i = 0; i < data.rpc_properties.size(); i++) {
-		if (data.rpc_properties[i].name == p_property) {
-			// Returns `i` with the high bit set to 1 so we know that this id comes
-			// from the node and not the script.
-			return i | (1 << 15);
-		}
-	}
-	return UINT16_MAX;
-}
-
-StringName Node::get_node_rset_property(const uint16_t p_rset_property_id) const {
-	// Make sure this is a node generated ID.
-	if (((1 << 15) & p_rset_property_id) > 0) {
-		int mid = (~(1 << 15)) & p_rset_property_id;
-		if (mid < data.rpc_properties.size()) {
-			return data.rpc_properties[mid].name;
-		}
-	}
-	return StringName();
-}
-
-MultiplayerAPI::RPCMode Node::get_node_rset_mode_by_id(const uint16_t p_rset_property_id) const {
-	if (((1 << 15) & p_rset_property_id) > 0) {
-		int mid = (~(1 << 15)) & p_rset_property_id;
-		if (mid < data.rpc_properties.size()) {
-			return data.rpc_properties[mid].mode;
-		}
-	}
-	return MultiplayerAPI::RPC_MODE_DISABLED;
-}
-
-MultiplayerAPI::RPCMode Node::get_node_rset_mode(const StringName &p_property) const {
-	return get_node_rset_mode_by_id(get_node_rset_property_id(p_property));
-}
-
-String Node::get_rpc_md5() const {
-	String rpc_list;
-	for (int i = 0; i < data.rpc_methods.size(); i += 1) {
-		rpc_list += String(data.rpc_methods[i].name);
-	}
-	for (int i = 0; i < data.rpc_properties.size(); i += 1) {
-		rpc_list += String(data.rpc_properties[i].name);
-	}
-	if (get_script_instance()) {
-		Vector<ScriptNetData> rpc = get_script_instance()->get_rpc_methods();
-		for (int i = 0; i < rpc.size(); i += 1) {
-			rpc_list += String(rpc[i].name);
-		}
-		rpc = get_script_instance()->get_rset_properties();
-		for (int i = 0; i < rpc.size(); i += 1) {
-			rpc_list += String(rpc[i].name);
-		}
-	}
-	return rpc_list.md5_text();
-}
+//////////// end of rpc
 
 bool Node::can_process_notification(int p_what) const {
 	switch (p_what) {
@@ -1240,8 +1038,11 @@ void Node::_add_child_nocheck(Node *p_child, const StringName &p_name) {
 
 void Node::add_child(Node *p_child, bool p_legible_unique_name) {
 	ERR_FAIL_NULL(p_child);
-	ERR_FAIL_COND_MSG(p_child == this, "Can't add child '" + p_child->get_name() + "' to itself."); // adding to itself!
-	ERR_FAIL_COND_MSG(p_child->data.parent, "Can't add child '" + p_child->get_name() + "' to '" + get_name() + "', already has a parent '" + p_child->data.parent->get_name() + "'."); //Fail if node has a parent
+	ERR_FAIL_COND_MSG(p_child == this, vformat("Can't add child '%s' to itself.", p_child->get_name())); // adding to itself!
+	ERR_FAIL_COND_MSG(p_child->data.parent, vformat("Can't add child '%s' to '%s', already has a parent '%s'.", p_child->get_name(), get_name(), p_child->data.parent->get_name())); //Fail if node has a parent
+#ifdef DEBUG_ENABLED
+	ERR_FAIL_COND_MSG(p_child->is_a_parent_of(this), vformat("Can't add child '%s' to '%s' as it would result in a cyclic dependency since '%s' is already a parent of '%s'.", p_child->get_name(), get_name(), p_child->get_name(), get_name()));
+#endif
 	ERR_FAIL_COND_MSG(data.blocked > 0, "Parent node is busy setting up children, add_node() failed. Consider using call_deferred(\"add_child\", child) instead.");
 
 	/* Validate name */
@@ -1252,7 +1053,7 @@ void Node::add_child(Node *p_child, bool p_legible_unique_name) {
 
 void Node::add_sibling(Node *p_sibling, bool p_legible_unique_name) {
 	ERR_FAIL_NULL(p_sibling);
-	ERR_FAIL_COND_MSG(p_sibling == this, "Can't add sibling '" + p_sibling->get_name() + "' to itself."); // adding to itself!
+	ERR_FAIL_COND_MSG(p_sibling == this, vformat("Can't add sibling '%s' to itself.", p_sibling->get_name())); // adding to itself!
 	ERR_FAIL_COND_MSG(data.blocked > 0, "Parent node is busy setting up children, add_sibling() failed. Consider using call_deferred(\"add_sibling\", sibling) instead.");
 
 	get_parent()->add_child(p_sibling, p_legible_unique_name);
@@ -1307,7 +1108,7 @@ void Node::remove_child(Node *p_child) {
 		}
 	}
 
-	ERR_FAIL_COND_MSG(idx == -1, "Cannot remove child node " + p_child->get_name() + " as it is not a child of this node.");
+	ERR_FAIL_COND_MSG(idx == -1, vformat("Cannot remove child node '%s' as it is not a child of this node.", p_child->get_name()));
 	//ERR_FAIL_COND( p_child->data.blocked > 0 );
 
 	//if (data.scene) { does not matter
@@ -1886,6 +1687,13 @@ int Node::get_index() const {
 	return data.pos;
 }
 
+Ref<Tween> Node::create_tween() {
+	ERR_FAIL_COND_V_MSG(!data.tree, nullptr, "Can't create Tween when not inside scene tree.");
+	Ref<Tween> tween = get_tree()->create_tween();
+	tween->bind_node(this);
+	return tween;
+}
+
 void Node::remove_and_skip() {
 	ERR_FAIL_COND(!data.parent);
 
@@ -2005,7 +1813,7 @@ bool Node::get_scene_instance_load_placeholder() const {
 Node *Node::_duplicate(int p_flags, Map<const Node *, Node *> *r_duplimap) const {
 	Node *node = nullptr;
 
-	bool instanced = false;
+	bool instantiated = false;
 
 	if (Object::cast_to<InstancePlaceholder>(this)) {
 		const InstancePlaceholder *ip = Object::cast_to<const InstancePlaceholder>(this);
@@ -2022,13 +1830,13 @@ Node *Node::_duplicate(int p_flags, Map<const Node *, Node *> *r_duplimap) const
 			ges = PackedScene::GEN_EDIT_STATE_INSTANCE;
 		}
 #endif
-		node = res->instance(ges);
+		node = res->instantiate(ges);
 		ERR_FAIL_COND_V(!node, nullptr);
 
-		instanced = true;
+		instantiated = true;
 
 	} else {
-		Object *obj = ClassDB::instance(get_class());
+		Object *obj = ClassDB::instantiate(get_class());
 		ERR_FAIL_COND_V(!obj, nullptr);
 		node = Object::cast_to<Node>(obj);
 		if (!node) {
@@ -2048,9 +1856,9 @@ Node *Node::_duplicate(int p_flags, Map<const Node *, Node *> *r_duplimap) const
 	List<const Node *> node_tree;
 	node_tree.push_front(this);
 
-	if (instanced) {
-		// Since nodes in the instanced hierarchy won't be duplicated explicitly, we need to make an inventory
-		// of all the nodes in the tree of the instanced scene in order to transfer the values of the properties
+	if (instantiated) {
+		// Since nodes in the instantiated hierarchy won't be duplicated explicitly, we need to make an inventory
+		// of all the nodes in the tree of the instantiated scene in order to transfer the values of the properties
 
 		Vector<const Node *> instance_roots;
 		instance_roots.push_back(this);
@@ -2058,8 +1866,8 @@ Node *Node::_duplicate(int p_flags, Map<const Node *, Node *> *r_duplimap) const
 		for (List<const Node *>::Element *N = node_tree.front(); N; N = N->next()) {
 			for (int i = 0; i < N->get()->get_child_count(); ++i) {
 				Node *descendant = N->get()->get_child(i);
-				// Skip nodes not really belonging to the instanced hierarchy; they'll be processed normally later
-				// but remember non-instanced nodes that are hidden below instanced ones
+				// Skip nodes not really belonging to the instantiated hierarchy; they'll be processed normally later
+				// but remember non-instantiated nodes that are hidden below instantiated ones
 				if (!instance_roots.has(descendant->get_owner())) {
 					if (descendant->get_parent() && descendant->get_parent() != this && descendant->data.owner != descendant->get_parent()) {
 						hidden_roots.push_back(descendant);
@@ -2142,7 +1950,7 @@ Node *Node::_duplicate(int p_flags, Map<const Node *, Node *> *r_duplimap) const
 		if (get_child(i)->data.parent_owned) {
 			continue;
 		}
-		if (instanced && get_child(i)->data.owner == this) {
+		if (instantiated && get_child(i)->data.owner == this) {
 			continue; //part of instance
 		}
 
@@ -2391,7 +2199,7 @@ void Node::_replace_connections_target(Node *p_new_target) {
 		if (c.flags & CONNECT_PERSIST) {
 			c.signal.get_object()->disconnect(c.signal.get_name(), Callable(this, c.callable.get_method()));
 			bool valid = p_new_target->has_method(c.callable.get_method()) || Ref<Script>(p_new_target->get_script()).is_null() || Ref<Script>(p_new_target->get_script())->has_method(c.callable.get_method());
-			ERR_CONTINUE_MSG(!valid, "Attempt to connect signal '" + c.signal.get_object()->get_class() + "." + c.signal.get_name() + "' to nonexistent method '" + c.callable.get_object()->get_class() + "." + c.callable.get_method() + "'.");
+			ERR_CONTINUE_MSG(!valid, vformat("Attempt to connect signal '%s.%s' to nonexistent method '%s.%s'.", c.signal.get_object()->get_class(), c.signal.get_name(), c.callable.get_object()->get_class(), c.callable.get_method()));
 			c.signal.get_object()->connect(c.signal.get_name(), Callable(p_new_target, c.callable.get_method()), c.binds, c.flags);
 		}
 	}
@@ -2755,6 +2563,7 @@ void Node::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("is_physics_processing_internal"), &Node::is_physics_processing_internal);
 
 	ClassDB::bind_method(D_METHOD("get_tree"), &Node::get_tree);
+	ClassDB::bind_method(D_METHOD("create_tween"), &Node::create_tween);
 
 	ClassDB::bind_method(D_METHOD("duplicate", "flags"), &Node::duplicate, DEFVAL(DUPLICATE_USE_INSTANCING | DUPLICATE_SIGNALS | DUPLICATE_GROUPS | DUPLICATE_SCRIPTS));
 	ClassDB::bind_method(D_METHOD("replace_by", "node", "keep_groups"), &Node::replace_by, DEFVAL(false));
@@ -2776,8 +2585,7 @@ void Node::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_multiplayer"), &Node::get_multiplayer);
 	ClassDB::bind_method(D_METHOD("get_custom_multiplayer"), &Node::get_custom_multiplayer);
 	ClassDB::bind_method(D_METHOD("set_custom_multiplayer", "api"), &Node::set_custom_multiplayer);
-	ClassDB::bind_method(D_METHOD("rpc_config", "method", "mode"), &Node::rpc_config);
-	ClassDB::bind_method(D_METHOD("rset_config", "property", "mode"), &Node::rset_config);
+	ClassDB::bind_method(D_METHOD("rpc_config", "method", "rpc_mode", "transfer_mode", "channel"), &Node::rpc_config, DEFVAL(NetworkedMultiplayerPeer::TRANSFER_MODE_RELIABLE), DEFVAL(0));
 
 	ClassDB::bind_method(D_METHOD("set_editor_description", "editor_description"), &Node::set_editor_description);
 	ClassDB::bind_method(D_METHOD("get_editor_description"), &Node::get_editor_description);
@@ -2794,21 +2602,12 @@ void Node::_bind_methods() {
 
 		mi.name = "rpc";
 		ClassDB::bind_vararg_method(METHOD_FLAGS_DEFAULT, "rpc", &Node::_rpc_bind, mi);
-		mi.name = "rpc_unreliable";
-		ClassDB::bind_vararg_method(METHOD_FLAGS_DEFAULT, "rpc_unreliable", &Node::_rpc_unreliable_bind, mi);
 
 		mi.arguments.push_front(PropertyInfo(Variant::INT, "peer_id"));
 
 		mi.name = "rpc_id";
 		ClassDB::bind_vararg_method(METHOD_FLAGS_DEFAULT, "rpc_id", &Node::_rpc_id_bind, mi);
-		mi.name = "rpc_unreliable_id";
-		ClassDB::bind_vararg_method(METHOD_FLAGS_DEFAULT, "rpc_unreliable_id", &Node::_rpc_unreliable_id_bind, mi);
 	}
-
-	ClassDB::bind_method(D_METHOD("rset", "property", "value"), &Node::rset);
-	ClassDB::bind_method(D_METHOD("rset_id", "peer_id", "property", "value"), &Node::rset_id);
-	ClassDB::bind_method(D_METHOD("rset_unreliable", "property", "value"), &Node::rset_unreliable);
-	ClassDB::bind_method(D_METHOD("rset_unreliable_id", "peer_id", "property", "value"), &Node::rset_unreliable_id);
 
 	ClassDB::bind_method(D_METHOD("update_configuration_warnings"), &Node::update_configuration_warnings);
 
@@ -2829,6 +2628,9 @@ void Node::_bind_methods() {
 	BIND_CONSTANT(NOTIFICATION_INTERNAL_PROCESS);
 	BIND_CONSTANT(NOTIFICATION_INTERNAL_PHYSICS_PROCESS);
 	BIND_CONSTANT(NOTIFICATION_POST_ENTER_TREE);
+
+	BIND_CONSTANT(NOTIFICATION_EDITOR_PRE_SAVE);
+	BIND_CONSTANT(NOTIFICATION_EDITOR_POST_SAVE);
 
 	BIND_CONSTANT(NOTIFICATION_WM_MOUSE_ENTER);
 	BIND_CONSTANT(NOTIFICATION_WM_MOUSE_EXIT);
@@ -2865,11 +2667,11 @@ void Node::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("tree_exiting"));
 	ADD_SIGNAL(MethodInfo("tree_exited"));
 
-	ADD_PROPERTY(PropertyInfo(Variant::STRING_NAME, "name", PROPERTY_HINT_NONE, "", 0), "set_name", "get_name");
-	ADD_PROPERTY(PropertyInfo(Variant::STRING, "filename", PROPERTY_HINT_NONE, "", 0), "set_filename", "get_filename");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "owner", PROPERTY_HINT_RESOURCE_TYPE, "Node", 0), "set_owner", "get_owner");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "multiplayer", PROPERTY_HINT_RESOURCE_TYPE, "MultiplayerAPI", 0), "", "get_multiplayer");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "custom_multiplayer", PROPERTY_HINT_RESOURCE_TYPE, "MultiplayerAPI", 0), "set_custom_multiplayer", "get_custom_multiplayer");
+	ADD_PROPERTY(PropertyInfo(Variant::STRING_NAME, "name", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "set_name", "get_name");
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "filename", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "set_filename", "get_filename");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "owner", PROPERTY_HINT_RESOURCE_TYPE, "Node", PROPERTY_USAGE_NONE), "set_owner", "get_owner");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "multiplayer", PROPERTY_HINT_RESOURCE_TYPE, "MultiplayerAPI", PROPERTY_USAGE_NONE), "", "get_multiplayer");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "custom_multiplayer", PROPERTY_HINT_RESOURCE_TYPE, "MultiplayerAPI", PROPERTY_USAGE_NONE), "set_custom_multiplayer", "get_custom_multiplayer");
 
 	ADD_GROUP("Process", "process_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "process_mode", PROPERTY_HINT_ENUM, "Inherit,Pausable,When Paused,Always,Disabled"), "set_process_mode", "get_process_mode");

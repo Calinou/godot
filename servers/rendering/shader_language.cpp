@@ -631,7 +631,7 @@ ShaderLanguage::Token ShaderLanguage::_get_token() {
 						if (!_is_number(last_char)) {
 							return _make_token(TK_ERROR, "Invalid (integer) numeric constant");
 						}
-						if (!str.is_valid_integer()) {
+						if (!str.is_valid_int()) {
 							return _make_token(TK_ERROR, "Invalid numeric constant");
 						}
 					}
@@ -2941,7 +2941,7 @@ Variant ShaderLanguage::constant_value_to_variant(const Vector<ShaderLanguage::C
 				p[2][0] = p_value[8].real;
 				p[2][1] = p_value[9].real;
 				p[2][2] = p_value[10].real;
-				Transform t = Transform(p, Vector3(p_value[3].real, p_value[7].real, p_value[11].real));
+				Transform3D t = Transform3D(p, Vector3(p_value[3].real, p_value[7].real, p_value[11].real));
 				value = Variant(t);
 				break;
 			}
@@ -3040,7 +3040,7 @@ PropertyInfo ShaderLanguage::uniform_to_property_info(const ShaderNode::Uniform 
 			pi.type = Variant::BASIS;
 			break;
 		case ShaderLanguage::TYPE_MAT4:
-			pi.type = Variant::TRANSFORM;
+			pi.type = Variant::TRANSFORM3D;
 			break;
 		case ShaderLanguage::TYPE_SAMPLER2D:
 		case ShaderLanguage::TYPE_ISAMPLER2D:
@@ -6375,13 +6375,7 @@ Error ShaderLanguage::_parse_block(BlockNode *p_block, const FunctionInfo &p_fun
 				}
 				pass_array = false;
 
-				bool array_size_incorrect = false;
-
-				if (b->parent_function->return_array_size > 0 && b->parent_function->return_array_size != expr->get_array_size()) {
-					array_size_incorrect = true;
-				}
-
-				if (b->parent_function->return_type != expr->get_datatype() || array_size_incorrect || return_struct_name != expr->get_datatype_name()) {
+				if (b->parent_function->return_type != expr->get_datatype() || b->parent_function->return_array_size != expr->get_array_size() || return_struct_name != expr->get_datatype_name()) {
 					_set_error("Expected return with an expression of type '" + (return_struct_name != "" ? return_struct_name : get_datatype_name(b->parent_function->return_type)) + array_size_string + "'");
 					return ERR_PARSE_ERROR;
 				}

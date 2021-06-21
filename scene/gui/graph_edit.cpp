@@ -40,13 +40,8 @@
 #include "editor/editor_scale.h"
 #endif
 
-#define ZOOM_SCALE 1.2
-
-#define MIN_ZOOM (((1 / ZOOM_SCALE) / ZOOM_SCALE) / ZOOM_SCALE)
-#define MAX_ZOOM (1 * ZOOM_SCALE * ZOOM_SCALE * ZOOM_SCALE)
-
-#define MINIMAP_OFFSET 12
-#define MINIMAP_PADDING 5
+constexpr int MINIMAP_OFFSET = 12;
+constexpr int MINIMAP_PADDING = 5;
 
 bool GraphEditFilter::has_point(const Point2 &p_point) const {
 	return ge->_filter_input(p_point);
@@ -824,7 +819,7 @@ void GraphEdit::_bake_segment2d(Vector<Vector2> &points, Vector<Color> &colors, 
 	}
 }
 
-void GraphEdit::_draw_cos_line(CanvasItem *p_where, const Vector2 &p_from, const Vector2 &p_to, const Color &p_color, const Color &p_to_color, float p_width, float p_bezier_ratio = 1.0) {
+void GraphEdit::_draw_cos_line(CanvasItem *p_where, const Vector2 &p_from, const Vector2 &p_to, const Color &p_color, const Color &p_to_color, float p_width, float p_bezier_ratio) {
 	//cubic bezier code
 	float diff = p_to.x - p_from.x;
 	float cp_offset;
@@ -1072,8 +1067,9 @@ void GraphEdit::_gui_input(const Ref<InputEvent> &p_ev) {
 
 	Ref<InputEventMouseMotion> mm = p_ev;
 	if (mm.is_valid() && (mm->get_button_mask() & MOUSE_BUTTON_MASK_MIDDLE || (mm->get_button_mask() & MOUSE_BUTTON_MASK_LEFT && Input::get_singleton()->is_key_pressed(KEY_SPACE)))) {
-		h_scroll->set_value(h_scroll->get_value() - mm->get_relative().x);
-		v_scroll->set_value(v_scroll->get_value() - mm->get_relative().y);
+		Vector2i relative = Input::get_singleton()->warp_mouse_motion(mm, get_global_rect());
+		h_scroll->set_value(h_scroll->get_value() - relative.x);
+		v_scroll->set_value(v_scroll->get_value() - relative.y);
 	}
 
 	if (mm.is_valid() && dragging) {
@@ -1322,18 +1318,20 @@ void GraphEdit::_gui_input(const Ref<InputEvent> &p_ev) {
 			minimap->update();
 		}
 
-		if (b->get_button_index() == MOUSE_BUTTON_WHEEL_UP && Input::get_singleton()->is_key_pressed(KEY_CTRL)) {
-			set_zoom_custom(zoom * ZOOM_SCALE, b->get_position());
-		} else if (b->get_button_index() == MOUSE_BUTTON_WHEEL_DOWN && Input::get_singleton()->is_key_pressed(KEY_CTRL)) {
-			set_zoom_custom(zoom / ZOOM_SCALE, b->get_position());
-		} else if (b->get_button_index() == MOUSE_BUTTON_WHEEL_UP && !Input::get_singleton()->is_key_pressed(KEY_SHIFT)) {
-			v_scroll->set_value(v_scroll->get_value() - v_scroll->get_page() * b->get_factor() / 8);
-		} else if (b->get_button_index() == MOUSE_BUTTON_WHEEL_DOWN && !Input::get_singleton()->is_key_pressed(KEY_SHIFT)) {
-			v_scroll->set_value(v_scroll->get_value() + v_scroll->get_page() * b->get_factor() / 8);
-		} else if (b->get_button_index() == MOUSE_BUTTON_WHEEL_RIGHT || (b->get_button_index() == MOUSE_BUTTON_WHEEL_DOWN && Input::get_singleton()->is_key_pressed(KEY_SHIFT))) {
-			h_scroll->set_value(h_scroll->get_value() + h_scroll->get_page() * b->get_factor() / 8);
-		} else if (b->get_button_index() == MOUSE_BUTTON_WHEEL_LEFT || (b->get_button_index() == MOUSE_BUTTON_WHEEL_UP && Input::get_singleton()->is_key_pressed(KEY_SHIFT))) {
-			h_scroll->set_value(h_scroll->get_value() - h_scroll->get_page() * b->get_factor() / 8);
+		int scroll_direction = (b->get_button_index() == MOUSE_BUTTON_WHEEL_DOWN) - (b->get_button_index() == MOUSE_BUTTON_WHEEL_UP);
+		if (scroll_direction != 0) {
+			if (b->is_ctrl_pressed()) {
+				if (b->is_shift_pressed()) {
+					// Horizontal scrolling.
+					h_scroll->set_value(h_scroll->get_value() + (h_scroll->get_page() * b->get_factor() / 8) * scroll_direction);
+				} else {
+					// Vertical scrolling.
+					v_scroll->set_value(v_scroll->get_value() + (v_scroll->get_page() * b->get_factor() / 8) * scroll_direction);
+				}
+			} else {
+				// Zooming.
+				set_zoom_custom(scroll_direction < 0 ? zoom * zoom_step : zoom / zoom_step, b->get_position());
+			}
 		}
 	}
 
@@ -1392,18 +1390,18 @@ void GraphEdit::set_zoom(float p_zoom) {
 }
 
 void GraphEdit::set_zoom_custom(float p_zoom, const Vector2 &p_center) {
-	p_zoom = CLAMP(p_zoom, MIN_ZOOM, MAX_ZOOM);
+	p_zoom = CLAMP(p_zoom, zoom_min, zoom_max);
 	if (zoom == p_zoom) {
 		return;
 	}
-
-	zoom_minus->set_disabled(zoom == MIN_ZOOM);
-	zoom_plus->set_disabled(zoom == MAX_ZOOM);
 
 	Vector2 sbofs = (Vector2(h_scroll->get_value(), v_scroll->get_value()) + p_center) / zoom;
 
 	zoom = p_zoom;
 	top_layer->update();
+
+	zoom_minus->set_disabled(zoom == zoom_min);
+	zoom_plus->set_disabled(zoom == zoom_max);
 
 	_update_scroll();
 	minimap->update();
@@ -1415,11 +1413,67 @@ void GraphEdit::set_zoom_custom(float p_zoom, const Vector2 &p_center) {
 		v_scroll->set_value(ofs.y);
 	}
 
+	_update_zoom_label();
 	update();
 }
 
 float GraphEdit::get_zoom() const {
 	return zoom;
+}
+
+void GraphEdit::set_zoom_step(float p_zoom_step) {
+	p_zoom_step = abs(p_zoom_step);
+	if (zoom_step == p_zoom_step) {
+		return;
+	}
+
+	zoom_step = p_zoom_step;
+}
+
+float GraphEdit::get_zoom_step() const {
+	return zoom_step;
+}
+
+void GraphEdit::set_zoom_min(float p_zoom_min) {
+	ERR_FAIL_COND_MSG(p_zoom_min > zoom_max, "Cannot set min zoom level greater than max zoom level.");
+
+	if (zoom_min == p_zoom_min) {
+		return;
+	}
+
+	zoom_min = p_zoom_min;
+	set_zoom(zoom);
+}
+
+float GraphEdit::get_zoom_min() const {
+	return zoom_min;
+}
+
+void GraphEdit::set_zoom_max(float p_zoom_max) {
+	ERR_FAIL_COND_MSG(p_zoom_max < zoom_min, "Cannot set max zoom level lesser than min zoom level.");
+
+	if (zoom_max == p_zoom_max) {
+		return;
+	}
+
+	zoom_max = p_zoom_max;
+	set_zoom(zoom);
+}
+
+float GraphEdit::get_zoom_max() const {
+	return zoom_max;
+}
+
+void GraphEdit::set_show_zoom_label(bool p_enable) {
+	if (zoom_label->is_visible() == p_enable) {
+		return;
+	}
+
+	zoom_label->set_visible(p_enable);
+}
+
+bool GraphEdit::is_showing_zoom_label() const {
+	return zoom_label->is_visible();
 }
 
 void GraphEdit::set_right_disconnects(bool p_enable) {
@@ -1462,7 +1516,7 @@ Array GraphEdit::_get_connection_list() const {
 }
 
 void GraphEdit::_zoom_minus() {
-	set_zoom(zoom / ZOOM_SCALE);
+	set_zoom(zoom / zoom_step);
 }
 
 void GraphEdit::_zoom_reset() {
@@ -1470,7 +1524,13 @@ void GraphEdit::_zoom_reset() {
 }
 
 void GraphEdit::_zoom_plus() {
-	set_zoom(zoom * ZOOM_SCALE);
+	set_zoom(zoom * zoom_step);
+}
+
+void GraphEdit::_update_zoom_label() {
+	int zoom_percent = static_cast<int>(Math::round(zoom * 100));
+	String zoom_text = itos(zoom_percent) + "%";
+	zoom_label->set_text(zoom_text);
 }
 
 void GraphEdit::add_valid_connection_type(int p_type, int p_with_type) {
@@ -1611,6 +1671,18 @@ void GraphEdit::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_zoom", "zoom"), &GraphEdit::set_zoom);
 	ClassDB::bind_method(D_METHOD("get_zoom"), &GraphEdit::get_zoom);
 
+	ClassDB::bind_method(D_METHOD("set_zoom_min", "zoom_min"), &GraphEdit::set_zoom_min);
+	ClassDB::bind_method(D_METHOD("get_zoom_min"), &GraphEdit::get_zoom_min);
+
+	ClassDB::bind_method(D_METHOD("set_zoom_max", "zoom_max"), &GraphEdit::set_zoom_max);
+	ClassDB::bind_method(D_METHOD("get_zoom_max"), &GraphEdit::get_zoom_max);
+
+	ClassDB::bind_method(D_METHOD("set_zoom_step", "zoom_step"), &GraphEdit::set_zoom_step);
+	ClassDB::bind_method(D_METHOD("get_zoom_step"), &GraphEdit::get_zoom_step);
+
+	ClassDB::bind_method(D_METHOD("set_show_zoom_label", "enable"), &GraphEdit::set_show_zoom_label);
+	ClassDB::bind_method(D_METHOD("is_showing_zoom_label"), &GraphEdit::is_showing_zoom_label);
+
 	ClassDB::bind_method(D_METHOD("set_snap", "pixels"), &GraphEdit::set_snap);
 	ClassDB::bind_method(D_METHOD("get_snap"), &GraphEdit::get_snap);
 
@@ -1645,9 +1717,18 @@ void GraphEdit::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "scroll_offset"), "set_scroll_ofs", "get_scroll_ofs");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "snap_distance"), "set_snap", "get_snap");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "use_snap"), "set_use_snap", "is_using_snap");
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "zoom"), "set_zoom", "get_zoom");
+
+	ADD_GROUP("Connection Lines", "connection_lines");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "connection_lines_thickness"), "set_connection_lines_thickness", "get_connection_lines_thickness");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "connection_lines_antialiased"), "set_connection_lines_antialiased", "is_connection_lines_antialiased");
+
+	ADD_GROUP("Zoom", "");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "zoom"), "set_zoom", "get_zoom");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "zoom_min"), "set_zoom_min", "get_zoom_min");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "zoom_max"), "set_zoom_max", "get_zoom_max");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "zoom_step"), "set_zoom_step", "get_zoom_step");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_zoom_label"), "set_show_zoom_label", "is_showing_zoom_label");
+
 	ADD_GROUP("Minimap", "minimap");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "minimap_enabled"), "set_minimap_enabled", "is_minimap_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "minimap_size"), "set_minimap_size", "get_minimap_size");
@@ -1671,6 +1752,13 @@ void GraphEdit::_bind_methods() {
 
 GraphEdit::GraphEdit() {
 	set_focus_mode(FOCUS_ALL);
+
+	// Allow dezooming 8 times from the default zoom level.
+	// At low zoom levels, text is unreadable due to its small size and poor filtering,
+	// but this is still useful for previewing and navigation.
+	zoom_min = (1 / Math::pow(zoom_step, 8));
+	// Allow zooming 4 times from the default zoom level.
+	zoom_max = (1 * Math::pow(zoom_step, 4));
 
 	top_layer = memnew(GraphEditFilter(this));
 	add_child(top_layer);
@@ -1707,6 +1795,18 @@ GraphEdit::GraphEdit() {
 	zoom_hb = memnew(HBoxContainer);
 	top_layer->add_child(zoom_hb);
 	zoom_hb->set_position(Vector2(10, 10));
+
+	zoom_label = memnew(Label);
+	zoom_hb->add_child(zoom_label);
+	zoom_label->set_visible(false);
+	zoom_label->set_v_size_flags(Control::SIZE_SHRINK_CENTER);
+	zoom_label->set_align(Label::ALIGN_CENTER);
+#ifdef TOOLS_ENABLED
+	zoom_label->set_custom_minimum_size(Size2(48, 0) * EDSCALE);
+#else
+	zoom_label->set_custom_minimum_size(Size2(48, 0));
+#endif
+	_update_zoom_label();
 
 	zoom_minus = memnew(Button);
 	zoom_minus->set_flat(true);

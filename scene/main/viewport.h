@@ -130,9 +130,9 @@ public:
 		DEBUG_DRAW_OVERDRAW,
 		DEBUG_DRAW_WIREFRAME,
 		DEBUG_DRAW_NORMAL_BUFFER,
-		DEBUG_DRAW_GI_PROBE_ALBEDO,
-		DEBUG_DRAW_GI_PROBE_LIGHTING,
-		DEBUG_DRAW_GI_PROBE_EMISSION,
+		DEBUG_DRAW_VOXEL_GI_ALBEDO,
+		DEBUG_DRAW_VOXEL_GI_LIGHTING,
+		DEBUG_DRAW_VOXEL_GI_EMISSION,
 		DEBUG_DRAW_SHADOW_ATLAS,
 		DEBUG_DRAW_DIRECTIONAL_SHADOW_ATLAS,
 		DEBUG_DRAW_SCENE_LUMINANCE,
@@ -193,7 +193,7 @@ private:
 	Set<Listener3D *> listeners;
 
 	struct CameraOverrideData {
-		Transform transform;
+		Transform3D transform;
 		enum Projection {
 			PROJECTION_PERSPECTIVE,
 			PROJECTION_ORTHOGONAL
@@ -254,8 +254,8 @@ private:
 	List<Ref<InputEvent>> physics_picking_events;
 	ObjectID physics_object_capture;
 	ObjectID physics_object_over;
-	Transform physics_last_object_transform;
-	Transform physics_last_camera_transform;
+	Transform3D physics_last_object_transform;
+	Transform3D physics_last_camera_transform;
 	ObjectID physics_last_id;
 	bool physics_has_last_mousepos = false;
 	Vector2 physics_last_mousepos = Vector2(Math_INF, Math_INF);
@@ -305,6 +305,7 @@ private:
 	MSAA msaa = MSAA_DISABLED;
 	ScreenSpaceAA screen_space_aa = SCREEN_SPACE_AA_DISABLED;
 	bool use_debanding = false;
+	float sharpen_intensity = 0.0;
 	float lod_threshold = 1.0;
 	bool use_occlusion_culling = false;
 
@@ -396,8 +397,6 @@ private:
 	Control *_gui_find_control_at_pos(CanvasItem *p_node, const Point2 &p_global, const Transform2D &p_xform, Transform2D &r_inv_xform);
 
 	void _gui_input_event(Ref<InputEvent> p_event);
-
-	void update_worlds();
 
 	_FORCE_INLINE_ Transform2D _get_input_pre_xform() const;
 
@@ -493,8 +492,8 @@ public:
 	void enable_camera_override(bool p_enable);
 	bool is_camera_override_enabled() const;
 
-	void set_camera_override_transform(const Transform &p_transform);
-	Transform get_camera_override_transform() const;
+	void set_camera_override_transform(const Transform3D &p_transform);
+	Transform3D get_camera_override_transform() const;
 
 	void set_camera_override_perspective(float p_fovy_degrees, float p_z_near, float p_z_far);
 	void set_camera_override_orthogonal(float p_size, float p_z_near, float p_z_far);
@@ -557,6 +556,9 @@ public:
 
 	void set_use_debanding(bool p_use_debanding);
 	bool is_using_debanding() const;
+
+	void set_sharpen_intensity(float p_intensity);
+	float get_sharpen_intensity() const;
 
 	void set_lod_threshold(float p_pixels);
 	float get_lod_threshold() const;

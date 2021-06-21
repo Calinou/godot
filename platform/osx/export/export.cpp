@@ -31,11 +31,11 @@
 #include "export.h"
 
 #include "core/config/project_settings.h"
+#include "core/io/dir_access.h"
+#include "core/io/file_access.h"
 #include "core/io/marshalls.h"
 #include "core/io/resource_saver.h"
 #include "core/io/zip_io.h"
-#include "core/os/dir_access.h"
-#include "core/os/file_access.h"
 #include "core/os/os.h"
 #include "core/version.h"
 #include "editor/editor_export.h"
@@ -147,6 +147,7 @@ void EditorExportPlatformOSX::get_export_options(List<ExportOption> *r_options) 
 	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, "application/icon", PROPERTY_HINT_FILE, "*.png,*.icns"), ""));
 	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, "application/bundle_identifier", PROPERTY_HINT_PLACEHOLDER_TEXT, "com.example.game"), ""));
 	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, "application/signature"), ""));
+	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, "application/app_category", PROPERTY_HINT_ENUM, "Business,Developer-tools,Education,Entertainment,Finance,Games,Action-games,Adventure-games,Arcade-games,Board-games,Card-games,Casino-games,Dice-games,Educational-games,Family-games,Kids-games,Music-games,Puzzle-games,Racing-games,Role-playing-games,Simulation-games,Sports-games,Strategy-games,Trivia-games,Word-games,Graphics-design,Healthcare-fitness,Lifestyle,Medical,Music,News,Photography,Productivity,Reference,Social-networking,Sports,Travel,Utilities,Video,Weather"), "Games"));
 	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, "application/short_version"), "1.0"));
 	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, "application/version"), "1.0"));
 	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, "application/copyright"), ""));
@@ -301,7 +302,7 @@ void EditorExportPlatformOSX::_make_icon(const Ref<Image> &p_icon, Vector<uint8_
 		if (icon_infos[i].is_png) {
 			// Encode PNG icon.
 			it->create_from_image(copy);
-			String path = EditorSettings::get_singleton()->get_cache_dir().plus_file("icon.png");
+			String path = EditorPaths::get_singleton()->get_cache_dir().plus_file("icon.png");
 			ResourceSaver::save(path, it);
 
 			FileAccess *f = FileAccess::open(path, FileAccess::READ);
@@ -386,6 +387,9 @@ void EditorExportPlatformOSX::_fix_plist(const Ref<EditorExportPreset> &p_preset
 			strnew += lines[i].replace("$version", p_preset->get("application/version")) + "\n";
 		} else if (lines[i].find("$signature") != -1) {
 			strnew += lines[i].replace("$signature", p_preset->get("application/signature")) + "\n";
+		} else if (lines[i].find("$app_category") != -1) {
+			String cat = p_preset->get("application/app_category");
+			strnew += lines[i].replace("$app_category", cat.to_lower()) + "\n";
 		} else if (lines[i].find("$copyright") != -1) {
 			strnew += lines[i].replace("$copyright", p_preset->get("application/copyright")) + "\n";
 		} else if (lines[i].find("$highres") != -1) {
@@ -610,7 +614,7 @@ Error EditorExportPlatformOSX::export_project(const Ref<EditorExportPreset> &p_p
 
 	// Create our application bundle.
 	String tmp_app_dir_name = pkg_name + ".app";
-	String tmp_app_path_name = EditorSettings::get_singleton()->get_cache_dir().plus_file(tmp_app_dir_name);
+	String tmp_app_path_name = EditorPaths::get_singleton()->get_cache_dir().plus_file(tmp_app_dir_name);
 	print_line("Exporting to " + tmp_app_path_name);
 
 	Error err = OK;
@@ -696,7 +700,7 @@ Error EditorExportPlatformOSX::export_project(const Ref<EditorExportPreset> &p_p
 					}
 				} else {
 					Ref<Image> icon;
-					icon.instance();
+					icon.instantiate();
 					icon->load(iconpath);
 					if (!icon->is_empty()) {
 						_make_icon(icon, data);
@@ -774,7 +778,7 @@ Error EditorExportPlatformOSX::export_project(const Ref<EditorExportPreset> &p_p
 
 		String ent_path = p_preset->get("codesign/entitlements/custom_file");
 		if (sign_enabled && (ent_path == "")) {
-			ent_path = EditorSettings::get_singleton()->get_cache_dir().plus_file(pkg_name + ".entitlements");
+			ent_path = EditorPaths::get_singleton()->get_cache_dir().plus_file(pkg_name + ".entitlements");
 
 			FileAccess *ent_f = FileAccess::open(ent_path, FileAccess::WRITE);
 			if (ent_f) {
@@ -959,7 +963,7 @@ Error EditorExportPlatformOSX::export_project(const Ref<EditorExportPreset> &p_p
 				zlib_filefunc_def io_dst = zipio_create_io_from_file(&dst_f);
 				zipFile zip = zipOpen2(p_path.utf8().get_data(), APPEND_STATUS_CREATE, nullptr, &io_dst);
 
-				_zip_folder_recursive(zip, EditorSettings::get_singleton()->get_cache_dir(), pkg_name + ".app", pkg_name);
+				_zip_folder_recursive(zip, EditorPaths::get_singleton()->get_cache_dir(), pkg_name + ".app", pkg_name);
 
 				zipClose(zip, nullptr);
 			}
@@ -1000,9 +1004,9 @@ void EditorExportPlatformOSX::_zip_folder_recursive(zipFile &p_zip, const String
 			zip_fileinfo zipfi;
 			zipfi.tmz_date.tm_hour = time.hour;
 			zipfi.tmz_date.tm_mday = date.day;
-			zipfi.tmz_date.tm_min = time.min;
+			zipfi.tmz_date.tm_min = time.minute;
 			zipfi.tmz_date.tm_mon = date.month - 1; // Note: "tm" month range - 0..11, Godot month range - 1..12, http://www.cplusplus.com/reference/ctime/tm/
-			zipfi.tmz_date.tm_sec = time.sec;
+			zipfi.tmz_date.tm_sec = time.second;
 			zipfi.tmz_date.tm_year = date.year;
 			zipfi.dosDate = 0;
 			// 0120000: symbolic link type
@@ -1045,9 +1049,9 @@ void EditorExportPlatformOSX::_zip_folder_recursive(zipFile &p_zip, const String
 			zip_fileinfo zipfi;
 			zipfi.tmz_date.tm_hour = time.hour;
 			zipfi.tmz_date.tm_mday = date.day;
-			zipfi.tmz_date.tm_min = time.min;
+			zipfi.tmz_date.tm_min = time.minute;
 			zipfi.tmz_date.tm_mon = date.month - 1; // Note: "tm" month range - 0..11, Godot month range - 1..12, http://www.cplusplus.com/reference/ctime/tm/
-			zipfi.tmz_date.tm_sec = time.sec;
+			zipfi.tmz_date.tm_sec = time.second;
 			zipfi.tmz_date.tm_year = date.year;
 			zipfi.dosDate = 0;
 			// 0100000: regular file type
@@ -1147,7 +1151,7 @@ bool EditorExportPlatformOSX::can_export(const Ref<EditorExportPreset> &p_preset
 
 EditorExportPlatformOSX::EditorExportPlatformOSX() {
 	Ref<Image> img = memnew(Image(_osx_logo));
-	logo.instance();
+	logo.instantiate();
 	logo->create_from_image(img);
 }
 
@@ -1156,7 +1160,7 @@ EditorExportPlatformOSX::~EditorExportPlatformOSX() {
 
 void register_osx_exporter() {
 	Ref<EditorExportPlatformOSX> platform;
-	platform.instance();
+	platform.instantiate();
 
 	EditorExport::get_singleton()->add_export_platform(platform);
 }

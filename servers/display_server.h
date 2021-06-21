@@ -142,7 +142,8 @@ public:
 		MOUSE_MODE_VISIBLE,
 		MOUSE_MODE_HIDDEN,
 		MOUSE_MODE_CAPTURED,
-		MOUSE_MODE_CONFINED
+		MOUSE_MODE_CONFINED,
+		MOUSE_MODE_CONFINED_HIDDEN,
 	};
 
 	virtual void mouse_set_mode(MouseMode p_mode);
@@ -151,7 +152,7 @@ public:
 	virtual void mouse_warp_to_position(const Point2i &p_to);
 	virtual Point2i mouse_get_position() const;
 	virtual Point2i mouse_get_absolute_position() const;
-	virtual int mouse_get_button_state() const;
+	virtual MouseButton mouse_get_button_state() const;
 
 	virtual void clipboard_set(const String &p_text);
 	virtual String clipboard_get() const;

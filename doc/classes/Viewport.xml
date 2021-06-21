@@ -81,10 +81,16 @@
 			<description>
 				Returns the viewport's texture.
 				[b]Note:[/b] Due to the way OpenGL works, the resulting [ViewportTexture] is flipped vertically. You can use [method Image.flip_y] on the result of [method Texture2D.get_image] to flip it back, for example:
-				[codeblock]
+				[codeblocks]
+				[gdscript]
 				var img = get_viewport().get_texture().get_image()
 				img.flip_y()
-				[/codeblock]
+				[/gdscript]
+				[csharp]
+				Image img = GetViewport().GetTexture().GetImage();
+				img.FlipY();
+				[/csharp]
+				[/codeblocks]
 			</description>
 		</method>
 		<method name="get_viewport_rid" qualifiers="const">
@@ -105,7 +111,7 @@
 			<return type="Variant">
 			</return>
 			<description>
-				Returns the drag data from the GUI, that was previously returned by [method Control.get_drag_data].
+				Returns the drag data from the GUI, that was previously returned by [method Control._get_drag_data].
 			</description>
 		</method>
 		<method name="gui_is_dragging" qualifiers="const">
@@ -173,13 +179,6 @@
 			<description>
 			</description>
 		</method>
-		<method name="update_worlds">
-			<return type="void">
-			</return>
-			<description>
-				Forces update of the 2D and 3D worlds.
-			</description>
-		</method>
 		<method name="warp_mouse">
 			<return type="void">
 			</return>
@@ -234,7 +233,7 @@
 			If [code]true[/code], the objects rendered by viewport become subjects of mouse picking process.
 		</member>
 		<member name="screen_space_aa" type="int" setter="set_screen_space_aa" getter="get_screen_space_aa" enum="Viewport.ScreenSpaceAA" default="0">
-			Sets the screen-space antialiasing method used. Screen-space antialiasing works by selectively blurring edges in a post-process shader. It differs from MSAA which takes multiple coverage samples while rendering objects. Screen-space AA methods are typically faster than MSAA and will smooth out specular aliasing, but tend to make scenes appear blurry.
+			Sets the screen-space antialiasing method used. Screen-space antialiasing works by selectively blurring edges in a post-process shader. It differs from MSAA which takes multiple coverage samples while rendering objects. Screen-space AA methods are typically faster than MSAA and will smooth out specular aliasing, but tend to make scenes appear blurry. Some of the lost sharpness can be recovered by enabling contrast-adaptive sharpening (see [member sharpen_intensity]).
 		</member>
 		<member name="sdf_oversize" type="int" setter="set_sdf_oversize" getter="get_sdf_oversize" enum="Viewport.SDFOversize" default="1">
 		</member>
@@ -257,6 +256,9 @@
 		<member name="shadow_atlas_size" type="int" setter="set_shadow_atlas_size" getter="get_shadow_atlas_size" default="2048">
 			The shadow atlas' resolution (used for omni and spot lights). The value will be rounded up to the nearest power of 2.
 			[b]Note:[/b] If this is set to 0, shadows won't be visible.
+		</member>
+		<member name="sharpen_intensity" type="float" setter="set_sharpen_intensity" getter="get_sharpen_intensity" default="0.0">
+			If set to a value greater than [code]0.0[/code], contrast-adaptive sharpening will be applied to the 3D viewport. This has a low performance cost and can be used to recover some of the sharpness lost due to screen-space antialiasing. Values around [code]0.5[/code] generally give the best results. See also [member screen_space_aa].
 		</member>
 		<member name="snap_2d_transforms_to_pixel" type="bool" setter="set_snap_2d_transforms_to_pixel" getter="is_snap_2d_transforms_to_pixel_enabled" default="false">
 		</member>
@@ -382,14 +384,14 @@
 		</constant>
 		<constant name="DEBUG_DRAW_NORMAL_BUFFER" value="5" enum="DebugDraw">
 		</constant>
-		<constant name="DEBUG_DRAW_GI_PROBE_ALBEDO" value="6" enum="DebugDraw">
-			Objects are displayed with only the albedo value from [GIProbe]s.
+		<constant name="DEBUG_DRAW_VOXEL_GI_ALBEDO" value="6" enum="DebugDraw">
+			Objects are displayed with only the albedo value from [VoxelGI]s.
 		</constant>
-		<constant name="DEBUG_DRAW_GI_PROBE_LIGHTING" value="7" enum="DebugDraw">
-			Objects are displayed with only the lighting value from [GIProbe]s.
+		<constant name="DEBUG_DRAW_VOXEL_GI_LIGHTING" value="7" enum="DebugDraw">
+			Objects are displayed with only the lighting value from [VoxelGI]s.
 		</constant>
-		<constant name="DEBUG_DRAW_GI_PROBE_EMISSION" value="8" enum="DebugDraw">
-			Objects are displayed with only the emission color from [GIProbe]s.
+		<constant name="DEBUG_DRAW_VOXEL_GI_EMISSION" value="8" enum="DebugDraw">
+			Objects are displayed with only the emission color from [VoxelGI]s.
 		</constant>
 		<constant name="DEBUG_DRAW_SHADOW_ATLAS" value="9" enum="DebugDraw">
 			Draws the shadow atlas that stores shadows from [OmniLight3D]s and [SpotLight3D]s in the upper left quadrant of the [Viewport].

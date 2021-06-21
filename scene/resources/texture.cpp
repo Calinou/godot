@@ -88,7 +88,7 @@ void ImageTexture::reload_from_file() {
 	}
 
 	Ref<Image> img;
-	img.instance();
+	img.instantiate();
 
 	if (ImageLoader::load_image(path, img) == OK) {
 		create_from_image(img);
@@ -138,7 +138,7 @@ void ImageTexture::_reload_hook(const RID &p_hook) {
 	}
 
 	Ref<Image> img;
-	img.instance();
+	img.instantiate();
 	Error err = ImageLoader::load_image(path, img);
 
 	ERR_FAIL_COND_MSG(err != OK, "Cannot load image from path '" + path + "'.");
@@ -258,7 +258,7 @@ bool ImageTexture::is_pixel_opaque(int p_x, int p_y) const {
 				decom->decompress();
 				img = decom;
 			}
-			alpha_cache.instance();
+			alpha_cache.instantiate();
 			alpha_cache->create_from_image_alpha(img);
 		}
 	}
@@ -327,7 +327,7 @@ Ref<Image> StreamTexture2D::load_image_from_file(FileAccess *f, int p_size_limit
 	uint32_t mipmaps = f->get_32();
 	Image::Format format = Image::Format(f->get_32());
 
-	if (data_format == DATA_FORMAT_LOSSLESS || data_format == DATA_FORMAT_LOSSY || data_format == DATA_FORMAT_BASIS_UNIVERSAL) {
+	if (data_format == DATA_FORMAT_PNG || data_format == DATA_FORMAT_WEBP || data_format == DATA_FORMAT_BASIS_UNIVERSAL) {
 		//look for a PNG or WEBP file inside
 
 		int sw = w;
@@ -360,10 +360,10 @@ Ref<Image> StreamTexture2D::load_image_from_file(FileAccess *f, int p_size_limit
 			Ref<Image> img;
 			if (data_format == DATA_FORMAT_BASIS_UNIVERSAL) {
 				img = Image::basis_universal_unpacker(pv);
-			} else if (data_format == DATA_FORMAT_LOSSLESS) {
-				img = Image::lossless_unpacker(pv);
+			} else if (data_format == DATA_FORMAT_PNG) {
+				img = Image::png_unpacker(pv);
 			} else {
-				img = Image::lossy_unpacker(pv);
+				img = Image::webp_unpacker(pv);
 			}
 
 			if (img.is_null() || img->is_empty()) {
@@ -390,7 +390,7 @@ Ref<Image> StreamTexture2D::load_image_from_file(FileAccess *f, int p_size_limit
 		//print_line("mipmap read total: " + itos(mipmap_images.size()));
 
 		Ref<Image> image;
-		image.instance();
+		image.instantiate();
 
 		if (mipmap_images.size() == 1) {
 			//only one image (which will most likely be the case anyway for this format)
@@ -442,7 +442,7 @@ Ref<Image> StreamTexture2D::load_image_from_file(FileAccess *f, int p_size_limit
 			}
 
 			Ref<Image> image;
-			image.instance();
+			image.instantiate();
 
 			image->create(tw, th, mipmaps - i ? true : false, format, data);
 
@@ -490,7 +490,7 @@ Image::Format StreamTexture2D::get_format() const {
 	return format;
 }
 
-Error StreamTexture2D::_load_data(const String &p_path, int &tw, int &th, int &tw_custom, int &th_custom, Ref<Image> &image, bool &r_request_3d, bool &r_request_normal, bool &r_request_roughness, int &mipmap_limit, int p_size_limit) {
+Error StreamTexture2D::_load_data(const String &p_path, int &r_width, int &r_height, Ref<Image> &image, bool &r_request_3d, bool &r_request_normal, bool &r_request_roughness, int &mipmap_limit, int p_size_limit) {
 	alpha_cache.unref();
 
 	ERR_FAIL_COND_V(image.is_null(), ERR_INVALID_PARAMETER);
@@ -511,8 +511,8 @@ Error StreamTexture2D::_load_data(const String &p_path, int &tw, int &th, int &t
 		memdelete(f);
 		ERR_FAIL_V_MSG(ERR_FILE_CORRUPT, "Stream texture file is too new.");
 	}
-	tw_custom = f->get_32();
-	th_custom = f->get_32();
+	r_width = f->get_32();
+	r_height = f->get_32();
 	uint32_t df = f->get_32(); //data format
 
 	//skip reserved
@@ -551,16 +551,16 @@ Error StreamTexture2D::_load_data(const String &p_path, int &tw, int &th, int &t
 }
 
 Error StreamTexture2D::load(const String &p_path) {
-	int lw, lh, lwc, lhc;
+	int lw, lh;
 	Ref<Image> image;
-	image.instance();
+	image.instantiate();
 
 	bool request_3d;
 	bool request_normal;
 	bool request_roughness;
 	int mipmap_limit;
 
-	Error err = _load_data(p_path, lw, lh, lwc, lhc, image, request_3d, request_normal, request_roughness, mipmap_limit);
+	Error err = _load_data(p_path, lw, lh, image, request_3d, request_normal, request_roughness, mipmap_limit);
 	if (err) {
 		return err;
 	}
@@ -571,12 +571,12 @@ Error StreamTexture2D::load(const String &p_path) {
 	} else {
 		texture = RS::get_singleton()->texture_2d_create(image);
 	}
-	if (lwc || lhc) {
-		RS::get_singleton()->texture_set_size_override(texture, lwc, lhc);
+	if (lw || lh) {
+		RS::get_singleton()->texture_set_size_override(texture, lw, lh);
 	}
 
-	w = lwc ? lwc : lw;
-	h = lhc ? lhc : lh;
+	w = lw;
+	h = lh;
 	path_to_file = p_path;
 	format = image->get_format();
 
@@ -679,7 +679,7 @@ bool StreamTexture2D::is_pixel_opaque(int p_x, int p_y) const {
 				img = decom;
 			}
 
-			alpha_cache.instance();
+			alpha_cache.instantiate();
 			alpha_cache->create_from_image_alpha(img);
 		}
 	}
@@ -738,7 +738,7 @@ StreamTexture2D::~StreamTexture2D() {
 
 RES ResourceFormatLoaderStreamTexture2D::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
 	Ref<StreamTexture2D> st;
-	st.instance();
+	st.instantiate();
 	Error err = st->load(p_path);
 	if (r_error) {
 		*r_error = err;
@@ -1036,7 +1036,7 @@ StreamTexture3D::~StreamTexture3D() {
 
 RES ResourceFormatLoaderStreamTexture3D::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
 	Ref<StreamTexture3D> st;
-	st.instance();
+	st.instantiate();
 	Error err = st->load(p_path);
 	if (r_error) {
 		*r_error = err;
@@ -1904,7 +1904,7 @@ void AnimatedTexture::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_frame_delay", "frame"), &AnimatedTexture::get_frame_delay);
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "frames", PROPERTY_HINT_RANGE, "1," + itos(MAX_FRAMES), PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), "set_frames", "get_frames");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "current_frame", PROPERTY_HINT_NONE, "", 0), "set_current_frame", "get_current_frame");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "current_frame", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "set_current_frame", "get_current_frame");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "pause"), "set_pause", "get_pause");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "oneshot"), "set_oneshot", "get_oneshot");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "fps", PROPERTY_HINT_RANGE, "0,1024,0.1"), "set_fps", "get_fps");
@@ -2257,15 +2257,15 @@ RES ResourceFormatLoaderStreamTextureLayered::load(const String &p_path, const S
 	Ref<StreamTextureLayered> st;
 	if (p_path.get_extension().to_lower() == "stexarray") {
 		Ref<StreamTexture2DArray> s;
-		s.instance();
+		s.instantiate();
 		st = s;
 	} else if (p_path.get_extension().to_lower() == "scube") {
 		Ref<StreamCubemap> s;
-		s.instance();
+		s.instantiate();
 		st = s;
 	} else if (p_path.get_extension().to_lower() == "scubearray") {
 		Ref<StreamCubemapArray> s;
-		s.instance();
+		s.instantiate();
 		st = s;
 	} else {
 		if (r_error) {

@@ -41,8 +41,8 @@
 #include "scene/gui/tree.h"
 #include "scene/resources/visual_shader.h"
 
-class VisualShaderNodePlugin : public Reference {
-	GDCLASS(VisualShaderNodePlugin, Reference);
+class VisualShaderNodePlugin : public RefCounted {
+	GDCLASS(VisualShaderNodePlugin, RefCounted);
 
 protected:
 	static void _bind_methods();
@@ -51,8 +51,8 @@ public:
 	virtual Control *create_editor(const Ref<Resource> &p_parent_resource, const Ref<VisualShaderNode> &p_node);
 };
 
-class VisualShaderGraphPlugin : public Reference {
-	GDCLASS(VisualShaderGraphPlugin, Reference);
+class VisualShaderGraphPlugin : public RefCounted {
+	GDCLASS(VisualShaderGraphPlugin, RefCounted);
 
 private:
 	struct InputPort {
@@ -142,12 +142,11 @@ class VisualShaderEditor : public VBoxContainer {
 	Button *preview_shader;
 
 	OptionButton *edit_type = nullptr;
-	OptionButton *edit_type_standart;
+	OptionButton *edit_type_standard;
 	OptionButton *edit_type_particles;
 	OptionButton *edit_type_sky;
-
-	PanelContainer *error_panel;
-	Label *error_label;
+	CheckBox *custom_mode_box;
+	bool custom_mode_enabled = false;
 
 	bool pending_update_preview;
 	bool shader_error;
@@ -155,7 +154,8 @@ class VisualShaderEditor : public VBoxContainer {
 	VBoxContainer *preview_vbox;
 	CodeEdit *preview_text;
 	Ref<CodeHighlighter> syntax_highlighter;
-	Label *error_text;
+	PanelContainer *error_panel;
+	Label *error_label;
 
 	UndoRedo *undo_redo;
 	Point2 saved_node_pos;
@@ -191,7 +191,9 @@ class VisualShaderEditor : public VBoxContainer {
 	enum ParticlesTypeFlags {
 		TYPE_FLAGS_EMIT = 1,
 		TYPE_FLAGS_PROCESS = 2,
-		TYPE_FLAGS_END = 4
+		TYPE_FLAGS_COLLIDE = 4,
+		TYPE_FLAGS_EMIT_CUSTOM = 8,
+		TYPE_FLAGS_PROCESS_CUSTOM = 16,
 	};
 
 	enum SkyTypeFlags {
@@ -356,7 +358,7 @@ class VisualShaderEditor : public VBoxContainer {
 	void _comment_title_popup_hide();
 	void _comment_title_popup_focus_out();
 	void _comment_title_text_changed(const String &p_new_text);
-	void _comment_title_text_entered(const String &p_new_text);
+	void _comment_title_text_submitted(const String &p_new_text);
 
 	void _comment_desc_popup_show(const Point2 &p_position, int p_node_id);
 	void _comment_desc_popup_hide();
@@ -387,6 +389,7 @@ class VisualShaderEditor : public VBoxContainer {
 	Ref<VisualShaderGraphPlugin> graph_plugin;
 
 	void _mode_selected(int p_id);
+	void _custom_mode_toggled(bool p_enabled);
 
 	void _input_select_item(Ref<VisualShaderNodeInput> input, String name);
 	void _uniform_select_item(Ref<VisualShaderNodeUniformRef> p_uniform, String p_name);

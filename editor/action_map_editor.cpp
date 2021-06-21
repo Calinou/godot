@@ -310,7 +310,7 @@ void InputEventConfigurationDialog::_update_input_list() {
 		MouseButton mouse_buttons[9] = { MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE, MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN, MOUSE_BUTTON_WHEEL_LEFT, MOUSE_BUTTON_WHEEL_RIGHT, MOUSE_BUTTON_XBUTTON1, MOUSE_BUTTON_XBUTTON2 };
 		for (int i = 0; i < 9; i++) {
 			Ref<InputEventMouseButton> mb;
-			mb.instance();
+			mb.instantiate();
 			mb->set_button_index(mouse_buttons[i]);
 			String desc = get_event_text(mb);
 
@@ -333,8 +333,8 @@ void InputEventConfigurationDialog::_update_input_list() {
 
 		for (int i = 0; i < JOY_BUTTON_MAX; i++) {
 			Ref<InputEventJoypadButton> joyb;
-			joyb.instance();
-			joyb->set_button_index(i);
+			joyb.instantiate();
+			joyb->set_button_index((JoyButton)i);
 			String desc = get_event_text(joyb);
 
 			if (!search_term.is_empty() && desc.findn(search_term) == -1) {
@@ -358,8 +358,8 @@ void InputEventConfigurationDialog::_update_input_list() {
 			int axis = i / 2;
 			int direction = (i & 1) ? 1 : -1;
 			Ref<InputEventJoypadMotion> joym;
-			joym.instance();
-			joym->set_axis(axis);
+			joym.instantiate();
+			joym->set_axis((JoyAxis)axis);
 			joym->set_axis_value(direction);
 			String desc = get_event_text(joym);
 
@@ -458,7 +458,7 @@ void InputEventConfigurationDialog::_input_list_item_selected() {
 		case InputEventConfigurationDialog::INPUT_KEY: {
 			int kc = selected->get_meta("__keycode");
 			Ref<InputEventKey> k;
-			k.instance();
+			k.instantiate();
 
 			if (physical_key_checkbox->is_pressed()) {
 				k->set_physical_keycode(kc);
@@ -481,8 +481,8 @@ void InputEventConfigurationDialog::_input_list_item_selected() {
 		case InputEventConfigurationDialog::INPUT_MOUSE_BUTTON: {
 			int idx = selected->get_meta("__index");
 			Ref<InputEventMouseButton> mb;
-			mb.instance();
-			mb->set_button_index(idx);
+			mb.instantiate();
+			mb->set_button_index((MouseButton)idx);
 			// Maintain modifier state from checkboxes
 			mb->set_alt_pressed(mod_checkboxes[MOD_ALT]->is_pressed());
 			mb->set_shift_pressed(mod_checkboxes[MOD_SHIFT]->is_pressed());
@@ -495,7 +495,7 @@ void InputEventConfigurationDialog::_input_list_item_selected() {
 		} break;
 		case InputEventConfigurationDialog::INPUT_JOY_BUTTON: {
 			int idx = selected->get_meta("__index");
-			Ref<InputEventJoypadButton> jb = InputEventJoypadButton::create_reference(idx);
+			Ref<InputEventJoypadButton> jb = InputEventJoypadButton::create_reference((JoyButton)idx);
 			_set_event(jb);
 		} break;
 		case InputEventConfigurationDialog::INPUT_JOY_MOTION: {
@@ -503,8 +503,8 @@ void InputEventConfigurationDialog::_input_list_item_selected() {
 			int value = selected->get_meta("__value");
 
 			Ref<InputEventJoypadMotion> jm;
-			jm.instance();
-			jm->set_axis(axis);
+			jm.instantiate();
+			jm->set_axis((JoyAxis)axis);
 			jm->set_axis_value(value);
 			_set_event(jm);
 		} break;
@@ -969,9 +969,9 @@ void ActionMapEditor::_notification(int p_what) {
 }
 
 void ActionMapEditor::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("get_drag_data_fw"), &ActionMapEditor::get_drag_data_fw);
-	ClassDB::bind_method(D_METHOD("can_drop_data_fw"), &ActionMapEditor::can_drop_data_fw);
-	ClassDB::bind_method(D_METHOD("drop_data_fw"), &ActionMapEditor::drop_data_fw);
+	ClassDB::bind_method(D_METHOD("_get_drag_data_fw"), &ActionMapEditor::get_drag_data_fw);
+	ClassDB::bind_method(D_METHOD("_can_drop_data_fw"), &ActionMapEditor::can_drop_data_fw);
+	ClassDB::bind_method(D_METHOD("_drop_data_fw"), &ActionMapEditor::drop_data_fw);
 
 	ADD_SIGNAL(MethodInfo("action_added", PropertyInfo(Variant::STRING, "name")));
 	ADD_SIGNAL(MethodInfo("action_edited", PropertyInfo(Variant::STRING, "name"), PropertyInfo(Variant::DICTIONARY, "new_action")));
@@ -1106,7 +1106,7 @@ ActionMapEditor::ActionMapEditor() {
 	add_edit->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	add_edit->set_placeholder(TTR("Add New Action"));
 	add_edit->set_clear_button_enabled(true);
-	add_edit->connect("text_entered", callable_mp(this, &ActionMapEditor::_add_action));
+	add_edit->connect("text_submitted", callable_mp(this, &ActionMapEditor::_add_action));
 	add_hbox->add_child(add_edit);
 
 	Button *add_button = memnew(Button);

@@ -257,7 +257,7 @@ void AnimationNodeStateMachineEditor::_state_machine_gui_input(const Ref<InputEv
 
 			} else {
 				Ref<AnimationNodeStateMachineTransition> tr;
-				tr.instance();
+				tr.instantiate();
 				tr->set_switch_mode(AnimationNodeStateMachineTransition::SwitchMode(transition_mode->get_selected()));
 
 				updating = true;
@@ -423,7 +423,7 @@ void AnimationNodeStateMachineEditor::_add_menu_type(int p_index) {
 	} else {
 		String type = menu->get_item_metadata(p_index);
 
-		Object *obj = ClassDB::instance(type);
+		Object *obj = ClassDB::instantiate(type);
 		ERR_FAIL_COND(!obj);
 		AnimationNode *an = Object::cast_to<AnimationNode>(obj);
 		ERR_FAIL_COND(!an);
@@ -462,7 +462,7 @@ void AnimationNodeStateMachineEditor::_add_menu_type(int p_index) {
 
 void AnimationNodeStateMachineEditor::_add_animation_type(int p_index) {
 	Ref<AnimationNodeAnimation> anim;
-	anim.instance();
+	anim.instantiate();
 
 	anim->set_animation(animations_to_add[p_index]);
 
@@ -1213,7 +1213,7 @@ AnimationNodeStateMachineEditor::AnimationNodeStateMachineEditor() {
 	add_child(top_hb);
 
 	Ref<ButtonGroup> bg;
-	bg.instance();
+	bg.instantiate();
 
 	tool_select = memnew(Button);
 	tool_select->set_flat(true);
@@ -1329,7 +1329,7 @@ AnimationNodeStateMachineEditor::AnimationNodeStateMachineEditor() {
 	name_edit = memnew(LineEdit);
 	name_edit_popup->add_child(name_edit);
 	name_edit->set_anchors_and_offsets_preset(PRESET_WIDE);
-	name_edit->connect("text_entered", callable_mp(this, &AnimationNodeStateMachineEditor::_name_edited));
+	name_edit->connect("text_submitted", callable_mp(this, &AnimationNodeStateMachineEditor::_name_edited));
 	name_edit->connect("focus_exited", callable_mp(this, &AnimationNodeStateMachineEditor::_name_edited_focus_out));
 
 	open_file = memnew(EditorFileDialog);

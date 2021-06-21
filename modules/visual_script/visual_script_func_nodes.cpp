@@ -737,20 +737,22 @@ public:
 		}
 
 		int to_id = 0;
-		bool reliable = true;
+		//bool reliable = true;
 
 		if (rpc_mode >= VisualScriptFunctionCall::RPC_RELIABLE_TO_ID) {
 			to_id = *p_args[0];
 			p_args += 1;
 			p_argcount -= 1;
-			if (rpc_mode == VisualScriptFunctionCall::RPC_UNRELIABLE_TO_ID) {
-				reliable = false;
-			}
-		} else if (rpc_mode == VisualScriptFunctionCall::RPC_UNRELIABLE) {
-			reliable = false;
+			//if (rpc_mode == VisualScriptFunctionCall::RPC_UNRELIABLE_TO_ID) {
+			//reliable = false;
+			//}
 		}
+		//else if (rpc_mode == VisualScriptFunctionCall::RPC_UNRELIABLE) {
+		//reliable = false;
+		//}
 
-		node->rpcp(to_id, !reliable, function, p_args, p_argcount);
+		// TODO reliable?
+		node->rpcp(to_id, function, p_args, p_argcount);
 
 		return true;
 	}
@@ -854,7 +856,7 @@ public:
 	}
 };
 
-VisualScriptNodeInstance *VisualScriptFunctionCall::instance(VisualScriptInstance *p_instance) {
+VisualScriptNodeInstance *VisualScriptFunctionCall::instantiate(VisualScriptInstance *p_instance) {
 	VisualScriptNodeInstanceFunctionCall *instance = memnew(VisualScriptNodeInstanceFunctionCall);
 	instance->node = this;
 	instance->instance = p_instance;
@@ -889,7 +891,7 @@ VisualScriptFunctionCall::VisualScriptFunctionCall() {
 template <VisualScriptFunctionCall::CallMode cmode>
 static Ref<VisualScriptNode> create_function_call_node(const String &p_name) {
 	Ref<VisualScriptFunctionCall> node;
-	node.instance();
+	node.instantiate();
 	node->set_call_mode(cmode);
 	return node;
 }
@@ -1585,7 +1587,7 @@ public:
 	}
 };
 
-VisualScriptNodeInstance *VisualScriptPropertySet::instance(VisualScriptInstance *p_instance) {
+VisualScriptNodeInstance *VisualScriptPropertySet::instantiate(VisualScriptInstance *p_instance) {
 	VisualScriptNodeInstancePropertySet *instance = memnew(VisualScriptNodeInstancePropertySet);
 	instance->node = this;
 	instance->instance = p_instance;
@@ -1616,7 +1618,7 @@ VisualScriptPropertySet::VisualScriptPropertySet() {
 template <VisualScriptPropertySet::CallMode cmode>
 static Ref<VisualScriptNode> create_property_set_node(const String &p_name) {
 	Ref<VisualScriptPropertySet> node;
-	node.instance();
+	node.instantiate();
 	node->set_call_mode(cmode);
 	return node;
 }
@@ -2173,7 +2175,7 @@ public:
 	}
 };
 
-VisualScriptNodeInstance *VisualScriptPropertyGet::instance(VisualScriptInstance *p_instance) {
+VisualScriptNodeInstance *VisualScriptPropertyGet::instantiate(VisualScriptInstance *p_instance) {
 	VisualScriptNodeInstancePropertyGet *instance = memnew(VisualScriptNodeInstancePropertyGet);
 	instance->node = this;
 	instance->instance = p_instance;
@@ -2195,7 +2197,7 @@ VisualScriptPropertyGet::VisualScriptPropertyGet() {
 template <VisualScriptPropertyGet::CallMode cmode>
 static Ref<VisualScriptNode> create_property_get_node(const String &p_name) {
 	Ref<VisualScriptPropertyGet> node;
-	node.instance();
+	node.instantiate();
 	node->set_call_mode(cmode);
 	return node;
 }
@@ -2319,7 +2321,7 @@ public:
 	}
 };
 
-VisualScriptNodeInstance *VisualScriptEmitSignal::instance(VisualScriptInstance *p_instance) {
+VisualScriptNodeInstance *VisualScriptEmitSignal::instantiate(VisualScriptInstance *p_instance) {
 	VisualScriptNodeInstanceEmitSignal *instance = memnew(VisualScriptNodeInstanceEmitSignal);
 	instance->node = this;
 	instance->instance = p_instance;
@@ -2338,7 +2340,7 @@ static Ref<VisualScriptNode> create_basic_type_call_node(const String &p_name) {
 	String method = path[3];
 
 	Ref<VisualScriptFunctionCall> node;
-	node.instance();
+	node.instantiate();
 
 	Variant::Type type = Variant::VARIANT_MAX;
 

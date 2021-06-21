@@ -68,6 +68,7 @@
 #include "core/object/class_db.h"
 #include "core/object/undo_redo.h"
 #include "core/os/main_loop.h"
+#include "core/os/time.h"
 #include "core/string/optimized_translation.h"
 #include "core/string/translation.h"
 
@@ -85,7 +86,6 @@ static _OS *_os = nullptr;
 static _Engine *_engine = nullptr;
 static _ClassDB *_classdb = nullptr;
 static _Marshalls *_marshalls = nullptr;
-static _JSON *_json = nullptr;
 static _EngineDebugger *_engine_debugger = nullptr;
 
 static IP *ip = nullptr;
@@ -113,25 +113,25 @@ void register_core_types() {
 
 	CoreStringNames::create();
 
-	resource_format_po.instance();
+	resource_format_po.instantiate();
 	ResourceLoader::add_resource_format_loader(resource_format_po);
 
-	resource_saver_binary.instance();
+	resource_saver_binary.instantiate();
 	ResourceSaver::add_resource_format_saver(resource_saver_binary);
-	resource_loader_binary.instance();
+	resource_loader_binary.instantiate();
 	ResourceLoader::add_resource_format_loader(resource_loader_binary);
 
-	resource_format_importer.instance();
+	resource_format_importer.instantiate();
 	ResourceLoader::add_resource_format_loader(resource_format_importer);
 
-	resource_format_image.instance();
+	resource_format_image.instantiate();
 	ResourceLoader::add_resource_format_loader(resource_format_image);
 
 	ClassDB::register_class<Object>();
 
 	ClassDB::register_virtual_class<Script>();
 
-	ClassDB::register_class<Reference>();
+	ClassDB::register_class<RefCounted>();
 	ClassDB::register_class<WeakRef>();
 	ClassDB::register_class<Resource>();
 	ClassDB::register_class<Image>();
@@ -171,9 +171,9 @@ void register_core_types() {
 	ClassDB::register_custom_instance_class<Crypto>();
 	ClassDB::register_custom_instance_class<StreamPeerSSL>();
 
-	resource_format_saver_crypto.instance();
+	resource_format_saver_crypto.instantiate();
 	ResourceSaver::add_resource_format_saver(resource_format_saver_crypto);
-	resource_format_loader_crypto.instance();
+	resource_format_loader_crypto.instantiate();
 	ResourceLoader::add_resource_format_loader(resource_format_loader_crypto);
 
 	ClassDB::register_virtual_class<IP>();
@@ -198,7 +198,7 @@ void register_core_types() {
 	ClassDB::register_class<_Semaphore>();
 
 	ClassDB::register_class<XMLParser>();
-	ClassDB::register_class<JSONParser>();
+	ClassDB::register_class<JSON>();
 
 	ClassDB::register_class<ConfigFile>();
 
@@ -210,8 +210,6 @@ void register_core_types() {
 	ClassDB::register_class<AStar2D>();
 	ClassDB::register_class<EncodedObjectAsID>();
 	ClassDB::register_class<RandomNumberGenerator>();
-
-	ClassDB::register_class<JSONParseResult>();
 
 	ClassDB::register_virtual_class<ResourceImporter>();
 
@@ -226,7 +224,6 @@ void register_core_types() {
 	_engine = memnew(_Engine);
 	_classdb = memnew(_ClassDB);
 	_marshalls = memnew(_Marshalls);
-	_json = memnew(_JSON);
 	_engine_debugger = memnew(_EngineDebugger);
 }
 
@@ -255,9 +252,9 @@ void register_core_singletons() {
 	ClassDB::register_class<TranslationServer>();
 	ClassDB::register_virtual_class<Input>();
 	ClassDB::register_class<InputMap>();
-	ClassDB::register_class<_JSON>();
 	ClassDB::register_class<Expression>();
 	ClassDB::register_class<_EngineDebugger>();
+	ClassDB::register_class<Time>();
 
 	Engine::get_singleton()->add_singleton(Engine::Singleton("ProjectSettings", ProjectSettings::get_singleton()));
 	Engine::get_singleton()->add_singleton(Engine::Singleton("IP", IP::get_singleton()));
@@ -272,8 +269,8 @@ void register_core_singletons() {
 	Engine::get_singleton()->add_singleton(Engine::Singleton("TranslationServer", TranslationServer::get_singleton()));
 	Engine::get_singleton()->add_singleton(Engine::Singleton("Input", Input::get_singleton()));
 	Engine::get_singleton()->add_singleton(Engine::Singleton("InputMap", InputMap::get_singleton()));
-	Engine::get_singleton()->add_singleton(Engine::Singleton("JSON", _JSON::get_singleton()));
 	Engine::get_singleton()->add_singleton(Engine::Singleton("EngineDebugger", _EngineDebugger::get_singleton()));
+	Engine::get_singleton()->add_singleton(Engine::Singleton("Time", Time::get_singleton()));
 }
 
 void unregister_core_types() {
@@ -283,7 +280,6 @@ void unregister_core_types() {
 	memdelete(_engine);
 	memdelete(_classdb);
 	memdelete(_marshalls);
-	memdelete(_json);
 	memdelete(_engine_debugger);
 
 	memdelete(_geometry_2d);

@@ -422,7 +422,9 @@ Error RenderingServer::_surface_set_data(Array p_arrays, uint32_t p_format, uint
 					value |= CLAMP(int((src[i * 4 + 0] * 0.5 + 0.5) * 1023.0), 0, 1023);
 					value |= CLAMP(int((src[i * 4 + 1] * 0.5 + 0.5) * 1023.0), 0, 1023) << 10;
 					value |= CLAMP(int((src[i * 4 + 2] * 0.5 + 0.5) * 1023.0), 0, 1023) << 20;
-					value |= CLAMP(int((src[i * 4 + 3] * 0.5 + 0.5) * 1023.0), 0, 1023) << 30;
+					if (src[i * 4 + 3] > 0) {
+						value |= 3 << 30;
+					}
 
 					memcpy(&vw[p_offsets[ai] + i * p_vertex_stride], &value, 4);
 				}
@@ -1569,32 +1571,32 @@ void RenderingServer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("reflection_probe_set_cull_mask", "probe", "layers"), &RenderingServer::reflection_probe_set_cull_mask);
 
 #ifndef _MSC_VER
-#warning TODO all giprobe methods need re-binding
+#warning TODO all voxel_gi methods need re-binding
 #endif
 #if 0
-	ClassDB::bind_method(D_METHOD("gi_probe_create"), &RenderingServer::gi_probe_create);
-	ClassDB::bind_method(D_METHOD("gi_probe_set_bounds", "probe", "bounds"), &RenderingServer::gi_probe_set_bounds);
-	ClassDB::bind_method(D_METHOD("gi_probe_get_bounds", "probe"), &RenderingServer::gi_probe_get_bounds);
-	ClassDB::bind_method(D_METHOD("gi_probe_set_cell_size", "probe", "range"), &RenderingServer::gi_probe_set_cell_size);
-	ClassDB::bind_method(D_METHOD("gi_probe_get_cell_size", "probe"), &RenderingServer::gi_probe_get_cell_size);
-	ClassDB::bind_method(D_METHOD("gi_probe_set_to_cell_xform", "probe", "xform"), &RenderingServer::gi_probe_set_to_cell_xform);
-	ClassDB::bind_method(D_METHOD("gi_probe_get_to_cell_xform", "probe"), &RenderingServer::gi_probe_get_to_cell_xform);
-	ClassDB::bind_method(D_METHOD("gi_probe_set_dynamic_data", "probe", "data"), &RenderingServer::gi_probe_set_dynamic_data);
-	ClassDB::bind_method(D_METHOD("gi_probe_get_dynamic_data", "probe"), &RenderingServer::gi_probe_get_dynamic_data);
-	ClassDB::bind_method(D_METHOD("gi_probe_set_dynamic_range", "probe", "range"), &RenderingServer::gi_probe_set_dynamic_range);
-	ClassDB::bind_method(D_METHOD("gi_probe_get_dynamic_range", "probe"), &RenderingServer::gi_probe_get_dynamic_range);
-	ClassDB::bind_method(D_METHOD("gi_probe_set_energy", "probe", "energy"), &RenderingServer::gi_probe_set_energy);
-	ClassDB::bind_method(D_METHOD("gi_probe_get_energy", "probe"), &RenderingServer::gi_probe_get_energy);
-	ClassDB::bind_method(D_METHOD("gi_probe_set_bias", "probe", "bias"), &RenderingServer::gi_probe_set_bias);
-	ClassDB::bind_method(D_METHOD("gi_probe_get_bias", "probe"), &RenderingServer::gi_probe_get_bias);
-	ClassDB::bind_method(D_METHOD("gi_probe_set_normal_bias", "probe", "bias"), &RenderingServer::gi_probe_set_normal_bias);
-	ClassDB::bind_method(D_METHOD("gi_probe_get_normal_bias", "probe"), &RenderingServer::gi_probe_get_normal_bias);
-	ClassDB::bind_method(D_METHOD("gi_probe_set_propagation", "probe", "propagation"), &RenderingServer::gi_probe_set_propagation);
-	ClassDB::bind_method(D_METHOD("gi_probe_get_propagation", "probe"), &RenderingServer::gi_probe_get_propagation);
-	ClassDB::bind_method(D_METHOD("gi_probe_set_interior", "probe", "enable"), &RenderingServer::gi_probe_set_interior);
-	ClassDB::bind_method(D_METHOD("gi_probe_is_interior", "probe"), &RenderingServer::gi_probe_is_interior);
-	ClassDB::bind_method(D_METHOD("gi_probe_set_compress", "probe", "enable"), &RenderingServer::gi_probe_set_compress);
-	ClassDB::bind_method(D_METHOD("gi_probe_is_compressed", "probe"), &RenderingServer::gi_probe_is_compressed);
+	ClassDB::bind_method(D_METHOD("voxel_gi_create"), &RenderingServer::voxel_gi_create);
+	ClassDB::bind_method(D_METHOD("voxel_gi_set_bounds", "probe", "bounds"), &RenderingServer::voxel_gi_set_bounds);
+	ClassDB::bind_method(D_METHOD("voxel_gi_get_bounds", "probe"), &RenderingServer::voxel_gi_get_bounds);
+	ClassDB::bind_method(D_METHOD("voxel_gi_set_cell_size", "probe", "range"), &RenderingServer::voxel_gi_set_cell_size);
+	ClassDB::bind_method(D_METHOD("voxel_gi_get_cell_size", "probe"), &RenderingServer::voxel_gi_get_cell_size);
+	ClassDB::bind_method(D_METHOD("voxel_gi_set_to_cell_xform", "probe", "xform"), &RenderingServer::voxel_gi_set_to_cell_xform);
+	ClassDB::bind_method(D_METHOD("voxel_gi_get_to_cell_xform", "probe"), &RenderingServer::voxel_gi_get_to_cell_xform);
+	ClassDB::bind_method(D_METHOD("voxel_gi_set_dynamic_data", "probe", "data"), &RenderingServer::voxel_gi_set_dynamic_data);
+	ClassDB::bind_method(D_METHOD("voxel_gi_get_dynamic_data", "probe"), &RenderingServer::voxel_gi_get_dynamic_data);
+	ClassDB::bind_method(D_METHOD("voxel_gi_set_dynamic_range", "probe", "range"), &RenderingServer::voxel_gi_set_dynamic_range);
+	ClassDB::bind_method(D_METHOD("voxel_gi_get_dynamic_range", "probe"), &RenderingServer::voxel_gi_get_dynamic_range);
+	ClassDB::bind_method(D_METHOD("voxel_gi_set_energy", "probe", "energy"), &RenderingServer::voxel_gi_set_energy);
+	ClassDB::bind_method(D_METHOD("voxel_gi_get_energy", "probe"), &RenderingServer::voxel_gi_get_energy);
+	ClassDB::bind_method(D_METHOD("voxel_gi_set_bias", "probe", "bias"), &RenderingServer::voxel_gi_set_bias);
+	ClassDB::bind_method(D_METHOD("voxel_gi_get_bias", "probe"), &RenderingServer::voxel_gi_get_bias);
+	ClassDB::bind_method(D_METHOD("voxel_gi_set_normal_bias", "probe", "bias"), &RenderingServer::voxel_gi_set_normal_bias);
+	ClassDB::bind_method(D_METHOD("voxel_gi_get_normal_bias", "probe"), &RenderingServer::voxel_gi_get_normal_bias);
+	ClassDB::bind_method(D_METHOD("voxel_gi_set_propagation", "probe", "propagation"), &RenderingServer::voxel_gi_set_propagation);
+	ClassDB::bind_method(D_METHOD("voxel_gi_get_propagation", "probe"), &RenderingServer::voxel_gi_get_propagation);
+	ClassDB::bind_method(D_METHOD("voxel_gi_set_interior", "probe", "enable"), &RenderingServer::voxel_gi_set_interior);
+	ClassDB::bind_method(D_METHOD("voxel_gi_is_interior", "probe"), &RenderingServer::voxel_gi_is_interior);
+	ClassDB::bind_method(D_METHOD("voxel_gi_set_compress", "probe", "enable"), &RenderingServer::voxel_gi_set_compress);
+	ClassDB::bind_method(D_METHOD("voxel_gi_is_compressed", "probe"), &RenderingServer::voxel_gi_is_compressed);
 #endif
 	/*
 	ClassDB::bind_method(D_METHOD("lightmap_create()"), &RenderingServer::lightmap_capture_create);
@@ -1673,6 +1675,7 @@ void RenderingServer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("viewport_set_shadow_atlas_quadrant_subdivision", "viewport", "quadrant", "subdivision"), &RenderingServer::viewport_set_shadow_atlas_quadrant_subdivision);
 	ClassDB::bind_method(D_METHOD("viewport_set_msaa", "viewport", "msaa"), &RenderingServer::viewport_set_msaa);
 	ClassDB::bind_method(D_METHOD("viewport_set_use_debanding", "viewport", "enable"), &RenderingServer::viewport_set_use_debanding);
+	ClassDB::bind_method(D_METHOD("viewport_set_sharpen_intensity", "viewport", "intensity"), &RenderingServer::viewport_set_sharpen_intensity);
 	ClassDB::bind_method(D_METHOD("viewport_set_use_occlusion_culling", "viewport", "enable"), &RenderingServer::viewport_set_use_occlusion_culling);
 	ClassDB::bind_method(D_METHOD("viewport_set_occlusion_rays_per_thread", "rays_per_thread"), &RenderingServer::viewport_set_occlusion_rays_per_thread);
 	ClassDB::bind_method(D_METHOD("viewport_set_occlusion_culling_build_quality", "quality"), &RenderingServer::viewport_set_occlusion_culling_build_quality);
@@ -1723,11 +1726,11 @@ void RenderingServer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("instance_attach_skeleton", "instance", "skeleton"), &RenderingServer::instance_attach_skeleton);
 	ClassDB::bind_method(D_METHOD("instance_set_exterior", "instance", "enabled"), &RenderingServer::instance_set_exterior);
 	ClassDB::bind_method(D_METHOD("instance_set_extra_visibility_margin", "instance", "margin"), &RenderingServer::instance_set_extra_visibility_margin);
+	ClassDB::bind_method(D_METHOD("instance_set_visibility_parent", "instance", "parent"), &RenderingServer::instance_set_visibility_parent);
 	ClassDB::bind_method(D_METHOD("instance_geometry_set_flag", "instance", "flag", "enabled"), &RenderingServer::instance_geometry_set_flag);
 	ClassDB::bind_method(D_METHOD("instance_geometry_set_cast_shadows_setting", "instance", "shadow_casting_setting"), &RenderingServer::instance_geometry_set_cast_shadows_setting);
 	ClassDB::bind_method(D_METHOD("instance_geometry_set_material_override", "instance", "material"), &RenderingServer::instance_geometry_set_material_override);
-	ClassDB::bind_method(D_METHOD("instance_geometry_set_draw_range", "instance", "min", "max", "min_margin", "max_margin"), &RenderingServer::instance_geometry_set_draw_range);
-	ClassDB::bind_method(D_METHOD("instance_geometry_set_as_instance_lod", "instance", "as_lod_of_instance"), &RenderingServer::instance_geometry_set_as_instance_lod);
+	ClassDB::bind_method(D_METHOD("instance_geometry_set_visibility_range", "instance", "min", "max", "min_margin", "max_margin"), &RenderingServer::instance_geometry_set_visibility_range);
 
 	ClassDB::bind_method(D_METHOD("instances_cull_aabb", "aabb", "scenario"), &RenderingServer::_instances_cull_aabb_bind, DEFVAL(RID()));
 	ClassDB::bind_method(D_METHOD("instances_cull_ray", "from", "to", "scenario"), &RenderingServer::_instances_cull_ray_bind, DEFVAL(RID()));
@@ -2022,9 +2025,9 @@ void RenderingServer::_bind_methods() {
 	BIND_ENUM_CONSTANT(VIEWPORT_DEBUG_DRAW_OVERDRAW);
 	BIND_ENUM_CONSTANT(VIEWPORT_DEBUG_DRAW_WIREFRAME);
 	BIND_ENUM_CONSTANT(VIEWPORT_DEBUG_DRAW_NORMAL_BUFFER);
-	BIND_ENUM_CONSTANT(VIEWPORT_DEBUG_DRAW_GI_PROBE_ALBEDO);
-	BIND_ENUM_CONSTANT(VIEWPORT_DEBUG_DRAW_GI_PROBE_LIGHTING);
-	BIND_ENUM_CONSTANT(VIEWPORT_DEBUG_DRAW_GI_PROBE_EMISSION);
+	BIND_ENUM_CONSTANT(VIEWPORT_DEBUG_DRAW_VOXEL_GI_ALBEDO);
+	BIND_ENUM_CONSTANT(VIEWPORT_DEBUG_DRAW_VOXEL_GI_LIGHTING);
+	BIND_ENUM_CONSTANT(VIEWPORT_DEBUG_DRAW_VOXEL_GI_EMISSION);
 	BIND_ENUM_CONSTANT(VIEWPORT_DEBUG_DRAW_SHADOW_ATLAS);
 	BIND_ENUM_CONSTANT(VIEWPORT_DEBUG_DRAW_DIRECTIONAL_SHADOW_ATLAS);
 	BIND_ENUM_CONSTANT(VIEWPORT_DEBUG_DRAW_SCENE_LUMINANCE);
@@ -2117,7 +2120,7 @@ void RenderingServer::_bind_methods() {
 	BIND_ENUM_CONSTANT(INSTANCE_LIGHT);
 	BIND_ENUM_CONSTANT(INSTANCE_REFLECTION_PROBE);
 	BIND_ENUM_CONSTANT(INSTANCE_DECAL);
-	BIND_ENUM_CONSTANT(INSTANCE_GI_PROBE);
+	BIND_ENUM_CONSTANT(INSTANCE_VOXEL_GI);
 	BIND_ENUM_CONSTANT(INSTANCE_LIGHTMAP);
 	BIND_ENUM_CONSTANT(INSTANCE_OCCLUDER);
 	BIND_ENUM_CONSTANT(INSTANCE_MAX);
@@ -2282,6 +2285,10 @@ RenderingServer::RenderingServer() {
 	GLOBAL_DEF_RST("rendering/textures/vram_compression/import_etc2", true);
 	GLOBAL_DEF_RST("rendering/textures/vram_compression/import_pvrtc", false);
 
+	GLOBAL_DEF("rendering/textures/lossless_compression/force_png", false);
+	GLOBAL_DEF("rendering/textures/lossless_compression/webp_compression_level", 2);
+	ProjectSettings::get_singleton()->set_custom_property_info("rendering/textures/lossless_compression/webp_compression_level", PropertyInfo(Variant::INT, "rendering/textures/lossless_compression/webp_compression_level", PROPERTY_HINT_RANGE, "0,9,1"));
+
 	GLOBAL_DEF("rendering/limits/time/time_rollover_secs", 3600);
 	ProjectSettings::get_singleton()->set_custom_property_info("rendering/limits/time/time_rollover_secs", PropertyInfo(Variant::FLOAT, "rendering/limits/time/time_rollover_secs", PROPERTY_HINT_RANGE, "0,10000,1,or_greater"));
 
@@ -2306,6 +2313,12 @@ RenderingServer::RenderingServer() {
 					"rendering/vulkan/rendering/back_end",
 					PROPERTY_HINT_ENUM, "ForwardClustered,ForwardMobile"));
 
+	GLOBAL_DEF("rendering/shader_compiler/shader_cache/enabled", true);
+	GLOBAL_DEF("rendering/shader_compiler/shader_cache/compress", true);
+	GLOBAL_DEF("rendering/shader_compiler/shader_cache/use_zstd_compression", true);
+	GLOBAL_DEF("rendering/shader_compiler/shader_cache/strip_debug", false);
+	GLOBAL_DEF("rendering/shader_compiler/shader_cache/strip_debug.release", true);
+
 	GLOBAL_DEF("rendering/reflections/sky_reflections/roughness_layers", 8);
 	GLOBAL_DEF("rendering/reflections/sky_reflections/texture_array_reflections", true);
 	GLOBAL_DEF("rendering/reflections/sky_reflections/texture_array_reflections.mobile", false);
@@ -2318,9 +2331,9 @@ RenderingServer::RenderingServer() {
 
 	GLOBAL_DEF("rendering/global_illumination/gi/use_half_resolution", false);
 
-	GLOBAL_DEF("rendering/global_illumination/gi_probes/anisotropic", false);
-	GLOBAL_DEF("rendering/global_illumination/gi_probes/quality", 1);
-	ProjectSettings::get_singleton()->set_custom_property_info("rendering/global_illumination/gi_probes/quality", PropertyInfo(Variant::INT, "rendering/global_illumination/gi_probes/quality", PROPERTY_HINT_ENUM, "Low (4 Cones - Fast),High (6 Cones - Slow)"));
+	GLOBAL_DEF("rendering/global_illumination/voxel_gi/anisotropic", false);
+	GLOBAL_DEF("rendering/global_illumination/voxel_gi/quality", 1);
+	ProjectSettings::get_singleton()->set_custom_property_info("rendering/global_illumination/voxel_gi/quality", PropertyInfo(Variant::INT, "rendering/global_illumination/voxel_gi/quality", PROPERTY_HINT_ENUM, "Low (4 Cones - Fast),High (6 Cones - Slow)"));
 
 	GLOBAL_DEF("rendering/shading/overrides/force_vertex_shading", false);
 	GLOBAL_DEF("rendering/shading/overrides/force_vertex_shading.mobile", true);
@@ -2360,6 +2373,9 @@ RenderingServer::RenderingServer() {
 	GLOBAL_DEF("rendering/anti_aliasing/screen_space_roughness_limiter/limit", 0.18);
 	ProjectSettings::get_singleton()->set_custom_property_info("rendering/anti_aliasing/screen_space_roughness_limiter/amount", PropertyInfo(Variant::FLOAT, "rendering/anti_aliasing/screen_space_roughness_limiter/amount", PROPERTY_HINT_RANGE, "0.01,4.0,0.01"));
 	ProjectSettings::get_singleton()->set_custom_property_info("rendering/anti_aliasing/screen_space_roughness_limiter/limit", PropertyInfo(Variant::FLOAT, "rendering/anti_aliasing/screen_space_roughness_limiter/limit", PROPERTY_HINT_RANGE, "0.01,1.0,0.01"));
+
+	GLOBAL_DEF("rendering/anti_aliasing/quality/sharpen_intensity", 0.0);
+	ProjectSettings::get_singleton()->set_custom_property_info("rendering/anti_aliasing/quality/sharpen_intensity", PropertyInfo(Variant::FLOAT, "rendering/anti_aliasing/quality/sharpen_intensity", PROPERTY_HINT_RANGE, "0,1"));
 
 	GLOBAL_DEF_RST("rendering/occlusion_culling/occlusion_rays_per_thread", 512);
 	GLOBAL_DEF_RST("rendering/occlusion_culling/bvh_build_quality", 2);
@@ -2408,6 +2424,8 @@ RenderingServer::RenderingServer() {
 
 	GLOBAL_DEF("rendering/limits/cluster_builder/max_clustered_elements", 512);
 	ProjectSettings::get_singleton()->set_custom_property_info("rendering/limits/cluster_builder/max_clustered_elements", PropertyInfo(Variant::FLOAT, "rendering/limits/cluster_builder/max_clustered_elements", PROPERTY_HINT_RANGE, "32,8192,1"));
+
+	GLOBAL_DEF_RST("rendering/xr/enabled", false);
 }
 
 RenderingServer::~RenderingServer() {

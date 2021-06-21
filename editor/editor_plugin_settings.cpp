@@ -32,7 +32,7 @@
 
 #include "core/config/project_settings.h"
 #include "core/io/config_file.h"
-#include "core/os/file_access.h"
+#include "core/io/file_access.h"
 #include "core/os/main_loop.h"
 #include "editor_node.h"
 #include "editor_scale.h"
@@ -57,7 +57,7 @@ void EditorPluginSettings::update_plugins() {
 
 	for (int i = 0; i < plugins.size(); i++) {
 		Ref<ConfigFile> cf;
-		cf.instance();
+		cf.instantiate();
 		const String path = plugins[i];
 
 		Error err2 = cf->load(path);

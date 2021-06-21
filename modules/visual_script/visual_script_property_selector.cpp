@@ -108,10 +108,10 @@ void VisualScriptPropertySelector::_update_search() {
 			vbc->get_theme_icon("Vector3", "EditorIcons"),
 			vbc->get_theme_icon("Transform2D", "EditorIcons"),
 			vbc->get_theme_icon("Plane", "EditorIcons"),
-			vbc->get_theme_icon("Quat", "EditorIcons"),
+			vbc->get_theme_icon("Quaternion", "EditorIcons"),
 			vbc->get_theme_icon("AABB", "EditorIcons"),
 			vbc->get_theme_icon("Basis", "EditorIcons"),
-			vbc->get_theme_icon("Transform", "EditorIcons"),
+			vbc->get_theme_icon("Transform3D", "EditorIcons"),
 			vbc->get_theme_icon("Color", "EditorIcons"),
 			vbc->get_theme_icon("Path", "EditorIcons"),
 			vbc->get_theme_icon("RID", "EditorIcons"),
@@ -469,10 +469,11 @@ void VisualScriptPropertySelector::_item_selected() {
 
 		at_class = ClassDB::get_parent_class_nocheck(at_class);
 	}
-	Map<String, DocData::ClassDoc>::Element *T = dd->class_list.find(class_type);
+	Vector<String> functions = name.rsplit("/", false);
+	at_class = functions.size() > 3 ? functions[functions.size() - 2] : class_type;
+	Map<String, DocData::ClassDoc>::Element *T = dd->class_list.find(at_class);
 	if (T) {
 		for (int i = 0; i < T->get().methods.size(); i++) {
-			Vector<String> functions = name.rsplit("/", false, 1);
 			if (T->get().methods[i].name == functions[functions.size() - 1]) {
 				text = DTR(T->get().methods[i].description);
 			}

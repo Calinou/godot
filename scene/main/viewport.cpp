@@ -183,22 +183,9 @@ public:
 
 /////////////////////////////////////
 
-void Viewport::update_worlds() {
-	if (!is_inside_tree()) {
-		return;
-	}
-
-	Rect2 abstracted_rect = Rect2(Vector2(), get_visible_rect().size);
-	Rect2 xformed_rect = (global_canvas_transform * canvas_transform).affine_inverse().xform(abstracted_rect);
-	find_world_2d()->_update_viewport(this, xformed_rect);
-	find_world_2d()->_update();
-
-	find_world_3d()->_update(get_tree()->get_frame());
-}
-
 void Viewport::_collision_object_input_event(CollisionObject3D *p_object, Camera3D *p_camera, const Ref<InputEvent> &p_input_event, const Vector3 &p_pos, const Vector3 &p_normal, int p_shape) {
-	Transform object_transform = p_object->get_global_transform();
-	Transform camera_transform = p_camera->get_global_transform();
+	Transform3D object_transform = p_object->get_global_transform();
+	Transform3D camera_transform = p_camera->get_global_transform();
 	ObjectID id = p_object->get_instance_id();
 
 	//avoid sending the fake event unnecessarily if nothing really changed in the context
@@ -441,8 +428,6 @@ void Viewport::_notification(int p_what) {
 			_update_listener();
 			_update_listener_2d();
 
-			find_world_2d()->_register_viewport(this, Rect2());
-
 			add_to_group("_viewports");
 			if (get_tree()->is_debugging_collisions_hint()) {
 				//2D
@@ -499,9 +484,6 @@ void Viewport::_notification(int p_what) {
 		} break;
 		case NOTIFICATION_EXIT_TREE: {
 			_gui_cancel_tooltip();
-			if (world_2d.is_valid()) {
-				world_2d->_remove_viewport(this);
-			}
 
 			RenderingServer::get_singleton()->viewport_set_scenario(viewport, RID());
 			RenderingServer::get_singleton()->viewport_remove_canvas(viewport, current_canvas);
@@ -553,7 +535,7 @@ void Viewport::_notification(int p_what) {
 				RS::get_singleton()->multimesh_set_visible_instances(contact_3d_debug_multimesh, point_count);
 
 				for (int i = 0; i < point_count; i++) {
-					Transform point_transform;
+					Transform3D point_transform;
 					point_transform.origin = points[i];
 					RS::get_singleton()->multimesh_instance_set_transform(contact_3d_debug_multimesh, i, point_transform);
 				}
@@ -612,7 +594,7 @@ void Viewport::_process_picking() {
 
 		if (!has_mouse_event) {
 			Ref<InputEventMouseMotion> mm;
-			mm.instance();
+			mm.instantiate();
 
 			mm->set_device(InputEvent::DEVICE_ID_INTERNAL);
 			mm->set_global_position(physics_last_mousepos);
@@ -662,9 +644,9 @@ void Viewport::_process_picking() {
 			physics_last_mouse_state.meta = mb->is_meta_pressed();
 
 			if (mb->is_pressed()) {
-				physics_last_mouse_state.mouse_mask |= (1 << (mb->get_button_index() - 1));
+				physics_last_mouse_state.mouse_mask |= (MouseButton)(1 << (mb->get_button_index() - 1));
 			} else {
-				physics_last_mouse_state.mouse_mask &= ~(1 << (mb->get_button_index() - 1));
+				physics_last_mouse_state.mouse_mask &= (MouseButton) ~(1 << (mb->get_button_index() - 1));
 
 				// If touch mouse raised, assume we don't know last mouse pos until new events come
 				if (mb->get_device() == InputEvent::DEVICE_ID_TOUCH_MOUSE) {
@@ -1156,7 +1138,6 @@ void Viewport::set_world_2d(const Ref<World2D> &p_world_2d) {
 	}
 
 	if (is_inside_tree()) {
-		find_world_2d()->_remove_viewport(this);
 		RenderingServer::get_singleton()->viewport_remove_canvas(viewport, current_canvas);
 	}
 
@@ -1172,7 +1153,6 @@ void Viewport::set_world_2d(const Ref<World2D> &p_world_2d) {
 	if (is_inside_tree()) {
 		current_canvas = find_world_2d()->get_canvas();
 		RenderingServer::get_singleton()->viewport_attach_canvas(viewport, current_canvas);
-		find_world_2d()->_register_viewport(this, Rect2());
 	}
 }
 
@@ -1341,19 +1321,19 @@ bool Viewport::is_camera_override_enabled() const {
 	return camera_override;
 }
 
-void Viewport::set_camera_override_transform(const Transform &p_transform) {
+void Viewport::set_camera_override_transform(const Transform3D &p_transform) {
 	if (camera_override) {
 		camera_override.transform = p_transform;
 		RenderingServer::get_singleton()->camera_set_transform(camera_override.rid, p_transform);
 	}
 }
 
-Transform Viewport::get_camera_override_transform() const {
+Transform3D Viewport::get_camera_override_transform() const {
 	if (camera_override) {
 		return camera_override.transform;
 	}
 
-	return Transform();
+	return Transform3D();
 }
 
 void Viewport::set_camera_override_perspective(float p_fovy_degrees, float p_z_near, float p_z_far) {
@@ -2547,6 +2527,8 @@ void Viewport::_gui_remove_control(Control *p_control) {
 }
 
 Window *Viewport::get_base_window() const {
+	ERR_FAIL_COND_V(!is_inside_tree(), nullptr);
+
 	Viewport *v = const_cast<Viewport *>(this);
 	Window *w = Object::cast_to<Window>(v);
 	while (!w) {
@@ -2603,10 +2585,10 @@ void Viewport::_drop_mouse_focus() {
 	for (int i = 0; i < 3; i++) {
 		if (mask & (1 << i)) {
 			Ref<InputEventMouseButton> mb;
-			mb.instance();
+			mb.instantiate();
 			mb->set_position(c->get_local_mouse_position());
 			mb->set_global_position(c->get_local_mouse_position());
-			mb->set_button_index(i + 1);
+			mb->set_button_index(MouseButton(i + 1));
 			mb->set_pressed(false);
 			c->call(SceneStringNames::get_singleton()->_gui_input, mb);
 		}
@@ -2679,12 +2661,12 @@ void Viewport::_post_gui_grab_click_focus() {
 		for (int i = 0; i < 3; i++) {
 			if (mask & (1 << i)) {
 				Ref<InputEventMouseButton> mb;
-				mb.instance();
+				mb.instantiate();
 
 				//send unclick
 
 				mb->set_position(click);
-				mb->set_button_index(i + 1);
+				mb->set_button_index(MouseButton(i + 1));
 				mb->set_pressed(false);
 				gui.mouse_focus->call(SceneStringNames::get_singleton()->_gui_input, mb);
 			}
@@ -2697,12 +2679,12 @@ void Viewport::_post_gui_grab_click_focus() {
 		for (int i = 0; i < 3; i++) {
 			if (mask & (1 << i)) {
 				Ref<InputEventMouseButton> mb;
-				mb.instance();
+				mb.instantiate();
 
 				//send click
 
 				mb->set_position(click);
-				mb->set_button_index(i + 1);
+				mb->set_button_index(MouseButton(i + 1));
 				mb->set_pressed(true);
 				gui.mouse_focus->call_deferred(SceneStringNames::get_singleton()->_gui_input, mb);
 			}
@@ -3245,6 +3227,18 @@ bool Viewport::is_using_debanding() const {
 	return use_debanding;
 }
 
+void Viewport::set_sharpen_intensity(float p_intensity) {
+	if (sharpen_intensity == p_intensity) {
+		return;
+	}
+	sharpen_intensity = p_intensity;
+	RS::get_singleton()->viewport_set_sharpen_intensity(viewport, p_intensity);
+}
+
+float Viewport::get_sharpen_intensity() const {
+	return sharpen_intensity;
+}
+
 void Viewport::set_lod_threshold(float p_pixels) {
 	lod_threshold = p_pixels;
 	RS::get_singleton()->viewport_set_lod_threshold(viewport, lod_threshold);
@@ -3336,6 +3330,7 @@ bool Viewport::is_input_handled() const {
 		return local_input_handled;
 	} else {
 		const Viewport *vp = this;
+		ERR_FAIL_COND_V(!is_inside_tree(), false);
 		while (true) {
 			if (Object::cast_to<Window>(vp)) {
 				break;
@@ -3501,6 +3496,9 @@ void Viewport::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_use_debanding", "enable"), &Viewport::set_use_debanding);
 	ClassDB::bind_method(D_METHOD("is_using_debanding"), &Viewport::is_using_debanding);
 
+	ClassDB::bind_method(D_METHOD("set_sharpen_intensity", "intensity"), &Viewport::set_sharpen_intensity);
+	ClassDB::bind_method(D_METHOD("get_sharpen_intensity"), &Viewport::get_sharpen_intensity);
+
 	ClassDB::bind_method(D_METHOD("set_use_occlusion_culling", "enable"), &Viewport::set_use_occlusion_culling);
 	ClassDB::bind_method(D_METHOD("is_using_occlusion_culling"), &Viewport::is_using_occlusion_culling);
 
@@ -3521,8 +3519,6 @@ void Viewport::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("input_text", "text"), &Viewport::input_text);
 	ClassDB::bind_method(D_METHOD("input", "event", "in_local_coords"), &Viewport::input, DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("unhandled_input", "event", "in_local_coords"), &Viewport::unhandled_input, DEFVAL(false));
-
-	ClassDB::bind_method(D_METHOD("update_worlds"), &Viewport::update_worlds);
 
 	ClassDB::bind_method(D_METHOD("set_use_own_world_3d", "enable"), &Viewport::set_use_own_world_3d);
 	ClassDB::bind_method(D_METHOD("is_using_own_world_3d"), &Viewport::is_using_own_world_3d);
@@ -3595,33 +3591,41 @@ void Viewport::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "use_xr"), "set_use_xr", "is_using_xr");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "own_world_3d"), "set_use_own_world_3d", "is_using_own_world_3d");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "world_3d", PROPERTY_HINT_RESOURCE_TYPE, "World3D"), "set_world_3d", "get_world_3d");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "world_2d", PROPERTY_HINT_RESOURCE_TYPE, "World2D", 0), "set_world_2d", "get_world_2d");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "world_2d", PROPERTY_HINT_RESOURCE_TYPE, "World2D", PROPERTY_USAGE_NONE), "set_world_2d", "get_world_2d");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "transparent_bg"), "set_transparent_background", "has_transparent_background");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "handle_input_locally"), "set_handle_input_locally", "is_handling_input_locally");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "snap_2d_transforms_to_pixel"), "set_snap_2d_transforms_to_pixel", "is_snap_2d_transforms_to_pixel_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "snap_2d_vertices_to_pixel"), "set_snap_2d_vertices_to_pixel", "is_snap_2d_vertices_to_pixel_enabled");
+
 	ADD_GROUP("Rendering", "");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "msaa", PROPERTY_HINT_ENUM, "Disabled (Fastest),2x (Fast),4x (Average),8x (Slow),16x (Slower)"), "set_msaa", "get_msaa");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "screen_space_aa", PROPERTY_HINT_ENUM, "Disabled (Fastest),FXAA (Fast)"), "set_screen_space_aa", "get_screen_space_aa");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "use_debanding"), "set_use_debanding", "is_using_debanding");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "sharpen_intensity"), "set_sharpen_intensity", "get_sharpen_intensity");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "use_occlusion_culling"), "set_use_occlusion_culling", "is_using_occlusion_culling");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "lod_threshold", PROPERTY_HINT_RANGE, "0,1024,0.1"), "set_lod_threshold", "get_lod_threshold");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "debug_draw", PROPERTY_HINT_ENUM, "Disabled,Unshaded,Overdraw,Wireframe"), "set_debug_draw", "get_debug_draw");
+
 	ADD_GROUP("Canvas Items", "canvas_item_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "canvas_item_default_texture_filter", PROPERTY_HINT_ENUM, "Nearest,Linear,Linear Mipmap,Nearest Mipmap"), "set_default_canvas_item_texture_filter", "get_default_canvas_item_texture_filter");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "canvas_item_default_texture_repeat", PROPERTY_HINT_ENUM, "Disabled,Enabled,Mirror"), "set_default_canvas_item_texture_repeat", "get_default_canvas_item_texture_repeat");
+
 	ADD_GROUP("Audio Listener", "audio_listener_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "audio_listener_enable_2d"), "set_as_audio_listener_2d", "is_audio_listener_2d");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "audio_listener_enable_3d"), "set_as_audio_listener", "is_audio_listener");
+
 	ADD_GROUP("Physics", "physics_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "physics_object_picking"), "set_physics_object_picking", "get_physics_object_picking");
+
 	ADD_GROUP("GUI", "gui_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "gui_disable_input"), "set_disable_input", "is_input_disabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "gui_snap_controls_to_pixels"), "set_snap_controls_to_pixels", "is_snap_controls_to_pixels_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "gui_embed_subwindows"), "set_embed_subwindows_hint", "get_embed_subwindows_hint");
+
 	ADD_GROUP("SDF", "sdf_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "sdf_oversize", PROPERTY_HINT_ENUM, "100%,120%,150%,200%"), "set_sdf_oversize", "get_sdf_oversize");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "sdf_scale", PROPERTY_HINT_ENUM, "100%,50%,25%"), "set_sdf_scale", "get_sdf_scale");
+
 	ADD_GROUP("Shadow Atlas", "shadow_atlas_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "shadow_atlas_size"), "set_shadow_atlas_size", "get_shadow_atlas_size");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "shadow_atlas_16_bits"), "set_shadow_atlas_16_bits", "get_shadow_atlas_16_bits");
@@ -3629,8 +3633,8 @@ void Viewport::_bind_methods() {
 	ADD_PROPERTYI(PropertyInfo(Variant::INT, "shadow_atlas_quad_1", PROPERTY_HINT_ENUM, "Disabled,1 Shadow,4 Shadows,16 Shadows,64 Shadows,256 Shadows,1024 Shadows"), "set_shadow_atlas_quadrant_subdiv", "get_shadow_atlas_quadrant_subdiv", 1);
 	ADD_PROPERTYI(PropertyInfo(Variant::INT, "shadow_atlas_quad_2", PROPERTY_HINT_ENUM, "Disabled,1 Shadow,4 Shadows,16 Shadows,64 Shadows,256 Shadows,1024 Shadows"), "set_shadow_atlas_quadrant_subdiv", "get_shadow_atlas_quadrant_subdiv", 2);
 	ADD_PROPERTYI(PropertyInfo(Variant::INT, "shadow_atlas_quad_3", PROPERTY_HINT_ENUM, "Disabled,1 Shadow,4 Shadows,16 Shadows,64 Shadows,256 Shadows,1024 Shadows"), "set_shadow_atlas_quadrant_subdiv", "get_shadow_atlas_quadrant_subdiv", 3);
-	ADD_PROPERTY(PropertyInfo(Variant::TRANSFORM2D, "canvas_transform", PROPERTY_HINT_NONE, "", 0), "set_canvas_transform", "get_canvas_transform");
-	ADD_PROPERTY(PropertyInfo(Variant::TRANSFORM2D, "global_canvas_transform", PROPERTY_HINT_NONE, "", 0), "set_global_canvas_transform", "get_global_canvas_transform");
+	ADD_PROPERTY(PropertyInfo(Variant::TRANSFORM2D, "canvas_transform", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "set_canvas_transform", "get_canvas_transform");
+	ADD_PROPERTY(PropertyInfo(Variant::TRANSFORM2D, "global_canvas_transform", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "set_global_canvas_transform", "get_global_canvas_transform");
 
 	ADD_SIGNAL(MethodInfo("size_changed"));
 	ADD_SIGNAL(MethodInfo("gui_focus_changed", PropertyInfo(Variant::OBJECT, "node", PROPERTY_HINT_RESOURCE_TYPE, "Control")));
@@ -3669,9 +3673,9 @@ void Viewport::_bind_methods() {
 	BIND_ENUM_CONSTANT(DEBUG_DRAW_OVERDRAW);
 	BIND_ENUM_CONSTANT(DEBUG_DRAW_WIREFRAME);
 	BIND_ENUM_CONSTANT(DEBUG_DRAW_NORMAL_BUFFER);
-	BIND_ENUM_CONSTANT(DEBUG_DRAW_GI_PROBE_ALBEDO);
-	BIND_ENUM_CONSTANT(DEBUG_DRAW_GI_PROBE_LIGHTING);
-	BIND_ENUM_CONSTANT(DEBUG_DRAW_GI_PROBE_EMISSION);
+	BIND_ENUM_CONSTANT(DEBUG_DRAW_VOXEL_GI_ALBEDO);
+	BIND_ENUM_CONSTANT(DEBUG_DRAW_VOXEL_GI_LIGHTING);
+	BIND_ENUM_CONSTANT(DEBUG_DRAW_VOXEL_GI_EMISSION);
 	BIND_ENUM_CONSTANT(DEBUG_DRAW_SHADOW_ATLAS);
 	BIND_ENUM_CONSTANT(DEBUG_DRAW_DIRECTIONAL_SHADOW_ATLAS);
 	BIND_ENUM_CONSTANT(DEBUG_DRAW_SCENE_LUMINANCE);
@@ -3717,7 +3721,7 @@ Viewport::Viewport() {
 	viewport = RenderingServer::get_singleton()->viewport_create();
 	texture_rid = RenderingServer::get_singleton()->viewport_get_texture(viewport);
 
-	default_texture.instance();
+	default_texture.instantiate();
 	default_texture->vp = const_cast<Viewport *>(this);
 	viewport_textures.insert(default_texture.ptr());
 	default_texture->proxy = RS::get_singleton()->texture_proxy_create(texture_rid);

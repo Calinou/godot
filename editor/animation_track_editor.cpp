@@ -165,7 +165,7 @@ public:
 		}
 
 		switch (animation->track_get_type(track)) {
-			case Animation::TYPE_TRANSFORM: {
+			case Animation::TYPE_TRANSFORM3D: {
 				Dictionary d_old = animation->track_get_key_value(track, key);
 				Dictionary d_new = d_old.duplicate();
 				d_new[p_name] = p_value;
@@ -412,7 +412,7 @@ public:
 		}
 
 		switch (animation->track_get_type(track)) {
-			case Animation::TYPE_TRANSFORM: {
+			case Animation::TYPE_TRANSFORM3D: {
 				Dictionary d = animation->track_get_key_value(track, key);
 				ERR_FAIL_COND_V(!d.has(name), false);
 				r_ret = d[p_name];
@@ -523,9 +523,9 @@ public:
 		}
 
 		switch (animation->track_get_type(track)) {
-			case Animation::TYPE_TRANSFORM: {
+			case Animation::TYPE_TRANSFORM3D: {
 				p_list->push_back(PropertyInfo(Variant::VECTOR3, "location"));
-				p_list->push_back(PropertyInfo(Variant::QUAT, "rotation"));
+				p_list->push_back(PropertyInfo(Variant::QUATERNION, "rotation"));
 				p_list->push_back(PropertyInfo(Variant::VECTOR3, "scale"));
 
 			} break;
@@ -781,7 +781,7 @@ public:
 				}
 
 				switch (animation->track_get_type(track)) {
-					case Animation::TYPE_TRANSFORM: {
+					case Animation::TYPE_TRANSFORM3D: {
 						Dictionary d_old = animation->track_get_key_value(track, key);
 						Dictionary d_new = d_old.duplicate();
 						d_new[p_name] = p_value;
@@ -1012,7 +1012,7 @@ public:
 				}
 
 				switch (animation->track_get_type(track)) {
-					case Animation::TYPE_TRANSFORM: {
+					case Animation::TYPE_TRANSFORM3D: {
 						Dictionary d = animation->track_get_key_value(track, key);
 						ERR_FAIL_COND_V(!d.has(name), false);
 						r_ret = d[p_name];
@@ -1162,37 +1162,35 @@ public:
 
 		if (same_track_type) {
 			switch (animation->track_get_type(first_track)) {
-				case Animation::TYPE_TRANSFORM: {
+				case Animation::TYPE_TRANSFORM3D: {
 					p_list->push_back(PropertyInfo(Variant::VECTOR3, "location"));
-					p_list->push_back(PropertyInfo(Variant::QUAT, "rotation"));
+					p_list->push_back(PropertyInfo(Variant::QUATERNION, "rotation"));
 					p_list->push_back(PropertyInfo(Variant::VECTOR3, "scale"));
 				} break;
 				case Animation::TYPE_VALUE: {
-					if (!same_key_type) {
-						break;
-					}
+					if (same_key_type) {
+						Variant v = animation->track_get_key_value(first_track, first_key);
 
-					Variant v = animation->track_get_key_value(first_track, first_key);
+						if (hint.type != Variant::NIL) {
+							PropertyInfo pi = hint;
+							pi.name = "value";
+							p_list->push_back(pi);
+						} else {
+							PropertyHint hint = PROPERTY_HINT_NONE;
+							String hint_string;
 
-					if (hint.type != Variant::NIL) {
-						PropertyInfo pi = hint;
-						pi.name = "value";
-						p_list->push_back(pi);
-					} else {
-						PropertyHint hint = PROPERTY_HINT_NONE;
-						String hint_string;
-
-						if (v.get_type() == Variant::OBJECT) {
-							//could actually check the object property if exists..? yes i will!
-							Ref<Resource> res = v;
-							if (res.is_valid()) {
-								hint = PROPERTY_HINT_RESOURCE_TYPE;
-								hint_string = res->get_class();
+							if (v.get_type() == Variant::OBJECT) {
+								//could actually check the object property if exists..? yes i will!
+								Ref<Resource> res = v;
+								if (res.is_valid()) {
+									hint = PROPERTY_HINT_RESOURCE_TYPE;
+									hint_string = res->get_class();
+								}
 							}
-						}
 
-						if (v.get_type() != Variant::NIL) {
-							p_list->push_back(PropertyInfo(v.get_type(), "value", hint, hint_string));
+							if (v.get_type() != Variant::NIL) {
+								p_list->push_back(PropertyInfo(v.get_type(), "value", hint, hint_string));
+							}
 						}
 					}
 
@@ -1586,6 +1584,10 @@ void AnimationTimelineEdit::set_zoom(Range *p_zoom) {
 	zoom->connect("value_changed", callable_mp(this, &AnimationTimelineEdit::_zoom_changed));
 }
 
+void AnimationTimelineEdit::set_track_edit(AnimationTrackEdit *p_track_edit) {
+	track_edit = p_track_edit;
+}
+
 void AnimationTimelineEdit::set_play_position(float p_pos) {
 	play_position_pos = p_pos;
 	play_position->update();
@@ -1643,7 +1645,31 @@ void AnimationTimelineEdit::_play_position_draw() {
 void AnimationTimelineEdit::_gui_input(const Ref<InputEvent> &p_event) {
 	ERR_FAIL_COND(p_event.is_null());
 
-	Ref<InputEventMouseButton> mb = p_event;
+	const Ref<InputEventMouseButton> mb = p_event;
+
+	if (mb.is_valid() && mb->is_pressed() && mb->is_command_pressed() && mb->get_button_index() == MOUSE_BUTTON_WHEEL_UP) {
+		get_zoom()->set_value(get_zoom()->get_value() * 1.05);
+		accept_event();
+	}
+
+	if (mb.is_valid() && mb->is_pressed() && mb->is_command_pressed() && mb->get_button_index() == MOUSE_BUTTON_WHEEL_DOWN) {
+		get_zoom()->set_value(get_zoom()->get_value() / 1.05);
+		accept_event();
+	}
+
+	if (mb.is_valid() && mb->is_pressed() && mb->is_alt_pressed() && mb->get_button_index() == MOUSE_BUTTON_WHEEL_UP) {
+		if (track_edit) {
+			track_edit->get_editor()->goto_prev_step(true);
+		}
+		accept_event();
+	}
+
+	if (mb.is_valid() && mb->is_pressed() && mb->is_alt_pressed() && mb->get_button_index() == MOUSE_BUTTON_WHEEL_DOWN) {
+		if (track_edit) {
+			track_edit->get_editor()->goto_next_step(true);
+		}
+		accept_event();
+	}
 
 	if (mb.is_valid() && mb->is_pressed() && mb->get_button_index() == MOUSE_BUTTON_LEFT && hsize_rect.has_point(mb->get_position())) {
 		dragging_hsize = true;
@@ -1742,6 +1768,7 @@ AnimationTimelineEdit::AnimationTimelineEdit() {
 	editing = false;
 	name_limit = 150 * EDSCALE;
 	zoom = nullptr;
+	track_edit = nullptr;
 
 	play_position_pos = 0;
 	play_position = memnew(Control);
@@ -2007,7 +2034,7 @@ void AnimationTrackEdit::_notification(int p_what) {
 				interp_mode_rect.position.y = int(get_size().height - icon->get_height()) / 2;
 				interp_mode_rect.size = icon->get_size();
 
-				if (animation->track_get_type(track) == Animation::TYPE_VALUE || animation->track_get_type(track) == Animation::TYPE_TRANSFORM) {
+				if (animation->track_get_type(track) == Animation::TYPE_VALUE || animation->track_get_type(track) == Animation::TYPE_TRANSFORM3D) {
 					draw_texture(icon, interp_mode_rect.position);
 				}
 				//make it easier to click
@@ -2017,7 +2044,7 @@ void AnimationTrackEdit::_notification(int p_what) {
 				ofs += icon->get_width() + hsep;
 				interp_mode_rect.size.x += hsep;
 
-				if (animation->track_get_type(track) == Animation::TYPE_VALUE || animation->track_get_type(track) == Animation::TYPE_TRANSFORM) {
+				if (animation->track_get_type(track) == Animation::TYPE_VALUE || animation->track_get_type(track) == Animation::TYPE_TRANSFORM3D) {
 					draw_texture(down_icon, Vector2(ofs, int(get_size().height - down_icon->get_height()) / 2));
 					interp_mode_rect.size.x += down_icon->get_width();
 				} else {
@@ -2040,7 +2067,7 @@ void AnimationTrackEdit::_notification(int p_what) {
 				loop_mode_rect.position.y = int(get_size().height - icon->get_height()) / 2;
 				loop_mode_rect.size = icon->get_size();
 
-				if (animation->track_get_type(track) == Animation::TYPE_VALUE || animation->track_get_type(track) == Animation::TYPE_TRANSFORM) {
+				if (animation->track_get_type(track) == Animation::TYPE_VALUE || animation->track_get_type(track) == Animation::TYPE_TRANSFORM3D) {
 					draw_texture(icon, loop_mode_rect.position);
 				}
 
@@ -2050,7 +2077,7 @@ void AnimationTrackEdit::_notification(int p_what) {
 				ofs += icon->get_width() + hsep;
 				loop_mode_rect.size.x += hsep;
 
-				if (animation->track_get_type(track) == Animation::TYPE_VALUE || animation->track_get_type(track) == Animation::TYPE_TRANSFORM) {
+				if (animation->track_get_type(track) == Animation::TYPE_VALUE || animation->track_get_type(track) == Animation::TYPE_TRANSFORM3D) {
 					draw_texture(down_icon, Vector2(ofs, int(get_size().height - down_icon->get_height()) / 2));
 					loop_mode_rect.size.x += down_icon->get_width();
 				} else {
@@ -2308,6 +2335,7 @@ void AnimationTrackEdit::set_undo_redo(UndoRedo *p_undo_redo) {
 
 void AnimationTrackEdit::set_timeline(AnimationTimelineEdit *p_timeline) {
 	timeline = p_timeline;
+	timeline->set_track_edit(this);
 	timeline->connect("zoom_changed", callable_mp(this, &AnimationTrackEdit::_zoom_changed));
 	timeline->connect("name_limit_changed", callable_mp(this, &AnimationTrackEdit::_zoom_changed));
 }
@@ -2350,7 +2378,7 @@ void AnimationTrackEdit::_zoom_changed() {
 	play_position->update();
 }
 
-void AnimationTrackEdit::_path_entered(const String &p_text) {
+void AnimationTrackEdit::_path_submitted(const String &p_text) {
 	undo_redo->create_action(TTR("Change Track Path"));
 	undo_redo->add_do_method(animation.ptr(), "track_set_path", track, p_text);
 	undo_redo->add_undo_method(animation.ptr(), "track_set_path", track, animation->track_get_path(track));
@@ -2441,7 +2469,7 @@ String AnimationTrackEdit::get_tooltip(const Point2 &p_pos) const {
 		if (key_idx != -1) {
 			String text = TTR("Time (s): ") + rtos(animation->track_get_key_time(track, key_idx)) + "\n";
 			switch (animation->track_get_type(track)) {
-				case Animation::TYPE_TRANSFORM: {
+				case Animation::TYPE_TRANSFORM3D: {
 					Dictionary d = animation->track_get_key_value(track, key_idx);
 					if (d.has("location")) {
 						text += "Pos: " + String(d["location"]) + "\n";
@@ -2725,7 +2753,7 @@ void AnimationTrackEdit::_gui_input(const Ref<InputEvent> &p_event) {
 			path = memnew(LineEdit);
 			path_popup->add_child(path);
 			path->set_anchors_and_offsets_preset(PRESET_WIDE);
-			path->connect("text_entered", callable_mp(this, &AnimationTrackEdit::_path_entered));
+			path->connect("text_submitted", callable_mp(this, &AnimationTrackEdit::_path_submitted));
 		}
 
 		path->set_text(animation->track_get_path(track));
@@ -3310,7 +3338,7 @@ static bool track_type_is_resettable(Animation::TrackType p_type) {
 			[[fallthrough]];
 		case Animation::TYPE_BEZIER:
 			[[fallthrough]];
-		case Animation::TYPE_TRANSFORM:
+		case Animation::TYPE_TRANSFORM3D:
 			return true;
 		default:
 			return false;
@@ -3376,7 +3404,7 @@ void AnimationTrackEditor::_query_insert(const InsertData &p_id) {
 				case Variant::FLOAT:
 				case Variant::VECTOR2:
 				case Variant::VECTOR3:
-				case Variant::QUAT:
+				case Variant::QUATERNION:
 				case Variant::PLANE:
 				case Variant::COLOR: {
 					// Valid.
@@ -3459,7 +3487,7 @@ void AnimationTrackEditor::_insert_delay(bool p_create_reset, bool p_create_bezi
 	insert_queue = false;
 }
 
-void AnimationTrackEditor::insert_transform_key(Node3D *p_node, const String &p_sub, const Transform &p_xform) {
+void AnimationTrackEditor::insert_transform_key(Node3D *p_node, const String &p_sub, const Transform3D &p_xform) {
 	if (!keying) {
 		return;
 	}
@@ -3479,7 +3507,7 @@ void AnimationTrackEditor::insert_transform_key(Node3D *p_node, const String &p_
 	int track_idx = -1;
 
 	for (int i = 0; i < animation->get_track_count(); i++) {
-		if (animation->track_get_type(i) != Animation::TYPE_TRANSFORM) {
+		if (animation->track_get_type(i) != Animation::TYPE_TRANSFORM3D) {
 			continue;
 		}
 		if (animation->track_get_path(i) != np) {
@@ -3496,7 +3524,7 @@ void AnimationTrackEditor::insert_transform_key(Node3D *p_node, const String &p_
 	id.path = np;
 	id.track_idx = track_idx;
 	id.value = p_xform;
-	id.type = Animation::TYPE_TRANSFORM;
+	id.type = Animation::TYPE_TRANSFORM3D;
 	id.query = "node '" + p_node->get_name() + "'";
 	id.advance = false;
 
@@ -3732,7 +3760,7 @@ Ref<Animation> AnimationTrackEditor::_create_and_get_reset_animation() {
 		return player->get_animation("RESET");
 	} else {
 		Ref<Animation> reset_anim;
-		reset_anim.instance();
+		reset_anim.instantiate();
 		reset_anim->set_length(ANIM_MIN_LENGTH);
 		undo_redo->add_do_method(player, "add_animation", "RESET", reset_anim);
 		undo_redo->add_do_method(AnimationPlayerEditor::singleton, "_animation_player_changed", player);
@@ -3845,7 +3873,7 @@ static Vector<String> _get_bezier_subindices_for_type(Variant::Type p_type, bool
 			subindices.push_back(":y");
 			subindices.push_back(":z");
 		} break;
-		case Variant::QUAT: {
+		case Variant::QUATERNION: {
 			subindices.push_back(":x");
 			subindices.push_back(":y");
 			subindices.push_back(":z");
@@ -3911,11 +3939,11 @@ AnimationTrackEditor::TrackIndices AnimationTrackEditor::_confirm_insert(InsertD
 						h.type == Variant::RECT2 ||
 						h.type == Variant::VECTOR3 ||
 						h.type == Variant::AABB ||
-						h.type == Variant::QUAT ||
+						h.type == Variant::QUATERNION ||
 						h.type == Variant::COLOR ||
 						h.type == Variant::PLANE ||
 						h.type == Variant::TRANSFORM2D ||
-						h.type == Variant::TRANSFORM) {
+						h.type == Variant::TRANSFORM3D) {
 					update_mode = Animation::UPDATE_CONTINUOUS;
 				}
 
@@ -3945,12 +3973,12 @@ AnimationTrackEditor::TrackIndices AnimationTrackEditor::_confirm_insert(InsertD
 			value = p_id.value;
 
 		} break;
-		case Animation::TYPE_TRANSFORM: {
-			Transform tr = p_id.value;
+		case Animation::TYPE_TRANSFORM3D: {
+			Transform3D tr = p_id.value;
 			Dictionary d;
 			d["location"] = tr.origin;
 			d["scale"] = tr.basis.get_scale();
-			d["rotation"] = Quat(tr.basis);
+			d["rotation"] = Quaternion(tr.basis);
 			value = d;
 		} break;
 		case Animation::TYPE_BEZIER: {
@@ -4368,8 +4396,8 @@ void AnimationTrackEditor::_new_track_node_selected(NodePath p_path) {
 	ERR_FAIL_COND(!node);
 	NodePath path_to = root->get_path_to(node);
 
-	if (adding_track_type == Animation::TYPE_TRANSFORM && !node->is_class("Node3D")) {
-		EditorNode::get_singleton()->show_warning(TTR("Transform tracks only apply to 3D-based nodes."));
+	if (adding_track_type == Animation::TYPE_TRANSFORM3D && !node->is_class("Node3D")) {
+		EditorNode::get_singleton()->show_warning(TTR("Transform3D tracks only apply to 3D-based nodes."));
 		return;
 	}
 
@@ -4379,7 +4407,7 @@ void AnimationTrackEditor::_new_track_node_selected(NodePath p_path) {
 			prop_selector->set_type_filter(Vector<Variant::Type>());
 			prop_selector->select_property_from_instance(node);
 		} break;
-		case Animation::TYPE_TRANSFORM:
+		case Animation::TYPE_TRANSFORM3D:
 		case Animation::TYPE_METHOD: {
 			undo_redo->create_action(TTR("Add Track"));
 			undo_redo->add_do_method(animation.ptr(), "add_track", adding_track_type);
@@ -4394,7 +4422,7 @@ void AnimationTrackEditor::_new_track_node_selected(NodePath p_path) {
 			filter.push_back(Variant::FLOAT);
 			filter.push_back(Variant::VECTOR2);
 			filter.push_back(Variant::VECTOR3);
-			filter.push_back(Variant::QUAT);
+			filter.push_back(Variant::QUATERNION);
 			filter.push_back(Variant::PLANE);
 			filter.push_back(Variant::COLOR);
 
@@ -4464,11 +4492,11 @@ void AnimationTrackEditor::_new_track_property_selected(String p_name) {
 					h.type == Variant::RECT2 ||
 					h.type == Variant::VECTOR3 ||
 					h.type == Variant::AABB ||
-					h.type == Variant::QUAT ||
+					h.type == Variant::QUATERNION ||
 					h.type == Variant::COLOR ||
 					h.type == Variant::PLANE ||
 					h.type == Variant::TRANSFORM2D ||
-					h.type == Variant::TRANSFORM) {
+					h.type == Variant::TRANSFORM3D) {
 				update_mode = Animation::UPDATE_CONTINUOUS;
 			}
 
@@ -4548,7 +4576,7 @@ void AnimationTrackEditor::_insert_key_from_track(float p_ofs, int p_track) {
 	}
 
 	switch (animation->track_get_type(p_track)) {
-		case Animation::TYPE_TRANSFORM: {
+		case Animation::TYPE_TRANSFORM3D: {
 			if (!root->has_node(animation->track_get_path(p_track))) {
 				EditorNode::get_singleton()->show_warning(TTR("Track path is invalid, so can't add a key."));
 				return;
@@ -4560,11 +4588,11 @@ void AnimationTrackEditor::_insert_key_from_track(float p_ofs, int p_track) {
 				return;
 			}
 
-			Transform xf = base->get_transform();
+			Transform3D xf = base->get_transform();
 
 			Vector3 loc = xf.get_origin();
 			Vector3 scale = xf.basis.get_scale_local();
-			Quat rot = xf.basis;
+			Quaternion rot = xf.basis;
 
 			undo_redo->create_action(TTR("Add Transform Track Key"));
 			undo_redo->add_do_method(animation.ptr(), "transform_track_insert_key", p_track, p_ofs, loc, rot, scale);
@@ -4969,6 +4997,16 @@ void AnimationTrackEditor::_scroll_input(const Ref<InputEvent> &p_event) {
 		scroll->accept_event();
 	}
 
+	if (mb.is_valid() && mb->is_pressed() && mb->is_alt_pressed() && mb->get_button_index() == MOUSE_BUTTON_WHEEL_UP) {
+		goto_prev_step(true);
+		scroll->accept_event();
+	}
+
+	if (mb.is_valid() && mb->is_pressed() && mb->is_alt_pressed() && mb->get_button_index() == MOUSE_BUTTON_WHEEL_DOWN) {
+		goto_next_step(true);
+		scroll->accept_event();
+	}
+
 	if (mb.is_valid() && mb->get_button_index() == MOUSE_BUTTON_LEFT) {
 		if (mb->is_pressed()) {
 			box_selecting = true;
@@ -5143,6 +5181,56 @@ void AnimationTrackEditor::_edit_menu_about_to_popup() {
 	edit->get_popup()->set_item_disabled(edit->get_popup()->get_item_index(EDIT_APPLY_RESET), !player->can_apply_reset());
 }
 
+void AnimationTrackEditor::goto_prev_step(bool p_from_mouse_event) {
+	if (animation.is_null()) {
+		return;
+	}
+	float step = animation->get_step();
+	if (step == 0) {
+		step = 1;
+	}
+	if (p_from_mouse_event && Input::get_singleton()->is_key_pressed(KEY_SHIFT)) {
+		// Use more precise snapping when holding Shift.
+		// This is used when scrobbling the timeline using Alt + Mouse wheel.
+		step *= 0.25;
+	}
+
+	float pos = timeline->get_play_position();
+	pos = Math::snapped(pos - step, step);
+	if (pos < 0) {
+		pos = 0;
+	}
+	set_anim_pos(pos);
+	emit_signal("timeline_changed", pos, true);
+}
+
+void AnimationTrackEditor::goto_next_step(bool p_from_mouse_event) {
+	if (animation.is_null()) {
+		return;
+	}
+	float step = animation->get_step();
+	if (step == 0) {
+		step = 1;
+	}
+	if (p_from_mouse_event && Input::get_singleton()->is_key_pressed(KEY_SHIFT)) {
+		// Use more precise snapping when holding Shift.
+		// This is used when scrobbling the timeline using Alt + Mouse wheel.
+		// Do not use precise snapping when using the menu action or keyboard shortcut,
+		// as the default keyboard shortcut requires pressing Shift.
+		step *= 0.25;
+	}
+
+	float pos = timeline->get_play_position();
+
+	pos = Math::snapped(pos + step, step);
+	if (pos > animation->get_length()) {
+		pos = animation->get_length();
+	}
+	set_anim_pos(pos);
+
+	emit_signal("timeline_changed", pos, true);
+}
+
 void AnimationTrackEditor::_edit_menu_pressed(int p_option) {
 	last_menu_track_opt = p_option;
 	switch (p_option) {
@@ -5182,7 +5270,7 @@ void AnimationTrackEditor::_edit_menu_pressed(int p_option) {
 				}
 
 				switch (animation->track_get_type(i)) {
-					case Animation::TYPE_TRANSFORM:
+					case Animation::TYPE_TRANSFORM3D:
 						text += " (Transform)";
 						break;
 					case Animation::TYPE_METHOD:
@@ -5428,42 +5516,10 @@ void AnimationTrackEditor::_edit_menu_pressed(int p_option) {
 			}
 		} break;
 		case EDIT_GOTO_NEXT_STEP: {
-			if (animation.is_null()) {
-				break;
-			}
-			float step = animation->get_step();
-			if (step == 0) {
-				step = 1;
-			}
-
-			float pos = timeline->get_play_position();
-
-			pos = Math::snapped(pos + step, step);
-			if (pos > animation->get_length()) {
-				pos = animation->get_length();
-			}
-			set_anim_pos(pos);
-
-			emit_signal("timeline_changed", pos, true);
-
+			goto_next_step(false);
 		} break;
 		case EDIT_GOTO_PREV_STEP: {
-			if (animation.is_null()) {
-				break;
-			}
-			float step = animation->get_step();
-			if (step == 0) {
-				step = 1;
-			}
-
-			float pos = timeline->get_play_position();
-			pos = Math::snapped(pos - step, step);
-			if (pos < 0) {
-				pos = 0;
-			}
-			set_anim_pos(pos);
-			emit_signal("timeline_changed", pos, true);
-
+			goto_prev_step(false);
 		} break;
 		case EDIT_APPLY_RESET: {
 			AnimationPlayerEditor::singleton->get_player()->apply_reset(true);
@@ -5927,7 +5983,7 @@ AnimationTrackEditor::AnimationTrackEditor() {
 	//default plugins
 
 	Ref<AnimationTrackEditDefaultPlugin> def_plugin;
-	def_plugin.instance();
+	def_plugin.instantiate();
 	add_track_edit_plugin(def_plugin);
 
 	//dialogs

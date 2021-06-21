@@ -86,7 +86,7 @@ void EditorAssetLibraryItem::_bind_methods() {
 
 EditorAssetLibraryItem::EditorAssetLibraryItem() {
 	Ref<StyleBoxEmpty> border;
-	border.instance();
+	border.instantiate();
 	border->set_default_margin(SIDE_LEFT, 5 * EDSCALE);
 	border->set_default_margin(SIDE_RIGHT, 5 * EDSCALE);
 	border->set_default_margin(SIDE_BOTTOM, 5 * EDSCALE);
@@ -155,7 +155,7 @@ void EditorAssetLibraryItemDescription::set_image(int p_type, int p_index, const
 						thumbnail->blend_rect(overlay, overlay->get_used_rect(), overlay_pos);
 
 						Ref<ImageTexture> tex;
-						tex.instance();
+						tex.instantiate();
 						tex->create_from_image(thumbnail);
 
 						preview_images[i].button->set_icon(tex);
@@ -464,7 +464,7 @@ void EditorAssetLibraryItemDownload::_make_request() {
 	retry->hide();
 
 	download->cancel_request();
-	download->set_download_file(EditorSettings::get_singleton()->get_cache_dir().plus_file("tmp_asset_" + itos(asset_id)) + ".zip");
+	download->set_download_file(EditorPaths::get_singleton()->get_cache_dir().plus_file("tmp_asset_" + itos(asset_id)) + ".zip");
 
 	Error err = download->request(host);
 	if (err != OK) {
@@ -702,7 +702,7 @@ void EditorAssetLibrary::_image_update(bool use_cache, bool final, const PackedB
 		PackedByteArray image_data = p_data;
 
 		if (use_cache) {
-			String cache_filename_base = EditorSettings::get_singleton()->get_cache_dir().plus_file("assetimage_" + image_queue[p_queue_id].image_url.md5_text());
+			String cache_filename_base = EditorPaths::get_singleton()->get_cache_dir().plus_file("assetimage_" + image_queue[p_queue_id].image_url.md5_text());
 
 			FileAccess *file = FileAccess::open(cache_filename_base + ".data", FileAccess::READ);
 
@@ -761,7 +761,7 @@ void EditorAssetLibrary::_image_update(bool use_cache, bool final, const PackedB
 			}
 
 			Ref<ImageTexture> tex;
-			tex.instance();
+			tex.instantiate();
 			tex->create_from_image(image);
 
 			obj->call("set_image", image_queue[p_queue_id].image_type, image_queue[p_queue_id].image_index, tex);
@@ -781,7 +781,7 @@ void EditorAssetLibrary::_image_request_completed(int p_status, int p_code, cons
 		if (p_code != HTTPClient::RESPONSE_NOT_MODIFIED) {
 			for (int i = 0; i < headers.size(); i++) {
 				if (headers[i].findn("ETag:") == 0) { // Save etag
-					String cache_filename_base = EditorSettings::get_singleton()->get_cache_dir().plus_file("assetimage_" + image_queue[p_queue_id].image_url.md5_text());
+					String cache_filename_base = EditorPaths::get_singleton()->get_cache_dir().plus_file("assetimage_" + image_queue[p_queue_id].image_url.md5_text());
 					String new_etag = headers[i].substr(headers[i].find(":") + 1, headers[i].length()).strip_edges();
 					FileAccess *file;
 
@@ -829,7 +829,7 @@ void EditorAssetLibrary::_update_image_queue() {
 	List<int> to_delete;
 	for (Map<int, ImageQueue>::Element *E = image_queue.front(); E; E = E->next()) {
 		if (!E->get().active && current_images < max_images) {
-			String cache_filename_base = EditorSettings::get_singleton()->get_cache_dir().plus_file("assetimage_" + E->get().image_url.md5_text());
+			String cache_filename_base = EditorPaths::get_singleton()->get_cache_dir().plus_file("assetimage_" + E->get().image_url.md5_text());
 			Vector<String> headers;
 
 			if (FileAccess::exists(cache_filename_base + ".etag") && FileAccess::exists(cache_filename_base + ".data")) {
@@ -1098,11 +1098,9 @@ void EditorAssetLibrary::_http_request_completed(int p_status, int p_code, const
 
 	Dictionary d;
 	{
-		Variant js;
-		String errs;
-		int errl;
-		JSON::parse(str, js, errs, errl);
-		d = js;
+		JSON json;
+		json.parse(str);
+		d = json.get_data();
 	}
 
 	RequestType requested = requesting;
@@ -1437,7 +1435,7 @@ EditorAssetLibrary::EditorAssetLibrary(bool p_templates_only) {
 	library_scroll_bg->add_child(library_scroll);
 
 	Ref<StyleBoxEmpty> border2;
-	border2.instance();
+	border2.instantiate();
 	border2->set_default_margin(SIDE_LEFT, 15 * EDSCALE);
 	border2->set_default_margin(SIDE_RIGHT, 35 * EDSCALE);
 	border2->set_default_margin(SIDE_BOTTOM, 15 * EDSCALE);

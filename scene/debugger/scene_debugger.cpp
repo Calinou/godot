@@ -98,7 +98,7 @@ Error SceneDebugger::parse_message(void *p_user, const String &p_msg, const Arra
 
 	} else if (p_msg == "override_camera_3D:transform") {
 		ERR_FAIL_COND_V(p_args.size() < 5, ERR_INVALID_DATA);
-		Transform transform = p_args[0];
+		Transform3D transform = p_args[0];
 		bool is_perspective = p_args[1];
 		float size_or_fov = p_args[2];
 		float near = p_args[3];
@@ -661,7 +661,7 @@ void LiveEditor::_create_node_func(const NodePath &p_parent, const String &p_typ
 		}
 		Node *n2 = n->get_node(p_parent);
 
-		Node *no = Object::cast_to<Node>(ClassDB::instance(p_type));
+		Node *no = Object::cast_to<Node>(ClassDB::instantiate(p_type));
 		if (!no) {
 			continue;
 		}
@@ -705,7 +705,7 @@ void LiveEditor::_instance_node_func(const NodePath &p_parent, const String &p_p
 		}
 		Node *n2 = n->get_node(p_parent);
 
-		Node *no = ps->instance();
+		Node *no = ps->instantiate();
 		if (!no) {
 			continue;
 		}

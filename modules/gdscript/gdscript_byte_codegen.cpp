@@ -85,10 +85,10 @@ uint32_t GDScriptByteCodeGenerator::add_temporary(const GDScriptDataType &p_type
 				case Variant::VECTOR3I:
 				case Variant::TRANSFORM2D:
 				case Variant::PLANE:
-				case Variant::QUAT:
+				case Variant::QUATERNION:
 				case Variant::AABB:
 				case Variant::BASIS:
-				case Variant::TRANSFORM:
+				case Variant::TRANSFORM3D:
 				case Variant::COLOR:
 				case Variant::STRING_NAME:
 				case Variant::NODE_PATH:
@@ -458,8 +458,8 @@ void GDScriptByteCodeGenerator::write_type_adjust(const Address &p_target, Varia
 		case Variant::PLANE:
 			append(GDScriptFunction::OPCODE_TYPE_ADJUST_PLANE, 1);
 			break;
-		case Variant::QUAT:
-			append(GDScriptFunction::OPCODE_TYPE_ADJUST_QUAT, 1);
+		case Variant::QUATERNION:
+			append(GDScriptFunction::OPCODE_TYPE_ADJUST_QUATERNION, 1);
 			break;
 		case Variant::AABB:
 			append(GDScriptFunction::OPCODE_TYPE_ADJUST_AABB, 1);
@@ -467,7 +467,7 @@ void GDScriptByteCodeGenerator::write_type_adjust(const Address &p_target, Varia
 		case Variant::BASIS:
 			append(GDScriptFunction::OPCODE_TYPE_ADJUST_BASIS, 1);
 			break;
-		case Variant::TRANSFORM:
+		case Variant::TRANSFORM3D:
 			append(GDScriptFunction::OPCODE_TYPE_ADJUST_TRANSFORM, 1);
 			break;
 		case Variant::COLOR:
@@ -554,6 +554,14 @@ void GDScriptByteCodeGenerator::write_unary_operator(const Address &p_target, Va
 
 void GDScriptByteCodeGenerator::write_binary_operator(const Address &p_target, Variant::Operator p_operator, const Address &p_left_operand, const Address &p_right_operand) {
 	if (HAS_BUILTIN_TYPE(p_left_operand) && HAS_BUILTIN_TYPE(p_right_operand)) {
+		if (p_target.mode == Address::TEMPORARY) {
+			Variant::Type result_type = Variant::get_operator_return_type(p_operator, p_left_operand.type.builtin_type, p_right_operand.type.builtin_type);
+			Variant::Type temp_type = temporaries[p_target.address].type;
+			if (result_type != temp_type) {
+				write_type_adjust(p_target, result_type);
+			}
+		}
+
 		// Gather specific operator.
 		Variant::ValidatedOperatorEvaluator op_func = Variant::get_validated_operator_evaluator(p_operator, p_left_operand.type.builtin_type, p_right_operand.type.builtin_type);
 
@@ -1100,12 +1108,12 @@ void GDScriptByteCodeGenerator::write_call_ptrcall(const Address &p_target, cons
 			CASE_TYPE(PLANE);
 			CASE_TYPE(AABB);
 			CASE_TYPE(BASIS);
-			CASE_TYPE(TRANSFORM);
+			CASE_TYPE(TRANSFORM3D);
 			CASE_TYPE(COLOR);
 			CASE_TYPE(STRING_NAME);
 			CASE_TYPE(NODE_PATH);
 			CASE_TYPE(RID);
-			CASE_TYPE(QUAT);
+			CASE_TYPE(QUATERNION);
 			CASE_TYPE(OBJECT);
 			CASE_TYPE(CALLABLE);
 			CASE_TYPE(SIGNAL);

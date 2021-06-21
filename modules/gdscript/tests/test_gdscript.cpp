@@ -31,8 +31,8 @@
 #include "test_gdscript.h"
 
 #include "core/config/project_settings.h"
+#include "core/io/file_access.h"
 #include "core/io/file_access_pack.h"
-#include "core/os/file_access.h"
 #include "core/os/main_loop.h"
 #include "core/os/os.h"
 #include "core/string/string_builder.h"
@@ -165,7 +165,7 @@ static void test_compiler(const String &p_code, const String &p_script_path, con
 
 	GDScriptCompiler compiler;
 	Ref<GDScript> script;
-	script.instance();
+	script.instantiate();
 	script->set_path(p_script_path);
 
 	err = compiler.compile(&parser, script.ptr(), false);

@@ -341,10 +341,10 @@ void VisualShaderNodeVec3Constant::_bind_methods() {
 VisualShaderNodeVec3Constant::VisualShaderNodeVec3Constant() {
 }
 
-////////////// Transform
+////////////// Transform3D
 
 String VisualShaderNodeTransformConstant::get_caption() const {
-	return "Transform";
+	return "Transform3D";
 }
 
 int VisualShaderNodeTransformConstant::get_input_port_count() const {
@@ -372,7 +372,7 @@ String VisualShaderNodeTransformConstant::get_output_port_name(int p_port) const
 }
 
 String VisualShaderNodeTransformConstant::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
-	Transform t = constant;
+	Transform3D t = constant;
 	t.basis.transpose();
 
 	String code = "\t" + p_output_vars[0] + " = mat4(";
@@ -383,12 +383,12 @@ String VisualShaderNodeTransformConstant::generate_code(Shader::Mode p_mode, Vis
 	return code;
 }
 
-void VisualShaderNodeTransformConstant::set_constant(Transform p_value) {
+void VisualShaderNodeTransformConstant::set_constant(Transform3D p_value) {
 	constant = p_value;
 	emit_changed();
 }
 
-Transform VisualShaderNodeTransformConstant::get_constant() const {
+Transform3D VisualShaderNodeTransformConstant::get_constant() const {
 	return constant;
 }
 
@@ -402,7 +402,7 @@ void VisualShaderNodeTransformConstant::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_constant", "value"), &VisualShaderNodeTransformConstant::set_constant);
 	ClassDB::bind_method(D_METHOD("get_constant"), &VisualShaderNodeTransformConstant::get_constant);
 
-	ADD_PROPERTY(PropertyInfo(Variant::TRANSFORM, "constant"), "set_constant", "get_constant");
+	ADD_PROPERTY(PropertyInfo(Variant::TRANSFORM3D, "constant"), "set_constant", "get_constant");
 }
 
 VisualShaderNodeTransformConstant::VisualShaderNodeTransformConstant() {
@@ -860,7 +860,7 @@ String VisualShaderNodeCurveTexture::generate_code(Shader::Mode p_mode, VisualSh
 	}
 	String id = make_unique_id(p_type, p_id, "curve");
 	String code;
-	code += "\t" + p_output_vars[0] + " = texture(" + id + ", vec2(" + p_input_vars[0] + ", 0.0)).r;\n";
+	code += "\t" + p_output_vars[0] + " = texture(" + id + ", vec2(" + p_input_vars[0] + ")).r;\n";
 	return code;
 }
 
@@ -1901,8 +1901,8 @@ void VisualShaderNodeTransformMult::_bind_methods() {
 }
 
 VisualShaderNodeTransformMult::VisualShaderNodeTransformMult() {
-	set_input_port_default_value(0, Transform());
-	set_input_port_default_value(1, Transform());
+	set_input_port_default_value(0, Transform3D());
+	set_input_port_default_value(1, Transform3D());
 }
 
 ////////////// TransformVec Mult
@@ -1975,7 +1975,7 @@ void VisualShaderNodeTransformVecMult::_bind_methods() {
 }
 
 VisualShaderNodeTransformVecMult::VisualShaderNodeTransformVecMult() {
-	set_input_port_default_value(0, Transform());
+	set_input_port_default_value(0, Transform3D());
 	set_input_port_default_value(1, Vector3());
 }
 
@@ -2496,7 +2496,144 @@ void VisualShaderNodeTransformFunc::_bind_methods() {
 }
 
 VisualShaderNodeTransformFunc::VisualShaderNodeTransformFunc() {
-	set_input_port_default_value(0, Transform());
+	set_input_port_default_value(0, Transform3D());
+}
+
+////////////// UV Func
+
+String VisualShaderNodeUVFunc::get_caption() const {
+	return "UVFunc";
+}
+
+int VisualShaderNodeUVFunc::get_input_port_count() const {
+	return 3;
+}
+
+VisualShaderNodeUVFunc::PortType VisualShaderNodeUVFunc::get_input_port_type(int p_port) const {
+	switch (p_port) {
+		case 0:
+			[[fallthrough]]; // uv
+		case 1:
+			return PORT_TYPE_VECTOR; // scale
+		case 2:
+			return PORT_TYPE_VECTOR; // offset & pivot
+		default:
+			break;
+	}
+	return PORT_TYPE_SCALAR;
+}
+
+String VisualShaderNodeUVFunc::get_input_port_name(int p_port) const {
+	switch (p_port) {
+		case 0:
+			return "uv";
+		case 1:
+			return "scale";
+		case 2:
+			switch (func) {
+				case FUNC_PANNING:
+					return "offset";
+				case FUNC_SCALING:
+					return "pivot";
+				case FUNC_MAX:
+					break;
+				default:
+					break;
+			}
+			break;
+		default:
+			break;
+	}
+	return "";
+}
+
+String VisualShaderNodeUVFunc::get_input_port_default_hint(int p_port) const {
+	if (p_port == 0) {
+		return "UV";
+	}
+	return "";
+}
+
+int VisualShaderNodeUVFunc::get_output_port_count() const {
+	return 1;
+}
+
+VisualShaderNodeUVFunc::PortType VisualShaderNodeUVFunc::get_output_port_type(int p_port) const {
+	return PORT_TYPE_VECTOR;
+}
+
+String VisualShaderNodeUVFunc::get_output_port_name(int p_port) const {
+	return "uv";
+}
+
+bool VisualShaderNodeUVFunc::is_show_prop_names() const {
+	return true;
+}
+
+String VisualShaderNodeUVFunc::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	String code;
+
+	String uv;
+	if (p_input_vars[0].is_empty()) {
+		uv = "vec3(UV.xy, 0.0)";
+	} else {
+		uv = vformat("%s", p_input_vars[0]);
+	}
+	String scale = vformat("%s", p_input_vars[1]);
+	String offset_pivot = vformat("%s", p_input_vars[2]);
+
+	switch (func) {
+		case FUNC_PANNING: {
+			code += vformat("\t%s = fma(%s, %s, %s);\n", p_output_vars[0], offset_pivot, scale, uv);
+		} break;
+		case FUNC_SCALING: {
+			code += vformat("\t%s = fma((%s - %s), %s, %s);\n", p_output_vars[0], uv, offset_pivot, scale, offset_pivot);
+		} break;
+		case FUNC_MAX:
+			break;
+	}
+	return code;
+}
+
+void VisualShaderNodeUVFunc::set_function(VisualShaderNodeUVFunc::Function p_func) {
+	ERR_FAIL_INDEX(int(p_func), FUNC_MAX);
+	if (func == p_func) {
+		return;
+	}
+	func = p_func;
+
+	if (p_func == FUNC_PANNING) {
+		set_input_port_default_value(2, Vector3()); // offset
+	} else { // FUNC_SCALING
+		set_input_port_default_value(2, Vector3(0.5, 0.5, 0.0)); // pivot
+	}
+	emit_changed();
+}
+
+VisualShaderNodeUVFunc::Function VisualShaderNodeUVFunc::get_function() const {
+	return func;
+}
+
+Vector<StringName> VisualShaderNodeUVFunc::get_editable_properties() const {
+	Vector<StringName> props;
+	props.push_back("function");
+	return props;
+}
+
+void VisualShaderNodeUVFunc::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_function", "func"), &VisualShaderNodeUVFunc::set_function);
+	ClassDB::bind_method(D_METHOD("get_function"), &VisualShaderNodeUVFunc::get_function);
+
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "function", PROPERTY_HINT_ENUM, "Panning,Scaling"), "set_function", "get_function");
+
+	BIND_ENUM_CONSTANT(FUNC_PANNING);
+	BIND_ENUM_CONSTANT(FUNC_SCALING);
+	BIND_ENUM_CONSTANT(FUNC_MAX);
+}
+
+VisualShaderNodeUVFunc::VisualShaderNodeUVFunc() {
+	set_input_port_default_value(1, Vector3(1.0, 1.0, 0.0)); // scale
+	set_input_port_default_value(2, Vector3()); // offset
 }
 
 ////////////// Dot Product
@@ -2611,7 +2748,7 @@ String VisualShaderNodeDeterminant::generate_code(Shader::Mode p_mode, VisualSha
 }
 
 VisualShaderNodeDeterminant::VisualShaderNodeDeterminant() {
-	set_input_port_default_value(0, Transform());
+	set_input_port_default_value(0, Transform3D());
 }
 
 ////////////// Scalar Derivative Function
@@ -3622,7 +3759,7 @@ String VisualShaderNodeTransformDecompose::generate_code(Shader::Mode p_mode, Vi
 }
 
 VisualShaderNodeTransformDecompose::VisualShaderNodeTransformDecompose() {
-	set_input_port_default_value(0, Transform());
+	set_input_port_default_value(0, Transform3D());
 }
 
 ////////////// Float Uniform
@@ -4308,12 +4445,12 @@ bool VisualShaderNodeTransformUniform::is_default_value_enabled() const {
 	return default_value_enabled;
 }
 
-void VisualShaderNodeTransformUniform::set_default_value(const Transform &p_value) {
+void VisualShaderNodeTransformUniform::set_default_value(const Transform3D &p_value) {
 	default_value = p_value;
 	emit_changed();
 }
 
-Transform VisualShaderNodeTransformUniform::get_default_value() const {
+Transform3D VisualShaderNodeTransformUniform::get_default_value() const {
 	return default_value;
 }
 
@@ -4342,7 +4479,7 @@ void VisualShaderNodeTransformUniform::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_default_value"), &VisualShaderNodeTransformUniform::get_default_value);
 
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "default_value_enabled"), "set_default_value_enabled", "is_default_value_enabled");
-	ADD_PROPERTY(PropertyInfo(Variant::TRANSFORM, "default_value"), "set_default_value", "get_default_value");
+	ADD_PROPERTY(PropertyInfo(Variant::TRANSFORM3D, "default_value"), "set_default_value", "get_default_value");
 }
 
 bool VisualShaderNodeTransformUniform::is_show_prop_names() const {
@@ -5025,8 +5162,8 @@ void VisualShaderNodeSwitch::set_op_type(OpType p_op_type) {
 			set_input_port_default_value(2, false);
 			break;
 		case OP_TYPE_TRANSFORM:
-			set_input_port_default_value(1, Transform());
-			set_input_port_default_value(2, Transform());
+			set_input_port_default_value(1, Transform3D());
+			set_input_port_default_value(2, Transform3D());
 			break;
 		default:
 			break;
@@ -5405,8 +5542,8 @@ void VisualShaderNodeCompare::set_comparison_type(ComparisonType p_type) {
 			simple_decl = true;
 			break;
 		case CTYPE_TRANSFORM:
-			set_input_port_default_value(0, Transform());
-			set_input_port_default_value(1, Transform());
+			set_input_port_default_value(0, Transform3D());
+			set_input_port_default_value(1, Transform3D());
 			simple_decl = true;
 			break;
 	}
@@ -5578,4 +5715,128 @@ VisualShaderNodeMultiplyAdd::VisualShaderNodeMultiplyAdd() {
 	set_input_port_default_value(0, 0.0);
 	set_input_port_default_value(1, 0.0);
 	set_input_port_default_value(2, 0.0);
+}
+
+////////////// Billboard
+
+String VisualShaderNodeBillboard::get_caption() const {
+	return "GetBillboardMatrix";
+}
+
+int VisualShaderNodeBillboard::get_input_port_count() const {
+	return 0;
+}
+
+VisualShaderNodeBillboard::PortType VisualShaderNodeBillboard::get_input_port_type(int p_port) const {
+	return PORT_TYPE_SCALAR;
+}
+
+String VisualShaderNodeBillboard::get_input_port_name(int p_port) const {
+	return "";
+}
+
+int VisualShaderNodeBillboard::get_output_port_count() const {
+	return 1;
+}
+
+VisualShaderNodeBillboard::PortType VisualShaderNodeBillboard::get_output_port_type(int p_port) const {
+	return PORT_TYPE_TRANSFORM;
+}
+
+String VisualShaderNodeBillboard::get_output_port_name(int p_port) const {
+	return "model_view_matrix";
+}
+
+String VisualShaderNodeBillboard::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	String code;
+
+	switch (billboard_type) {
+		case BILLBOARD_TYPE_ENABLED:
+			code += "\t{\n";
+			code += "\t\tmat4 __mvm = INV_CAMERA_MATRIX * mat4(CAMERA_MATRIX[0], CAMERA_MATRIX[1], CAMERA_MATRIX[2], WORLD_MATRIX[3]);\n";
+			if (keep_scale) {
+				code += "\t\t__mvm = __mvm * mat4(vec4(length(WORLD_MATRIX[0].xyz), 0.0, 0.0, 0.0), vec4(0.0, length(WORLD_MATRIX[1].xyz), 0.0, 0.0), vec4(0.0, 0.0, length(WORLD_MATRIX[2].xyz), 0.0), vec4(0.0, 0.0, 0.0, 1.0));\n";
+			}
+			code += "\t\t" + p_output_vars[0] + " = __mvm;\n";
+			code += "\t}\n";
+			break;
+		case BILLBOARD_TYPE_FIXED_Y:
+			code += "\t{\n";
+			code += "\t\tmat4 __mvm = INV_CAMERA_MATRIX * mat4(CAMERA_MATRIX[0], WORLD_MATRIX[1], vec4(normalize(cross(CAMERA_MATRIX[0].xyz, WORLD_MATRIX[1].xyz)), 0.0), WORLD_MATRIX[3]);\n";
+			if (keep_scale) {
+				code += "\t\t__mvm = __mvm * mat4(vec4(length(WORLD_MATRIX[0].xyz), 0.0, 0.0, 0.0), vec4(0.0, 1.0, 0.0, 0.0), vec4(0.0, 0.0, length(WORLD_MATRIX[2].xyz), 0.0), vec4(0.0, 0.0, 0.0, 1.0));\n";
+			} else {
+				code += "\t\t__mvm = __mvm * mat4(vec4(1.0, 0.0, 0.0, 0.0), vec4(0.0, 1.0 / length(WORLD_MATRIX[1].xyz), 0.0, 0.0), vec4(0.0, 0.0, 1.0, 0.0), vec4(0.0, 0.0, 0.0, 1.0));\n";
+			}
+			code += "\t\t" + p_output_vars[0] + " = __mvm;\n";
+			code += "\t}\n";
+			break;
+		case BILLBOARD_TYPE_PARTICLES:
+			code += "\t{\n";
+			code += "\t\tmat4 __wm = mat4(normalize(CAMERA_MATRIX[0]) * length(WORLD_MATRIX[0]), normalize(CAMERA_MATRIX[1]) * length(WORLD_MATRIX[0]), normalize(CAMERA_MATRIX[2]) * length(WORLD_MATRIX[2]), WORLD_MATRIX[3]);\n";
+			code += "\t\t__wm = __wm * mat4(vec4(cos(INSTANCE_CUSTOM.x), -sin(INSTANCE_CUSTOM.x), 0.0, 0.0), vec4(sin(INSTANCE_CUSTOM.x), cos(INSTANCE_CUSTOM.x), 0.0, 0.0), vec4(0.0, 0.0, 1.0, 0.0), vec4(0.0, 0.0, 0.0, 1.0));\n";
+			code += "\t\t" + p_output_vars[0] + " = INV_CAMERA_MATRIX * __wm;\n";
+			code += "\t}\n";
+			break;
+		default:
+			code += "\t" + p_output_vars[0] + " = mat4(1.0);\n";
+			break;
+	}
+
+	return code;
+}
+
+bool VisualShaderNodeBillboard::is_show_prop_names() const {
+	return true;
+}
+
+void VisualShaderNodeBillboard::set_billboard_type(BillboardType p_billboard_type) {
+	ERR_FAIL_INDEX((int)p_billboard_type, BILLBOARD_TYPE_MAX);
+	billboard_type = p_billboard_type;
+	simple_decl = bool(billboard_type == BILLBOARD_TYPE_DISABLED);
+	set_disabled(simple_decl);
+	emit_changed();
+}
+
+VisualShaderNodeBillboard::BillboardType VisualShaderNodeBillboard::get_billboard_type() const {
+	return billboard_type;
+}
+
+void VisualShaderNodeBillboard::set_keep_scale_enabled(bool p_enabled) {
+	keep_scale = p_enabled;
+	emit_changed();
+}
+
+bool VisualShaderNodeBillboard::is_keep_scale_enabled() const {
+	return keep_scale;
+}
+
+Vector<StringName> VisualShaderNodeBillboard::get_editable_properties() const {
+	Vector<StringName> props;
+	props.push_back("billboard_type");
+	if (billboard_type == BILLBOARD_TYPE_ENABLED || billboard_type == BILLBOARD_TYPE_FIXED_Y) {
+		props.push_back("keep_scale");
+	}
+	return props;
+}
+
+void VisualShaderNodeBillboard::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_billboard_type", "billboard_type"), &VisualShaderNodeBillboard::set_billboard_type);
+	ClassDB::bind_method(D_METHOD("get_billboard_type"), &VisualShaderNodeBillboard::get_billboard_type);
+
+	ClassDB::bind_method(D_METHOD("set_keep_scale_enabled", "enabled"), &VisualShaderNodeBillboard::set_keep_scale_enabled);
+	ClassDB::bind_method(D_METHOD("is_keep_scale_enabled"), &VisualShaderNodeBillboard::is_keep_scale_enabled);
+
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "billboard_type", PROPERTY_HINT_ENUM, "Disabled,Enabled,Y-Billboard,Particles"), "set_billboard_type", "get_billboard_type");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "keep_scale"), "set_keep_scale_enabled", "is_keep_scale_enabled");
+
+	BIND_ENUM_CONSTANT(BILLBOARD_TYPE_DISABLED);
+	BIND_ENUM_CONSTANT(BILLBOARD_TYPE_ENABLED);
+	BIND_ENUM_CONSTANT(BILLBOARD_TYPE_FIXED_Y);
+	BIND_ENUM_CONSTANT(BILLBOARD_TYPE_PARTICLES);
+	BIND_ENUM_CONSTANT(BILLBOARD_TYPE_MAX);
+}
+
+VisualShaderNodeBillboard::VisualShaderNodeBillboard() {
+	simple_decl = false;
 }

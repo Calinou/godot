@@ -1066,11 +1066,13 @@
 			<description>
 				Returns the internal type of the given Variant object, using the [enum Variant.Type] values.
 				[codeblock]
-				p = parse_json('["a", "b", "c"]')
-				if typeof(p) == TYPE_ARRAY:
-				    print(p[0]) # Prints a
+				var json = JSON.new()
+				json.parse('["a", "b", "c"]')
+				var result = json.get_data()
+				if typeof(result) == TYPE_ARRAY:
+				    print(result[0]) # Prints a
 				else:
-				    print("unexpected results")
+				    print("Unexpected result")
 				[/codeblock]
 			</description>
 		</method>
@@ -1211,9 +1213,6 @@
 		<member name="InputMap" type="InputMap" setter="" getter="">
 			The [InputMap] singleton.
 		</member>
-		<member name="JSON" type="JSON" setter="" getter="">
-			The [JSON] singleton.
-		</member>
 		<member name="JavaClassWrapper" type="JavaClassWrapper" setter="" getter="">
 			The [JavaClassWrapper] singleton.
 			[b]Note:[/b] Only implemented on Android.
@@ -1260,6 +1259,9 @@
 		</member>
 		<member name="TextServerManager" type="TextServerManager" setter="" getter="">
 			The [TextServerManager] singleton.
+		</member>
+		<member name="Time" type="Time" setter="" getter="">
+			The [Time] singleton.
 		</member>
 		<member name="TranslationServer" type="TranslationServer" setter="" getter="">
 			The [TranslationServer] singleton.
@@ -2596,8 +2598,8 @@
 		<constant name="TYPE_PLANE" value="12" enum="Variant.Type">
 			Variable is of type [Plane].
 		</constant>
-		<constant name="TYPE_QUAT" value="13" enum="Variant.Type">
-			Variable is of type [Quat].
+		<constant name="TYPE_QUATERNION" value="13" enum="Variant.Type">
+			Variable is of type [Quaternion].
 		</constant>
 		<constant name="TYPE_AABB" value="14" enum="Variant.Type">
 			Variable is of type [AABB].
@@ -2605,8 +2607,8 @@
 		<constant name="TYPE_BASIS" value="15" enum="Variant.Type">
 			Variable is of type [Basis].
 		</constant>
-		<constant name="TYPE_TRANSFORM" value="16" enum="Variant.Type">
-			Variable is of type [Transform].
+		<constant name="TYPE_TRANSFORM3D" value="16" enum="Variant.Type">
+			Variable is of type [Transform3D].
 		</constant>
 		<constant name="TYPE_COLOR" value="17" enum="Variant.Type">
 			Variable is of type [Color].

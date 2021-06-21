@@ -505,9 +505,6 @@ void BaseMaterial3D::_update_shader() {
 		case DIFFUSE_LAMBERT_WRAP:
 			code += ",diffuse_lambert_wrap";
 			break;
-		case DIFFUSE_OREN_NAYAR:
-			code += ",diffuse_oren_nayar";
-			break;
 		case DIFFUSE_TOON:
 			code += ",diffuse_toon";
 			break;
@@ -891,7 +888,7 @@ void BaseMaterial3D::_update_shader() {
 			code += "\t\tfloat current_layer_depth = 0.0;\n";
 			code += "\t\tvec2 P = view_dir.xy * heightmap_scale;\n";
 			code += "\t\tvec2 delta = P / num_layers;\n";
-			code += "\t\tvec2  ofs = base_uv;\n";
+			code += "\t\tvec2 ofs = base_uv;\n";
 			if (flags[FLAG_INVERT_HEIGHTMAP]) {
 				code += "\t\tfloat depth = texture(texture_heightmap, ofs).r;\n";
 			} else {
@@ -2095,7 +2092,7 @@ RID BaseMaterial3D::get_material_rid_for_2d(bool p_shaded, bool p_transparent, b
 	}
 
 	Ref<StandardMaterial3D> material;
-	material.instance();
+	material.instantiate();
 
 	material->set_shading_mode(p_shaded ? SHADING_MODE_PER_PIXEL : SHADING_MODE_UNSHADED);
 	material->set_transparency(p_transparent ? (p_opaque_prepass ? TRANSPARENCY_ALPHA_DEPTH_PRE_PASS : (p_cut_alpha ? TRANSPARENCY_ALPHA_SCISSOR : TRANSPARENCY_ALPHA)) : TRANSPARENCY_DISABLED);
@@ -2400,7 +2397,7 @@ void BaseMaterial3D::_bind_methods() {
 
 	ADD_GROUP("Shading", "");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "shading_mode", PROPERTY_HINT_ENUM, "Unshaded,Per-Pixel,Per-Vertex"), "set_shading_mode", "get_shading_mode");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "diffuse_mode", PROPERTY_HINT_ENUM, "Burley,Lambert,Lambert Wrap,Oren Nayar,Toon"), "set_diffuse_mode", "get_diffuse_mode");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "diffuse_mode", PROPERTY_HINT_ENUM, "Burley,Lambert,Lambert Wrap,Toon"), "set_diffuse_mode", "get_diffuse_mode");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "specular_mode", PROPERTY_HINT_ENUM, "SchlickGGX,Blinn,Phong,Toon,Disabled"), "set_specular_mode", "get_specular_mode");
 	ADD_PROPERTYI(PropertyInfo(Variant::BOOL, "disable_ambient_light"), "set_flag", "get_flag", FLAG_DISABLE_AMBIENT_LIGHT);
 
@@ -2654,7 +2651,6 @@ void BaseMaterial3D::_bind_methods() {
 	BIND_ENUM_CONSTANT(DIFFUSE_BURLEY);
 	BIND_ENUM_CONSTANT(DIFFUSE_LAMBERT);
 	BIND_ENUM_CONSTANT(DIFFUSE_LAMBERT_WRAP);
-	BIND_ENUM_CONSTANT(DIFFUSE_OREN_NAYAR);
 	BIND_ENUM_CONSTANT(DIFFUSE_TOON);
 
 	BIND_ENUM_CONSTANT(SPECULAR_SCHLICK_GGX);

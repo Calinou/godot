@@ -404,10 +404,7 @@ void AudioStreamPlayer3D::_notification(int p_what) {
 				break;
 			}
 
-			List<Camera3D *> cameras;
-			world_3d->get_camera_list(&cameras);
-
-			for (List<Camera3D *>::Element *E = cameras.front(); E; E = E->next()) {
+			for (const Set<Camera3D *>::Element *E = world_3d->get_cameras().front(); E; E = E->next()) {
 				Camera3D *camera = E->get();
 				Viewport *vp = camera->get_viewport();
 				if (!vp->is_audio_listener()) {
@@ -964,7 +961,7 @@ void AudioStreamPlayer3D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "stream", PROPERTY_HINT_RESOURCE_TYPE, "AudioStream"), "set_stream", "get_stream");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "attenuation_model", PROPERTY_HINT_ENUM, "Inverse,Inverse Square,Log,Disabled"), "set_attenuation_model", "get_attenuation_model");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "unit_db", PROPERTY_HINT_RANGE, "-80,80"), "set_unit_db", "get_unit_db");
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "unit_size", PROPERTY_HINT_RANGE, "0.1,100,0.1"), "set_unit_size", "get_unit_size");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "unit_size", PROPERTY_HINT_RANGE, "0.1,100,0.01,or_greater"), "set_unit_size", "get_unit_size");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "max_db", PROPERTY_HINT_RANGE, "-24,6"), "set_max_db", "get_max_db");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "pitch_scale", PROPERTY_HINT_RANGE, "0.01,4,0.01,or_greater"), "set_pitch_scale", "get_pitch_scale");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "playing", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "_set_playing", "is_playing");
@@ -1000,7 +997,7 @@ void AudioStreamPlayer3D::_bind_methods() {
 }
 
 AudioStreamPlayer3D::AudioStreamPlayer3D() {
-	velocity_tracker.instance();
+	velocity_tracker.instantiate();
 	AudioServer::get_singleton()->connect("bus_layout_changed", callable_mp(this, &AudioStreamPlayer3D::_bus_layout_changed));
 	set_disable_scale(true);
 }

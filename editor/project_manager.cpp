@@ -31,11 +31,11 @@
 #include "project_manager.h"
 
 #include "core/io/config_file.h"
+#include "core/io/dir_access.h"
+#include "core/io/file_access.h"
 #include "core/io/resource_saver.h"
 #include "core/io/stream_peer_ssl.h"
 #include "core/io/zip_io.h"
-#include "core/os/dir_access.h"
-#include "core/os/file_access.h"
 #include "core/os/keyboard.h"
 #include "core/os/os.h"
 #include "core/string/translation.h"
@@ -862,7 +862,7 @@ public:
 		rasterizer_container->add_child(l);
 		Container *rshb = memnew(HBoxContainer);
 		rasterizer_container->add_child(rshb);
-		rasterizer_button_group.instance();
+		rasterizer_button_group.instantiate();
 
 		Container *rvb = memnew(VBoxContainer);
 		rvb->set_h_size_flags(Control::SIZE_EXPAND_FILL);
@@ -1145,7 +1145,7 @@ void ProjectList::load_project_icon(int p_index) {
 	Ref<Texture2D> icon;
 	if (item.icon != "") {
 		Ref<Image> img;
-		img.instance();
+		img.instantiate();
 		Error err = img->load(item.icon.replace_first("res://", item.path + "/"));
 		if (err == OK) {
 			img->resize(default_icon->get_width(), default_icon->get_height(), Image::INTERPOLATE_LANCZOS);
@@ -1484,16 +1484,7 @@ Vector<ProjectList::Item> ProjectList::get_selected_projects() const {
 
 void ProjectList::ensure_project_visible(int p_index) {
 	const Item &item = _projects[p_index];
-
-	int item_top = item.control->get_position().y;
-	int item_bottom = item.control->get_position().y + item.control->get_size().y;
-
-	if (item_top < get_v_scroll()) {
-		set_v_scroll(item_top);
-
-	} else if (item_bottom > get_v_scroll() + get_size().y) {
-		set_v_scroll(item_bottom - get_size().y);
-	}
+	ensure_control_visible(item.control);
 }
 
 int ProjectList::get_single_selected_index() const {
@@ -1932,9 +1923,6 @@ void ProjectManager::_unhandled_key_input(const Ref<InputEvent> &p_ev) {
 		switch (k->get_keycode()) {
 			case KEY_ENTER: {
 				_open_selected_projects_ask();
-			} break;
-			case KEY_DELETE: {
-				_erase_project();
 			} break;
 			case KEY_HOME: {
 				if (_project_list->get_project_count() > 0) {
@@ -2409,34 +2397,10 @@ ProjectManager::ProjectManager() {
 		int display_scale = EditorSettings::get_singleton()->get("interface/editor/display_scale");
 
 		switch (display_scale) {
-			case 0: {
+			case 0:
 				// Try applying a suitable display scale automatically.
-				// The code below is adapted in `editor/editor_settings.cpp` and `editor/editor_node.cpp`.
-				// Make sure to update those when modifying the code below.
-#ifdef OSX_ENABLED
-				editor_set_scale(DisplayServer::get_singleton()->screen_get_max_scale());
-#else
-				const int screen = DisplayServer::get_singleton()->window_get_current_screen();
-				float scale;
-				if (DisplayServer::get_singleton()->screen_get_dpi(screen) >= 192 && DisplayServer::get_singleton()->screen_get_size(screen).y >= 1400) {
-					// hiDPI display.
-					scale = 2.0;
-				} else if (DisplayServer::get_singleton()->screen_get_size(screen).y >= 1700) {
-					// Likely a hiDPI display, but we aren't certain due to the returned DPI.
-					// Use an intermediate scale to handle this situation.
-					scale = 1.5;
-				} else if (DisplayServer::get_singleton()->screen_get_size(screen).y <= 800) {
-					// Small loDPI display. Use a smaller display scale so that editor elements fit more easily.
-					// Icons won't look great, but this is better than having editor elements overflow from its window.
-					scale = 0.75;
-				} else {
-					scale = 1.0;
-				}
-
-				editor_set_scale(scale);
-#endif
-			} break;
-
+				editor_set_scale(EditorSettings::get_singleton()->get_auto_display_scale());
+				break;
 			case 1:
 				editor_set_scale(0.75);
 				break;
@@ -2499,7 +2463,7 @@ ProjectManager::ProjectManager() {
 	tabs->connect("tab_changed", callable_mp(this, &ProjectManager::_on_tab_changed));
 
 	HBoxContainer *projects_hb = memnew(HBoxContainer);
-	projects_hb->set_name(TTR("Projects"));
+	projects_hb->set_name(TTR("Local Projects"));
 	tabs->add_child(projects_hb);
 
 	{
@@ -2565,16 +2529,19 @@ ProjectManager::ProjectManager() {
 
 		Button *create = memnew(Button);
 		create->set_text(TTR("New Project"));
+		create->set_shortcut(ED_SHORTCUT("project_manager/new_project", TTR("New Project"), KEY_MASK_CMD | KEY_N));
 		create->connect("pressed", callable_mp(this, &ProjectManager::_new_project));
 		tree_vb->add_child(create);
 
 		Button *import = memnew(Button);
 		import->set_text(TTR("Import"));
+		import->set_shortcut(ED_SHORTCUT("project_manager/import_project", TTR("Import Project"), KEY_MASK_CMD | KEY_I));
 		import->connect("pressed", callable_mp(this, &ProjectManager::_import_project));
 		tree_vb->add_child(import);
 
 		Button *scan = memnew(Button);
 		scan->set_text(TTR("Scan"));
+		scan->set_shortcut(ED_SHORTCUT("project_manager/scan_projects", TTR("Scan Projects"), KEY_MASK_CMD | KEY_S));
 		scan->connect("pressed", callable_mp(this, &ProjectManager::_scan_projects));
 		tree_vb->add_child(scan);
 
@@ -2582,21 +2549,25 @@ ProjectManager::ProjectManager() {
 
 		open_btn = memnew(Button);
 		open_btn->set_text(TTR("Edit"));
+		open_btn->set_shortcut(ED_SHORTCUT("project_manager/edit_project", TTR("Edit Project"), KEY_MASK_CMD | KEY_E));
 		open_btn->connect("pressed", callable_mp(this, &ProjectManager::_open_selected_projects_ask));
 		tree_vb->add_child(open_btn);
 
 		run_btn = memnew(Button);
 		run_btn->set_text(TTR("Run"));
+		run_btn->set_shortcut(ED_SHORTCUT("project_manager/run_project", TTR("Run Project"), KEY_MASK_CMD | KEY_R));
 		run_btn->connect("pressed", callable_mp(this, &ProjectManager::_run_project));
 		tree_vb->add_child(run_btn);
 
 		rename_btn = memnew(Button);
 		rename_btn->set_text(TTR("Rename"));
+		rename_btn->set_shortcut(ED_SHORTCUT("project_manager/rename_project", TTR("Rename Project"), KEY_F2));
 		rename_btn->connect("pressed", callable_mp(this, &ProjectManager::_rename_project));
 		tree_vb->add_child(rename_btn);
 
 		erase_btn = memnew(Button);
 		erase_btn->set_text(TTR("Remove"));
+		erase_btn->set_shortcut(ED_SHORTCUT("project_manager/remove_project", TTR("Remove Project"), KEY_DELETE));
 		erase_btn->connect("pressed", callable_mp(this, &ProjectManager::_erase_project));
 		tree_vb->add_child(erase_btn);
 
@@ -2630,7 +2601,7 @@ ProjectManager::ProjectManager() {
 		version_btn = memnew(LinkButton);
 		String hash = String(VERSION_HASH);
 		if (hash.length() != 0) {
-			hash = "." + hash.left(9);
+			hash = " " + vformat("[%s]", hash.left(9));
 		}
 		version_btn->set_text("v" VERSION_FULL_BUILD + hash);
 		// Fade the version label to be less prominent, but still readable.
@@ -2681,7 +2652,7 @@ ProjectManager::ProjectManager() {
 
 	if (StreamPeerSSL::is_available()) {
 		asset_library = memnew(EditorAssetLibrary(true));
-		asset_library->set_name(TTR("Templates"));
+		asset_library->set_name(TTR("Asset Library Projects"));
 		tabs->add_child(asset_library);
 		asset_library->connect("install_asset", callable_mp(this, &ProjectManager::_install_project));
 	} else {

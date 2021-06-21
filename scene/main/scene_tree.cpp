@@ -33,14 +33,15 @@
 #include "core/config/project_settings.h"
 #include "core/debugger/engine_debugger.h"
 #include "core/input/input.h"
+#include "core/io/dir_access.h"
 #include "core/io/marshalls.h"
 #include "core/io/resource_loader.h"
 #include "core/object/message_queue.h"
-#include "core/os/dir_access.h"
 #include "core/os/keyboard.h"
 #include "core/os/os.h"
 #include "core/string/print_string.h"
 #include "node.h"
+#include "scene/animation/tween.h"
 #include "scene/debugger/scene_debugger.h"
 #include "scene/resources/font.h"
 #include "scene/resources/material.h"
@@ -412,8 +413,10 @@ bool SceneTree::physics_process(float p_time) {
 	_notify_group_pause("physics_process", Node::NOTIFICATION_PHYSICS_PROCESS);
 	_flush_ugc();
 	MessageQueue::get_singleton()->flush(); //small little hack
+
+	process_tweens(p_time, true);
+
 	flush_transform_notifications();
-	call_group_flags(GROUP_CALL_REALTIME, "_viewports", "update_worlds");
 	root_lock--;
 
 	_flush_delete_queue();
@@ -445,7 +448,6 @@ bool SceneTree::process(float p_time) {
 	_flush_ugc();
 	MessageQueue::get_singleton()->flush(); //small little hack
 	flush_transform_notifications(); //transforms after world update, to avoid unnecessary enter/exit notifications
-	call_group_flags(GROUP_CALL_REALTIME, "_viewports", "update_worlds");
 
 	root_lock--;
 
@@ -477,6 +479,8 @@ bool SceneTree::process(float p_time) {
 		}
 		E = N;
 	}
+
+	process_tweens(p_time, false);
 
 	flush_transform_notifications(); //additional transforms after timers update
 
@@ -510,6 +514,32 @@ bool SceneTree::process(float p_time) {
 #endif
 
 	return _quit;
+}
+
+void SceneTree::process_tweens(float p_delta, bool p_physics) {
+	// This methods works similarly to how SceneTreeTimers are handled.
+	List<Ref<Tween>>::Element *L = tweens.back();
+
+	for (List<Ref<Tween>>::Element *E = tweens.front(); E;) {
+		List<Ref<Tween>>::Element *N = E->next();
+		// Don't process if paused or process mode doesn't match.
+		if ((paused && E->get()->should_pause()) || (p_physics == (E->get()->get_process_mode() == Tween::TWEEN_PROCESS_IDLE))) {
+			if (E == L) {
+				break;
+			}
+			E = N;
+			continue;
+		}
+
+		if (!E->get()->step(p_delta)) {
+			E->get()->set_valid(false);
+			tweens.erase(E);
+		}
+		if (E == L) {
+			break;
+		}
+		E = N;
+	}
 }
 
 void SceneTree::finalize() {
@@ -1063,7 +1093,7 @@ Error SceneTree::change_scene(const String &p_path) {
 Error SceneTree::change_scene_to(const Ref<PackedScene> &p_scene) {
 	Node *new_scene = nullptr;
 	if (p_scene.is_valid()) {
-		new_scene = p_scene->instance();
+		new_scene = p_scene->instantiate();
 		ERR_FAIL_COND_V(!new_scene, ERR_CANT_CREATE);
 	}
 
@@ -1084,11 +1114,32 @@ void SceneTree::add_current_scene(Node *p_current) {
 
 Ref<SceneTreeTimer> SceneTree::create_timer(float p_delay_sec, bool p_process_always) {
 	Ref<SceneTreeTimer> stt;
-	stt.instance();
+	stt.instantiate();
 	stt->set_process_always(p_process_always);
 	stt->set_time_left(p_delay_sec);
 	timers.push_back(stt);
 	return stt;
+}
+
+Ref<Tween> SceneTree::create_tween() {
+	Ref<Tween> tween;
+	tween.instantiate();
+	tween->set_valid(true);
+	tweens.push_back(tween);
+	return tween;
+}
+
+Array SceneTree::get_processed_tweens() {
+	Array ret;
+	ret.resize(tweens.size());
+
+	int i = 0;
+	for (List<Ref<Tween>>::Element *E = tweens.front(); E; E = E->next()) {
+		ret[i] = E->get();
+		i++;
+	}
+
+	return ret;
 }
 
 void SceneTree::_network_peer_connected(int p_id) {
@@ -1199,6 +1250,8 @@ void SceneTree::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("is_paused"), &SceneTree::is_paused);
 
 	ClassDB::bind_method(D_METHOD("create_timer", "time_sec", "process_always"), &SceneTree::create_timer, DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("create_tween"), &SceneTree::create_tween);
+	ClassDB::bind_method(D_METHOD("get_processed_tweens"), &SceneTree::get_processed_tweens);
 
 	ClassDB::bind_method(D_METHOD("get_node_count"), &SceneTree::get_node_count);
 	ClassDB::bind_method(D_METHOD("get_frame"), &SceneTree::get_frame);
@@ -1259,11 +1312,11 @@ void SceneTree::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "paused"), "set_pause", "is_paused");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "refuse_new_network_connections"), "set_refuse_new_network_connections", "is_refusing_new_network_connections");
 	ADD_PROPERTY_DEFAULT("refuse_new_network_connections", false);
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "edited_scene_root", PROPERTY_HINT_RESOURCE_TYPE, "Node", 0), "set_edited_scene_root", "get_edited_scene_root");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "current_scene", PROPERTY_HINT_RESOURCE_TYPE, "Node", 0), "set_current_scene", "get_current_scene");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "network_peer", PROPERTY_HINT_RESOURCE_TYPE, "NetworkedMultiplayerPeer", 0), "set_network_peer", "get_network_peer");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "root", PROPERTY_HINT_RESOURCE_TYPE, "Node", 0), "", "get_root");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "multiplayer", PROPERTY_HINT_RESOURCE_TYPE, "MultiplayerAPI", 0), "set_multiplayer", "get_multiplayer");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "edited_scene_root", PROPERTY_HINT_RESOURCE_TYPE, "Node", PROPERTY_USAGE_NONE), "set_edited_scene_root", "get_edited_scene_root");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "current_scene", PROPERTY_HINT_RESOURCE_TYPE, "Node", PROPERTY_USAGE_NONE), "set_current_scene", "get_current_scene");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "network_peer", PROPERTY_HINT_RESOURCE_TYPE, "NetworkedMultiplayerPeer", PROPERTY_USAGE_NONE), "set_network_peer", "get_network_peer");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "root", PROPERTY_HINT_RESOURCE_TYPE, "Node", PROPERTY_USAGE_NONE), "", "get_root");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "multiplayer", PROPERTY_HINT_RESOURCE_TYPE, "MultiplayerAPI", PROPERTY_USAGE_NONE), "set_multiplayer", "get_multiplayer");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "multiplayer_poll"), "set_multiplayer_poll_enabled", "is_multiplayer_poll_enabled");
 
 	ADD_SIGNAL(MethodInfo("tree_changed"));
@@ -1377,6 +1430,9 @@ SceneTree::SceneTree() {
 
 	const bool use_debanding = GLOBAL_DEF("rendering/anti_aliasing/quality/use_debanding", false);
 	root->set_use_debanding(use_debanding);
+
+	const float sharpen_intensity = GLOBAL_GET("rendering/anti_aliasing/quality/sharpen_intensity");
+	root->set_sharpen_intensity(sharpen_intensity);
 
 	const bool use_occlusion_culling = GLOBAL_DEF("rendering/occlusion_culling/use_occlusion_culling", false);
 	root->set_use_occlusion_culling(use_occlusion_culling);

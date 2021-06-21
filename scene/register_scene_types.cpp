@@ -55,6 +55,7 @@
 #include "scene/2d/parallax_background.h"
 #include "scene/2d/parallax_layer.h"
 #include "scene/2d/path_2d.h"
+#include "scene/2d/physical_bone_2d.h"
 #include "scene/2d/physics_body_2d.h"
 #include "scene/2d/polygon_2d.h"
 #include "scene/2d/position_2d.h"
@@ -64,8 +65,7 @@
 #include "scene/2d/sprite_2d.h"
 #include "scene/2d/tile_map.h"
 #include "scene/2d/touch_screen_button.h"
-#include "scene/2d/visibility_notifier_2d.h"
-#include "scene/2d/y_sort.h"
+#include "scene/2d/visible_on_screen_notifier_2d.h"
 #include "scene/animation/animation_blend_space_1d.h"
 #include "scene/animation/animation_blend_space_2d.h"
 #include "scene/animation/animation_blend_tree.h"
@@ -161,6 +161,15 @@
 #include "scene/resources/rectangle_shape_2d.h"
 #include "scene/resources/resource_format_text.h"
 #include "scene/resources/segment_shape_2d.h"
+#include "scene/resources/skeleton_modification_2d.h"
+#include "scene/resources/skeleton_modification_2d_ccdik.h"
+#include "scene/resources/skeleton_modification_2d_fabrik.h"
+#include "scene/resources/skeleton_modification_2d_jiggle.h"
+#include "scene/resources/skeleton_modification_2d_lookat.h"
+#include "scene/resources/skeleton_modification_2d_physicalbones.h"
+#include "scene/resources/skeleton_modification_2d_stackholder.h"
+#include "scene/resources/skeleton_modification_2d_twoboneik.h"
+#include "scene/resources/skeleton_modification_stack_2d.h"
 #include "scene/resources/sky.h"
 #include "scene/resources/sky_material.h"
 #include "scene/resources/sphere_shape_3d.h"
@@ -174,33 +183,29 @@
 #include "scene/resources/video_stream.h"
 #include "scene/resources/visual_shader.h"
 #include "scene/resources/visual_shader_nodes.h"
+#include "scene/resources/visual_shader_particle_nodes.h"
 #include "scene/resources/visual_shader_sdf_nodes.h"
 #include "scene/resources/world_2d.h"
 #include "scene/resources/world_3d.h"
 #include "scene/resources/world_margin_shape_3d.h"
 #include "scene/scene_string_names.h"
 
-// Needed by animation code, so keep when 3D disabled.
-#include "scene/3d/node_3d.h"
-#include "scene/3d/skeleton_3d.h"
-
 #include "scene/main/shader_globals_override.h"
 
 #ifndef _3D_DISABLED
 #include "scene/3d/area_3d.h"
 #include "scene/3d/audio_stream_player_3d.h"
-#include "scene/3d/baked_lightmap.h"
 #include "scene/3d/bone_attachment_3d.h"
 #include "scene/3d/camera_3d.h"
 #include "scene/3d/collision_polygon_3d.h"
 #include "scene/3d/collision_shape_3d.h"
 #include "scene/3d/cpu_particles_3d.h"
 #include "scene/3d/decal.h"
-#include "scene/3d/gi_probe.h"
 #include "scene/3d/gpu_particles_3d.h"
 #include "scene/3d/gpu_particles_collision_3d.h"
 #include "scene/3d/immediate_geometry_3d.h"
 #include "scene/3d/light_3d.h"
+#include "scene/3d/lightmap_gi.h"
 #include "scene/3d/lightmap_probe.h"
 #include "scene/3d/listener_3d.h"
 #include "scene/3d/mesh_instance_3d.h"
@@ -208,6 +213,7 @@
 #include "scene/3d/navigation_agent_3d.h"
 #include "scene/3d/navigation_obstacle_3d.h"
 #include "scene/3d/navigation_region_3d.h"
+#include "scene/3d/node_3d.h"
 #include "scene/3d/occluder_instance_3d.h"
 #include "scene/3d/path_3d.h"
 #include "scene/3d/physics_body_3d.h"
@@ -217,12 +223,14 @@
 #include "scene/3d/ray_cast_3d.h"
 #include "scene/3d/reflection_probe.h"
 #include "scene/3d/remote_transform_3d.h"
+#include "scene/3d/skeleton_3d.h"
 #include "scene/3d/skeleton_ik_3d.h"
 #include "scene/3d/soft_body_3d.h"
 #include "scene/3d/spring_arm_3d.h"
 #include "scene/3d/sprite_3d.h"
 #include "scene/3d/vehicle_body_3d.h"
-#include "scene/3d/visibility_notifier_3d.h"
+#include "scene/3d/visible_on_screen_notifier_3d.h"
+#include "scene/3d/voxel_gi.h"
 #include "scene/3d/world_environment.h"
 #include "scene/3d/xr_nodes.h"
 #include "scene/resources/environment.h"
@@ -252,33 +260,33 @@ void register_scene_types() {
 
 	Node::init_node_hrcr();
 
-	resource_loader_font.instance();
+	resource_loader_font.instantiate();
 	ResourceLoader::add_resource_format_loader(resource_loader_font);
 
 #ifndef DISABLE_DEPRECATED
-	resource_loader_compat_font.instance();
+	resource_loader_compat_font.instantiate();
 	ResourceLoader::add_resource_format_loader(resource_loader_compat_font);
 #endif /* DISABLE_DEPRECATED */
 
-	resource_loader_stream_texture.instance();
+	resource_loader_stream_texture.instantiate();
 	ResourceLoader::add_resource_format_loader(resource_loader_stream_texture);
 
-	resource_loader_texture_layered.instance();
+	resource_loader_texture_layered.instantiate();
 	ResourceLoader::add_resource_format_loader(resource_loader_texture_layered);
 
-	resource_loader_texture_3d.instance();
+	resource_loader_texture_3d.instantiate();
 	ResourceLoader::add_resource_format_loader(resource_loader_texture_3d);
 
-	resource_saver_text.instance();
+	resource_saver_text.instantiate();
 	ResourceSaver::add_resource_format_saver(resource_saver_text, true);
 
-	resource_loader_text.instance();
+	resource_loader_text.instantiate();
 	ResourceLoader::add_resource_format_loader(resource_loader_text, true);
 
-	resource_saver_shader.instance();
+	resource_saver_shader.instantiate();
 	ResourceSaver::add_resource_format_saver(resource_saver_shader, true);
 
-	resource_loader_shader.instance();
+	resource_loader_shader.instantiate();
 	ResourceLoader::add_resource_format_loader(resource_loader_shader, true);
 
 	OS::get_singleton()->yield(); //may take time to init
@@ -395,17 +403,15 @@ void register_scene_types() {
 	AcceptDialog::set_swap_cancel_ok(swap_cancel_ok);
 #endif
 
-	/* REGISTER 3D */
-
-	// Needed even with _3D_DISABLED as used in animation code.
-	ClassDB::register_class<Node3D>();
-	ClassDB::register_virtual_class<Node3DGizmo>();
-	ClassDB::register_class<Skin>();
-	ClassDB::register_virtual_class<SkinReference>();
-	ClassDB::register_class<Skeleton3D>();
+	/* REGISTER ANIMATION */
 
 	ClassDB::register_class<AnimationPlayer>();
 	ClassDB::register_class<Tween>();
+	ClassDB::register_virtual_class<Tweener>();
+	ClassDB::register_class<PropertyTweener>();
+	ClassDB::register_class<IntervalTweener>();
+	ClassDB::register_class<CallbackTweener>();
+	ClassDB::register_class<MethodTweener>();
 
 	ClassDB::register_class<AnimationTree>();
 	ClassDB::register_class<AnimationNode>();
@@ -432,7 +438,14 @@ void register_scene_types() {
 
 	OS::get_singleton()->yield(); //may take time to init
 
+	/* REGISTER 3D */
+
 #ifndef _3D_DISABLED
+	ClassDB::register_class<Node3D>();
+	ClassDB::register_virtual_class<Node3DGizmo>();
+	ClassDB::register_class<Skin>();
+	ClassDB::register_virtual_class<SkinReference>();
+	ClassDB::register_class<Skeleton3D>();
 	ClassDB::register_virtual_class<VisualInstance3D>();
 	ClassDB::register_virtual_class<GeometryInstance3D>();
 	ClassDB::register_class<Camera3D>();
@@ -455,10 +468,10 @@ void register_scene_types() {
 	ClassDB::register_class<SpotLight3D>();
 	ClassDB::register_class<ReflectionProbe>();
 	ClassDB::register_class<Decal>();
-	ClassDB::register_class<GIProbe>();
-	ClassDB::register_class<GIProbeData>();
-	ClassDB::register_class<BakedLightmap>();
-	ClassDB::register_class<BakedLightmapData>();
+	ClassDB::register_class<VoxelGI>();
+	ClassDB::register_class<VoxelGIData>();
+	ClassDB::register_class<LightmapGI>();
+	ClassDB::register_class<LightmapGIData>();
 	ClassDB::register_class<LightmapProbe>();
 	ClassDB::register_virtual_class<Lightmapper>();
 	ClassDB::register_class<GPUParticles3D>();
@@ -484,7 +497,7 @@ void register_scene_types() {
 	ClassDB::register_class<StaticBody3D>();
 	ClassDB::register_class<RigidBody3D>();
 	ClassDB::register_class<KinematicCollision3D>();
-	ClassDB::register_class<KinematicBody3D>();
+	ClassDB::register_class<CharacterBody3D>();
 	ClassDB::register_class<SpringArm3D>();
 
 	ClassDB::register_class<PhysicalBone3D>();
@@ -505,8 +518,8 @@ void register_scene_types() {
 	ClassDB::register_class<Curve3D>();
 	ClassDB::register_class<Path3D>();
 	ClassDB::register_class<PathFollow3D>();
-	ClassDB::register_class<VisibilityNotifier3D>();
-	ClassDB::register_class<VisibilityEnabler3D>();
+	ClassDB::register_class<VisibleOnScreenNotifier3D>();
+	ClassDB::register_class<VisibleOnScreenEnabler3D>();
 	ClassDB::register_class<WorldEnvironment>();
 	ClassDB::register_class<RemoteTransform3D>();
 
@@ -553,6 +566,7 @@ void register_scene_types() {
 	ClassDB::register_class<VisualShaderNodeVectorFunc>();
 	ClassDB::register_class<VisualShaderNodeColorFunc>();
 	ClassDB::register_class<VisualShaderNodeTransformFunc>();
+	ClassDB::register_class<VisualShaderNodeUVFunc>();
 	ClassDB::register_class<VisualShaderNodeDotProduct>();
 	ClassDB::register_class<VisualShaderNodeVectorLen>();
 	ClassDB::register_class<VisualShaderNodeDeterminant>();
@@ -597,12 +611,24 @@ void register_scene_types() {
 	ClassDB::register_class<VisualShaderNodeIs>();
 	ClassDB::register_class<VisualShaderNodeCompare>();
 	ClassDB::register_class<VisualShaderNodeMultiplyAdd>();
+	ClassDB::register_class<VisualShaderNodeBillboard>();
 
 	ClassDB::register_class<VisualShaderNodeSDFToScreenUV>();
 	ClassDB::register_class<VisualShaderNodeScreenUVToSDF>();
 	ClassDB::register_class<VisualShaderNodeTextureSDF>();
 	ClassDB::register_class<VisualShaderNodeTextureSDFNormal>();
 	ClassDB::register_class<VisualShaderNodeSDFRaymarch>();
+
+	ClassDB::register_class<VisualShaderNodeParticleOutput>();
+	ClassDB::register_virtual_class<VisualShaderNodeParticleEmitter>();
+	ClassDB::register_class<VisualShaderNodeParticleSphereEmitter>();
+	ClassDB::register_class<VisualShaderNodeParticleBoxEmitter>();
+	ClassDB::register_class<VisualShaderNodeParticleRingEmitter>();
+	ClassDB::register_class<VisualShaderNodeParticleMultiplyByAxisAngle>();
+	ClassDB::register_class<VisualShaderNodeParticleConeVelocity>();
+	ClassDB::register_class<VisualShaderNodeParticleRandomness>();
+	ClassDB::register_class<VisualShaderNodeParticleAccelerator>();
+	ClassDB::register_class<VisualShaderNodeParticleEmit>();
 
 	ClassDB::register_class<ShaderMaterial>();
 	ClassDB::register_virtual_class<CanvasItem>();
@@ -628,14 +654,14 @@ void register_scene_types() {
 	ClassDB::register_virtual_class<PhysicsBody2D>();
 	ClassDB::register_class<StaticBody2D>();
 	ClassDB::register_class<RigidBody2D>();
-	ClassDB::register_class<KinematicBody2D>();
+	ClassDB::register_class<CharacterBody2D>();
 	ClassDB::register_class<KinematicCollision2D>();
 	ClassDB::register_class<Area2D>();
 	ClassDB::register_class<CollisionShape2D>();
 	ClassDB::register_class<CollisionPolygon2D>();
 	ClassDB::register_class<RayCast2D>();
-	ClassDB::register_class<VisibilityNotifier2D>();
-	ClassDB::register_class<VisibilityEnabler2D>();
+	ClassDB::register_class<VisibleOnScreenNotifier2D>();
+	ClassDB::register_class<VisibleOnScreenEnabler2D>();
 	ClassDB::register_class<Polygon2D>();
 	ClassDB::register_class<Skeleton2D>();
 	ClassDB::register_class<Bone2D>();
@@ -644,7 +670,6 @@ void register_scene_types() {
 	ClassDB::register_class<DirectionalLight2D>();
 	ClassDB::register_class<LightOccluder2D>();
 	ClassDB::register_class<OccluderPolygon2D>();
-	ClassDB::register_class<YSort>();
 	ClassDB::register_class<BackBufferCopy>();
 
 	OS::get_singleton()->yield(); //may take time to init
@@ -664,6 +689,18 @@ void register_scene_types() {
 	ClassDB::register_class<ParallaxLayer>();
 	ClassDB::register_class<TouchScreenButton>();
 	ClassDB::register_class<RemoteTransform2D>();
+
+	ClassDB::register_class<SkeletonModificationStack2D>();
+	ClassDB::register_class<SkeletonModification2D>();
+	ClassDB::register_class<SkeletonModification2DLookAt>();
+	ClassDB::register_class<SkeletonModification2DCCDIK>();
+	ClassDB::register_class<SkeletonModification2DFABRIK>();
+	ClassDB::register_class<SkeletonModification2DJiggle>();
+	ClassDB::register_class<SkeletonModification2DTwoBoneIK>();
+	ClassDB::register_class<SkeletonModification2DStackHolder>();
+
+	ClassDB::register_class<PhysicalBone2D>();
+	ClassDB::register_class<SkeletonModification2DPhysicalBones>();
 
 	OS::get_singleton()->yield(); //may take time to init
 
@@ -821,6 +858,11 @@ void register_scene_types() {
 	ClassDB::add_compatibility_class("ToolButton", "Button");
 	ClassDB::add_compatibility_class("Navigation3D", "Node3D");
 	ClassDB::add_compatibility_class("Navigation2D", "Node2D");
+	ClassDB::add_compatibility_class("YSort", "Node2D");
+	ClassDB::add_compatibility_class("GIProbe", "VoxelGI");
+	ClassDB::add_compatibility_class("GIProbeData", "VoxelGIData");
+	ClassDB::add_compatibility_class("BakedLightmap", "LightmapGI");
+	ClassDB::add_compatibility_class("BakedLightmapData", "LightmapGIData");
 
 	// Renamed in 4.0.
 	// Keep alphabetical ordering to easily locate classes and avoid duplicates.
@@ -866,7 +908,8 @@ void register_scene_types() {
 	ClassDB::add_compatibility_class("HingeJoint", "HingeJoint3D");
 	ClassDB::add_compatibility_class("ImmediateGeometry", "ImmediateGeometry3D");
 	ClassDB::add_compatibility_class("Joint", "Joint3D");
-	ClassDB::add_compatibility_class("KinematicBody", "KinematicBody3D");
+	ClassDB::add_compatibility_class("KinematicBody", "CharacterBody3D");
+	ClassDB::add_compatibility_class("KinematicBody2D", "CharacterBody2D");
 	ClassDB::add_compatibility_class("KinematicCollision", "KinematicCollision3D");
 	ClassDB::add_compatibility_class("Light", "Light3D");
 	ClassDB::add_compatibility_class("Listener", "Listener3D");
@@ -928,8 +971,8 @@ void register_scene_types() {
 	ClassDB::add_compatibility_class("VehicleWheel", "VehicleWheel3D");
 	ClassDB::add_compatibility_class("ViewportContainer", "SubViewportContainer");
 	ClassDB::add_compatibility_class("Viewport", "SubViewport");
-	ClassDB::add_compatibility_class("VisibilityEnabler", "VisibilityEnabler3D");
-	ClassDB::add_compatibility_class("VisibilityNotifier", "VisibilityNotifier3D");
+	ClassDB::add_compatibility_class("VisibilityEnabler", "VisibleOnScreenEnabler3D");
+	ClassDB::add_compatibility_class("VisibilityNotifier", "VisibleOnScreenNotifier3D");
 	ClassDB::add_compatibility_class("VisualServer", "RenderingServer");
 	ClassDB::add_compatibility_class("VisualShaderNodeScalarConstant", "VisualShaderNodeFloatConstant");
 	ClassDB::add_compatibility_class("VisualShaderNodeScalarFunc", "VisualShaderNodeFloatFunc");
@@ -948,6 +991,8 @@ void register_scene_types() {
 	ClassDB::add_compatibility_class("World", "World3D");
 	ClassDB::add_compatibility_class("StreamTexture", "StreamTexture2D");
 	ClassDB::add_compatibility_class("Light2D", "PointLight2D");
+	ClassDB::add_compatibility_class("VisibilityNotifier2D", "VisibleOnScreenNotifier2D");
+	ClassDB::add_compatibility_class("VisibilityNotifier3D", "VisibleOnScreenNotifier3D");
 
 #endif /* DISABLE_DEPRECATED */
 

@@ -261,10 +261,6 @@ void EditorSettingsDialog::_update_shortcuts() {
 	for (OrderedHashMap<StringName, InputMap::Action>::Element E = action_map.front(); E; E = E.next()) {
 		String action_name = E.key();
 
-		if (!shortcut_filter.is_subsequence_ofi(action_name)) {
-			continue;
-		}
-
 		InputMap::Action action = E.get();
 
 		Array events; // Need to get the list of events into an array so it can be set as metadata on the item.
@@ -289,7 +285,7 @@ void EditorSettingsDialog::_update_shortcuts() {
 			event_strings.push_back(I->get()->as_text());
 
 			// Only check if the events have been the same so far - once one fails, we don't need to check any more.
-			if (same_as_defaults && !key_default_events[count]->shortcut_match(I->get())) {
+			if (same_as_defaults && !key_default_events[count]->is_match(I->get())) {
 				same_as_defaults = false;
 			}
 			count++;
@@ -297,6 +293,10 @@ void EditorSettingsDialog::_update_shortcuts() {
 
 		// Join the text of the events with a delimiter so they can all be displayed in one cell.
 		String events_display_string = event_strings.is_empty() ? "None" : String("; ").join(event_strings);
+
+		if (!shortcut_filter.is_subsequence_ofi(action_name) && (events_display_string == "None" || !shortcut_filter.is_subsequence_ofi(events_display_string))) {
+			continue;
+		}
 
 		TreeItem *item = shortcuts->create_item(common_section);
 		item->set_text(0, action_name);

@@ -88,7 +88,7 @@ Ref<Shader> ColorPicker::wheel_shader;
 Ref<Shader> ColorPicker::circle_shader;
 
 void ColorPicker::init_shaders() {
-	wheel_shader.instance();
+	wheel_shader.instantiate();
 	wheel_shader->set_code(
 			"shader_type canvas_item;"
 			"void fragment() {"
@@ -107,7 +107,7 @@ void ColorPicker::init_shaders() {
 			"	COLOR = vec4(clamp((abs(fract(((a - TAU) / TAU) + vec3(3.0, 2.0, 1.0) / 3.0) * 6.0 - 3.0) - 1.0), 0.0, 1.0), (b + b2 + b3 + b4) / 4.00);"
 			"}");
 
-	circle_shader.instance();
+	circle_shader.instantiate();
 	circle_shader->set_code(
 			"shader_type canvas_item;"
 			"uniform float v = 1.0;"
@@ -289,7 +289,7 @@ void ColorPicker::_value_changed(double) {
 	emit_signal("color_changed", color);
 }
 
-void ColorPicker::_html_entered(const String &p_html) {
+void ColorPicker::_html_submitted(const String &p_html) {
 	if (updating || text_is_constructor || !c_text->is_visible()) {
 		return;
 	}
@@ -1041,7 +1041,7 @@ void ColorPicker::_html_focus_exit() {
 	if (c_text->get_menu()->is_visible()) {
 		return;
 	}
-	_html_entered(c_text->get_text());
+	_html_submitted(c_text->get_text());
 	_focus_exit();
 }
 
@@ -1204,7 +1204,7 @@ ColorPicker::ColorPicker() :
 
 	hhb->add_child(c_text);
 	c_text->set_h_size_flags(SIZE_EXPAND_FILL);
-	c_text->connect("text_entered", callable_mp(this, &ColorPicker::_html_entered));
+	c_text->connect("text_submitted", callable_mp(this, &ColorPicker::_html_submitted));
 	c_text->connect("focus_entered", callable_mp(this, &ColorPicker::_focus_enter));
 	c_text->connect("focus_exited", callable_mp(this, &ColorPicker::_html_focus_exit));
 
@@ -1213,9 +1213,9 @@ ColorPicker::ColorPicker() :
 	wheel_edit->set_custom_minimum_size(Size2(get_theme_constant("sv_width"), get_theme_constant("sv_height")));
 	hb_edit->add_child(wheel_edit);
 
-	wheel_mat.instance();
+	wheel_mat.instantiate();
 	wheel_mat->set_shader(wheel_shader);
-	circle_mat.instance();
+	circle_mat.instantiate();
 	circle_mat->set_shader(circle_shader);
 
 	MarginContainer *wheel_margin(memnew(MarginContainer));

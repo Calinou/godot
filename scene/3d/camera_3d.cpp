@@ -93,10 +93,6 @@ void Camera3D::_update_camera() {
 	}
 
 	get_viewport()->_camera_transform_changed_notify();
-
-	if (get_world_3d().is_valid()) {
-		get_world_3d()->_update_camera(this);
-	}
 }
 
 void Camera3D::_notification(int p_what) {
@@ -150,8 +146,8 @@ void Camera3D::_notification(int p_what) {
 	}
 }
 
-Transform Camera3D::get_camera_transform() const {
-	Transform tr = get_global_transform().orthonormalized();
+Transform3D Camera3D::get_camera_transform() const {
+	Transform3D tr = get_global_transform().orthonormalized();
 	tr.origin += tr.basis.get_axis(1) * v_offset;
 	tr.origin += tr.basis.get_axis(0) * h_offset;
 	return tr;
@@ -318,7 +314,7 @@ Vector3 Camera3D::project_ray_origin(const Point2 &p_pos) const {
 };
 
 bool Camera3D::is_position_behind(const Vector3 &p_pos) const {
-	Transform t = get_global_transform();
+	Transform3D t = get_global_transform();
 	Vector3 eyedir = -t.basis.get_axis(2).normalized();
 	return eyedir.dot(p_pos - t.origin) < near;
 }
@@ -337,7 +333,7 @@ Vector<Vector3> Camera3D::get_near_plane_points() const {
 	}
 
 	Vector3 endpoints[8];
-	cm.get_endpoints(Transform(), endpoints);
+	cm.get_endpoints(Transform3D(), endpoints);
 
 	Vector<Vector3> points;
 	points.push_back(Vector3());
@@ -500,6 +496,7 @@ void Camera3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_doppler_tracking", "mode"), &Camera3D::set_doppler_tracking);
 	ClassDB::bind_method(D_METHOD("get_doppler_tracking"), &Camera3D::get_doppler_tracking);
 	ClassDB::bind_method(D_METHOD("get_frustum"), &Camera3D::get_frustum);
+	ClassDB::bind_method(D_METHOD("is_position_in_frustum", "world_point"), &Camera3D::is_position_in_frustum);
 	ClassDB::bind_method(D_METHOD("get_camera_rid"), &Camera3D::get_camera);
 
 	ClassDB::bind_method(D_METHOD("set_cull_mask_bit", "layer", "enable"), &Camera3D::set_cull_mask_bit);
@@ -623,6 +620,16 @@ Vector<Plane> Camera3D::get_frustum() const {
 	return cm.get_projection_planes(get_camera_transform());
 }
 
+bool Camera3D::is_position_in_frustum(const Vector3 &p_position) const {
+	Vector<Plane> frustum = get_frustum();
+	for (int i = 0; i < frustum.size(); i++) {
+		if (frustum[i].is_point_over(p_position)) {
+			return false;
+		}
+	}
+	return true;
+}
+
 void Camera3D::set_v_offset(float p_offset) {
 	v_offset = p_offset;
 	_update_camera();
@@ -654,7 +661,7 @@ Camera3D::Camera3D() {
 	set_perspective(75.0, 0.05, 4000.0);
 	RenderingServer::get_singleton()->camera_set_cull_mask(camera, layers);
 	//active=false;
-	velocity_tracker.instance();
+	velocity_tracker.instantiate();
 	set_notify_transform(true);
 	set_disable_scale(true);
 }
@@ -686,8 +693,8 @@ ClippedCamera3D::ClipProcessCallback ClippedCamera3D::get_process_callback() con
 	return process_callback;
 }
 
-Transform ClippedCamera3D::get_camera_transform() const {
-	Transform t = Camera3D::get_camera_transform();
+Transform3D ClippedCamera3D::get_camera_transform() const {
+	Transform3D t = Camera3D::get_camera_transform();
 	t.origin += -t.basis.get_axis(Vector3::AXIS_Z).normalized() * clip_offset;
 	return t;
 }
@@ -735,7 +742,7 @@ void ClippedCamera3D::_notification(int p_what) {
 			}
 		}
 
-		Transform xf = get_global_transform();
+		Transform3D xf = get_global_transform();
 		xf.origin = ray_from;
 		xf.orthonormalize();
 

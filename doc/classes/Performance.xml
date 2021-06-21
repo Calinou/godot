@@ -20,7 +20,7 @@
 			</argument>
 			<argument index="1" name="callable" type="Callable">
 			</argument>
-			<argument index="2" name="arguments" type="Array" default="[  ]">
+			<argument index="2" name="arguments" type="Array" default="[]">
 			</argument>
 			<description>
 				Adds a custom monitor with name same as id. You can specify the category of monitor using '/' in id. If there are more than one '/' then default category is used. Default category is "Custom".
@@ -157,13 +157,13 @@
 			Largest amount of memory the message queue buffer has used, in bytes. The message queue is used for deferred functions calls and notifications.
 		</constant>
 		<constant name="OBJECT_COUNT" value="6" enum="Monitor">
-			Number of objects currently instanced (including nodes).
+			Number of objects currently instantiated (including nodes).
 		</constant>
 		<constant name="OBJECT_RESOURCE_COUNT" value="7" enum="Monitor">
 			Number of resources currently used.
 		</constant>
 		<constant name="OBJECT_NODE_COUNT" value="8" enum="Monitor">
-			Number of nodes currently instanced in the scene tree. This also includes the root node.
+			Number of nodes currently instantiated in the scene tree. This also includes the root node.
 		</constant>
 		<constant name="OBJECT_ORPHAN_NODE_COUNT" value="9" enum="Monitor">
 			Number of orphan nodes, i.e. nodes which are not parented to a node of the scene tree.

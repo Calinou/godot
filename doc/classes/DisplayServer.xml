@@ -46,7 +46,7 @@
 			</argument>
 			<argument index="1" name="flags" type="int">
 			</argument>
-			<argument index="2" name="rect" type="Rect2i" default="Rect2i( 0, 0, 0, 0 )">
+			<argument index="2" name="rect" type="Rect2i" default="Rect2i(0, 0, 0, 0)">
 			</argument>
 			<description>
 			</description>
@@ -64,7 +64,7 @@
 			</argument>
 			<argument index="1" name="shape" type="int" enum="DisplayServer.CursorShape" default="0">
 			</argument>
-			<argument index="2" name="hotspot" type="Vector2" default="Vector2( 0, 0 )">
+			<argument index="2" name="hotspot" type="Vector2" default="Vector2(0, 0)">
 			</argument>
 			<description>
 			</description>
@@ -436,7 +436,7 @@
 			</description>
 		</method>
 		<method name="mouse_get_button_state" qualifiers="const">
-			<return type="int">
+			<return type="int" enum="MouseButton">
 			</return>
 			<description>
 			</description>
@@ -650,7 +650,7 @@
 			</return>
 			<argument index="0" name="existing_text" type="String">
 			</argument>
-			<argument index="1" name="position" type="Rect2" default="Rect2i( 0, 0, 0, 0 )">
+			<argument index="1" name="position" type="Rect2" default="Rect2i(0, 0, 0, 0)">
 			</argument>
 			<argument index="2" name="multiline" type="bool" default="false">
 			</argument>
@@ -1044,12 +1044,20 @@
 		<constant name="FEATURE_SWAP_BUFFERS" value="17" enum="Feature">
 		</constant>
 		<constant name="MOUSE_MODE_VISIBLE" value="0" enum="MouseMode">
+			Makes the mouse cursor visible if it is hidden.
 		</constant>
 		<constant name="MOUSE_MODE_HIDDEN" value="1" enum="MouseMode">
+			Makes the mouse cursor hidden if it is visible.
 		</constant>
 		<constant name="MOUSE_MODE_CAPTURED" value="2" enum="MouseMode">
+			Captures the mouse. The mouse will be hidden and its position locked at the center of the screen.
+			[b]Note:[/b] If you want to process the mouse's movement in this mode, you need to use [member InputEventMouseMotion.relative].
 		</constant>
 		<constant name="MOUSE_MODE_CONFINED" value="3" enum="MouseMode">
+			Confines the mouse cursor to the game window, and make it visible.
+		</constant>
+		<constant name="MOUSE_MODE_CONFINED_HIDDEN" value="4" enum="MouseMode">
+			Confines the mouse cursor to the game window, and make it hidden.
 		</constant>
 		<constant name="SCREEN_OF_MAIN_WINDOW" value="-1">
 		</constant>

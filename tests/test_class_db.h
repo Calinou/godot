@@ -97,7 +97,7 @@ struct ExposedClass {
 
 	bool is_singleton = false;
 	bool is_instantiable = false;
-	bool is_reference = false;
+	bool is_ref_counted = false;
 
 	ClassDB::APIType api_type;
 
@@ -131,7 +131,7 @@ struct ExposedClass {
 struct NamesCache {
 	StringName variant_type = StaticCString::create("Variant");
 	StringName object_class = StaticCString::create("Object");
-	StringName reference_class = StaticCString::create("Reference");
+	StringName ref_counted_class = StaticCString::create("RefCounted");
 	StringName string_type = StaticCString::create("String");
 	StringName string_name_type = StaticCString::create("StringName");
 	StringName node_path_type = StaticCString::create("NodePath");
@@ -240,10 +240,10 @@ bool arg_default_value_is_assignable_to_type(const Context &p_context, const Var
 				   p_arg_type.name == p_context.names_cache.node_path_type;
 		case Variant::NODE_PATH:
 			return p_arg_type.name == p_context.names_cache.node_path_type;
-		case Variant::TRANSFORM:
+		case Variant::TRANSFORM3D:
 		case Variant::TRANSFORM2D:
 		case Variant::BASIS:
-		case Variant::QUAT:
+		case Variant::QUATERNION:
 		case Variant::PLANE:
 		case Variant::AABB:
 		case Variant::COLOR:
@@ -516,7 +516,7 @@ void add_exposed_classes(Context &r_context) {
 		exposed_class.api_type = api_type;
 		exposed_class.is_singleton = Engine::get_singleton()->has_singleton(class_name);
 		exposed_class.is_instantiable = class_info->creation_func && !exposed_class.is_singleton;
-		exposed_class.is_reference = ClassDB::is_parent_class(class_name, "Reference");
+		exposed_class.is_ref_counted = ClassDB::is_parent_class(class_name, "RefCounted");
 		exposed_class.base = ClassDB::get_parent_class(class_name);
 
 		// Add properties
@@ -611,7 +611,7 @@ void add_exposed_classes(Context &r_context) {
 				method.return_type.name = return_info.class_name;
 
 				bool bad_reference_hint = !method.is_virtual && return_info.hint != PROPERTY_HINT_RESOURCE_TYPE &&
-										  ClassDB::is_parent_class(return_info.class_name, r_context.names_cache.reference_class);
+										  ClassDB::is_parent_class(return_info.class_name, r_context.names_cache.ref_counted_class);
 				TEST_COND(bad_reference_hint, "Return type is reference but hint is not '" _STR(PROPERTY_HINT_RESOURCE_TYPE) "'.", " Are you returning a reference type by pointer? Method: '",
 						exposed_class.name, ".", method.name, "'.");
 			} else if (return_info.hint == PROPERTY_HINT_RESOURCE_TYPE) {
@@ -665,7 +665,7 @@ void add_exposed_classes(Context &r_context) {
 			TEST_COND(exposed_class.find_property_by_name(method.name),
 					"Method name conflicts with property: '", String(class_name), ".", String(method.name), "'.");
 
-			// Classes starting with an underscore are ignored unless they're used as a property setter or getter
+			// Methods starting with an underscore are ignored unless they're virtual or used as a property setter or getter.
 			if (!method.is_virtual && String(method.name)[0] == '_') {
 				for (const List<PropertyData>::Element *F = exposed_class.properties.front(); F; F = F->next()) {
 					const PropertyData &prop = F->get();
@@ -677,6 +677,10 @@ void add_exposed_classes(Context &r_context) {
 				}
 			} else {
 				exposed_class.methods.push_back(method);
+			}
+
+			if (method.is_virtual) {
+				TEST_COND(String(method.name)[0] != '_', "Virtual method ", String(method.name), " does not start with underscore.");
 			}
 		}
 

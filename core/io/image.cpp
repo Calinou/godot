@@ -1428,16 +1428,23 @@ void Image::flip_x() {
 	}
 }
 
+/// Get mipmap size and offset.
 int Image::_get_dst_image_size(int p_width, int p_height, Format p_format, int &r_mipmaps, int p_mipmaps, int *r_mm_width, int *r_mm_height) {
+	// Data offset in mipmaps (including the original texture).
 	int size = 0;
+
 	int w = p_width;
 	int h = p_height;
+
+	// Current mipmap index in the loop below. p_mipmaps is the target mipmap index.
+	// In this function, mipmap 0 represents the first mipmap instead of the original texture.
 	int mm = 0;
 
 	int pixsize = get_format_pixel_size(p_format);
 	int pixshift = get_format_pixel_rshift(p_format);
 	int block = get_format_block_size(p_format);
-	//technically, you can still compress up to 1 px no matter the format, so commenting this
+
+	// Technically, you can still compress up to 1 px no matter the format, so commenting this.
 	//int minw, minh;
 	//get_format_min_pixel_size(p_format, minw, minh);
 	int minw = 1, minh = 1;
@@ -1453,17 +1460,6 @@ int Image::_get_dst_image_size(int p_width, int p_height, Format p_format, int &
 
 		size += s;
 
-		if (r_mm_width) {
-			*r_mm_width = bw;
-		}
-		if (r_mm_height) {
-			*r_mm_height = bh;
-		}
-
-		if (p_mipmaps >= 0 && mm == p_mipmaps) {
-			break;
-		}
-
 		if (p_mipmaps >= 0) {
 			w = MAX(minw, w >> 1);
 			h = MAX(minh, h >> 1);
@@ -1474,6 +1470,21 @@ int Image::_get_dst_image_size(int p_width, int p_height, Format p_format, int &
 			w = MAX(minw, w >> 1);
 			h = MAX(minh, h >> 1);
 		}
+
+		// Set mipmap size.
+		// It might be necessary to put this after the minimum mipmap size check because of the possible occurrence of "1 >> 1".
+		if (r_mm_width) {
+			*r_mm_width = bw >> 1;
+		}
+		if (r_mm_height) {
+			*r_mm_height = bh >> 1;
+		}
+
+		// Reach target mipmap.
+		if (p_mipmaps >= 0 && mm == p_mipmaps) {
+			break;
+		}
+
 		mm++;
 	}
 
@@ -1934,7 +1945,7 @@ Error Image::generate_mipmap_roughness(RoughnessChannel p_roughness_channel, con
 			memcpy(wr.ptr(), ptr, size);
 			wr = uint8_t*();
 			Ref<Image> im;
-			im.instance();
+			im.instantiate();
 			im->create(w, h, false, format, imgdata);
 			im->save_png("res://mipmap_" + itos(i) + ".png");
 		}
@@ -2718,10 +2729,11 @@ void (*Image::_image_decompress_bptc)(Image *) = nullptr;
 void (*Image::_image_decompress_etc1)(Image *) = nullptr;
 void (*Image::_image_decompress_etc2)(Image *) = nullptr;
 
-Vector<uint8_t> (*Image::lossy_packer)(const Ref<Image> &, float) = nullptr;
-Ref<Image> (*Image::lossy_unpacker)(const Vector<uint8_t> &) = nullptr;
-Vector<uint8_t> (*Image::lossless_packer)(const Ref<Image> &) = nullptr;
-Ref<Image> (*Image::lossless_unpacker)(const Vector<uint8_t> &) = nullptr;
+Vector<uint8_t> (*Image::webp_lossy_packer)(const Ref<Image> &, float) = nullptr;
+Vector<uint8_t> (*Image::webp_lossless_packer)(const Ref<Image> &) = nullptr;
+Ref<Image> (*Image::webp_unpacker)(const Vector<uint8_t> &) = nullptr;
+Vector<uint8_t> (*Image::png_packer)(const Ref<Image> &) = nullptr;
+Ref<Image> (*Image::png_unpacker)(const Vector<uint8_t> &) = nullptr;
 Vector<uint8_t> (*Image::basis_universal_packer)(const Ref<Image> &, Image::UsedChannels) = nullptr;
 Ref<Image> (*Image::basis_universal_unpacker)(const Vector<uint8_t> &) = nullptr;
 
@@ -3268,7 +3280,7 @@ Ref<Image> Image::rgbe_to_srgb() {
 	ERR_FAIL_COND_V(format != FORMAT_RGBE9995, Ref<Image>());
 
 	Ref<Image> new_image;
-	new_image.instance();
+	new_image.instantiate();
 	new_image->create(width, height, false, Image::FORMAT_RGB8);
 
 	for (int row = 0; row < height; row++) {
@@ -3298,7 +3310,7 @@ Ref<Image> Image::get_image_from_mipmap(int p_mipamp) const {
 	}
 
 	Ref<Image> image;
-	image.instance();
+	image.instantiate();
 	image->width = w;
 	image->height = h;
 	image->format = format;
@@ -3615,7 +3627,7 @@ Image::Image(const uint8_t *p_mem_png_jpg, int p_len) {
 
 Ref<Resource> Image::duplicate(bool p_subresources) const {
 	Ref<Image> copy;
-	copy.instance();
+	copy.instantiate();
 	copy->_copy_internals_from(*this);
 	return copy;
 }

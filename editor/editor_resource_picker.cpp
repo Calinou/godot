@@ -271,7 +271,7 @@ void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 			}
 
 			String orig_type = edited_resource->get_class();
-			Object *inst = ClassDB::instance(orig_type);
+			Object *inst = ClassDB::instantiate(orig_type);
 			Ref<Resource> unique_resource = Ref<Resource>(Object::cast_to<Resource>(inst));
 			ERR_FAIL_COND(unique_resource.is_null());
 
@@ -334,7 +334,7 @@ void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 			Variant obj;
 
 			if (ScriptServer::is_global_class(intype)) {
-				obj = ClassDB::instance(ScriptServer::get_global_class_native_base(intype));
+				obj = ClassDB::instantiate(ScriptServer::get_global_class_native_base(intype));
 				if (obj) {
 					Ref<Script> script = ResourceLoader::load(ScriptServer::get_global_class_path(intype));
 					if (script.is_valid()) {
@@ -342,7 +342,7 @@ void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 					}
 				}
 			} else {
-				obj = ClassDB::instance(intype);
+				obj = ClassDB::instantiate(intype);
 			}
 
 			if (!obj) {
@@ -361,8 +361,8 @@ void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 
 void EditorResourcePicker::set_create_options(Object *p_menu_node) {
 	// If a subclass implements this method, use it to replace all create items.
-	if (get_script_instance() && get_script_instance()->has_method("set_create_options")) {
-		get_script_instance()->call("set_create_options", p_menu_node);
+	if (get_script_instance() && get_script_instance()->has_method("_set_create_options")) {
+		get_script_instance()->call("_set_create_options", p_menu_node);
 		return;
 	}
 
@@ -395,7 +395,7 @@ void EditorResourcePicker::set_create_options(Object *p_menu_node) {
 				}
 			}
 
-			if (!is_custom_resource && !(ScriptServer::is_global_class(t) || ClassDB::can_instance(t))) {
+			if (!is_custom_resource && !(ScriptServer::is_global_class(t) || ClassDB::can_instantiate(t))) {
 				continue;
 			}
 
@@ -418,8 +418,8 @@ void EditorResourcePicker::set_create_options(Object *p_menu_node) {
 }
 
 bool EditorResourcePicker::handle_menu_selected(int p_which) {
-	if (get_script_instance() && get_script_instance()->has_method("handle_menu_selected")) {
-		return get_script_instance()->call("handle_menu_selected", p_which);
+	if (get_script_instance() && get_script_instance()->has_method("_handle_menu_selected")) {
+		return get_script_instance()->call("_handle_menu_selected", p_which);
 	}
 
 	return false;
@@ -625,9 +625,9 @@ void EditorResourcePicker::drop_data_fw(const Point2 &p_point, const Variant &p_
 
 void EditorResourcePicker::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_update_resource_preview"), &EditorResourcePicker::_update_resource_preview);
-	ClassDB::bind_method(D_METHOD("get_drag_data_fw", "position", "from"), &EditorResourcePicker::get_drag_data_fw);
-	ClassDB::bind_method(D_METHOD("can_drop_data_fw", "position", "data", "from"), &EditorResourcePicker::can_drop_data_fw);
-	ClassDB::bind_method(D_METHOD("drop_data_fw", "position", "data", "from"), &EditorResourcePicker::drop_data_fw);
+	ClassDB::bind_method(D_METHOD("_get_drag_data_fw", "position", "from"), &EditorResourcePicker::get_drag_data_fw);
+	ClassDB::bind_method(D_METHOD("_can_drop_data_fw", "position", "data", "from"), &EditorResourcePicker::can_drop_data_fw);
+	ClassDB::bind_method(D_METHOD("_drop_data_fw", "position", "data", "from"), &EditorResourcePicker::drop_data_fw);
 
 	ClassDB::bind_method(D_METHOD("set_base_type", "base_type"), &EditorResourcePicker::set_base_type);
 	ClassDB::bind_method(D_METHOD("get_base_type"), &EditorResourcePicker::get_base_type);
@@ -640,11 +640,11 @@ void EditorResourcePicker::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_editable", "enable"), &EditorResourcePicker::set_editable);
 	ClassDB::bind_method(D_METHOD("is_editable"), &EditorResourcePicker::is_editable);
 
-	ClassDB::add_virtual_method(get_class_static(), MethodInfo("set_create_options", PropertyInfo(Variant::OBJECT, "menu_node")));
-	ClassDB::add_virtual_method(get_class_static(), MethodInfo("handle_menu_selected", PropertyInfo(Variant::INT, "id")));
+	ClassDB::add_virtual_method(get_class_static(), MethodInfo("_set_create_options", PropertyInfo(Variant::OBJECT, "menu_node")));
+	ClassDB::add_virtual_method(get_class_static(), MethodInfo("_handle_menu_selected", PropertyInfo(Variant::INT, "id")));
 
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "base_type"), "set_base_type", "get_base_type");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "edited_resource", PROPERTY_HINT_RESOURCE_TYPE, "Resource", 0), "set_edited_resource", "get_edited_resource");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "edited_resource", PROPERTY_HINT_RESOURCE_TYPE, "Resource", PROPERTY_USAGE_NONE), "set_edited_resource", "get_edited_resource");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "editable"), "set_editable", "is_editable");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "toggle_mode"), "set_toggle_mode", "is_toggle_mode");
 
@@ -857,7 +857,7 @@ void EditorScriptPicker::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_script_owner", "owner_node"), &EditorScriptPicker::set_script_owner);
 	ClassDB::bind_method(D_METHOD("get_script_owner"), &EditorScriptPicker::get_script_owner);
 
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "script_owner", PROPERTY_HINT_RESOURCE_TYPE, "Node", 0), "set_script_owner", "get_script_owner");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "script_owner", PROPERTY_HINT_RESOURCE_TYPE, "Node", PROPERTY_USAGE_NONE), "set_script_owner", "get_script_owner");
 }
 
 EditorScriptPicker::EditorScriptPicker() {

@@ -30,8 +30,8 @@
 
 #include "platform/javascript/display_server_javascript.h"
 
-#include "drivers/dummy/rasterizer_dummy.h"
 #include "platform/javascript/os_javascript.h"
+#include "servers/rendering/rasterizer_dummy.h"
 
 #include <emscripten.h>
 #include <png.h>
@@ -128,7 +128,7 @@ void DisplayServerJavaScript::dom2godot_mod(T *emscripten_event_ptr, Ref<InputEv
 
 Ref<InputEventKey> DisplayServerJavaScript::setup_key_event(const EmscriptenKeyboardEvent *emscripten_event) {
 	Ref<InputEventKey> ev;
-	ev.instance();
+	ev.instantiate();
 	ev->set_echo(emscripten_event->repeat);
 	dom2godot_mod(emscripten_event, ev);
 	ev->set_keycode(dom_code2godot_scancode(emscripten_event->code, emscripten_event->key, false));
@@ -181,7 +181,7 @@ EM_BOOL DisplayServerJavaScript::mouse_button_callback(int p_event_type, const E
 	DisplayServerJavaScript *display = get_singleton();
 
 	Ref<InputEventMouseButton> ev;
-	ev.instance();
+	ev.instantiate();
 	ev->set_pressed(p_event_type == EMSCRIPTEN_EVENT_MOUSEDOWN);
 	ev->set_position(compute_position_in_canvas(p_event->clientX, p_event->clientY));
 	ev->set_global_position(ev->get_position());
@@ -229,8 +229,8 @@ EM_BOOL DisplayServerJavaScript::mouse_button_callback(int p_event_type, const E
 	}
 
 	Input *input = Input::get_singleton();
-	int mask = input->get_mouse_button_mask();
-	int button_flag = 1 << (ev->get_button_index() - 1);
+	MouseButton mask = input->get_mouse_button_mask();
+	MouseButton button_flag = MouseButton(1 << (ev->get_button_index() - 1));
 	if (ev->is_pressed()) {
 		// Since the event is consumed, focus manually. The containing iframe,
 		// if exists, may not have focus yet, so focus even if already focused.
@@ -261,7 +261,7 @@ EM_BOOL DisplayServerJavaScript::mousemove_callback(int p_event_type, const Emsc
 		return false;
 
 	Ref<InputEventMouseMotion> ev;
-	ev.instance();
+	ev.instantiate();
 	dom2godot_mod(p_event, ev);
 	ev->set_button_mask(input_mask);
 
@@ -407,9 +407,10 @@ void DisplayServerJavaScript::cursor_set_custom_image(const RES &p_cursor, Curso
 
 // Mouse mode
 void DisplayServerJavaScript::mouse_set_mode(MouseMode p_mode) {
-	ERR_FAIL_COND_MSG(p_mode == MOUSE_MODE_CONFINED, "MOUSE_MODE_CONFINED is not supported for the HTML5 platform.");
-	if (p_mode == mouse_get_mode())
+	ERR_FAIL_COND_MSG(p_mode == MOUSE_MODE_CONFINED || p_mode == MOUSE_MODE_CONFINED_HIDDEN, "MOUSE_MODE_CONFINED is not supported for the HTML5 platform.");
+	if (p_mode == mouse_get_mode()) {
 		return;
+	}
 
 	if (p_mode == MOUSE_MODE_VISIBLE) {
 		godot_js_display_cursor_set_visible(1);
@@ -451,7 +452,7 @@ EM_BOOL DisplayServerJavaScript::wheel_callback(int p_event_type, const Emscript
 
 	Input *input = Input::get_singleton();
 	Ref<InputEventMouseButton> ev;
-	ev.instance();
+	ev.instantiate();
 	ev->set_position(input->get_mouse_position());
 	ev->set_global_position(ev->get_position());
 
@@ -477,11 +478,11 @@ EM_BOOL DisplayServerJavaScript::wheel_callback(int p_event_type, const Emscript
 	int button_flag = 1 << (ev->get_button_index() - 1);
 
 	ev->set_pressed(true);
-	ev->set_button_mask(input->get_mouse_button_mask() | button_flag);
+	ev->set_button_mask(MouseButton(input->get_mouse_button_mask() | button_flag));
 	input->parse_input_event(ev);
 
 	ev->set_pressed(false);
-	ev->set_button_mask(input->get_mouse_button_mask() & ~button_flag);
+	ev->set_button_mask(MouseButton(input->get_mouse_button_mask() & ~button_flag));
 	input->parse_input_event(ev);
 
 	return true;
@@ -491,7 +492,7 @@ EM_BOOL DisplayServerJavaScript::wheel_callback(int p_event_type, const Emscript
 EM_BOOL DisplayServerJavaScript::touch_press_callback(int p_event_type, const EmscriptenTouchEvent *p_event, void *p_user_data) {
 	DisplayServerJavaScript *display = get_singleton();
 	Ref<InputEventScreenTouch> ev;
-	ev.instance();
+	ev.instantiate();
 	int lowest_id_index = -1;
 	for (int i = 0; i < p_event->numTouches; ++i) {
 		const EmscriptenTouchPoint &touch = p_event->touches[i];
@@ -513,7 +514,7 @@ EM_BOOL DisplayServerJavaScript::touch_press_callback(int p_event_type, const Em
 EM_BOOL DisplayServerJavaScript::touchmove_callback(int p_event_type, const EmscriptenTouchEvent *p_event, void *p_user_data) {
 	DisplayServerJavaScript *display = get_singleton();
 	Ref<InputEventScreenDrag> ev;
-	ev.instance();
+	ev.instantiate();
 	int lowest_id_index = -1;
 	for (int i = 0; i < p_event->numTouches; ++i) {
 		const EmscriptenTouchPoint &touch = p_event->touches[i];
@@ -552,12 +553,12 @@ void DisplayServerJavaScript::vk_input_text_callback(const char *p_text, int p_c
 	Input *input = Input::get_singleton();
 	Ref<InputEventKey> k;
 	for (int i = 0; i < p_cursor; i++) {
-		k.instance();
+		k.instantiate();
 		k->set_pressed(true);
 		k->set_echo(false);
 		k->set_keycode(KEY_RIGHT);
 		input->parse_input_event(k);
-		k.instance();
+		k.instantiate();
 		k->set_pressed(false);
 		k->set_echo(false);
 		k->set_keycode(KEY_RIGHT);

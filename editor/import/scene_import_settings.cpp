@@ -317,7 +317,7 @@ void SceneImportSettings::_fill_scene(Node *p_node, TreeItem *p_parent_item) {
 	if (mesh_node && mesh_node->get_mesh().is_valid()) {
 		_fill_mesh(scene_tree, mesh_node->get_mesh(), item);
 
-		Transform accum_xform;
+		Transform3D accum_xform;
 		Node3D *base = mesh_node;
 		while (base) {
 			accum_xform = base->get_transform() * accum_xform;
@@ -379,7 +379,7 @@ void SceneImportSettings::_update_camera() {
 
 	camera->set_orthogonal(camera_size * zoom, 0.0001, camera_size * 2);
 
-	Transform xf;
+	Transform3D xf;
 	xf.basis = Basis(Vector3(0, 1, 0), rot_y) * Basis(Vector3(1, 0, 0), rot_x);
 	xf.origin = center;
 	xf.translate(0, 0, camera_size);
@@ -435,7 +435,7 @@ void SceneImportSettings::open_settings(const String &p_path) {
 		base_subresource_settings.clear();
 
 		Ref<ConfigFile> config;
-		config.instance();
+		config.instantiate();
 		Error err = config->load(p_path + ".import");
 		if (err == OK) {
 			List<String> keys;
@@ -493,7 +493,7 @@ void SceneImportSettings::_select(Tree *p_from, String p_type, String p_id) {
 			Ref<Mesh> base_mesh = mi->get_mesh();
 			if (base_mesh.is_valid()) {
 				AABB aabb = base_mesh->get_aabb();
-				Transform aabb_xf;
+				Transform3D aabb_xf;
 				aabb_xf.basis.scale(aabb.size);
 				aabb_xf.origin = aabb.position;
 
@@ -1099,18 +1099,18 @@ SceneImportSettings::SceneImportSettings() {
 	camera->make_current();
 
 	light = memnew(DirectionalLight3D);
-	light->set_transform(Transform().looking_at(Vector3(-1, -2, -0.6), Vector3(0, 1, 0)));
+	light->set_transform(Transform3D().looking_at(Vector3(-1, -2, -0.6), Vector3(0, 1, 0)));
 	base_viewport->add_child(light);
 	light->set_shadow(true);
 
 	{
 		Ref<StandardMaterial3D> selection_mat;
-		selection_mat.instance();
+		selection_mat.instantiate();
 		selection_mat->set_shading_mode(StandardMaterial3D::SHADING_MODE_UNSHADED);
 		selection_mat->set_albedo(Color(1, 0.8, 1.0));
 
 		Ref<SurfaceTool> st;
-		st.instance();
+		st.instantiate();
 		st->begin(Mesh::PRIMITIVE_LINES);
 
 		AABB base_aabb;
@@ -1126,7 +1126,7 @@ SceneImportSettings::SceneImportSettings() {
 			st->add_vertex(b.lerp(a, 0.2));
 		}
 
-		selection_mesh.instance();
+		selection_mesh.instantiate();
 		st->commit(selection_mesh);
 		selection_mesh->surface_set_material(0, selection_mat);
 
@@ -1141,7 +1141,7 @@ SceneImportSettings::SceneImportSettings() {
 		base_viewport->add_child(mesh_preview);
 		mesh_preview->hide();
 
-		material_preview.instance();
+		material_preview.instantiate();
 	}
 
 	inspector = memnew(EditorInspector);

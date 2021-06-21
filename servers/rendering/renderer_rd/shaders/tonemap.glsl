@@ -4,6 +4,12 @@
 
 #VERSION_DEFINES
 
+#ifdef MULTIVIEW
+#ifdef has_VK_KHR_multiview
+#extension GL_EXT_multiview : enable
+#endif
+#endif
+
 layout(location = 0) out vec2 uv_interp;
 
 void main() {
@@ -18,9 +24,22 @@ void main() {
 
 #VERSION_DEFINES
 
+#ifdef MULTIVIEW
+#ifdef has_VK_KHR_multiview
+#extension GL_EXT_multiview : enable
+#define ViewIndex gl_ViewIndex
+#else // has_VK_KHR_multiview
+#define ViewIndex 0
+#endif // has_VK_KHR_multiview
+#endif //MULTIVIEW
+
 layout(location = 0) in vec2 uv_interp;
 
+#ifdef MULTIVIEW
+layout(set = 0, binding = 0) uniform sampler2DArray source_color;
+#else
 layout(set = 0, binding = 0) uniform sampler2D source_color;
+#endif
 layout(set = 1, binding = 0) uniform sampler2D source_auto_exposure;
 layout(set = 2, binding = 0) uniform sampler2D source_glow;
 #ifdef USE_1D_LUT
@@ -53,6 +72,7 @@ layout(push_constant, binding = 1, std430) uniform Params {
 	vec2 pixel_size;
 	bool use_fxaa;
 	bool use_debanding;
+	float sharpen_intensity;
 }
 params;
 
@@ -277,10 +297,17 @@ vec3 do_fxaa(vec3 color, float exposure, vec2 uv_interp) {
 	const float FXAA_REDUCE_MUL = (1.0 / 8.0);
 	const float FXAA_SPAN_MAX = 8.0;
 
+#ifdef MULTIVIEW
+	vec3 rgbNW = textureLod(source_color, vec3(uv_interp + vec2(-1.0, -1.0) * params.pixel_size, ViewIndex), 0.0).xyz * exposure;
+	vec3 rgbNE = textureLod(source_color, vec3(uv_interp + vec2(1.0, -1.0) * params.pixel_size, ViewIndex), 0.0).xyz * exposure;
+	vec3 rgbSW = textureLod(source_color, vec3(uv_interp + vec2(-1.0, 1.0) * params.pixel_size, ViewIndex), 0.0).xyz * exposure;
+	vec3 rgbSE = textureLod(source_color, vec3(uv_interp + vec2(1.0, 1.0) * params.pixel_size, ViewIndex), 0.0).xyz * exposure;
+#else
 	vec3 rgbNW = textureLod(source_color, uv_interp + vec2(-1.0, -1.0) * params.pixel_size, 0.0).xyz * exposure;
 	vec3 rgbNE = textureLod(source_color, uv_interp + vec2(1.0, -1.0) * params.pixel_size, 0.0).xyz * exposure;
 	vec3 rgbSW = textureLod(source_color, uv_interp + vec2(-1.0, 1.0) * params.pixel_size, 0.0).xyz * exposure;
 	vec3 rgbSE = textureLod(source_color, uv_interp + vec2(1.0, 1.0) * params.pixel_size, 0.0).xyz * exposure;
+#endif
 	vec3 rgbM = color;
 	vec3 luma = vec3(0.299, 0.587, 0.114);
 	float lumaNW = dot(rgbNW, luma);
@@ -305,8 +332,13 @@ vec3 do_fxaa(vec3 color, float exposure, vec2 uv_interp) {
 						  dir * rcpDirMin)) *
 		  params.pixel_size;
 
+#ifdef MULTIVIEW
+	vec3 rgbA = 0.5 * exposure * (textureLod(source_color, vec3(uv_interp + dir * (1.0 / 3.0 - 0.5), ViewIndex), 0.0).xyz + textureLod(source_color, vec3(uv_interp + dir * (2.0 / 3.0 - 0.5), ViewIndex), 0.0).xyz);
+	vec3 rgbB = rgbA * 0.5 + 0.25 * exposure * (textureLod(source_color, vec3(uv_interp + dir * -0.5, ViewIndex), 0.0).xyz + textureLod(source_color, vec3(uv_interp + dir * 0.5, ViewIndex), 0.0).xyz);
+#else
 	vec3 rgbA = 0.5 * exposure * (textureLod(source_color, uv_interp + dir * (1.0 / 3.0 - 0.5), 0.0).xyz + textureLod(source_color, uv_interp + dir * (2.0 / 3.0 - 0.5), 0.0).xyz);
 	vec3 rgbB = rgbA * 0.5 + 0.25 * exposure * (textureLod(source_color, uv_interp + dir * -0.5, 0.0).xyz + textureLod(source_color, uv_interp + dir * 0.5, 0.0).xyz);
+#endif
 
 	float lumaB = dot(rgbB, luma);
 	if ((lumaB < lumaMin) || (lumaB > lumaMax)) {
@@ -328,8 +360,60 @@ vec3 screen_space_dither(vec2 frag_coord) {
 	return (dither.rgb - 0.5) / 255.0;
 }
 
+// Adapted from https://github.com/DadSchoorse/vkBasalt/blob/b929505ba71dea21d6c32a5a59f2d241592b30c4/src/shader/cas.frag.glsl
+// (MIT license).
+vec3 do_cas(vec3 color, vec2 uv_interp, float sharpen_intensity) {
+	// Fetch a 3x3 neighborhood around the pixel 'e',
+	//  a b c
+	//  d(e)f
+	//  g h i
+	vec3 a = textureLodOffset(source_color, uv_interp, 0.0, ivec2(-1, -1)).rgb;
+	vec3 b = textureLodOffset(source_color, uv_interp, 0.0, ivec2(0, -1)).rgb;
+	vec3 c = textureLodOffset(source_color, uv_interp, 0.0, ivec2(1, -1)).rgb;
+	vec3 d = textureLodOffset(source_color, uv_interp, 0.0, ivec2(-1, 0)).rgb;
+	vec3 e = color.rgb;
+	vec3 f = textureLodOffset(source_color, uv_interp, 0.0, ivec2(1, 0)).rgb;
+	vec3 g = textureLodOffset(source_color, uv_interp, 0.0, ivec2(-1, 1)).rgb;
+	vec3 h = textureLodOffset(source_color, uv_interp, 0.0, ivec2(0, 1)).rgb;
+	vec3 i = textureLodOffset(source_color, uv_interp, 0.0, ivec2(1, 1)).rgb;
+
+	// Soft min and max.
+	//  a b c             b
+	//  d e f * 0.5  +  d e f * 0.5
+	//  g h i             h
+	// These are 2.0x bigger (factored out the extra multiply).
+	vec3 min_rgb = min(min(min(d, e), min(f, b)), h);
+	vec3 min_rgb2 = min(min(min(min_rgb, a), min(g, c)), i);
+	min_rgb += min_rgb2;
+
+	vec3 max_rgb = max(max(max(d, e), max(f, b)), h);
+	vec3 max_rgb2 = max(max(max(max_rgb, a), max(g, c)), i);
+	max_rgb += max_rgb2;
+
+	// Smooth minimum distance to signal limit divided by smooth max.
+	vec3 rcp_max_rgb = vec3(1.0) / max_rgb;
+	vec3 amp_rgb = clamp((min(min_rgb, 2.0 - max_rgb) * rcp_max_rgb), 0.0, 1.0);
+
+	// Shaping amount of sharpening.
+	amp_rgb = inversesqrt(amp_rgb);
+	float peak = 8.0 - 3.0 * sharpen_intensity;
+	vec3 w_rgb = -vec3(1) / (amp_rgb * peak);
+	vec3 rcp_weight_rgb = vec3(1.0) / (1.0 + 4.0 * w_rgb);
+
+	//                          0 w 0
+	//  Filter shape:           w 1 w
+	//                          0 w 0
+	vec3 window = b + d + f + h;
+
+	return max(vec3(0.0), (window * w_rgb + e) * rcp_weight_rgb);
+}
+
 void main() {
+#ifdef MULTIVIEW
+	vec3 color = textureLod(source_color, vec3(uv_interp, ViewIndex), 0.0f).rgb;
+#else
 	vec3 color = textureLod(source_color, uv_interp, 0.0f).rgb;
+#endif
 
 	// Exposure
 
@@ -351,11 +435,19 @@ void main() {
 	if (params.use_fxaa) {
 		color = do_fxaa(color, exposure, uv_interp);
 	}
+
+	if (params.sharpen_intensity >= 0.001) {
+		// CAS gives best results when applied after tonemapping, but `source_color` isn't tonemapped.
+		// As a workaround, apply CAS before tonemapping so that the image still has a correct appearance when tonemapped.
+		color = do_cas(color, uv_interp, params.sharpen_intensity);
+	}
+
 	if (params.use_debanding) {
 		// For best results, debanding should be done before tonemapping.
 		// Otherwise, we're adding noise to an already-quantized image.
 		color += screen_space_dither(gl_FragCoord.xy);
 	}
+
 	color = apply_tonemapping(color, params.white);
 
 	color = linear_to_srgb(color); // regular linear -> SRGB conversion

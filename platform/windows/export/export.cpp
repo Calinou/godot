@@ -28,7 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "core/os/file_access.h"
+#include "core/io/file_access.h"
 #include "core/os/os.h"
 #include "editor/editor_export.h"
 #include "editor/editor_node.h"
@@ -344,11 +344,11 @@ void register_windows_exporter() {
 #endif
 
 	Ref<EditorExportPlatformWindows> platform;
-	platform.instance();
+	platform.instantiate();
 
 	Ref<Image> img = memnew(Image(_windows_logo));
 	Ref<ImageTexture> logo;
-	logo.instance();
+	logo.instantiate();
 	logo->create_from_image(img);
 	platform->set_logo(logo);
 	platform->set_name("Windows Desktop");

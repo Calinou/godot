@@ -36,7 +36,6 @@
 #include "android/asset_manager_jni.h"
 #include "api/java_class_wrapper.h"
 #include "api/jni_singleton.h"
-#include "audio_driver_jandroid.h"
 #include "core/config/engine.h"
 #include "core/config/project_settings.h"
 #include "core/input/input.h"
@@ -94,7 +93,6 @@ JNIEXPORT void JNICALL Java_org_godotengine_godot_GodotLib_initialize(JNIEnv *en
 	FileAccessAndroid::asset_manager = AAssetManager_fromJava(env, amgr);
 
 	DirAccessJAndroid::setup(godot_io_java->get_instance());
-	AudioDriverAndroid::setup(godot_io_java->get_instance());
 	NetSocketAndroid::setup(godot_java->get_member_object("netUtils", "Lorg/godotengine/godot/utils/GodotNetUtils;", env));
 
 	os_android = new OS_Android(godot_java, godot_io_java, p_use_apk_expansion);
@@ -326,15 +324,15 @@ JNIEXPORT void JNICALL Java_org_godotengine_godot_GodotLib_joyhat(JNIEnv *env, j
 	int hat = 0;
 	if (p_hat_x != 0) {
 		if (p_hat_x < 0)
-			hat |= Input::HAT_MASK_LEFT;
+			hat |= HatMask::HAT_MASK_LEFT;
 		else
-			hat |= Input::HAT_MASK_RIGHT;
+			hat |= HatMask::HAT_MASK_RIGHT;
 	}
 	if (p_hat_y != 0) {
 		if (p_hat_y < 0)
-			hat |= Input::HAT_MASK_UP;
+			hat |= HatMask::HAT_MASK_UP;
 		else
-			hat |= Input::HAT_MASK_DOWN;
+			hat |= HatMask::HAT_MASK_DOWN;
 	}
 	jevent.hat = hat;
 
@@ -383,11 +381,6 @@ JNIEXPORT void JNICALL Java_org_godotengine_godot_GodotLib_focusout(JNIEnv *env,
 		return;
 
 	os_android->main_loop_focusout();
-}
-
-JNIEXPORT void JNICALL Java_org_godotengine_godot_GodotLib_audio(JNIEnv *env, jclass clazz) {
-	setup_android_thread();
-	AudioDriverAndroid::thread_func(env);
 }
 
 JNIEXPORT jstring JNICALL Java_org_godotengine_godot_GodotLib_getGlobal(JNIEnv *env, jclass clazz, jstring path) {

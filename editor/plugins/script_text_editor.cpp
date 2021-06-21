@@ -109,13 +109,11 @@ ConnectionInfoDialog::ConnectionInfoDialog() {
 ////////////////////////////////////////////////////////////////////////////////
 
 Vector<String> ScriptTextEditor::get_functions() {
-	String errortxt;
-	int line = -1, col;
 	CodeEdit *te = code_editor->get_text_editor();
 	String text = te->get_text();
 	List<String> fnc;
 
-	if (script->get_language()->validate(text, line, col, errortxt, script->get_path(), &fnc)) {
+	if (script->get_language()->validate(text, script->get_path(), &fnc)) {
 		//if valid rewrite functions to latest
 		functions.clear();
 		for (List<String>::Element *E = fnc.front(); E; E = E->next()) {
@@ -168,7 +166,6 @@ void ScriptTextEditor::enable_editor() {
 
 void ScriptTextEditor::_load_theme_settings() {
 	CodeEdit *text_edit = code_editor->get_text_editor();
-	text_edit->clear_keywords();
 
 	Color updated_marked_line_color = EDITOR_GET("text_editor/highlighting/mark_color");
 	Color updated_safe_line_number_color = EDITOR_GET("text_editor/highlighting/safe_line_number_color");
@@ -203,46 +200,29 @@ void ScriptTextEditor::_set_theme_for_script() {
 	CodeEdit *text_edit = code_editor->get_text_editor();
 	text_edit->get_syntax_highlighter()->update_cache();
 
-	/* add keywords for auto completion */
-	// singleton autoloads (as types, just as engine singletons are)
-	Map<StringName, ProjectSettings::AutoloadInfo> autoloads = ProjectSettings::get_singleton()->get_autoload_list();
-	for (Map<StringName, ProjectSettings::AutoloadInfo>::Element *E = autoloads.front(); E; E = E->next()) {
-		const ProjectSettings::AutoloadInfo &info = E->value();
-		if (info.is_singleton) {
-			text_edit->add_keyword(info.name);
-		}
+	List<String> strings;
+	script->get_language()->get_string_delimiters(&strings);
+	text_edit->clear_string_delimiters();
+	for (List<String>::Element *E = strings.front(); E; E = E->next()) {
+		String string = E->get();
+		String beg = string.get_slice(" ", 0);
+		String end = string.get_slice_count(" ") > 1 ? string.get_slice(" ", 1) : String();
+		text_edit->add_string_delimiter(beg, end, end == "");
 	}
 
-	// engine types
-	List<StringName> types;
-	ClassDB::get_class_list(&types);
-	for (List<StringName>::Element *E = types.front(); E; E = E->next()) {
-		String n = E->get();
-		if (n.begins_with("_")) {
-			n = n.substr(1, n.length());
-		}
-		text_edit->add_keyword(n);
+	List<String> comments;
+	script->get_language()->get_comment_delimiters(&comments);
+	text_edit->clear_comment_delimiters();
+	for (List<String>::Element *E = comments.front(); E; E = E->next()) {
+		String comment = E->get();
+		String beg = comment.get_slice(" ", 0);
+		String end = comment.get_slice_count(" ") > 1 ? comment.get_slice(" ", 1) : String();
+		text_edit->add_comment_delimiter(beg, end, end == "");
 	}
+}
 
-	// user types
-	List<StringName> global_classes;
-	ScriptServer::get_global_class_list(&global_classes);
-	for (List<StringName>::Element *E = global_classes.front(); E; E = E->next()) {
-		text_edit->add_keyword(E->get());
-	}
-
-	List<String> keywords;
-	script->get_language()->get_reserved_words(&keywords);
-	for (List<String>::Element *E = keywords.front(); E; E = E->next()) {
-		text_edit->add_keyword(E->get());
-	}
-
-	// core types
-	List<String> core_types;
-	script->get_language()->get_core_type_words(&core_types);
-	for (List<String>::Element *E = core_types.front(); E; E = E->next()) {
-		text_edit->add_keyword(E->get());
-	}
+void ScriptTextEditor::_show_errors_panel(bool p_show) {
+	errors_panel->set_visible(p_show);
 }
 
 void ScriptTextEditor::_show_warnings_panel(bool p_show) {
@@ -256,6 +236,12 @@ void ScriptTextEditor::_warning_clicked(Variant p_line) {
 		Dictionary meta = p_line.operator Dictionary();
 		code_editor->get_text_editor()->insert_at("# warning-ignore:" + meta["code"].operator String(), meta["line"].operator int64_t() - 1);
 		_validate_script();
+	}
+}
+
+void ScriptTextEditor::_error_clicked(Variant p_line) {
+	if (p_line.get_type() == Variant::INT) {
+		code_editor->get_text_editor()->cursor_set_line(p_line.operator int64_t());
 	}
 }
 
@@ -409,23 +395,21 @@ Ref<Texture2D> ScriptTextEditor::get_theme_icon() {
 }
 
 void ScriptTextEditor::_validate_script() {
-	String errortxt;
-	int line = -1, col;
 	CodeEdit *te = code_editor->get_text_editor();
 
 	String text = te->get_text();
 	List<String> fnc;
 	Set<int> safe_lines;
 	List<ScriptLanguage::Warning> warnings;
+	List<ScriptLanguage::ScriptError> errors;
 
-	if (!script->get_language()->validate(text, line, col, errortxt, script->get_path(), &fnc, &warnings, &safe_lines)) {
-		String error_text = "error(" + itos(line) + "," + itos(col) + "): " + errortxt;
+	if (!script->get_language()->validate(text, script->get_path(), &fnc, &errors, &warnings, &safe_lines)) {
+		String error_text = TTR("Error at ") + "(" + itos(errors[0].line) + "," + itos(errors[0].column) + "): " + errors[0].message;
 		code_editor->set_error(error_text);
-		code_editor->set_error_pos(line - 1, col - 1);
+		code_editor->set_error_pos(errors[0].line - 1, errors[0].column - 1);
 		script_is_valid = false;
 	} else {
 		code_editor->set_error("");
-		line = -1;
 		if (!script->is_tool()) {
 			script->set_source_code(text);
 			script->update_exports();
@@ -467,7 +451,8 @@ void ScriptTextEditor::_validate_script() {
 		}
 	}
 
-	code_editor->set_warning_nb(warning_nb);
+	code_editor->set_error_count(errors.size());
+	code_editor->set_warning_count(warning_nb);
 
 	// Add script warnings.
 	warnings_panel->push_table(3);
@@ -501,23 +486,52 @@ void ScriptTextEditor::_validate_script() {
 	}
 	warnings_panel->pop(); // Table.
 
-	line--;
+	errors_panel->clear();
+	errors_panel->push_table(2);
+	for (List<ScriptLanguage::ScriptError>::Element *E = errors.front(); E; E = E->next()) {
+		ScriptLanguage::ScriptError err = E->get();
+
+		errors_panel->push_cell();
+		errors_panel->push_meta(err.line - 1);
+		errors_panel->push_color(warnings_panel->get_theme_color("error_color", "Editor"));
+		errors_panel->add_text(TTR("Line") + " " + itos(err.line) + ":");
+		errors_panel->pop(); // Color.
+		errors_panel->pop(); // Meta goto.
+		errors_panel->pop(); // Cell.
+
+		errors_panel->push_cell();
+		errors_panel->add_text(err.message);
+		errors_panel->pop(); // Cell.
+	}
+	errors_panel->pop(); // Table
+
 	bool highlight_safe = EDITOR_DEF("text_editor/highlighting/highlight_type_safe_lines", true);
 	bool last_is_safe = false;
 	for (int i = 0; i < te->get_line_count(); i++) {
-		te->set_line_background_color(i, (line == i) ? marked_line_color : Color(0, 0, 0, 0));
+		if (errors.is_empty()) {
+			te->set_line_background_color(i, Color(0, 0, 0, 0));
+		} else {
+			for (List<ScriptLanguage::ScriptError>::Element *E = errors.front(); E; E = E->next()) {
+				bool error_line = i == E->get().line - 1;
+				te->set_line_background_color(i, error_line ? marked_line_color : Color(0, 0, 0, 0));
+				if (error_line) {
+					break;
+				}
+			}
+		}
+
 		if (highlight_safe) {
 			if (safe_lines.has(i + 1)) {
 				te->set_line_gutter_item_color(i, line_number_gutter, safe_line_number_color);
 				last_is_safe = true;
-			} else if (last_is_safe && (te->is_line_comment(i) || te->get_line(i).strip_edges().is_empty())) {
+			} else if (last_is_safe && (te->is_in_comment(i) != -1 || te->get_line(i).strip_edges().is_empty())) {
 				te->set_line_gutter_item_color(i, line_number_gutter, safe_line_number_color);
 			} else {
 				te->set_line_gutter_item_color(i, line_number_gutter, default_line_number_color);
 				last_is_safe = false;
 			}
 		} else {
-			te->set_line_gutter_item_color(line, 1, default_line_number_color);
+			te->set_line_gutter_item_color(i, 1, default_line_number_color);
 		}
 	}
 
@@ -1024,7 +1038,7 @@ void ScriptTextEditor::_edit_option(int p_op) {
 				return;
 			}
 
-			tx->indent_selected_lines_left();
+			tx->unindent_lines();
 		} break;
 		case EDIT_INDENT_RIGHT: {
 			Ref<Script> scr = script;
@@ -1032,7 +1046,7 @@ void ScriptTextEditor::_edit_option(int p_op) {
 				return;
 			}
 
-			tx->indent_selected_lines_right();
+			tx->indent_lines();
 		} break;
 		case EDIT_DELETE_LINE: {
 			code_editor->delete_lines();
@@ -1041,7 +1055,7 @@ void ScriptTextEditor::_edit_option(int p_op) {
 			code_editor->clone_lines_down();
 		} break;
 		case EDIT_TOGGLE_FOLD_LINE: {
-			tx->toggle_fold_line(tx->cursor_get_line());
+			tx->toggle_foldable_line(tx->cursor_get_line());
 			tx->update();
 		} break;
 		case EDIT_FOLD_ALL_LINES: {
@@ -1056,7 +1070,7 @@ void ScriptTextEditor::_edit_option(int p_op) {
 			_edit_option_toggle_inline_comment();
 		} break;
 		case EDIT_COMPLETE: {
-			tx->query_code_comple();
+			tx->request_code_completion(true);
 		} break;
 		case EDIT_AUTO_INDENT: {
 			String text = tx->get_text();
@@ -1323,9 +1337,9 @@ void ScriptTextEditor::_notification(int p_what) {
 void ScriptTextEditor::_bind_methods() {
 	ClassDB::bind_method("_update_connected_methods", &ScriptTextEditor::_update_connected_methods);
 
-	ClassDB::bind_method("get_drag_data_fw", &ScriptTextEditor::get_drag_data_fw);
-	ClassDB::bind_method("can_drop_data_fw", &ScriptTextEditor::can_drop_data_fw);
-	ClassDB::bind_method("drop_data_fw", &ScriptTextEditor::drop_data_fw);
+	ClassDB::bind_method("_get_drag_data_fw", &ScriptTextEditor::get_drag_data_fw);
+	ClassDB::bind_method("_can_drop_data_fw", &ScriptTextEditor::can_drop_data_fw);
+	ClassDB::bind_method("_drop_data_fw", &ScriptTextEditor::drop_data_fw);
 
 	ClassDB::bind_method(D_METHOD("add_syntax_highlighter", "highlighter"), &ScriptTextEditor::add_syntax_highlighter);
 }
@@ -1336,6 +1350,10 @@ Control *ScriptTextEditor::get_edit_menu() {
 
 void ScriptTextEditor::clear_edit_menu() {
 	memdelete(edit_hb);
+}
+
+void ScriptTextEditor::set_find_replace_bar(FindReplaceBar *p_bar) {
+	code_editor->set_find_replace_bar(p_bar);
 }
 
 void ScriptTextEditor::reload(bool p_soft) {
@@ -1429,11 +1447,17 @@ void ScriptTextEditor::drop_data_fw(const Point2 &p_point, const Variant &p_data
 		Array files = d["files"];
 
 		String text_to_drop;
+		bool preload = Input::get_singleton()->is_key_pressed(KEY_CTRL);
 		for (int i = 0; i < files.size(); i++) {
 			if (i > 0) {
-				text_to_drop += ",";
+				text_to_drop += ", ";
 			}
-			text_to_drop += "\"" + String(files[i]).c_escape() + "\"";
+
+			if (preload) {
+				text_to_drop += "preload(\"" + String(files[i]).c_escape() + "\")";
+			} else {
+				text_to_drop += "\"" + String(files[i]).c_escape() + "\"";
+			}
 		}
 
 		te->cursor_set_line(row);
@@ -1519,7 +1543,7 @@ void ScriptTextEditor::_text_edit_gui_input(const Ref<InputEvent> &ev) {
 		}
 
 		bool has_color = (word_at_pos == "Color");
-		bool foldable = tx->can_fold(row) || tx->is_folded(row);
+		bool foldable = tx->can_fold_line(row) || tx->is_line_folded(row);
 		bool open_docs = false;
 		bool goto_definition = false;
 
@@ -1645,6 +1669,7 @@ void ScriptTextEditor::_enable_code_editor() {
 	editor_box->set_v_size_flags(SIZE_EXPAND_FILL);
 
 	editor_box->add_child(code_editor);
+	code_editor->connect("show_errors_panel", callable_mp(this, &ScriptTextEditor::_show_errors_panel));
 	code_editor->connect("show_warnings_panel", callable_mp(this, &ScriptTextEditor::_show_warnings_panel));
 	code_editor->connect("validate_script", callable_mp(this, &ScriptTextEditor::_validate_script));
 	code_editor->connect("load_theme_settings", callable_mp(this, &ScriptTextEditor::_load_theme_settings));
@@ -1664,6 +1689,13 @@ void ScriptTextEditor::_enable_code_editor() {
 	warnings_panel->add_theme_font_size_override(
 			"normal_font_size", EditorNode::get_singleton()->get_gui_base()->get_theme_font_size("main_size", "EditorFonts"));
 	warnings_panel->connect("meta_clicked", callable_mp(this, &ScriptTextEditor::_warning_clicked));
+
+	editor_box->add_child(errors_panel);
+	errors_panel->add_theme_font_override(
+			"normal_font", EditorNode::get_singleton()->get_gui_base()->get_theme_font("main", "EditorFonts"));
+	errors_panel->add_theme_font_size_override(
+			"normal_font_size", EditorNode::get_singleton()->get_gui_base()->get_theme_font_size("main_size", "EditorFonts"));
+	errors_panel->connect("meta_clicked", callable_mp(this, &ScriptTextEditor::_error_clicked));
 
 	add_child(context_menu);
 	context_menu->connect("id_pressed", callable_mp(this, &ScriptTextEditor::_edit_option));
@@ -1796,11 +1828,17 @@ ScriptTextEditor::ScriptTextEditor() {
 	warnings_panel->set_focus_mode(FOCUS_CLICK);
 	warnings_panel->hide();
 
+	errors_panel = memnew(RichTextLabel);
+	errors_panel->set_custom_minimum_size(Size2(0, 100 * EDSCALE));
+	errors_panel->set_h_size_flags(SIZE_EXPAND_FILL);
+	errors_panel->set_meta_underline(true);
+	errors_panel->set_selection_enabled(true);
+	errors_panel->set_focus_mode(FOCUS_CLICK);
+	errors_panel->hide();
+
 	update_settings();
 
-	code_editor->get_text_editor()->set_callhint_settings(
-			EditorSettings::get_singleton()->get("text_editor/completion/put_callhint_tooltip_below_current_line"),
-			EditorSettings::get_singleton()->get("text_editor/completion/callhint_tooltip_offset"));
+	code_editor->get_text_editor()->set_code_hint_draw_below(EditorSettings::get_singleton()->get("text_editor/completion/put_callhint_tooltip_below_current_line"));
 
 	code_editor->get_text_editor()->set_select_identifiers_on_hover(true);
 	code_editor->get_text_editor()->set_context_menu_enabled(false);
@@ -1823,11 +1861,11 @@ ScriptTextEditor::ScriptTextEditor() {
 	highlighter_menu->set_name("highlighter_menu");
 
 	Ref<EditorPlainTextSyntaxHighlighter> plain_highlighter;
-	plain_highlighter.instance();
+	plain_highlighter.instantiate();
 	add_syntax_highlighter(plain_highlighter);
 
 	Ref<EditorStandardSyntaxHighlighter> highlighter;
-	highlighter.instance();
+	highlighter.instantiate();
 	add_syntax_highlighter(highlighter);
 	set_syntax_highlighter(highlighter);
 
@@ -1858,6 +1896,7 @@ ScriptTextEditor::~ScriptTextEditor() {
 	if (!editor_enabled) {
 		memdelete(code_editor);
 		memdelete(warnings_panel);
+		memdelete(errors_panel);
 		memdelete(context_menu);
 		memdelete(color_panel);
 		memdelete(edit_hb);

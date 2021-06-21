@@ -114,7 +114,7 @@ Ref<ArrayMesh> Occluder3D::get_debug_mesh() const {
 	arrays[Mesh::ARRAY_VERTEX] = vertices;
 	arrays[Mesh::ARRAY_INDEX] = indices;
 
-	debug_mesh.instance();
+	debug_mesh.instantiate();
 	debug_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
 	return debug_mesh;
 }
@@ -233,7 +233,7 @@ void OccluderInstance3D::_bake_node(Node *p_node, PackedVector3Array &r_vertices
 		}
 
 		if (valid) {
-			Transform global_to_local = get_global_transform().affine_inverse() * mi->get_global_transform();
+			Transform3D global_to_local = get_global_transform().affine_inverse() * mi->get_global_transform();
 
 			for (int i = 0; i < mesh->get_surface_count(); i++) {
 				if (mesh->surface_get_primitive_type(i) != Mesh::PRIMITIVE_TRIANGLES) {
@@ -303,7 +303,7 @@ OccluderInstance3D::BakeError OccluderInstance3D::bake(Node *p_from_node, String
 	if (get_occluder().is_valid()) {
 		occ = get_occluder();
 	} else {
-		occ.instance();
+		occ.instantiate();
 		occ->set_path(p_occluder_path);
 	}
 

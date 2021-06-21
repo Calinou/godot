@@ -154,6 +154,10 @@ void ShaderTextEditor::_load_theme_settings() {
 	syntax_highlighter->add_color_region("/*", "*/", comment_color, false);
 	syntax_highlighter->add_color_region("//", "", comment_color, true);
 
+	text_editor->clear_comment_delimiters();
+	text_editor->add_comment_delimiter("/*", "*/", false);
+	text_editor->add_comment_delimiter("//", "", true);
+
 	if (warnings_panel) {
 		// Warnings panel
 		warnings_panel->add_theme_font_override("normal_font", EditorNode::get_singleton()->get_gui_base()->get_theme_font("main", "EditorFonts"));
@@ -236,7 +240,7 @@ void ShaderTextEditor::_validate_script() {
 		warnings.sort_custom<WarningsComparator>();
 		_update_warning_panel();
 	} else {
-		set_warning_nb(0);
+		set_warning_count(0);
 	}
 	emit_signal("script_changed");
 }
@@ -276,14 +280,14 @@ void ShaderTextEditor::_update_warning_panel() {
 	}
 	warnings_panel->pop(); // Table.
 
-	set_warning_nb(warning_count);
+	set_warning_count(warning_count);
 }
 
 void ShaderTextEditor::_bind_methods() {
 }
 
 ShaderTextEditor::ShaderTextEditor() {
-	syntax_highlighter.instance();
+	syntax_highlighter.instantiate();
 	get_text_editor()->set_syntax_highlighter(syntax_highlighter);
 }
 
@@ -319,19 +323,13 @@ void ShaderEditor::_menu_option(int p_option) {
 			if (shader.is_null()) {
 				return;
 			}
-
-			CodeEdit *tx = shader_editor->get_text_editor();
-			tx->indent_selected_lines_left();
-
+			shader_editor->get_text_editor()->unindent_lines();
 		} break;
 		case EDIT_INDENT_RIGHT: {
 			if (shader.is_null()) {
 				return;
 			}
-
-			CodeEdit *tx = shader_editor->get_text_editor();
-			tx->indent_selected_lines_right();
-
+			shader_editor->get_text_editor()->indent_lines();
 		} break;
 		case EDIT_DELETE_LINE: {
 			shader_editor->delete_lines();
@@ -348,7 +346,7 @@ void ShaderEditor::_menu_option(int p_option) {
 
 		} break;
 		case EDIT_COMPLETE: {
-			shader_editor->get_text_editor()->query_code_comple();
+			shader_editor->get_text_editor()->request_code_completion();
 		} break;
 		case SEARCH_FIND: {
 			shader_editor->get_find_replace_bar()->popup_search();
@@ -659,9 +657,7 @@ ShaderEditor::ShaderEditor(EditorNode *p_node) {
 	EditorSettings::get_singleton()->connect("settings_changed", callable_mp(this, &ShaderEditor::_editor_settings_changed));
 	ProjectSettingsEditor::get_singleton()->connect("confirmed", callable_mp(this, &ShaderEditor::_project_settings_changed));
 
-	shader_editor->get_text_editor()->set_callhint_settings(
-			EditorSettings::get_singleton()->get("text_editor/completion/put_callhint_tooltip_below_current_line"),
-			EditorSettings::get_singleton()->get("text_editor/completion/callhint_tooltip_offset"));
+	shader_editor->get_text_editor()->set_code_hint_draw_below(EditorSettings::get_singleton()->get("text_editor/completion/put_callhint_tooltip_below_current_line"));
 
 	shader_editor->get_text_editor()->set_select_identifiers_on_hover(true);
 	shader_editor->get_text_editor()->set_context_menu_enabled(false);
@@ -748,6 +744,11 @@ ShaderEditor::ShaderEditor(EditorNode *p_node) {
 	editor_box->set_anchors_and_offsets_preset(Control::PRESET_WIDE);
 	editor_box->set_v_size_flags(SIZE_EXPAND_FILL);
 	editor_box->add_child(shader_editor);
+
+	FindReplaceBar *bar = memnew(FindReplaceBar);
+	main_container->add_child(bar);
+	bar->hide();
+	shader_editor->set_find_replace_bar(bar);
 
 	warnings_panel = memnew(RichTextLabel);
 	warnings_panel->set_custom_minimum_size(Size2(0, 100 * EDSCALE));

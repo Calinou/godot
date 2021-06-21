@@ -870,6 +870,15 @@ void TreeItem::clear_custom_color(int p_column) {
 	_changed_notify(p_column);
 }
 
+void TreeItem::set_custom_font(int p_column, const Ref<Font> &p_font) {
+	ERR_FAIL_INDEX(p_column, cells.size());
+	cells.write[p_column].custom_font = p_font;
+}
+Ref<Font> TreeItem::get_custom_font(int p_column) const {
+	ERR_FAIL_INDEX_V(p_column, cells.size(), Ref<Font>());
+	return cells[p_column].custom_font;
+}
+
 void TreeItem::set_tooltip(int p_column, const String &p_tooltip) {
 	ERR_FAIL_INDEX(p_column, cells.size());
 	cells.write[p_column].tooltip = p_tooltip;
@@ -1050,8 +1059,11 @@ void TreeItem::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("is_editable", "column"), &TreeItem::is_editable);
 
 	ClassDB::bind_method(D_METHOD("set_custom_color", "column", "color"), &TreeItem::set_custom_color);
-	ClassDB::bind_method(D_METHOD("clear_custom_color", "column"), &TreeItem::clear_custom_color);
 	ClassDB::bind_method(D_METHOD("get_custom_color", "column"), &TreeItem::get_custom_color);
+	ClassDB::bind_method(D_METHOD("clear_custom_color", "column"), &TreeItem::clear_custom_color);
+
+	ClassDB::bind_method(D_METHOD("set_custom_font", "column", "font"), &TreeItem::set_custom_font);
+	ClassDB::bind_method(D_METHOD("get_custom_font", "column"), &TreeItem::get_custom_font);
 
 	ClassDB::bind_method(D_METHOD("set_custom_bg_color", "column", "color", "just_outline"), &TreeItem::set_custom_bg_color, DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("clear_custom_bg_color", "column"), &TreeItem::clear_custom_bg_color);
@@ -1372,6 +1384,7 @@ void Tree::update_column(int p_col) {
 	} else {
 		columns.write[p_col].text_buf->set_direction((TextServer::Direction)columns[p_col].text_direction);
 	}
+
 	columns.write[p_col].text_buf->add_string(columns[p_col].title, cache.font, cache.font_size, columns[p_col].opentype_features, (columns[p_col].language != "") ? columns[p_col].language : TranslationServer::get_singleton()->get_tool_locale());
 }
 
@@ -1416,7 +1429,14 @@ void Tree::update_item_cell(TreeItem *p_item, int p_col) {
 	} else {
 		p_item->cells.write[p_col].text_buf->set_direction((TextServer::Direction)p_item->cells[p_col].text_direction);
 	}
-	p_item->cells.write[p_col].text_buf->add_string(valtext, cache.font, cache.font_size, p_item->cells[p_col].opentype_features, (p_item->cells[p_col].language != "") ? p_item->cells[p_col].language : TranslationServer::get_singleton()->get_tool_locale());
+
+	Ref<Font> font;
+	if (p_item->cells[p_col].custom_font.is_valid()) {
+		font = p_item->cells[p_col].custom_font;
+	} else {
+		font = cache.font;
+	}
+	p_item->cells.write[p_col].text_buf->add_string(valtext, font, cache.font_size, p_item->cells[p_col].opentype_features, (p_item->cells[p_col].language != "") ? p_item->cells[p_col].language : TranslationServer::get_singleton()->get_tool_locale());
 	TS->shaped_text_set_bidi_override(p_item->cells[p_col].text_buf->get_rid(), structured_text_parser(p_item->cells[p_col].st_parser, p_item->cells[p_col].st_args, valtext));
 	p_item->cells.write[p_col].dirty = false;
 }
@@ -2072,7 +2092,7 @@ void Tree::_range_click_timeout() {
 
 		click_handled = false;
 		Ref<InputEventMouseButton> mb;
-		mb.instance();
+		mb.instantiate();
 
 		propagate_mouse_activated = false; // done from outside, so signal handler can't clear the tree in the middle of emit (which is a common case)
 		blocked++;
@@ -2431,10 +2451,10 @@ void Tree::_text_editor_modal_close() {
 		return;
 	}
 
-	_text_editor_enter(text_editor->get_text());
+	_text_editor_submit(text_editor->get_text());
 }
 
-void Tree::_text_editor_enter(String p_text) {
+void Tree::_text_editor_submit(String p_text) {
 	popup_editor->hide();
 
 	if (!popup_edited_item) {
@@ -3106,7 +3126,7 @@ void Tree::_gui_input(Ref<InputEvent> p_event) {
 					drag_accum = 0;
 					//last_drag_accum=0;
 					drag_from = v_scroll->get_value();
-					drag_touching = !DisplayServer::get_singleton()->screen_is_touchscreen(DisplayServer::get_singleton()->window_get_current_screen(get_viewport()->get_window_id()));
+					drag_touching = DisplayServer::get_singleton()->screen_is_touchscreen(DisplayServer::get_singleton()->window_get_current_screen(get_viewport()->get_window_id()));
 					drag_touching_deaccel = false;
 					if (drag_touching) {
 						set_physics_process_internal(true);
@@ -3141,6 +3161,8 @@ void Tree::_gui_input(Ref<InputEvent> p_event) {
 				}
 
 			} break;
+			default:
+				break;
 		}
 	}
 
@@ -4534,7 +4556,7 @@ Tree::Tree() {
 
 	h_scroll->connect("value_changed", callable_mp(this, &Tree::_scroll_moved));
 	v_scroll->connect("value_changed", callable_mp(this, &Tree::_scroll_moved));
-	text_editor->connect("text_entered", callable_mp(this, &Tree::_text_editor_enter));
+	text_editor->connect("text_submitted", callable_mp(this, &Tree::_text_editor_submit));
 	popup_editor->connect("popup_hide", callable_mp(this, &Tree::_text_editor_modal_close));
 	popup_menu->connect("id_pressed", callable_mp(this, &Tree::popup_select));
 	value_editor->connect("value_changed", callable_mp(this, &Tree::value_editor_changed));

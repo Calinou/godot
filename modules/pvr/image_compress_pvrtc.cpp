@@ -31,7 +31,7 @@
 #include "image_compress_pvrtc.h"
 
 #include "core/io/image.h"
-#include "core/object/reference.h"
+#include "core/object/ref_counted.h"
 
 #include <PvrTcEncoder.h>
 #include <RgbaBitmap.h>
@@ -52,7 +52,7 @@ static void _compress_pvrtc1_4bpp(Image *p_img) {
 	bool use_alpha = img->detect_alpha();
 
 	Ref<Image> new_img;
-	new_img.instance();
+	new_img.instantiate();
 	new_img->create(img->get_width(), img->get_height(), img->has_mipmaps(), use_alpha ? Image::FORMAT_PVRTC1_4A : Image::FORMAT_PVRTC1_4);
 
 	Vector<uint8_t> data = new_img->get_data();

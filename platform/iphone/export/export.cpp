@@ -31,11 +31,11 @@
 #include "export.h"
 
 #include "core/config/project_settings.h"
+#include "core/io/file_access.h"
 #include "core/io/image_loader.h"
 #include "core/io/marshalls.h"
 #include "core/io/resource_saver.h"
 #include "core/io/zip_io.h"
-#include "core/os/file_access.h"
 #include "core/os/os.h"
 #include "core/templates/safe_refcount.h"
 #include "core/version.h"
@@ -353,6 +353,8 @@ void EditorExportPlatformIOS::get_export_options(List<ExportOption> *r_options) 
 	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, "application/code_sign_identity_release", PROPERTY_HINT_PLACEHOLDER_TEXT, "iPhone Distribution"), ""));
 	r_options->push_back(ExportOption(PropertyInfo(Variant::INT, "application/export_method_release", PROPERTY_HINT_ENUM, "App Store,Development,Ad-Hoc,Enterprise"), 0));
 
+	r_options->push_back(ExportOption(PropertyInfo(Variant::INT, "application/targeted_device_family", PROPERTY_HINT_ENUM, "iPhone,iPad,iPhone & iPad"), 2));
+
 	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, "application/name", PROPERTY_HINT_PLACEHOLDER_TEXT, "Game Name"), ""));
 	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, "application/info"), "Made with Godot Engine"));
 	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, "application/bundle_identifier", PROPERTY_HINT_PLACEHOLDER_TEXT, "com.example.game"), ""));
@@ -470,6 +472,20 @@ void EditorExportPlatformIOS::_fix_config_file(const Ref<EditorExportPreset> &p_
 			strnew += lines[i].replace("$godot_archs", p_config.architectures) + "\n";
 		} else if (lines[i].find("$linker_flags") != -1) {
 			strnew += lines[i].replace("$linker_flags", p_config.linker_flags) + "\n";
+		} else if (lines[i].find("$targeted_device_family") != -1) {
+			String xcode_value;
+			switch ((int)p_preset->get("application/targeted_device_family")) {
+				case 0: // iPhone
+					xcode_value = "1";
+					break;
+				case 1: // iPad
+					xcode_value = "2";
+					break;
+				case 2: // iPhone & iPad
+					xcode_value = "1,2";
+					break;
+			}
+			strnew += lines[i].replace("$targeted_device_family", xcode_value) + "\n";
 		} else if (lines[i].find("$cpp_code") != -1) {
 			strnew += lines[i].replace("$cpp_code", p_config.cpp_code) + "\n";
 		} else if (lines[i].find("$docs_in_place") != -1) {
@@ -804,7 +820,7 @@ Error EditorExportPlatformIOS::_export_loading_screen_file(const Ref<EditorExpor
 	if (custom_launch_image_2x.length() > 0 && custom_launch_image_3x.length() > 0) {
 		Ref<Image> image;
 		String image_path = p_dest_dir.plus_file("splash@2x.png");
-		image.instance();
+		image.instantiate();
 		Error err = image->load(custom_launch_image_2x);
 
 		if (err) {
@@ -818,7 +834,7 @@ Error EditorExportPlatformIOS::_export_loading_screen_file(const Ref<EditorExpor
 
 		image.unref();
 		image_path = p_dest_dir.plus_file("splash@3x.png");
-		image.instance();
+		image.instantiate();
 		err = image->load(custom_launch_image_3x);
 
 		if (err) {
@@ -835,7 +851,7 @@ Error EditorExportPlatformIOS::_export_loading_screen_file(const Ref<EditorExpor
 		const String splash_path = ProjectSettings::get_singleton()->get("application/boot_splash/image");
 
 		if (!splash_path.is_empty()) {
-			splash.instance();
+			splash.instantiate();
 			const Error err = splash->load(splash_path);
 			if (err) {
 				splash.unref();
@@ -1983,7 +1999,7 @@ bool EditorExportPlatformIOS::can_export(const Ref<EditorExportPreset> &p_preset
 
 EditorExportPlatformIOS::EditorExportPlatformIOS() {
 	Ref<Image> img = memnew(Image(_iphone_logo));
-	logo.instance();
+	logo.instantiate();
 	logo->create_from_image(img);
 
 	plugins_changed.set();
@@ -1998,7 +2014,7 @@ EditorExportPlatformIOS::~EditorExportPlatformIOS() {
 
 void register_iphone_exporter() {
 	Ref<EditorExportPlatformIOS> platform;
-	platform.instance();
+	platform.instantiate();
 
 	EditorExport::get_singleton()->add_export_platform(platform);
 }

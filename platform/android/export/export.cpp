@@ -31,11 +31,11 @@
 #include "export.h"
 
 #include "core/config/project_settings.h"
+#include "core/io/dir_access.h"
+#include "core/io/file_access.h"
 #include "core/io/image_loader.h"
 #include "core/io/marshalls.h"
 #include "core/io/zip_io.h"
-#include "core/os/dir_access.h"
-#include "core/os/file_access.h"
 #include "core/os/os.h"
 #include "core/templates/safe_refcount.h"
 #include "core/version.h"
@@ -609,9 +609,9 @@ class EditorExportPlatformAndroid : public EditorExportPlatform {
 		zip_fileinfo zipfi;
 		zipfi.tmz_date.tm_hour = time.hour;
 		zipfi.tmz_date.tm_mday = date.day;
-		zipfi.tmz_date.tm_min = time.min;
+		zipfi.tmz_date.tm_min = time.minute;
 		zipfi.tmz_date.tm_mon = date.month - 1; // tm_mon is zero indexed
-		zipfi.tmz_date.tm_sec = time.sec;
+		zipfi.tmz_date.tm_sec = time.second;
 		zipfi.tmz_date.tm_year = date.year;
 		zipfi.dosDate = 0;
 		zipfi.external_fa = 0;
@@ -1461,7 +1461,7 @@ class EditorExportPlatformAndroid : public EditorExportPlatform {
 		String project_splash_path = ProjectSettings::get_singleton()->get("application/boot_splash/image");
 
 		if (!project_splash_path.is_empty()) {
-			splash_image.instance();
+			splash_image.instantiate();
 			print_verbose("Loading splash image: " + project_splash_path);
 			const Error err = ImageLoader::load_image(project_splash_path, splash_image);
 			if (err) {
@@ -1501,7 +1501,7 @@ class EditorExportPlatformAndroid : public EditorExportPlatform {
 		}
 
 		print_verbose("Creating splash background color image.");
-		splash_bg_color_image.instance();
+		splash_bg_color_image.instantiate();
 		splash_bg_color_image->create(splash_image->get_width(), splash_image->get_height(), false, splash_image->get_format());
 		splash_bg_color_image->fill(bg_color);
 
@@ -1512,9 +1512,9 @@ class EditorExportPlatformAndroid : public EditorExportPlatform {
 	void load_icon_refs(const Ref<EditorExportPreset> &p_preset, Ref<Image> &icon, Ref<Image> &foreground, Ref<Image> &background) {
 		String project_icon_path = ProjectSettings::get_singleton()->get("application/config/icon");
 
-		icon.instance();
-		foreground.instance();
-		background.instance();
+		icon.instantiate();
+		foreground.instantiate();
+		background.instantiate();
 
 		// Regular icon: user selection -> project icon -> default.
 		String path = static_cast<String>(p_preset->get(launcher_icon_option)).strip_edges();
@@ -1793,7 +1793,7 @@ public:
 			p_debug_flags |= DEBUG_FLAG_REMOTE_DEBUG_LOCALHOST;
 		}
 
-		String tmp_export_path = EditorSettings::get_singleton()->get_cache_dir().plus_file("tmpexport." + uitos(OS::get_singleton()->get_unix_time()) + ".apk");
+		String tmp_export_path = EditorPaths::get_singleton()->get_cache_dir().plus_file("tmpexport." + uitos(OS::get_singleton()->get_unix_time()) + ".apk");
 
 #define CLEANUP_AND_RETURN(m_err)                         \
 	{                                                     \
@@ -1849,7 +1849,7 @@ public:
 		err = OS::get_singleton()->execute(adb, args, &output, &rv, true);
 		print_verbose(output);
 		if (err || rv != 0) {
-			EditorNode::add_io_error("Could not install to device.");
+			EditorNode::add_io_error("Could not install to device: " + output);
 			CLEANUP_AND_RETURN(ERR_CANT_CREATE);
 		}
 
@@ -2037,6 +2037,13 @@ public:
 		// Validate the rest of the configuration.
 
 		String dk = p_preset->get("keystore/debug");
+		String dk_user = p_preset->get("keystore/debug_user");
+		String dk_password = p_preset->get("keystore/debug_password");
+
+		if ((dk.is_empty() || dk_user.is_empty() || dk_password.is_empty()) && (!dk.is_empty() || !dk_user.is_empty() || !dk_password.is_empty())) {
+			valid = false;
+			err += TTR("Either Debug Keystore, Debug User AND Debug Password settings must be configured OR none of them.") + "\n";
+		}
 
 		if (!FileAccess::exists(dk)) {
 			dk = EditorSettings::get_singleton()->get("export/android/debug_keystore");
@@ -2047,6 +2054,13 @@ public:
 		}
 
 		String rk = p_preset->get("keystore/release");
+		String rk_user = p_preset->get("keystore/release_user");
+		String rk_password = p_preset->get("keystore/release_password");
+
+		if ((rk.is_empty() || rk_user.is_empty() || rk_password.is_empty()) && (!rk.is_empty() || !rk_user.is_empty() || !rk_password.is_empty())) {
+			valid = false;
+			err += TTR("Either Release Keystore, Release User AND Release Password settings must be configured OR none of them.") + "\n";
+		}
 
 		if (!rk.is_empty() && !FileAccess::exists(rk)) {
 			valid = false;
@@ -2651,7 +2665,7 @@ public:
 		FileAccess *dst_f = nullptr;
 		io2.opaque = &dst_f;
 
-		String tmp_unaligned_path = EditorSettings::get_singleton()->get_cache_dir().plus_file("tmpexport-unaligned." + uitos(OS::get_singleton()->get_unix_time()) + ".apk");
+		String tmp_unaligned_path = EditorPaths::get_singleton()->get_cache_dir().plus_file("tmpexport-unaligned." + uitos(OS::get_singleton()->get_unix_time()) + ".apk");
 
 #define CLEANUP_AND_RETURN(m_err)                            \
 	{                                                        \
@@ -2927,11 +2941,11 @@ public:
 
 	EditorExportPlatformAndroid() {
 		Ref<Image> img = memnew(Image(_android_logo));
-		logo.instance();
+		logo.instantiate();
 		logo->create_from_image(img);
 
 		img = Ref<Image>(memnew(Image(_android_run_icon)));
-		run_icon.instance();
+		run_icon.instantiate();
 		run_icon->create_from_image(img);
 
 		devices_changed.set();

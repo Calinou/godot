@@ -50,9 +50,9 @@ void SpinBox::_value_changed(double) {
 	line_edit->set_text(value);
 }
 
-void SpinBox::_text_entered(const String &p_string) {
+void SpinBox::_text_submitted(const String &p_string) {
 	Ref<Expression> expr;
-	expr.instance();
+	expr.instantiate();
 
 	String num = TS->parse_number(p_string);
 	// Ignore the prefix and suffix in the expression
@@ -140,6 +140,8 @@ void SpinBox::_gui_input(const Ref<InputEvent> &p_event) {
 					accept_event();
 				}
 			} break;
+			default:
+				break;
 		}
 	}
 
@@ -172,7 +174,7 @@ void SpinBox::_line_edit_focus_exit() {
 		return;
 	}
 
-	_text_entered(line_edit->get_text());
+	_text_submitted(line_edit->get_text());
 }
 
 inline void SpinBox::_adjust_width_for_icon(const Ref<Texture2D> &icon) {
@@ -251,7 +253,7 @@ bool SpinBox::is_editable() const {
 }
 
 void SpinBox::apply() {
-	_text_entered(line_edit->get_text());
+	_text_submitted(line_edit->get_text());
 }
 
 void SpinBox::_bind_methods() {
@@ -283,7 +285,7 @@ SpinBox::SpinBox() {
 	line_edit->set_align(LineEdit::ALIGN_LEFT);
 
 	//connect("value_changed",this,"_value_changed");
-	line_edit->connect("text_entered", callable_mp(this, &SpinBox::_text_entered), Vector<Variant>(), CONNECT_DEFERRED);
+	line_edit->connect("text_submitted", callable_mp(this, &SpinBox::_text_submitted), Vector<Variant>(), CONNECT_DEFERRED);
 	line_edit->connect("focus_exited", callable_mp(this, &SpinBox::_line_edit_focus_exit), Vector<Variant>(), CONNECT_DEFERRED);
 	line_edit->connect("gui_input", callable_mp(this, &SpinBox::_line_edit_input));
 

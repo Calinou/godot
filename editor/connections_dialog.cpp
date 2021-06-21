@@ -146,7 +146,7 @@ void ConnectDialog::_item_activated() {
 	_ok_pressed(); // From AcceptDialog.
 }
 
-void ConnectDialog::_text_entered(const String &p_text) {
+void ConnectDialog::_text_submitted(const String &p_text) {
 	_ok_pressed(); // From AcceptDialog.
 }
 
@@ -203,8 +203,8 @@ void ConnectDialog::_add_bind() {
 		case Variant::PLANE:
 			value = Plane();
 			break;
-		case Variant::QUAT:
-			value = Quat();
+		case Variant::QUATERNION:
+			value = Quaternion();
 			break;
 		case Variant::AABB:
 			value = AABB();
@@ -212,8 +212,8 @@ void ConnectDialog::_add_bind() {
 		case Variant::BASIS:
 			value = Basis();
 			break;
-		case Variant::TRANSFORM:
-			value = Transform();
+		case Variant::TRANSFORM3D:
+			value = Transform3D();
 			break;
 		case Variant::COLOR:
 			value = Color();
@@ -443,10 +443,10 @@ ConnectDialog::ConnectDialog() {
 	type_list->add_item("Rect2", Variant::RECT2);
 	type_list->add_item("Vector3", Variant::VECTOR3);
 	type_list->add_item("Plane", Variant::PLANE);
-	type_list->add_item("Quat", Variant::QUAT);
+	type_list->add_item("Quaternion", Variant::QUATERNION);
 	type_list->add_item("AABB", Variant::AABB);
 	type_list->add_item("Basis", Variant::BASIS);
-	type_list->add_item("Transform", Variant::TRANSFORM);
+	type_list->add_item("Transform3D", Variant::TRANSFORM3D);
 	type_list->add_item("Color", Variant::COLOR);
 	type_list->select(0);
 
@@ -471,7 +471,7 @@ ConnectDialog::ConnectDialog() {
 
 	dst_method = memnew(LineEdit);
 	dst_method->set_h_size_flags(Control::SIZE_EXPAND_FILL);
-	dst_method->connect("text_entered", callable_mp(this, &ConnectDialog::_text_entered));
+	dst_method->connect("text_submitted", callable_mp(this, &ConnectDialog::_text_submitted));
 	dstm_hb->add_child(dst_method);
 
 	advanced = memnew(CheckButton);

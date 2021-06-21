@@ -119,7 +119,7 @@ static NSCursor *_cursorFromSelector(SEL selector, SEL fallback = nil) {
 	if ([event type] == NSEventTypeKeyDown) {
 		if (([event modifierFlags] & NSEventModifierFlagCommand) && [event keyCode] == 0x2f) {
 			Ref<InputEventKey> k;
-			k.instance();
+			k.instantiate();
 
 			_get_key_modifier_state([event modifierFlags], k);
 			k->set_window_id(DisplayServerOSX::INVALID_WINDOW_ID);
@@ -813,18 +813,18 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 	DS_OSX->cursor_set_shape(p_shape);
 }
 
-static void _mouseDownEvent(DisplayServer::WindowID window_id, NSEvent *event, int index, int mask, bool pressed) {
+static void _mouseDownEvent(DisplayServer::WindowID window_id, NSEvent *event, MouseButton index, MouseButton mask, bool pressed) {
 	ERR_FAIL_COND(!DS_OSX->windows.has(window_id));
 	DisplayServerOSX::WindowData &wd = DS_OSX->windows[window_id];
 
 	if (pressed) {
 		DS_OSX->last_button_state |= mask;
 	} else {
-		DS_OSX->last_button_state &= ~mask;
+		DS_OSX->last_button_state &= (MouseButton)~mask;
 	}
 
 	Ref<InputEventMouseButton> mb;
-	mb.instance();
+	mb.instantiate();
 	mb->set_window_id(window_id);
 	const Vector2 pos = _get_mouse_pos(wd, [event locationInWindow]);
 	_get_key_modifier_state([event modifierFlags], mb);
@@ -884,7 +884,7 @@ static void _mouseDownEvent(DisplayServer::WindowID window_id, NSEvent *event, i
 		return;
 	}
 
-	if (DS_OSX->mouse_mode == DisplayServer::MOUSE_MODE_CONFINED) {
+	if (DS_OSX->mouse_mode == DisplayServer::MOUSE_MODE_CONFINED || DS_OSX->mouse_mode == DisplayServer::MOUSE_MODE_CONFINED_HIDDEN) {
 		// Discard late events
 		if (([event timestamp]) < DS_OSX->last_warp) {
 			return;
@@ -928,7 +928,7 @@ static void _mouseDownEvent(DisplayServer::WindowID window_id, NSEvent *event, i
 	}
 
 	Ref<InputEventMouseMotion> mm;
-	mm.instance();
+	mm.instantiate();
 
 	mm->set_window_id(window_id);
 	mm->set_button_mask(DS_OSX->last_button_state);
@@ -1016,7 +1016,7 @@ static void _mouseDownEvent(DisplayServer::WindowID window_id, NSEvent *event, i
 	DisplayServerOSX::WindowData &wd = DS_OSX->windows[window_id];
 
 	Ref<InputEventMagnifyGesture> ev;
-	ev.instance();
+	ev.instantiate();
 	ev->set_window_id(window_id);
 	_get_key_modifier_state([event modifierFlags], ev);
 	ev->set_position(_get_mouse_pos(wd, [event locationInWindow]));
@@ -1485,14 +1485,14 @@ static int remapKey(unsigned int key, unsigned int state) {
 	}
 }
 
-inline void sendScrollEvent(DisplayServer::WindowID window_id, int button, double factor, int modifierFlags) {
+inline void sendScrollEvent(DisplayServer::WindowID window_id, MouseButton button, double factor, int modifierFlags) {
 	ERR_FAIL_COND(!DS_OSX->windows.has(window_id));
 	DisplayServerOSX::WindowData &wd = DS_OSX->windows[window_id];
 
-	unsigned int mask = 1 << (button - 1);
+	MouseButton mask = MouseButton(1 << (button - 1));
 
 	Ref<InputEventMouseButton> sc;
-	sc.instance();
+	sc.instantiate();
 
 	sc->set_window_id(window_id);
 	_get_key_modifier_state(modifierFlags, sc);
@@ -1501,19 +1501,19 @@ inline void sendScrollEvent(DisplayServer::WindowID window_id, int button, doubl
 	sc->set_pressed(true);
 	sc->set_position(wd.mouse_pos);
 	sc->set_global_position(wd.mouse_pos);
-	DS_OSX->last_button_state |= mask;
+	DS_OSX->last_button_state |= (MouseButton)mask;
 	sc->set_button_mask(DS_OSX->last_button_state);
 
 	Input::get_singleton()->accumulate_input_event(sc);
 
-	sc.instance();
+	sc.instantiate();
 	sc->set_window_id(window_id);
 	sc->set_button_index(button);
 	sc->set_factor(factor);
 	sc->set_pressed(false);
 	sc->set_position(wd.mouse_pos);
 	sc->set_global_position(wd.mouse_pos);
-	DS_OSX->last_button_state &= ~mask;
+	DS_OSX->last_button_state &= (MouseButton)~mask;
 	sc->set_button_mask(DS_OSX->last_button_state);
 
 	Input::get_singleton()->accumulate_input_event(sc);
@@ -1524,7 +1524,7 @@ inline void sendPanEvent(DisplayServer::WindowID window_id, double dx, double dy
 	DisplayServerOSX::WindowData &wd = DS_OSX->windows[window_id];
 
 	Ref<InputEventPanGesture> pg;
-	pg.instance();
+	pg.instantiate();
 
 	pg->set_window_id(window_id);
 	_get_key_modifier_state(modifierFlags, pg);
@@ -2106,7 +2106,12 @@ void DisplayServerOSX::mouse_set_mode(MouseMode p_mode) {
 	} else if (p_mode == MOUSE_MODE_CONFINED) {
 		CGDisplayShowCursor(kCGDirectMainDisplay);
 		CGAssociateMouseAndMouseCursorPosition(false);
-	} else {
+	} else if (p_mode == MOUSE_MODE_CONFINED_HIDDEN) {
+		if (mouse_mode == MOUSE_MODE_VISIBLE || mouse_mode == MOUSE_MODE_CONFINED) {
+			CGDisplayHideCursor(kCGDirectMainDisplay);
+		}
+		CGAssociateMouseAndMouseCursorPosition(false);
+	} else { // MOUSE_MODE_VISIBLE
 		CGDisplayShowCursor(kCGDirectMainDisplay);
 		CGAssociateMouseAndMouseCursorPosition(true);
 	}
@@ -2143,7 +2148,7 @@ void DisplayServerOSX::mouse_warp_to_position(const Point2i &p_to) {
 		CGEventSourceSetLocalEventsSuppressionInterval(lEventRef, 0.0);
 		CGAssociateMouseAndMouseCursorPosition(false);
 		CGWarpMouseCursorPosition(lMouseWarpPos);
-		if (mouse_mode != MOUSE_MODE_CONFINED) {
+		if (mouse_mode != MOUSE_MODE_CONFINED && mouse_mode != MOUSE_MODE_CONFINED_HIDDEN) {
 			CGAssociateMouseAndMouseCursorPosition(true);
 		}
 	}
@@ -2168,7 +2173,7 @@ Point2i DisplayServerOSX::mouse_get_absolute_position() const {
 	return Vector2i();
 }
 
-int DisplayServerOSX::mouse_get_button_state() const {
+MouseButton DisplayServerOSX::mouse_get_button_state() const {
 	return last_button_state;
 }
 
@@ -3370,7 +3375,7 @@ void DisplayServerOSX::_process_key_events() {
 		const KeyEvent &ke = key_event_buffer[i];
 		if (ke.raw) {
 			// Non IME input - no composite characters, pass events as is
-			k.instance();
+			k.instantiate();
 
 			k->set_window_id(ke.window_id);
 			_get_key_modifier_state(ke.osx_state, k);
@@ -3384,7 +3389,7 @@ void DisplayServerOSX::_process_key_events() {
 		} else {
 			// IME input
 			if ((i == 0 && ke.keycode == 0) || (i > 0 && key_event_buffer[i - 1].keycode == 0)) {
-				k.instance();
+				k.instantiate();
 
 				k->set_window_id(ke.window_id);
 				_get_key_modifier_state(ke.osx_state, k);
@@ -3397,7 +3402,7 @@ void DisplayServerOSX::_process_key_events() {
 				_push_input(k);
 			}
 			if (ke.keycode != 0) {
-				k.instance();
+				k.instantiate();
 
 				k->set_window_id(ke.window_id);
 				_get_key_modifier_state(ke.osx_state, k);
@@ -3750,7 +3755,6 @@ DisplayServerOSX::DisplayServerOSX(const String &p_rendering_driver, WindowMode 
 
 	key_event_pos = 0;
 	mouse_mode = MOUSE_MODE_VISIBLE;
-	last_button_state = 0;
 
 	autoreleasePool = [[NSAutoreleasePool alloc] init];
 

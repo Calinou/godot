@@ -90,6 +90,13 @@
 				The timer will be automatically freed after its time elapses.
 			</description>
 		</method>
+		<method name="create_tween">
+			<return type="Tween">
+			</return>
+			<description>
+				Creates and returns a new [Tween].
+			</description>
+		</method>
 		<method name="get_first_node_in_group">
 			<return type="Node">
 			</return>
@@ -133,6 +140,13 @@
 			</argument>
 			<description>
 				Returns a list of all nodes assigned to the given group.
+			</description>
+		</method>
+		<method name="get_processed_tweens">
+			<return type="Array">
+			</return>
+			<description>
+				Returns an array of currently exising [Tween]s in the [SceneTree] (both running and paused).
 			</description>
 		</method>
 		<method name="get_rpc_sender_id" qualifiers="const">
@@ -207,6 +221,7 @@
 				Quits the application at the end of the current iteration. Argument [code]exit_code[/code] can optionally be given (defaulting to 0) to customize the exit status code.
 				By convention, an exit code of [code]0[/code] indicates success whereas a non-zero exit code indicates an error.
 				For portability reasons, the exit code should be set between 0 and 125 (inclusive).
+				[b]Note:[/b] On iOS this method doesn't work. Instead, as recommended by the iOS Human Interface Guidelines, the user is expected to close apps via the Home button.
 			</description>
 		</method>
 		<method name="reload_current_scene">

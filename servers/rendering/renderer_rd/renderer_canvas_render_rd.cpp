@@ -76,7 +76,7 @@ void RendererCanvasRenderRD::_update_transform_2d_to_mat2x3(const Transform2D &p
 	p_mat2x3[5] = p_transform.elements[2][1];
 }
 
-void RendererCanvasRenderRD::_update_transform_to_mat4(const Transform &p_transform, float *p_mat4) {
+void RendererCanvasRenderRD::_update_transform_to_mat4(const Transform3D &p_transform, float *p_mat4) {
 	p_mat4[0] = p_transform.basis.elements[0][0];
 	p_mat4[1] = p_transform.basis.elements[1][0];
 	p_mat4[2] = p_transform.basis.elements[2][0];
@@ -464,8 +464,15 @@ void RendererCanvasRenderRD::_render_item(RD::DrawListID p_draw_list, RID p_rend
 	RID last_texture;
 	Size2 texpixel_size;
 
+	bool skipping = false;
+
 	const Item::Command *c = p_item->commands;
 	while (c) {
+		if (skipping && c->type != Item::Command::TYPE_ANIMATION_SLICE) {
+			c = c->next;
+			continue;
+		}
+
 		push_constant.flags = base_flags | (push_constant.flags & (FLAGS_DEFAULT_NORMAL_MAP_USED | FLAGS_DEFAULT_SPECULAR_MAP_USED)); //reset on each command for sanity, keep canvastexture binding config
 
 		switch (c->type) {
@@ -879,6 +886,14 @@ void RendererCanvasRenderRD::_render_item(RD::DrawListID p_draw_list, RID p_rend
 				}
 
 			} break;
+			case Item::Command::TYPE_ANIMATION_SLICE: {
+				const Item::CommandAnimationSlice *as = static_cast<const Item::CommandAnimationSlice *>(c);
+				double current_time = RendererCompositorRD::singleton->get_total_time();
+				double local_time = Math::fposmod(current_time - as->offset, as->animation_length);
+				skipping = !(local_time >= as->slice_begin && local_time < as->slice_end);
+
+				RenderingServerDefault::redraw_request(); // animation visible means redraw request
+			} break;
 		}
 
 		c = c->next;
@@ -1250,7 +1265,7 @@ void RendererCanvasRenderRD::canvas_render_items(RID p_to_render_target, Item *p
 
 		Size2i ssize = storage->render_target_get_size(p_to_render_target);
 
-		Transform screen_transform;
+		Transform3D screen_transform;
 		screen_transform.translate(-(ssize.width / 2.0f), -(ssize.height / 2.0f), 0.0f);
 		screen_transform.scale(Vector3(2.0f / ssize.width, 2.0f / ssize.height, 1.0f));
 		_update_transform_to_mat4(screen_transform, state_buffer.screen_transform);
@@ -1539,7 +1554,7 @@ void RendererCanvasRenderRD::light_update_shadow(RID p_rid, int p_shadow_index, 
 		}
 
 		Vector3 cam_target = Basis(Vector3(0, 0, Math_TAU * ((i + 3) / 4.0))).xform(Vector3(0, 1, 0));
-		projection = projection * CameraMatrix(Transform().looking_at(cam_target, Vector3(0, 0, -1)).affine_inverse());
+		projection = projection * CameraMatrix(Transform3D().looking_at(cam_target, Vector3(0, 0, -1)).affine_inverse());
 
 		ShadowRenderPushConstant push_constant;
 		for (int y = 0; y < 4; y++) {
@@ -1617,7 +1632,7 @@ void RendererCanvasRenderRD::light_update_directional_shadow(RID p_rid, int p_sh
 
 	CameraMatrix projection;
 	projection.set_orthogonal(-half_size, half_size, -0.5, 0.5, 0.0, distance);
-	projection = projection * CameraMatrix(Transform().looking_at(Vector3(0, 1, 0), Vector3(0, 0, -1)).affine_inverse());
+	projection = projection * CameraMatrix(Transform3D().looking_at(Vector3(0, 1, 0), Vector3(0, 0, -1)).affine_inverse());
 
 	ShadowRenderPushConstant push_constant;
 	for (int y = 0; y < 4; y++) {
