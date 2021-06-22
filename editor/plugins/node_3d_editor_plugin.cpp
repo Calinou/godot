@@ -5277,6 +5277,8 @@ void Node3DEditor::_snap_update() {
 	snap_translate->set_text(String::num(snap_translate_value));
 	snap_rotate->set_text(String::num(snap_rotate_value));
 	snap_scale->set_text(String::num(snap_scale_value));
+	// The grid reflects the translate snap value, so update it.
+	update_grid();
 }
 
 void Node3DEditor::_xform_dialog_action() {
@@ -6249,28 +6251,29 @@ void Node3DEditor::_init_grid() {
 			}
 		}
 
-		real_t division_level = Math::log(Math::abs(camera_distance)) / Math::log((double)primary_grid_steps) + division_level_bias;
+		const real_t division_level = Math::log(Math::abs(camera_distance)) / Math::log((double)primary_grid_steps) + division_level_bias;
 
-		real_t clamped_division_level = CLAMP(division_level, division_level_min, division_level_max);
-		real_t division_level_floored = Math::floor(clamped_division_level);
-		real_t division_level_decimals = clamped_division_level - division_level_floored;
+		const real_t clamped_division_level = CLAMP(division_level, division_level_min, division_level_max);
+		const real_t division_level_floored = Math::floor(clamped_division_level);
+		const real_t division_level_decimals = clamped_division_level - division_level_floored;
 
-		real_t small_step_size = Math::pow(primary_grid_steps, division_level_floored);
-		real_t large_step_size = small_step_size * primary_grid_steps;
-		real_t center_a = large_step_size * (int)(camera_position[a] / large_step_size);
-		real_t center_b = large_step_size * (int)(camera_position[b] / large_step_size);
+		// Reflect the snap size in the grid size.
+		const real_t small_step_size = Math::pow(primary_grid_steps, division_level_floored) * get_translate_snap();
+		const real_t large_step_size = small_step_size * primary_grid_steps * get_translate_snap();
+		const real_t center_a = large_step_size * (int)(camera_position[a] / large_step_size);
+		const real_t center_b = large_step_size * (int)(camera_position[b] / large_step_size);
 
-		real_t bgn_a = center_a - grid_size * small_step_size;
-		real_t end_a = center_a + grid_size * small_step_size;
-		real_t bgn_b = center_b - grid_size * small_step_size;
-		real_t end_b = center_b + grid_size * small_step_size;
+		const real_t bgn_a = center_a - grid_size * small_step_size;
+		const real_t end_a = center_a + grid_size * small_step_size;
+		const real_t bgn_b = center_b - grid_size * small_step_size;
+		const real_t end_b = center_b + grid_size * small_step_size;
 
 		real_t fade_size = Math::pow(primary_grid_steps, division_level - 1.0);
-		real_t min_fade_size = Math::pow(primary_grid_steps, float(division_level_min));
-		real_t max_fade_size = Math::pow(primary_grid_steps, float(division_level_max));
+		const real_t min_fade_size = Math::pow(primary_grid_steps, float(division_level_min));
+		const real_t max_fade_size = Math::pow(primary_grid_steps, float(division_level_max));
 		fade_size = CLAMP(fade_size, min_fade_size, max_fade_size);
 
-		real_t grid_fade_size = (grid_size - primary_grid_steps) * fade_size;
+		const real_t grid_fade_size = (grid_size - primary_grid_steps) * fade_size;
 		grid_mat[c]->set_shader_param("grid_size", grid_fade_size);
 		grid_mat[c]->set_shader_param("orthogonal", orthogonal);
 
@@ -6311,8 +6314,8 @@ void Node3DEditor::_init_grid() {
 				line_color.a = line_color.a * (1 - division_level_decimals);
 			}
 
-			real_t position_a = center_a + i * small_step_size;
-			real_t position_b = center_b + i * small_step_size;
+			const real_t position_a = center_a + i * small_step_size;
+			const real_t position_b = center_b + i * small_step_size;
 
 			// Don't draw lines over the origin if it's enabled.
 			if (!(origin_enabled && Math::is_zero_approx(position_a))) {
@@ -6623,6 +6626,19 @@ void Node3DEditor::unhandled_key_input(const Ref<InputEvent> &p_event) {
 
 	if (!is_visible_in_tree()) {
 		return;
+	}
+
+	const Ref<InputEventKey> k = p_event;
+	if (k.is_valid() && k->is_pressed() && !k->is_echo()) {
+		if (multiply_grid_step_shortcut.is_valid() && multiply_grid_step_shortcut->matches_event(p_event)) {
+			snap_translate_value *= 2;
+			_snap_update();
+		}
+
+		if (divide_grid_step_shortcut.is_valid() && divide_grid_step_shortcut->matches_event(p_event)) {
+			snap_translate_value *= 0.5;
+			_snap_update();
+		}
 	}
 
 	snap_key_enabled = Input::get_singleton()->is_key_pressed(Key::CTRL);
@@ -7518,6 +7534,9 @@ Node3DEditor::Node3DEditor(EditorNode *p_editor) {
 	snap_dialog_vbc->add_margin_child(TTR("Scale Snap (%):"), snap_scale);
 
 	_snap_update();
+
+	multiply_grid_step_shortcut = ED_SHORTCUT("spatial_editor/multiply_grid_step", TTR("Multiply Grid Step by 2"), Key::KP_MULTIPLY);
+	divide_grid_step_shortcut = ED_SHORTCUT("spatial_editor/divide_grid_step", TTR("Divide Grid Step by 2"), Key::KP_DIVIDE);
 
 	/* SETTINGS DIALOG */
 

@@ -621,6 +621,8 @@ private:
 	LineEdit *snap_translate;
 	LineEdit *snap_rotate;
 	LineEdit *snap_scale;
+	Ref<Shortcut> multiply_grid_step_shortcut;
+	Ref<Shortcut> divide_grid_step_shortcut;
 
 	LineEdit *xform_translate[3];
 	LineEdit *xform_rotate[3];
