@@ -85,7 +85,7 @@ Variant CSGShape3DGizmoPlugin::get_handle_value(EditorNode3DGizmo *p_gizmo, int 
 
 	if (Object::cast_to<CSGCylinder3D>(cs)) {
 		CSGCylinder3D *s = Object::cast_to<CSGCylinder3D>(cs);
-		return p_idx == 0 ? s->get_radius() : s->get_height();
+		return p_idx == 0 ? s->get_top_radius() : s->get_height();
 	}
 
 	if (Object::cast_to<CSGTorus3D>(cs)) {
@@ -163,7 +163,7 @@ void CSGShape3DGizmoPlugin::set_handle(EditorNode3DGizmo *p_gizmo, int p_idx, Ca
 		}
 
 		if (p_idx == 0) {
-			s->set_radius(d);
+			s->set_top_radius(d);
 		} else if (p_idx == 1) {
 			s->set_height(d * 2.0);
 		}
@@ -228,7 +228,7 @@ void CSGShape3DGizmoPlugin::commit_handle(EditorNode3DGizmo *p_gizmo, int p_idx,
 		CSGCylinder3D *s = Object::cast_to<CSGCylinder3D>(cs);
 		if (p_cancel) {
 			if (p_idx == 0) {
-				s->set_radius(p_restore);
+				s->set_top_radius(p_restore);
 			} else {
 				s->set_height(p_restore);
 			}
@@ -237,8 +237,8 @@ void CSGShape3DGizmoPlugin::commit_handle(EditorNode3DGizmo *p_gizmo, int p_idx,
 
 		UndoRedo *ur = Node3DEditor::get_singleton()->get_undo_redo();
 		if (p_idx == 0) {
-			ur->create_action(TTR("Change Cylinder Radius"));
-			ur->add_do_method(s, "set_radius", s->get_radius());
+			ur->create_action(TTR("Change Cylinder Top Radius"));
+			ur->add_do_method(s, "set_radius", s->get_top_radius());
 			ur->add_undo_method(s, "set_radius", p_restore);
 		} else {
 			ur->create_action(TTR("Change Cylinder Height"));
@@ -386,7 +386,7 @@ void CSGShape3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 		CSGCylinder3D *s = Object::cast_to<CSGCylinder3D>(cs);
 
 		Vector<Vector3> handles;
-		handles.push_back(Vector3(s->get_radius(), 0, 0));
+		handles.push_back(Vector3(s->get_top_radius(), 0, 0));
 		handles.push_back(Vector3(0, s->get_height() * 0.5, 0));
 		p_gizmo->add_handles(handles, handles_material);
 	}
