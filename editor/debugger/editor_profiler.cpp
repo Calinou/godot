@@ -86,7 +86,7 @@ void EditorProfiler::add_frame_metric(const Metric &p_metric, bool p_final) {
 
 void EditorProfiler::clear() {
 	int metric_size = EditorSettings::get_singleton()->get("debugger/profiler_frame_history_size");
-	metric_size = CLAMP(metric_size, 60, 1024);
+	metric_size = CLAMP(metric_size, 60, 6000);
 	frame_metrics.clear();
 	frame_metrics.resize(metric_size);
 	total_metrics = 0;
@@ -332,6 +332,17 @@ void EditorProfiler::_update_frame() {
 
 	int dtime = display_time->get_selected();
 
+	// Count totals to use for coloring text.
+	int calls_total = 0;
+	float self_time_total = 0;
+	for (int i = 0; i < m.categories.size(); i++) {
+		for (int j = m.categories[i].items.size() - 1; j >= 0; j--) {
+			const Metric::Category::Item &it = m.categories[i].items[j];
+			calls_total += it.calls;
+			self_time_total += it.self;
+		}
+	}
+
 	for (int i = 0; i < m.categories.size(); i++) {
 		TreeItem *category = variables->create_item(root);
 		category->set_cell_mode(0, TreeItem::CELL_MODE_CHECK);
@@ -360,9 +371,14 @@ void EditorProfiler::_update_frame() {
 
 			float time = dtime == DISPLAY_SELF_TIME ? it.self : it.total;
 
+			// Set color according to the percentage of calls for this line.
+			// Higher percentage of calls gets a warmer color, bringing attention
+			// to the user.
 			item->set_text(1, _get_time_as_text(m, time, it.calls));
+			item->set_custom_color(1, intensity_gradient->get_color_at_offset(it.calls / float(calls_total)));
 
 			item->set_text(2, itos(it.calls));
+			item->set_custom_color(2, intensity_gradient->get_color_at_offset(it.self / self_time_total));
 
 			if (plot_sigs.has(it.signature)) {
 				item->set_checked(0, true);
@@ -393,9 +409,19 @@ void EditorProfiler::_clear_pressed() {
 }
 
 void EditorProfiler::_notification(int p_what) {
-	if (p_what == NOTIFICATION_ENTER_TREE || p_what == NOTIFICATION_LAYOUT_DIRECTION_CHANGED || p_what == NOTIFICATION_TRANSLATION_CHANGED) {
-		activate->set_icon(get_theme_icon("Play", "EditorIcons"));
-		clear_button->set_icon(get_theme_icon("Clear", "EditorIcons"));
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_LAYOUT_DIRECTION_CHANGED:
+		case NOTIFICATION_TRANSLATION_CHANGED: {
+			activate->set_icon(get_theme_icon("Play", "EditorIcons"));
+			clear_button->set_icon(get_theme_icon("Clear", "EditorIcons"));
+		} break;
+		case NOTIFICATION_THEME_CHANGED: {
+			// Recreate the color gradient to follow dark/light editor theme changes.
+			intensity_gradient->set_color(0, get_theme_color("font_color", "Editor"));
+			intensity_gradient->set_color(1, get_theme_color("warning_color", "Editor"));
+			intensity_gradient->set_color(2, get_theme_color("error_color", "Editor"));
+		} break;
 	}
 }
 
@@ -640,6 +666,10 @@ EditorProfiler::EditorProfiler() {
 	variables->set_column_min_width(2, 60 * EDSCALE);
 	variables->connect("item_edited", callable_mp(this, &EditorProfiler::_item_edited));
 
+	intensity_gradient = memnew(Gradient);
+	// The color is set when the theme changes.
+	intensity_gradient->add_point(0.5, Color());
+
 	graph = memnew(TextureRect);
 	graph->set_expand(true);
 	graph->set_mouse_filter(MOUSE_FILTER_STOP);
@@ -650,13 +680,13 @@ EditorProfiler::EditorProfiler() {
 	h_split->add_child(graph);
 	graph->set_h_size_flags(SIZE_EXPAND_FILL);
 
-	int metric_size = CLAMP(int(EDITOR_DEF("debugger/profiler_frame_history_size", 600)), 60, 1024);
+	int metric_size = CLAMP(int(EDITOR_DEF("debugger/profiler_frame_history_size", 600)), 60, 6000);
 	frame_metrics.resize(metric_size);
 	total_metrics = 0;
 	last_metric = -1;
 	hover_metric = -1;
 
-	EDITOR_DEF("debugger/profiler_frame_max_functions", 64);
+	EDITOR_DEF("debugger/profiler_frame_max_functions", 4096);
 
 	frame_delay = memnew(Timer);
 	frame_delay->set_wait_time(0.1);

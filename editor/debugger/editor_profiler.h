@@ -96,6 +96,7 @@ private:
 	Ref<ImageTexture> graph_texture;
 	Vector<uint8_t> graph_image;
 	Tree *variables;
+	Gradient *intensity_gradient;
 	HSplitContainer *h_split;
 
 	Set<StringName> plot_sigs;
