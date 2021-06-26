@@ -830,13 +830,12 @@ void BaseMaterial3D::_update_shader() {
 
 	if (flags[FLAG_UV1_USE_TRIPLANAR]) {
 		if (flags[FLAG_UV1_USE_WORLD_TRIPLANAR]) {
-			code += "\tuv1_power_normal=pow(abs(mat3(WORLD_MATRIX) * NORMAL),vec3(uv1_blend_sharpness));\n";
+			code += "\tuv1_power_normal=abs(mat3(WORLD_MATRIX) * NORMAL);\n";
 			code += "\tuv1_triplanar_pos = (WORLD_MATRIX * vec4(VERTEX, 1.0f)).xyz * uv1_scale + uv1_offset;\n";
 		} else {
-			code += "\tuv1_power_normal=pow(abs(NORMAL),vec3(uv1_blend_sharpness));\n";
+			code += "\tuv1_power_normal=abs(NORMAL);\n";
 			code += "\tuv1_triplanar_pos = VERTEX * uv1_scale + uv1_offset;\n";
 		}
-		code += "\tuv1_power_normal/=dot(uv1_power_normal,vec3(1.0));\n";
 		code += "\tuv1_triplanar_pos *= vec3(1.0,-1.0, 1.0);\n";
 	}
 
@@ -859,14 +858,68 @@ void BaseMaterial3D::_update_shader() {
 	code += "}\n";
 	code += "\n\n";
 	if (flags[FLAG_UV1_USE_TRIPLANAR] || flags[FLAG_UV2_USE_TRIPLANAR]) {
-		code += "vec4 triplanar_texture(sampler2D p_sampler,vec3 p_weights,vec3 p_triplanar_pos) {\n";
-		code += "\tvec4 samp=vec4(0.0);\n";
-		code += "\tsamp+= texture(p_sampler,p_triplanar_pos.xy) * p_weights.z;\n";
-		code += "\tsamp+= texture(p_sampler,p_triplanar_pos.xz) * p_weights.y;\n";
-		code += "\tsamp+= texture(p_sampler,p_triplanar_pos.zy * vec2(-1.0,1.0)) * p_weights.x;\n";
-		code += "\treturn samp;\n";
+		// Biplanar mapping from <https://www.iquilezles.org/www/articles/biplanar/biplanar.htm>.
+		// Uses only two texture fetches, but uses more ALU operations.
+		// Since texture fetches are more expensive than ALU operations, this is usually faster
+		// with complex PBR materials that need to do multiple texture fetches per projection.
+
+		code += "vec4 triplanar_texture(sampler2D p_sampler, vec3 p_weights, vec3 p_triplanar_pos) {\n";
+
+		// Grab coord derivatives for texturing.
+		code += "\tvec3 dpdx = dFdx(p_triplanar_pos);\n";
+		code += "\tvec3 dpdy = dFdy(p_triplanar_pos);\n";
+		code += "\tvec3 weights_abs = abs(p_weights);\n";
+
+		// Determine major axis (in x; yz are following axis).
+		// Using an `if` statement instead of a ternary operator due to a GLSL shader compiler error.
+		code += "\tivec3 ma;\n";
+		code += "\tif (weights_abs.x > weights_abs.y && weights_abs.x > weights_abs.z) {\n";
+		code += "\t\tma = ivec3(0, 1, 2);\n";
+		code += "\t} else if (weights_abs.y > weights_abs.z) {\n";
+		code += "\t\tma = ivec3(1, 2, 0);\n";
+		code += "\t} else {\n";
+		code += "\t\tma = ivec3(2, 0, 1);\n";
+		code += "\t}\n";
+
+		// Determine minor axis (in x; yz are following axis).
+		// Using an `if` statement instead of a ternary operator due to a GLSL shader compiler error.
+		code += "\tivec3 mi;\n";
+		code += "\tif (weights_abs.x < weights_abs.y && weights_abs.x < weights_abs.z) {\n";
+		code += "\t\tmi = ivec3(0, 1, 2);\n";
+		code += "\t} else if (weights_abs.y < weights_abs.z) {\n";
+		code += "\t\tmi = ivec3(1, 2, 0);\n";
+		code += "\t} else {\n";
+		code += "\t\tmi = ivec3(2, 0, 1);\n";
+		code += "\t}\n";
+
+		// Determine median axis (in x; yz are following axis).
+		code += "\tivec3 me = ivec3(3) - mi - ma;\n";
+
+		// Project and fetch.
+		code += "\tvec4 x = textureGrad(p_sampler, vec2(p_triplanar_pos[ma.y], p_triplanar_pos[ma.z]), vec2(dpdx[ma.y], dpdx[ma.z]), vec2(dpdy[ma.y], dpdy[ma.z]));\n";
+		code += "\tvec4 y = textureGrad(p_sampler, vec2(p_triplanar_pos[me.y], p_triplanar_pos[me.z]), vec2(dpdx[me.y], dpdx[me.z]), vec2(dpdy[me.y], dpdy[me.z]));\n";
+
+		// Blend factors.
+		code += "\tvec2 w = vec2(weights_abs[ma.x], weights_abs[me.x]);\n";
+		// Add local support (prevents discontinuity).
+		// tan(30 degrees) = ~0.5773.
+		code += "\tw = clamp((w - 0.5773) / (1.0 - 0.5773), 0.0, 1.0);\n";
+		// Shape transition.
+		code += "\tw = pow(w, vec2(uv1_blend_sharpness / 8.0));\n";
+		// Blend and return.
+		code += "\treturn (x * w.x + y * w.y) / (w.x + w.y);\n";
+
 		code += "}\n";
 	}
+	// if (flags[FLAG_UV1_USE_TRIPLANAR] || flags[FLAG_UV2_USE_TRIPLANAR]) {
+	// 	code += "vec4 triplanar_texture(sampler2D p_sampler,vec3 p_weights,vec3 p_triplanar_pos) {\n";
+	// 	code += "\tvec4 samp=vec4(0.0);\n";
+	// 	code += "\tsamp+= texture(p_sampler,p_triplanar_pos.xy) * p_weights.z;\n";
+	// 	code += "\tsamp+= texture(p_sampler,p_triplanar_pos.xz) * p_weights.y;\n";
+	// 	code += "\tsamp+= texture(p_sampler,p_triplanar_pos.zy * vec2(-1.0,1.0)) * p_weights.x;\n";
+	// 	code += "\treturn samp;\n";
+	// 	code += "}\n";
+	// }
 	code += "\n\n";
 	code += "void fragment() {\n";
 
