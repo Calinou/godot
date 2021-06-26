@@ -412,6 +412,8 @@ void CapsuleMesh::_create_mesh_array(Array &p_arr) const {
 	p_arr[VS::ARRAY_NORMAL] = normals;
 	p_arr[VS::ARRAY_TANGENT] = tangents;
 	p_arr[VS::ARRAY_TEX_UV] = uvs;
+	// Reuse UV as UV2 since it doesn't have any overlapping areas, making it suited for lightmapping.
+	p_arr[VS::ARRAY_TEX_UV2] = uvs;
 	p_arr[VS::ARRAY_INDEX] = indices;
 }
 
@@ -669,6 +671,8 @@ void CubeMesh::_create_mesh_array(Array &p_arr) const {
 	p_arr[VS::ARRAY_NORMAL] = normals;
 	p_arr[VS::ARRAY_TANGENT] = tangents;
 	p_arr[VS::ARRAY_TEX_UV] = uvs;
+	// Reuse UV as UV2 since it doesn't have any overlapping areas, making it suited for lightmapping.
+	p_arr[VS::ARRAY_TEX_UV2] = uvs;
 	p_arr[VS::ARRAY_INDEX] = indices;
 }
 
@@ -870,6 +874,8 @@ void CylinderMesh::_create_mesh_array(Array &p_arr) const {
 	p_arr[VS::ARRAY_NORMAL] = normals;
 	p_arr[VS::ARRAY_TANGENT] = tangents;
 	p_arr[VS::ARRAY_TEX_UV] = uvs;
+	// Reuse UV as UV2 since it doesn't have any overlapping areas, making it suited for lightmapping.
+	p_arr[VS::ARRAY_TEX_UV2] = uvs;
 	p_arr[VS::ARRAY_INDEX] = indices;
 }
 
@@ -1009,6 +1015,8 @@ void PlaneMesh::_create_mesh_array(Array &p_arr) const {
 	p_arr[VS::ARRAY_NORMAL] = normals;
 	p_arr[VS::ARRAY_TANGENT] = tangents;
 	p_arr[VS::ARRAY_TEX_UV] = uvs;
+	// Reuse UV as UV2 since it doesn't have any overlapping areas, making it suited for lightmapping.
+	p_arr[VS::ARRAY_TEX_UV2] = uvs;
 	p_arr[VS::ARRAY_INDEX] = indices;
 }
 
@@ -1269,6 +1277,8 @@ void PrismMesh::_create_mesh_array(Array &p_arr) const {
 	p_arr[VS::ARRAY_NORMAL] = normals;
 	p_arr[VS::ARRAY_TANGENT] = tangents;
 	p_arr[VS::ARRAY_TEX_UV] = uvs;
+	// Reuse UV as UV2 since it doesn't have any overlapping areas, making it suited for lightmapping.
+	p_arr[VS::ARRAY_TEX_UV2] = uvs;
 	p_arr[VS::ARRAY_INDEX] = indices;
 }
 
@@ -1399,6 +1409,8 @@ void QuadMesh::_create_mesh_array(Array &p_arr) const {
 	p_arr[VS::ARRAY_NORMAL] = normals;
 	p_arr[VS::ARRAY_TANGENT] = tangents;
 	p_arr[VS::ARRAY_TEX_UV] = uvs;
+	// Reuse UV as UV2 since it doesn't have any overlapping areas, making it suited for lightmapping.
+	p_arr[VS::ARRAY_TEX_UV2] = uvs;
 }
 
 void QuadMesh::_bind_methods() {
@@ -1492,6 +1504,8 @@ void SphereMesh::_create_mesh_array(Array &p_arr) const {
 	p_arr[VS::ARRAY_NORMAL] = normals;
 	p_arr[VS::ARRAY_TANGENT] = tangents;
 	p_arr[VS::ARRAY_TEX_UV] = uvs;
+	// Reuse UV as UV2 since it doesn't have any overlapping areas, making it suited for lightmapping.
+	p_arr[VS::ARRAY_TEX_UV2] = uvs;
 	p_arr[VS::ARRAY_INDEX] = indices;
 }
 

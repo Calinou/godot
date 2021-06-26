@@ -48,6 +48,7 @@ struct CSGBrush {
 	struct Face {
 		Vector3 vertices[3];
 		Vector2 uvs[3];
+		Vector2 uv2s[3];
 		AABB aabb;
 		bool smooth;
 		bool invert;
@@ -60,7 +61,7 @@ struct CSGBrush {
 	inline void _regen_face_aabbs();
 
 	// Create a brush from faces.
-	void build_from_faces(const PoolVector<Vector3> &p_vertices, const PoolVector<Vector2> &p_uvs, const PoolVector<bool> &p_smooth, const PoolVector<Ref<Material>> &p_materials, const PoolVector<bool> &p_invert_faces);
+	void build_from_faces(const PoolVector<Vector3> &p_vertices, const PoolVector<Vector2> &p_uvs, const PoolVector<Vector2> &p_uv2s, const PoolVector<bool> &p_smooth, const PoolVector<Ref<Material>> &p_materials, const PoolVector<bool> &p_invert_faces);
 	void copy_from(const CSGBrush &p_brush, const Transform &p_xform);
 };
 
@@ -79,6 +80,7 @@ struct CSGBrushOperation {
 			bool inside;
 			int points[3];
 			Vector2 uvs[3];
+			Vector2 uv2s[3];
 			bool smooth;
 			bool invert;
 			int material_idx;
@@ -149,7 +151,7 @@ struct CSGBrushOperation {
 		inline bool _bvh_inside(FaceBVH *facebvhptr, int p_max_depth, int p_bvh_first, int p_face_idx) const;
 		inline int _create_bvh(FaceBVH *facebvhptr, FaceBVH **facebvhptrptr, int p_from, int p_size, int p_depth, int &r_max_depth, int &r_max_alloc);
 
-		void add_face(const Vector3 p_points[3], const Vector2 p_uvs[3], bool p_smooth, bool p_invert, const Ref<Material> &p_material, bool p_from_b);
+		void add_face(const Vector3 p_points[3], const Vector2 p_uvs[3], const Vector2 p_uv2s[3], bool p_smooth, bool p_invert, const Ref<Material> &p_material, bool p_from_b);
 		void mark_inside_faces();
 	};
 
@@ -157,6 +159,7 @@ struct CSGBrushOperation {
 		struct Vertex2D {
 			Vector2 point;
 			Vector2 uv;
+			Vector2 uv2;
 		};
 
 		struct Face2D {

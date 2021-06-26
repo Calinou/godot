@@ -318,6 +318,7 @@ void CSGShape::_update_shape() {
 		surfaces.write[i].vertices.resize(face_count[i] * 3);
 		surfaces.write[i].normals.resize(face_count[i] * 3);
 		surfaces.write[i].uvs.resize(face_count[i] * 3);
+		surfaces.write[i].uv2s.resize(face_count[i] * 3);
 		if (calculate_tangents) {
 			surfaces.write[i].tans.resize(face_count[i] * 3 * 4);
 		}
@@ -330,6 +331,7 @@ void CSGShape::_update_shape() {
 		surfaces.write[i].verticesw = surfaces.write[i].vertices.write();
 		surfaces.write[i].normalsw = surfaces.write[i].normals.write();
 		surfaces.write[i].uvsw = surfaces.write[i].uvs.write();
+		surfaces.write[i].uv2sw = surfaces.write[i].uv2s.write();
 		if (calculate_tangents) {
 			surfaces.write[i].tansw = surfaces.write[i].tans.write();
 		}
@@ -389,6 +391,7 @@ void CSGShape::_update_shape() {
 				int k = last + order[j];
 				surfaces[idx].verticesw[k] = v;
 				surfaces[idx].uvsw[k] = n->faces[i].uvs[j];
+				surfaces[idx].uv2sw[k] = n->faces[i].uv2s[j];
 				surfaces[idx].normalsw[k] = normal;
 
 				if (calculate_tangents) {
@@ -431,6 +434,7 @@ void CSGShape::_update_shape() {
 		surfaces.write[i].verticesw.release();
 		surfaces.write[i].normalsw.release();
 		surfaces.write[i].uvsw.release();
+		surfaces.write[i].uv2sw.release();
 		surfaces.write[i].tansw.release();
 
 		if (surfaces[i].last_added == 0) {
@@ -444,6 +448,8 @@ void CSGShape::_update_shape() {
 		array[Mesh::ARRAY_VERTEX] = surfaces[i].vertices;
 		array[Mesh::ARRAY_NORMAL] = surfaces[i].normals;
 		array[Mesh::ARRAY_TEX_UV] = surfaces[i].uvs;
+		print_line(itos(surfaces[i].uv2s.size()));
+		array[Mesh::ARRAY_TEX_UV2] = surfaces[i].uv2s;
 		if (have_tangents) {
 			array[Mesh::ARRAY_TANGENT] = surfaces[i].tans;
 		}
@@ -657,7 +663,7 @@ CSGCombiner::CSGCombiner() {
 
 /////////////////////
 
-CSGBrush *CSGPrimitive::_create_brush_from_arrays(const PoolVector<Vector3> &p_vertices, const PoolVector<Vector2> &p_uv, const PoolVector<bool> &p_smooth, const PoolVector<Ref<Material>> &p_materials) {
+CSGBrush *CSGPrimitive::_create_brush_from_arrays(const PoolVector<Vector3> &p_vertices, const PoolVector<Vector2> &p_uv, const PoolVector<Vector2> &p_uv2, const PoolVector<bool> &p_smooth, const PoolVector<Ref<Material>> &p_materials) {
 	CSGBrush *brush = memnew(CSGBrush);
 
 	PoolVector<bool> invert;
@@ -669,7 +675,7 @@ CSGBrush *CSGPrimitive::_create_brush_from_arrays(const PoolVector<Vector3> &p_v
 			w[i] = invert_faces;
 		}
 	}
-	brush->build_from_faces(p_vertices, p_uv, p_smooth, p_materials, invert);
+	brush->build_from_faces(p_vertices, p_uv, p_uv2, p_smooth, p_materials, invert);
 
 	return brush;
 }
@@ -710,6 +716,7 @@ CSGBrush *CSGMesh::_build_brush() {
 	PoolVector<bool> smooth;
 	PoolVector<Ref<Material>> materials;
 	PoolVector<Vector2> uvs;
+	PoolVector<Vector2> uv2s;
 	Ref<Material> material = get_material();
 
 	for (int i = 0; i < mesh->get_surface_count(); i++) {
@@ -747,6 +754,14 @@ CSGBrush *CSGMesh::_build_brush() {
 			uvr_used = true;
 		}
 
+		PoolVector<Vector2> auv2s = arrays[Mesh::ARRAY_TEX_UV2];
+		PoolVector<Vector2>::Read uv2r;
+		bool uv2r_used = false;
+		if (auv2s.size()) {
+			uv2r = auv2s.read();
+			uv2r_used = true;
+		}
+
 		Ref<Material> mat;
 		if (material.is_valid()) {
 			mat = material;
@@ -763,10 +778,12 @@ CSGBrush *CSGMesh::_build_brush() {
 			smooth.resize((as + is) / 3);
 			materials.resize((as + is) / 3);
 			uvs.resize(as + is);
+			uv2s.resize(as + is);
 
 			PoolVector<Vector3>::Write vw = vertices.write();
 			PoolVector<bool>::Write sw = smooth.write();
 			PoolVector<Vector2>::Write uvw = uvs.write();
+			PoolVector<Vector2>::Write uv2w = uv2s.write();
 			PoolVector<Ref<Material>>::Write mw = materials.write();
 
 			PoolVector<int>::Read ir = aindices.read();
@@ -775,6 +792,7 @@ CSGBrush *CSGMesh::_build_brush() {
 				Vector3 vertex[3];
 				Vector3 normal[3];
 				Vector2 uv[3];
+				Vector2 uv2[3];
 
 				for (int k = 0; k < 3; k++) {
 					int idx = ir[j + k];
@@ -784,6 +802,9 @@ CSGBrush *CSGMesh::_build_brush() {
 					}
 					if (uvr_used) {
 						uv[k] = uvr[idx];
+					}
+					if (uv2r_used) {
+						uv2[k] = uv2r[idx];
 					}
 				}
 
@@ -796,6 +817,10 @@ CSGBrush *CSGMesh::_build_brush() {
 				uvw[as + j + 0] = uv[0];
 				uvw[as + j + 1] = uv[1];
 				uvw[as + j + 2] = uv[2];
+
+				uv2w[as + j + 0] = uv2[0];
+				uv2w[as + j + 1] = uv2[1];
+				uv2w[as + j + 2] = uv2[2];
 
 				sw[(as + j) / 3] = !flat;
 				mw[(as + j) / 3] = mat;
@@ -807,17 +832,20 @@ CSGBrush *CSGMesh::_build_brush() {
 			vertices.resize(as + is);
 			smooth.resize((as + is) / 3);
 			uvs.resize(as + is);
+			uv2s.resize(as + is);
 			materials.resize((as + is) / 3);
 
 			PoolVector<Vector3>::Write vw = vertices.write();
 			PoolVector<bool>::Write sw = smooth.write();
 			PoolVector<Vector2>::Write uvw = uvs.write();
+			PoolVector<Vector2>::Write uv2w = uv2s.write();
 			PoolVector<Ref<Material>>::Write mw = materials.write();
 
 			for (int j = 0; j < is; j += 3) {
 				Vector3 vertex[3];
 				Vector3 normal[3];
 				Vector2 uv[3];
+				Vector2 uv2[3];
 
 				for (int k = 0; k < 3; k++) {
 					vertex[k] = vr[j + k];
@@ -826,6 +854,9 @@ CSGBrush *CSGMesh::_build_brush() {
 					}
 					if (uvr_used) {
 						uv[k] = uvr[j + k];
+					}
+					if (uv2r_used) {
+						uv2[k] = uv2r[j + k];
 					}
 				}
 
@@ -839,6 +870,10 @@ CSGBrush *CSGMesh::_build_brush() {
 				uvw[as + j + 1] = uv[1];
 				uvw[as + j + 2] = uv[2];
 
+				uv2w[as + j + 0] = uv2[0];
+				uv2w[as + j + 1] = uv2[1];
+				uv2w[as + j + 2] = uv2[2];
+
 				sw[(as + j) / 3] = !flat;
 				mw[(as + j) / 3] = mat;
 			}
@@ -849,7 +884,7 @@ CSGBrush *CSGMesh::_build_brush() {
 		return memnew(CSGBrush);
 	}
 
-	return _create_brush_from_arrays(vertices, uvs, smooth, materials);
+	return _create_brush_from_arrays(vertices, uvs, uv2s, smooth, materials);
 }
 
 void CSGMesh::_mesh_changed() {
@@ -1014,7 +1049,8 @@ CSGBrush *CSGSphere::_build_brush() {
 		}
 	}
 
-	brush->build_from_faces(faces, uvs, smooth, materials, invert);
+	// Pass same coordinates for UV1 and UV2 since the texture is never reused on different parts of the mesh.
+	brush->build_from_faces(faces, uvs, uvs, smooth, materials, invert);
 
 	return brush;
 }
@@ -1196,7 +1232,8 @@ CSGBrush *CSGBox::_build_brush() {
 		}
 	}
 
-	brush->build_from_faces(faces, uvs, smooth, materials, invert);
+	// Pass same coordinates for UV1 and UV2 since the texture is never reused on different parts of the mesh.
+	brush->build_from_faces(faces, uvs, uvs, smooth, materials, invert);
 
 	return brush;
 }
@@ -1399,7 +1436,8 @@ CSGBrush *CSGCylinder::_build_brush() {
 		}
 	}
 
-	brush->build_from_faces(faces, uvs, smooth, materials, invert);
+	// Pass same coordinates for UV1 and UV2 since the texture is never reused on different parts of the mesh.
+	brush->build_from_faces(faces, uvs, uvs, smooth, materials, invert);
 
 	return brush;
 }
@@ -1620,7 +1658,8 @@ CSGBrush *CSGTorus::_build_brush() {
 		}
 	}
 
-	brush->build_from_faces(faces, uvs, smooth, materials, invert);
+	// Pass same coordinates for UV1 and UV2 since the texture is never reused on different parts of the mesh.
+	brush->build_from_faces(faces, uvs, uvs, smooth, materials, invert);
 
 	return brush;
 }
@@ -2195,7 +2234,8 @@ CSGBrush *CSGPolygon::_build_brush() {
 		}
 	}
 
-	brush->build_from_faces(faces, uvs, smooth, materials, invert);
+	// Pass same coordinates for UV1 and UV2 since the texture is never reused on different parts of the mesh.
+	brush->build_from_faces(faces, uvs, uvs, smooth, materials, invert);
 
 	return brush;
 }

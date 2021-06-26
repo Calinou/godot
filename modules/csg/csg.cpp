@@ -194,7 +194,7 @@ void CSGBrush::_regen_face_aabbs() {
 	}
 }
 
-void CSGBrush::build_from_faces(const PoolVector<Vector3> &p_vertices, const PoolVector<Vector2> &p_uvs, const PoolVector<bool> &p_smooth, const PoolVector<Ref<Material>> &p_materials, const PoolVector<bool> &p_invert_faces) {
+void CSGBrush::build_from_faces(const PoolVector<Vector3> &p_vertices, const PoolVector<Vector2> &p_uvs, const PoolVector<Vector2> &p_uv2s, const PoolVector<bool> &p_smooth, const PoolVector<Ref<Material>> &p_materials, const PoolVector<bool> &p_invert_faces) {
 	faces.clear();
 
 	int vc = p_vertices.size();
@@ -204,6 +204,8 @@ void CSGBrush::build_from_faces(const PoolVector<Vector3> &p_vertices, const Poo
 	PoolVector<Vector3>::Read rv = p_vertices.read();
 	int uvc = p_uvs.size();
 	PoolVector<Vector2>::Read ruv = p_uvs.read();
+	int uv2c = p_uvs.size();
+	PoolVector<Vector2>::Read ruv2 = p_uv2s.read();
 	int sc = p_smooth.size();
 	PoolVector<bool>::Read rs = p_smooth.read();
 	int mc = p_materials.size();
@@ -225,6 +227,13 @@ void CSGBrush::build_from_faces(const PoolVector<Vector3> &p_vertices, const Poo
 			f.uvs[0] = ruv[i * 3 + 0];
 			f.uvs[1] = ruv[i * 3 + 1];
 			f.uvs[2] = ruv[i * 3 + 2];
+		}
+
+		if (uv2c == vc) {
+			print_line("there are UV2s");
+			f.uv2s[0] = ruv2[i * 3 + 0];
+			f.uv2s[1] = ruv2[i * 3 + 1];
+			f.uv2s[2] = ruv2[i * 3 + 2];
 		}
 
 		if (sc == vc / 3) {
@@ -306,11 +315,13 @@ void CSGBrushOperation::merge_brushes(Operation p_operation, const CSGBrush &p_b
 		} else {
 			Vector3 points[3];
 			Vector2 uvs[3];
+			Vector2 uv2s[3];
 			for (int j = 0; j < 3; j++) {
 				points[j] = p_brush_a.faces[i].vertices[j];
 				uvs[j] = p_brush_a.faces[i].uvs[j];
+				uv2s[j] = p_brush_a.faces[i].uv2s[j];
 			}
-			mesh_merge.add_face(points, uvs, p_brush_a.faces[i].smooth, p_brush_a.faces[i].invert, material, false);
+			mesh_merge.add_face(points, uvs, uv2s, p_brush_a.faces[i].smooth, p_brush_a.faces[i].invert, material, false);
 		}
 	}
 
@@ -325,11 +336,13 @@ void CSGBrushOperation::merge_brushes(Operation p_operation, const CSGBrush &p_b
 		} else {
 			Vector3 points[3];
 			Vector2 uvs[3];
+			Vector2 uv2s[3];
 			for (int j = 0; j < 3; j++) {
 				points[j] = p_brush_b.faces[i].vertices[j];
 				uvs[j] = p_brush_b.faces[i].uvs[j];
+				uv2s[j] = p_brush_b.faces[i].uv2s[j];
 			}
-			mesh_merge.add_face(points, uvs, p_brush_b.faces[i].smooth, p_brush_b.faces[i].invert, material, true);
+			mesh_merge.add_face(points, uvs, uv2s, p_brush_b.faces[i].smooth, p_brush_b.faces[i].invert, material, true);
 		}
 	}
 
@@ -362,6 +375,7 @@ void CSGBrushOperation::merge_brushes(Operation p_operation, const CSGBrush &p_b
 				for (int j = 0; j < 3; j++) {
 					r_merged_brush.faces.write[outside_count].vertices[j] = mesh_merge.points[mesh_merge.faces[i].points[j]];
 					r_merged_brush.faces.write[outside_count].uvs[j] = mesh_merge.faces[i].uvs[j];
+					r_merged_brush.faces.write[outside_count].uv2s[j] = mesh_merge.faces[i].uv2s[j];
 				}
 
 				r_merged_brush.faces.write[outside_count].smooth = mesh_merge.faces[i].smooth;
@@ -396,6 +410,7 @@ void CSGBrushOperation::merge_brushes(Operation p_operation, const CSGBrush &p_b
 				for (int j = 0; j < 3; j++) {
 					r_merged_brush.faces.write[inside_count].vertices[j] = mesh_merge.points[mesh_merge.faces[i].points[j]];
 					r_merged_brush.faces.write[inside_count].uvs[j] = mesh_merge.faces[i].uvs[j];
+					r_merged_brush.faces.write[inside_count].uv2s[j] = mesh_merge.faces[i].uv2s[j];
 				}
 
 				r_merged_brush.faces.write[inside_count].smooth = mesh_merge.faces[i].smooth;
@@ -436,12 +451,14 @@ void CSGBrushOperation::merge_brushes(Operation p_operation, const CSGBrush &p_b
 				for (int j = 0; j < 3; j++) {
 					r_merged_brush.faces.write[face_count].vertices[j] = mesh_merge.points[mesh_merge.faces[i].points[j]];
 					r_merged_brush.faces.write[face_count].uvs[j] = mesh_merge.faces[i].uvs[j];
+					r_merged_brush.faces.write[face_count].uv2s[j] = mesh_merge.faces[i].uv2s[j];
 				}
 
 				if (mesh_merge.faces[i].from_b) {
 					//invert facing of insides of B
 					SWAP(r_merged_brush.faces.write[face_count].vertices[1], r_merged_brush.faces.write[face_count].vertices[2]);
 					SWAP(r_merged_brush.faces.write[face_count].uvs[1], r_merged_brush.faces.write[face_count].uvs[2]);
+					SWAP(r_merged_brush.faces.write[face_count].uv2s[1], r_merged_brush.faces.write[face_count].uv2s[2]);
 				}
 
 				r_merged_brush.faces.write[face_count].smooth = mesh_merge.faces[i].smooth;
@@ -729,7 +746,7 @@ void CSGBrushOperation::MeshMerge::mark_inside_faces() {
 	}
 }
 
-void CSGBrushOperation::MeshMerge::add_face(const Vector3 p_points[], const Vector2 p_uvs[], bool p_smooth, bool p_invert, const Ref<Material> &p_material, bool p_from_b) {
+void CSGBrushOperation::MeshMerge::add_face(const Vector3 p_points[], const Vector2 p_uvs[], const Vector2 p_uv2s[], bool p_smooth, bool p_invert, const Ref<Material> &p_material, bool p_from_b) {
 	int indices[3];
 	for (int i = 0; i < 3; i++) {
 		VertexKey vk;
@@ -772,6 +789,7 @@ void CSGBrushOperation::MeshMerge::add_face(const Vector3 p_points[], const Vect
 	for (int k = 0; k < 3; k++) {
 		face.points[k] = indices[k];
 		face.uvs[k] = p_uvs[k];
+		face.uv2s[k] = p_uv2s[k];
 	}
 
 	faces.push_back(face);
@@ -1035,6 +1053,10 @@ void CSGBrushOperation::Build2DFaces::_find_edge_intersections(const Vector2 p_s
 				face_vertices[face_edge_idx].uv,
 				face_vertices[(face_edge_idx + 1) % 3].uv
 			};
+			Vector2 edge_uv2s[2] = {
+				face_vertices[face_edge_idx].uv2,
+				face_vertices[(face_edge_idx + 1) % 3].uv2
+			};
 			Vector2 intersection_point;
 
 			// First check if the ends of the segment are on the edge.
@@ -1064,6 +1086,7 @@ void CSGBrushOperation::Build2DFaces::_find_edge_intersections(const Vector2 p_s
 				Vertex2D new_vertex;
 				new_vertex.point = intersection_point;
 				new_vertex.uv = interpolate_segment_uv(edge_points, edge_uvs, intersection_point);
+				new_vertex.uv2 = interpolate_segment_uv(edge_points, edge_uv2s, intersection_point);
 				int new_vertex_idx = _add_vertex(new_vertex);
 				int opposite_vertex_idx = face.vertex_idx[(face_edge_idx + 2) % 3];
 				_add_vertex_idx_sorted(r_segment_indices, new_vertex_idx);
@@ -1124,6 +1147,11 @@ int CSGBrushOperation::Build2DFaces::_insert_point(const Vector2 &p_point) {
 			face_vertices[1].uv,
 			face_vertices[2].uv
 		};
+		Vector2 uv2s[3] = {
+			face_vertices[0].uv2,
+			face_vertices[1].uv2,
+			face_vertices[2].uv2
+		};
 
 		// Skip degenerate triangles.
 		if (is_triangle_degenerate(points, vertex_snap2)) {
@@ -1148,6 +1176,10 @@ int CSGBrushOperation::Build2DFaces::_insert_point(const Vector2 &p_point) {
 				uvs[face_edge_idx],
 				uvs[(face_edge_idx + 1) % 3]
 			};
+			Vector2 edge_uv2s[2] = {
+				uv2s[face_edge_idx],
+				uv2s[(face_edge_idx + 1) % 3]
+			};
 
 			Vector2 closest_point = Geometry::get_closest_point_to_segment_2d(p_point, edge_points);
 			if ((closest_point - p_point).length_squared() < vertex_snap2) {
@@ -1157,6 +1189,7 @@ int CSGBrushOperation::Build2DFaces::_insert_point(const Vector2 &p_point) {
 				Vertex2D new_vertex;
 				new_vertex.point = p_point;
 				new_vertex.uv = interpolate_segment_uv(edge_points, edge_uvs, p_point);
+				new_vertex.uv2 = interpolate_segment_uv(edge_points, edge_uv2s, p_point);
 				new_vertex_idx = _add_vertex(new_vertex);
 				int opposite_vertex_idx = face.vertex_idx[(face_edge_idx + 2) % 3];
 
@@ -1205,6 +1238,7 @@ int CSGBrushOperation::Build2DFaces::_insert_point(const Vector2 &p_point) {
 			Vertex2D new_vertex;
 			new_vertex.point = p_point;
 			new_vertex.uv = interpolate_triangle_uv(points, uvs, p_point);
+			new_vertex.uv2 = interpolate_triangle_uv(points, uv2s, p_point);
 			new_vertex_idx = _add_vertex(new_vertex);
 
 			// Create three new faces around this point and remove this face.
@@ -1315,13 +1349,15 @@ void CSGBrushOperation::Build2DFaces::addFacesToMesh(MeshMerge &r_mesh_merge, bo
 		// Convert 2D vertex points to 3D.
 		Vector3 points_3D[3];
 		Vector2 uvs[3];
+		Vector2 uv2s[3];
 		for (int i = 0; i < 3; ++i) {
 			Vector3 point_2D(fv[i].point.x, fv[i].point.y, 0);
 			points_3D[i] = to_3D.xform(point_2D);
 			uvs[i] = fv[i].uv;
+			uv2s[i] = fv[i].uv2;
 		}
 
-		r_mesh_merge.add_face(points_3D, uvs, p_smooth, p_invert, p_material, p_from_b);
+		r_mesh_merge.add_face(points_3D, uvs, uv2s, p_smooth, p_invert, p_material, p_from_b);
 	}
 }
 
@@ -1348,6 +1384,7 @@ CSGBrushOperation::Build2DFaces::Build2DFaces(const CSGBrush &p_brush, int p_fac
 		vertex.point.x = point_2D.x;
 		vertex.point.y = point_2D.y;
 		vertex.uv = p_brush.faces[p_face_idx].uvs[i];
+		vertex.uv2 = p_brush.faces[p_face_idx].uv2s[i];
 		vertices.push_back(vertex);
 		face.vertex_idx[i] = i;
 	}

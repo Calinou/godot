@@ -83,6 +83,7 @@ private:
 		PoolVector<Vector3> vertices;
 		PoolVector<Vector3> normals;
 		PoolVector<Vector2> uvs;
+		PoolVector<Vector2> uv2s;
 		PoolVector<float> tans;
 		Ref<Material> material;
 		int last_added;
@@ -90,6 +91,7 @@ private:
 		PoolVector<Vector3>::Write verticesw;
 		PoolVector<Vector3>::Write normalsw;
 		PoolVector<Vector2>::Write uvsw;
+		PoolVector<Vector2>::Write uv2sw;
 		PoolVector<float>::Write tansw;
 	};
 
@@ -172,7 +174,7 @@ private:
 	bool invert_faces;
 
 protected:
-	CSGBrush *_create_brush_from_arrays(const PoolVector<Vector3> &p_vertices, const PoolVector<Vector2> &p_uv, const PoolVector<bool> &p_smooth, const PoolVector<Ref<Material>> &p_materials);
+	CSGBrush *_create_brush_from_arrays(const PoolVector<Vector3> &p_vertices, const PoolVector<Vector2> &p_uv, const PoolVector<Vector2> &p_uv2, const PoolVector<bool> &p_smooth, const PoolVector<Ref<Material>> &p_materials);
 	static void _bind_methods();
 
 public:
