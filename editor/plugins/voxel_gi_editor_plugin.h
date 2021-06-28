@@ -43,10 +43,12 @@ class VoxelGIEditorPlugin : public EditorPlugin {
 
 	HBoxContainer *bake_hb;
 	Label *bake_info;
+	Button *fit_extents;
 	Button *bake;
 	EditorNode *editor;
 
 	EditorFileDialog *probe_file;
+	SceneTreeDialog *fit_extents_dialog;
 
 	static EditorProgress *tmp_progress;
 	static void bake_func_begin(int p_steps);
@@ -55,6 +57,9 @@ class VoxelGIEditorPlugin : public EditorPlugin {
 
 	void _bake();
 	void _voxel_gi_save_path_and_bake(const String &p_path);
+
+	void _show_fit_extents_dialog();
+	void _fit_extents_dialog_selected(const NodePath &p_path);
 
 protected:
 	static void _bind_methods();
