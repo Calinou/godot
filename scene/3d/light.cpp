@@ -230,6 +230,7 @@ void Light::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "light_color", PROPERTY_HINT_COLOR_NO_ALPHA), "set_color", "get_color");
 	ADD_PROPERTYI(PropertyInfo(Variant::REAL, "light_energy", PROPERTY_HINT_RANGE, "0,16,0.01,or_greater"), "set_param", "get_param", PARAM_ENERGY);
 	ADD_PROPERTYI(PropertyInfo(Variant::REAL, "light_indirect_energy", PROPERTY_HINT_RANGE, "0,16,0.01,or_greater"), "set_param", "get_param", PARAM_INDIRECT_ENERGY);
+	ADD_PROPERTYI(PropertyInfo(Variant::REAL, "light_size", PROPERTY_HINT_RANGE, "0,8,0.01,or_greater"), "set_param", "get_param", PARAM_SIZE);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "light_negative"), "set_negative", "is_negative");
 	ADD_PROPERTYI(PropertyInfo(Variant::REAL, "light_specular", PROPERTY_HINT_RANGE, "0,1,0.01"), "set_param", "get_param", PARAM_SPECULAR);
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "light_bake_mode", PROPERTY_HINT_ENUM, "Disable,Indirect,All"), "set_bake_mode", "get_bake_mode");
@@ -307,6 +308,7 @@ Light::Light(VisualServer::LightType p_type) {
 	set_param(PARAM_SHADOW_SPLIT_3_OFFSET, 0.5);
 	set_param(PARAM_SHADOW_NORMAL_BIAS, 0.0);
 	set_param(PARAM_SHADOW_BIAS, 0.15);
+	set_param(PARAM_SIZE, 0);
 	set_disable_scale(true);
 }
 
