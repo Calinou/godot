@@ -22,7 +22,6 @@ struct LightData { //this structure needs to be as packed as possible
 	float shadow_bias;
 	float shadow_normal_bias;
 	float transmittance_bias;
-	float soft_shadow_size; // for spot, it's the size in uv coordinates of the light, for omni it's the span angle
 	float soft_shadow_scale; // scales the shadow kernel for blurrier shadows
 	uint mask;
 	float shadow_volumetric_fog_fade;
@@ -57,13 +56,11 @@ struct DirectionalLightData {
 	float size;
 	float specular;
 	uint mask;
-	float softshadow_angle;
 	float soft_shadow_scale;
 	bool blend_splits;
 	bool shadow_enabled;
 	float fade_from;
 	float fade_to;
-	uvec2 pad;
 	uint bake_mode;
 	float shadow_volumetric_fog_fade;
 	vec4 shadow_bias;

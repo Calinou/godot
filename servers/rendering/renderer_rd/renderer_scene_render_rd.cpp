@@ -2566,7 +2566,6 @@ void RendererSceneRenderRD::_setup_lights(const PagedArray<RID> &p_lights, const
 					light_data.shadow_volumetric_fog_fade = 1.0 / storage->light_get_shadow_volumetric_fog_fade(base);
 
 					light_data.soft_shadow_scale = storage->light_get_param(base, RS::LIGHT_PARAM_SHADOW_BLUR);
-					light_data.softshadow_angle = angular_diameter;
 					light_data.bake_mode = storage->light_get_bake_mode(base);
 
 					if (angular_diameter <= 0.0) {
@@ -2726,12 +2725,7 @@ void RendererSceneRenderRD::_setup_lights(const PagedArray<RID> &p_lights, const
 
 				RendererStorageRD::store_transform(proj, light_data.shadow_matrix);
 
-				if (size > 0.0) {
-					light_data.soft_shadow_size = size;
-				} else {
-					light_data.soft_shadow_size = 0.0;
-					light_data.soft_shadow_scale *= shadows_quality_radius_get(); // Only use quality radius for PCF
-				}
+				light_data.soft_shadow_scale *= shadows_quality_radius_get(); // Only use quality radius for PCF
 
 			} else if (type == RS::LIGHT_SPOT) {
 				Transform3D modelview = (inverse_transform * light_transform).inverse();
@@ -2741,14 +2735,7 @@ void RendererSceneRenderRD::_setup_lights(const PagedArray<RID> &p_lights, const
 				CameraMatrix shadow_mtx = bias * li->shadow_transform[0].camera * modelview;
 				RendererStorageRD::store_camera(shadow_mtx, light_data.shadow_matrix);
 
-				if (size > 0.0) {
-					CameraMatrix cm = li->shadow_transform[0].camera;
-					float half_np = cm.get_z_near() * Math::tan(Math::deg2rad(spot_angle));
-					light_data.soft_shadow_size = (size * 0.5 / radius) / (half_np / cm.get_z_near()) * rect.size.width;
-				} else {
-					light_data.soft_shadow_size = 0.0;
-					light_data.soft_shadow_scale *= shadows_quality_radius_get(); // Only use quality radius for PCF
-				}
+				light_data.soft_shadow_scale *= shadows_quality_radius_get(); // Only use quality radius for PCF
 			}
 		} else {
 			light_data.shadow_enabled = false;

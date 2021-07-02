@@ -1993,7 +1993,6 @@ void RendererSceneCull::_light_instance_setup_directional_shadow(int p_shadow_in
 		}
 
 		real_t radius = 0;
-		real_t soft_shadow_expand = 0;
 		Vector3 center;
 
 		{
@@ -2023,25 +2022,10 @@ void RendererSceneCull::_light_instance_setup_directional_shadow(int p_shadow_in
 
 			z_min_cam = z_vec.dot(center) - radius;
 
-			{
-				float soft_shadow_angle = RSG::storage->light_get_param(p_instance->base, RS::LIGHT_PARAM_SIZE);
-
-				if (soft_shadow_angle > 0.0) {
-					float z_range = (z_vec.dot(center) + radius + pancake_size) - z_min_cam;
-					soft_shadow_expand = Math::tan(Math::deg2rad(soft_shadow_angle)) * z_range;
-
-					x_max += soft_shadow_expand;
-					y_max += soft_shadow_expand;
-
-					x_min -= soft_shadow_expand;
-					y_min -= soft_shadow_expand;
-				}
-			}
-
-			x_max_cam = x_vec.dot(center) + radius + soft_shadow_expand;
-			x_min_cam = x_vec.dot(center) - radius - soft_shadow_expand;
-			y_max_cam = y_vec.dot(center) + radius + soft_shadow_expand;
-			y_min_cam = y_vec.dot(center) - radius - soft_shadow_expand;
+			x_max_cam = x_vec.dot(center) + radius;
+			x_min_cam = x_vec.dot(center) - radius;
+			y_max_cam = y_vec.dot(center) + radius;
+			y_min_cam = y_vec.dot(center) - radius;
 
 			if (depth_range_mode == RS::LIGHT_DIRECTIONAL_SHADOW_DEPTH_RANGE_STABLE) {
 				//this trick here is what stabilizes the shadow (make potential jaggies to not move)

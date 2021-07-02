@@ -535,7 +535,6 @@ private:
 			float shadow_bias;
 			float shadow_normal_bias;
 			float transmittance_bias;
-			float soft_shadow_size;
 			float soft_shadow_scale;
 			uint32_t mask;
 			float shadow_volumetric_fog_fade;
@@ -550,13 +549,11 @@ private:
 			float size;
 			float specular;
 			uint32_t mask;
-			float softshadow_angle;
 			float soft_shadow_scale;
 			uint32_t blend_splits;
 			uint32_t shadow_enabled;
 			float fade_from;
 			float fade_to;
-			uint32_t pad[2];
 			uint32_t bake_mode;
 			float shadow_volumetric_fog_fade;
 			float shadow_bias[4];
