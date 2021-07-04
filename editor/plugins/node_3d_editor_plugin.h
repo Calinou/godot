@@ -257,9 +257,14 @@ private:
 	int gpu_time_history_index;
 
 	int index;
+	// This should be a menu option enum value that matches a value in the `display_options` vector,
+	// and should not be set to `VIEW_DISPLAY_NORMAL`.
+	int last_debug_draw_mode = VIEW_DISPLAY_WIREFRAME;
 	String name;
 	void _menu_option(int p_option);
 	void _set_auto_orthogonal();
+	Vector<int> display_options;
+	Vector<Viewport::DebugDraw> debug_draw_modes;
 	Node3D *preview_node;
 	AABB *preview_bounds;
 	Vector<String> selected_files;

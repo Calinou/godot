@@ -1094,6 +1094,23 @@ void Node3DEditorViewport::_list_select(Ref<InputEventMouseButton> b) {
 }
 
 void Node3DEditorViewport::_sinput(const Ref<InputEvent> &p_event) {
+	Ref<InputEventKey> k = p_event;
+
+	if (k.is_valid() && k->is_pressed() && !k->is_echo()) {
+		// Allow toggling debug draw mode while previewing a camera.
+		if (ED_IS_SHORTCUT("spatial_editor/toggle_debug_draw_mode", k)) {
+			// Cycle between the last debug draw mode (defaults to Wireframe after editor startup) and normal draw mode.
+			if (view_menu->get_popup()->is_item_checked(view_menu->get_popup()->get_item_index(VIEW_DISPLAY_NORMAL))) {
+				print_line("Going to " + itos(last_debug_draw_mode));
+				_menu_option(last_debug_draw_mode);
+			} else {
+				last_debug_draw_mode = display_options[viewport->get_debug_draw()];
+				print_line("Storing " + itos(last_debug_draw_mode));
+				_menu_option(VIEW_DISPLAY_NORMAL);
+			}
+		}
+	}
+
 	if (previewing) {
 		return; //do NONE
 	}
@@ -1959,8 +1976,6 @@ void Node3DEditorViewport::_sinput(const Ref<InputEvent> &p_event) {
 			}
 		}
 	}
-
-	Ref<InputEventKey> k = p_event;
 
 	if (k.is_valid()) {
 		if (!k->is_pressed()) {
@@ -3077,62 +3092,6 @@ void Node3DEditorViewport::_menu_option(int p_option) {
 		case VIEW_DISPLAY_DEBUG_CLUSTER_DECALS:
 		case VIEW_DISPLAY_DEBUG_CLUSTER_REFLECTION_PROBES:
 		case VIEW_DISPLAY_DEBUG_OCCLUDERS: {
-			static const int display_options[] = {
-				VIEW_DISPLAY_NORMAL,
-				VIEW_DISPLAY_WIREFRAME,
-				VIEW_DISPLAY_OVERDRAW,
-				VIEW_DISPLAY_SHADELESS,
-				VIEW_DISPLAY_LIGHTING,
-				VIEW_DISPLAY_NORMAL_BUFFER,
-				VIEW_DISPLAY_WIREFRAME,
-				VIEW_DISPLAY_DEBUG_SHADOW_ATLAS,
-				VIEW_DISPLAY_DEBUG_DIRECTIONAL_SHADOW_ATLAS,
-				VIEW_DISPLAY_DEBUG_VOXEL_GI_ALBEDO,
-				VIEW_DISPLAY_DEBUG_VOXEL_GI_LIGHTING,
-				VIEW_DISPLAY_DEBUG_VOXEL_GI_EMISSION,
-				VIEW_DISPLAY_DEBUG_SCENE_LUMINANCE,
-				VIEW_DISPLAY_DEBUG_SSAO,
-				VIEW_DISPLAY_DEBUG_GI_BUFFER,
-				VIEW_DISPLAY_DEBUG_DISABLE_LOD,
-				VIEW_DISPLAY_DEBUG_PSSM_SPLITS,
-				VIEW_DISPLAY_DEBUG_DECAL_ATLAS,
-				VIEW_DISPLAY_DEBUG_SDFGI,
-				VIEW_DISPLAY_DEBUG_SDFGI_PROBES,
-				VIEW_DISPLAY_DEBUG_CLUSTER_OMNI_LIGHTS,
-				VIEW_DISPLAY_DEBUG_CLUSTER_SPOT_LIGHTS,
-				VIEW_DISPLAY_DEBUG_CLUSTER_DECALS,
-				VIEW_DISPLAY_DEBUG_CLUSTER_REFLECTION_PROBES,
-				VIEW_DISPLAY_DEBUG_OCCLUDERS,
-				VIEW_MAX
-			};
-			static const Viewport::DebugDraw debug_draw_modes[] = {
-				Viewport::DEBUG_DRAW_DISABLED,
-				Viewport::DEBUG_DRAW_WIREFRAME,
-				Viewport::DEBUG_DRAW_OVERDRAW,
-				Viewport::DEBUG_DRAW_UNSHADED,
-				Viewport::DEBUG_DRAW_LIGHTING,
-				Viewport::DEBUG_DRAW_NORMAL_BUFFER,
-				Viewport::DEBUG_DRAW_WIREFRAME,
-				Viewport::DEBUG_DRAW_SHADOW_ATLAS,
-				Viewport::DEBUG_DRAW_DIRECTIONAL_SHADOW_ATLAS,
-				Viewport::DEBUG_DRAW_VOXEL_GI_ALBEDO,
-				Viewport::DEBUG_DRAW_VOXEL_GI_LIGHTING,
-				Viewport::DEBUG_DRAW_VOXEL_GI_EMISSION,
-				Viewport::DEBUG_DRAW_SCENE_LUMINANCE,
-				Viewport::DEBUG_DRAW_SSAO,
-				Viewport::DEBUG_DRAW_GI_BUFFER,
-				Viewport::DEBUG_DRAW_DISABLE_LOD,
-				Viewport::DEBUG_DRAW_PSSM_SPLITS,
-				Viewport::DEBUG_DRAW_DECAL_ATLAS,
-				Viewport::DEBUG_DRAW_SDFGI,
-				Viewport::DEBUG_DRAW_SDFGI_PROBES,
-				Viewport::DEBUG_DRAW_CLUSTER_OMNI_LIGHTS,
-				Viewport::DEBUG_DRAW_CLUSTER_SPOT_LIGHTS,
-				Viewport::DEBUG_DRAW_CLUSTER_DECALS,
-				Viewport::DEBUG_DRAW_CLUSTER_REFLECTION_PROBES,
-				Viewport::DEBUG_DRAW_OCCLUDERS,
-			};
-
 			int idx = 0;
 
 			while (display_options[idx] != VIEW_MAX) {
@@ -3950,6 +3909,62 @@ void Node3DEditorViewport::drop_data_fw(const Point2 &p_point, const Variant &p_
 }
 
 Node3DEditorViewport::Node3DEditorViewport(Node3DEditor *p_spatial_editor, EditorNode *p_editor, int p_index) {
+	// Keep this in sync with `debug_draw_modes` below.
+	display_options.push_back(VIEW_DISPLAY_NORMAL);
+	display_options.push_back(VIEW_DISPLAY_WIREFRAME);
+	display_options.push_back(VIEW_DISPLAY_OVERDRAW);
+	display_options.push_back(VIEW_DISPLAY_SHADELESS);
+	display_options.push_back(VIEW_DISPLAY_LIGHTING);
+	display_options.push_back(VIEW_DISPLAY_NORMAL_BUFFER);
+	display_options.push_back(VIEW_DISPLAY_WIREFRAME);
+	display_options.push_back(VIEW_DISPLAY_DEBUG_SHADOW_ATLAS);
+	display_options.push_back(VIEW_DISPLAY_DEBUG_DIRECTIONAL_SHADOW_ATLAS);
+	display_options.push_back(VIEW_DISPLAY_DEBUG_VOXEL_GI_ALBEDO);
+	display_options.push_back(VIEW_DISPLAY_DEBUG_VOXEL_GI_LIGHTING);
+	display_options.push_back(VIEW_DISPLAY_DEBUG_VOXEL_GI_EMISSION);
+	display_options.push_back(VIEW_DISPLAY_DEBUG_SCENE_LUMINANCE);
+	display_options.push_back(VIEW_DISPLAY_DEBUG_SSAO);
+	display_options.push_back(VIEW_DISPLAY_DEBUG_GI_BUFFER);
+	display_options.push_back(VIEW_DISPLAY_DEBUG_DISABLE_LOD);
+	display_options.push_back(VIEW_DISPLAY_DEBUG_PSSM_SPLITS);
+	display_options.push_back(VIEW_DISPLAY_DEBUG_DECAL_ATLAS);
+	display_options.push_back(VIEW_DISPLAY_DEBUG_SDFGI);
+	display_options.push_back(VIEW_DISPLAY_DEBUG_SDFGI_PROBES);
+	display_options.push_back(VIEW_DISPLAY_DEBUG_CLUSTER_OMNI_LIGHTS);
+	display_options.push_back(VIEW_DISPLAY_DEBUG_CLUSTER_SPOT_LIGHTS);
+	display_options.push_back(VIEW_DISPLAY_DEBUG_CLUSTER_DECALS);
+	display_options.push_back(VIEW_DISPLAY_DEBUG_CLUSTER_REFLECTION_PROBES);
+	display_options.push_back(VIEW_DISPLAY_DEBUG_OCCLUDERS);
+	// Extraneous option not present in `debug_draw_modes`, but it's required anyway.
+	display_options.push_back(VIEW_MAX);
+
+	// Keep this in sync with `display_options` above.
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_DISABLED);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_WIREFRAME);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_OVERDRAW);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_UNSHADED);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_LIGHTING);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_NORMAL_BUFFER);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_WIREFRAME);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_SHADOW_ATLAS);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_DIRECTIONAL_SHADOW_ATLAS);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_VOXEL_GI_ALBEDO);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_VOXEL_GI_LIGHTING);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_VOXEL_GI_EMISSION);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_SCENE_LUMINANCE);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_SSAO);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_GI_BUFFER);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_DISABLE_LOD);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_PSSM_SPLITS);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_DECAL_ATLAS);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_SDFGI);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_SDFGI_PROBES);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_CLUSTER_OMNI_LIGHTS);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_CLUSTER_SPOT_LIGHTS);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_CLUSTER_DECALS);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_CLUSTER_REFLECTION_PROBES);
+	debug_draw_modes.push_back(Viewport::DEBUG_DRAW_OCCLUDERS);
+
 	cpu_time_history_index = 0;
 	gpu_time_history_index = 0;
 
@@ -4114,6 +4129,8 @@ Node3DEditorViewport::Node3DEditorViewport(Node3DEditor *p_spatial_editor, Edito
 	ED_SHORTCUT("spatial_editor/freelook_down", TTR("Freelook Down"), KEY_Q);
 	ED_SHORTCUT("spatial_editor/freelook_speed_modifier", TTR("Freelook Speed Modifier"), KEY_SHIFT);
 	ED_SHORTCUT("spatial_editor/freelook_slow_modifier", TTR("Freelook Slow Modifier"), KEY_ALT);
+
+	ED_SHORTCUT("spatial_editor/toggle_debug_draw_mode", TTR("Toggle Debug Draw Mode"), KEY_Z);
 
 	preview_camera = memnew(CheckBox);
 	preview_camera->set_text(TTR("Preview"));
