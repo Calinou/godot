@@ -1903,7 +1903,24 @@ FRAGMENT_SHADER_CODE
 
 #ifdef USE_LIGHTMAP
 #ifdef USE_LIGHTMAP_LAYERED
-	ambient_light = LIGHTMAP_TEXTURE_LAYERED_SAMPLE(lightmap, vec3(uv2, float(lightmap_layer))).rgb * lightmap_energy;
+	// I can't use `-light_direction_attenuation.xyz` here.
+	// Code that sets that DirectionalLightData struct value:
+	//
+	// Vector3 direction = p_camera_inverse_transform.basis.xform(li->transform.basis.xform(Vector3(0, 0, -1))).normalized();
+	// ubo_data.light_direction_attenuation[0] = direction.x;
+	// ubo_data.light_direction_attenuation[1] = direction.y;
+	// ubo_data.light_direction_attenuation[2] = direction.z;
+	// ubo_data.light_direction_attenuation[3] = 1.0;
+	//
+	// FIXME: No idea how to get the directional light angle here, so I'll use a hardcoded value.
+	float NdotL = dot(normal, normalize((-camera_inverse_matrix * vec4(-0.5, -0.5, -0.5, 0.0)).xyz));
+	float cNdotL = max(NdotL, 0.0); // clamped NdotL
+
+	// lambert by default for everything else
+	// multiply by Tau to compensate darkening
+	float diffuse_brdf_NL = cNdotL * (1.0 / M_PI) * M_PI * 2;
+
+	ambient_light = LIGHTMAP_TEXTURE_LAYERED_SAMPLE(lightmap, vec3(uv2, float(lightmap_layer))).rgb * lightmap_energy * diffuse_brdf_NL;
 #else
 	ambient_light = LIGHTMAP_TEXTURE_SAMPLE(lightmap, uv2).rgb * lightmap_energy;
 #endif
