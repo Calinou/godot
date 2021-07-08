@@ -2326,13 +2326,20 @@ FRAGMENT_SHADER_CODE
 	if (fog_color_enabled.a > 0.5) {
 		float fog_amount = 0.0;
 
-		vec3 fog_color;
+		//vec3 ref_vec = reflect(eye_vec, normal);
+		vec3 ref_vec = normalize((radiance_inverse_xform * vec4(-eye_vec, 0.0)).xyz);
+#ifdef USE_RADIANCE_MAP_ARRAY //ubershader-runtime
+		vec3 fog_color = textureDualParaboloidArray(radiance_map_array, ref_vec, 0.1) * bg_energy;
+#else //ubershader-runtime
+		vec3 fog_color = textureDualParaboloid(radiance_map, ref_vec, 0.1) * bg_energy;
+#endif //ubershader-runtime
+
 #ifdef USE_LIGHT_DIRECTIONAL //ubershader-runtime
 
-		fog_color = mix(fog_color_enabled.rgb, fog_sun_color_amount.rgb, fog_sun_color_amount.a * pow(max(dot(normalize(vertex), -light_direction_attenuation.xyz), 0.0), 8.0));
+		//vec3 fog_color = mix(fog_color_enabled.rgb, fog_sun_color_amount.rgb, fog_sun_color_amount.a * pow(max(dot(normalize(vertex), -light_direction_attenuation.xyz), 0.0), 8.0));
 #else //ubershader-runtime
 
-		fog_color = fog_color_enabled.rgb;
+		/*vec3 fog_color = fog_color_enabled.rgb;*/
 #endif //ubershader-runtime
 
 		//apply fog

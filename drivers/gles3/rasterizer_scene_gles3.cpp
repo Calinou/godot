@@ -1951,12 +1951,14 @@ void RasterizerSceneGLES3::_render_list(RenderList::Element **p_elements, int p_
 			state.scene_shader.set_conditional(SceneShaderGLES3::USE_RADIANCE_MAP_ARRAY, storage->config.use_texture_array_environment);
 			use_radiance_map = true;
 		} else {
-			state.scene_shader.set_conditional(SceneShaderGLES3::USE_RADIANCE_MAP, false);
+			state.scene_shader.set_conditional(SceneShaderGLES3::USE_RADIANCE_MAP, true);
 			state.scene_shader.set_conditional(SceneShaderGLES3::USE_RADIANCE_MAP_ARRAY, false);
+			use_radiance_map = true;
 		}
 	} else {
-		state.scene_shader.set_conditional(SceneShaderGLES3::USE_RADIANCE_MAP, false);
+		state.scene_shader.set_conditional(SceneShaderGLES3::USE_RADIANCE_MAP, true);
 		state.scene_shader.set_conditional(SceneShaderGLES3::USE_RADIANCE_MAP_ARRAY, false);
+		use_radiance_map = true;
 	}
 
 	state.cull_front = false;
@@ -2036,7 +2038,7 @@ void RasterizerSceneGLES3::_render_list(RenderList::Element **p_elements, int p_
 					state.scene_shader.set_conditional(SceneShaderGLES3::USE_LIGHTMAP_CAPTURE, false);
 					state.scene_shader.set_conditional(SceneShaderGLES3::USE_LIGHTMAP, false);
 					state.scene_shader.set_conditional(SceneShaderGLES3::USE_LIGHTMAP_LAYERED, false);
-					state.scene_shader.set_conditional(SceneShaderGLES3::USE_RADIANCE_MAP, false);
+					state.scene_shader.set_conditional(SceneShaderGLES3::USE_RADIANCE_MAP, true);
 					state.scene_shader.set_conditional(SceneShaderGLES3::USE_CONTACT_SHADOWS, false);
 
 					//state.scene_shader.set_conditional(SceneShaderGLES3::SHADELESS,true);
@@ -2206,7 +2208,7 @@ void RasterizerSceneGLES3::_render_list(RenderList::Element **p_elements, int p_
 	state.scene_shader.set_conditional(SceneShaderGLES3::ENABLE_OCTAHEDRAL_COMPRESSION, false);
 	state.scene_shader.set_conditional(SceneShaderGLES3::USE_INSTANCING, false);
 	state.scene_shader.set_conditional(SceneShaderGLES3::USE_SKELETON, false);
-	state.scene_shader.set_conditional(SceneShaderGLES3::USE_RADIANCE_MAP, false);
+	state.scene_shader.set_conditional(SceneShaderGLES3::USE_RADIANCE_MAP, true);
 	state.scene_shader.set_conditional(SceneShaderGLES3::USE_FORWARD_LIGHTING, false);
 	state.scene_shader.set_conditional(SceneShaderGLES3::USE_LIGHT_DIRECTIONAL, false);
 	state.scene_shader.set_conditional(SceneShaderGLES3::LIGHT_DIRECTIONAL_SHADOW, false);
