@@ -12,6 +12,10 @@ struct LightData { //this structure needs to be as packed as possible
 	vec3 color;
 	float attenuation;
 
+	float volumetric_fog_energy;
+	uvec2 pad;
+	uint pad2;
+
 	float cone_attenuation;
 	float cone_angle;
 	float specular_amount;
@@ -63,7 +67,8 @@ struct DirectionalLightData {
 	bool shadow_enabled;
 	float fade_from;
 	float fade_to;
-	uvec2 pad;
+	float volumetric_fog_energy;
+	uint pad;
 	uint bake_mode;
 	float shadow_volumetric_fog_fade;
 	vec4 shadow_bias;
