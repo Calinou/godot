@@ -62,6 +62,9 @@
 		<member name="light_specular" type="float" setter="set_param" getter="get_param" default="0.5">
 			The intensity of the specular blob in objects affected by the light. At [code]0[/code], the light becomes a pure diffuse light. When not baking emission, this can be used to avoid unrealistic reflections when placing lights above an emissive surface.
 		</member>
+		<member name="light_volumetric_fog_energy" type="float" setter="set_param" getter="get_param" default="1.0">
+			Secondary multiplier multiplied with [member light_energy] then used with the [Environment]'s volumetric fog (if enabled). If set to [code]0.0[/code], computing volumetric fog will be skipped for this light, which can improve performance when volumetric fog is enabled.
+		</member>
 		<member name="shadow_bias" type="float" setter="set_param" getter="get_param" default="0.2">
 			Used to adjust shadow appearance. Too small a value results in self-shadowing ("shadow acne"), while too large a value causes shadows to separate from casters ("peter-panning"). Adjust as needed.
 		</member>
@@ -92,57 +95,57 @@
 		<constant name="PARAM_INDIRECT_ENERGY" value="1" enum="Param">
 			Constant for accessing [member light_indirect_energy].
 		</constant>
-		<constant name="PARAM_SPECULAR" value="2" enum="Param">
+		<constant name="PARAM_SPECULAR" value="3" enum="Param">
 			Constant for accessing [member light_specular].
 		</constant>
-		<constant name="PARAM_RANGE" value="3" enum="Param">
+		<constant name="PARAM_RANGE" value="4" enum="Param">
 			Constant for accessing [member OmniLight3D.omni_range] or [member SpotLight3D.spot_range].
 		</constant>
-		<constant name="PARAM_SIZE" value="4" enum="Param">
+		<constant name="PARAM_SIZE" value="5" enum="Param">
 			Constant for accessing [member light_size].
 		</constant>
-		<constant name="PARAM_ATTENUATION" value="5" enum="Param">
+		<constant name="PARAM_ATTENUATION" value="6" enum="Param">
 			Constant for accessing [member OmniLight3D.omni_attenuation] or [member SpotLight3D.spot_attenuation].
 		</constant>
-		<constant name="PARAM_SPOT_ANGLE" value="6" enum="Param">
+		<constant name="PARAM_SPOT_ANGLE" value="7" enum="Param">
 			Constant for accessing [member SpotLight3D.spot_angle].
 		</constant>
-		<constant name="PARAM_SPOT_ATTENUATION" value="7" enum="Param">
+		<constant name="PARAM_SPOT_ATTENUATION" value="8" enum="Param">
 			Constant for accessing [member SpotLight3D.spot_angle_attenuation].
 		</constant>
-		<constant name="PARAM_SHADOW_MAX_DISTANCE" value="8" enum="Param">
+		<constant name="PARAM_SHADOW_MAX_DISTANCE" value="9" enum="Param">
 			Constant for accessing [member DirectionalLight3D.directional_shadow_max_distance].
 		</constant>
-		<constant name="PARAM_SHADOW_SPLIT_1_OFFSET" value="9" enum="Param">
+		<constant name="PARAM_SHADOW_SPLIT_1_OFFSET" value="10" enum="Param">
 			Constant for accessing [member DirectionalLight3D.directional_shadow_split_1].
 		</constant>
-		<constant name="PARAM_SHADOW_SPLIT_2_OFFSET" value="10" enum="Param">
+		<constant name="PARAM_SHADOW_SPLIT_2_OFFSET" value="11" enum="Param">
 			Constant for accessing [member DirectionalLight3D.directional_shadow_split_2].
 		</constant>
-		<constant name="PARAM_SHADOW_SPLIT_3_OFFSET" value="11" enum="Param">
+		<constant name="PARAM_SHADOW_SPLIT_3_OFFSET" value="12" enum="Param">
 			Constant for accessing [member DirectionalLight3D.directional_shadow_split_3].
 		</constant>
-		<constant name="PARAM_SHADOW_FADE_START" value="12" enum="Param">
+		<constant name="PARAM_SHADOW_FADE_START" value="13" enum="Param">
 			Constant for accessing [member DirectionalLight3D.directional_shadow_fade_start].
 		</constant>
-		<constant name="PARAM_SHADOW_NORMAL_BIAS" value="13" enum="Param">
+		<constant name="PARAM_SHADOW_NORMAL_BIAS" value="14" enum="Param">
 			Constant for accessing [member shadow_normal_bias].
 		</constant>
-		<constant name="PARAM_SHADOW_BIAS" value="14" enum="Param">
+		<constant name="PARAM_SHADOW_BIAS" value="15" enum="Param">
 			Constant for accessing [member shadow_bias].
 		</constant>
-		<constant name="PARAM_SHADOW_PANCAKE_SIZE" value="15" enum="Param">
+		<constant name="PARAM_SHADOW_PANCAKE_SIZE" value="16" enum="Param">
 			Constant for accessing [member DirectionalLight3D.directional_shadow_pancake_size].
 		</constant>
-		<constant name="PARAM_SHADOW_BLUR" value="16" enum="Param">
+		<constant name="PARAM_SHADOW_BLUR" value="17" enum="Param">
 			Constant for accessing [member shadow_blur].
 		</constant>
-		<constant name="PARAM_SHADOW_VOLUMETRIC_FOG_FADE" value="17" enum="Param">
+		<constant name="PARAM_SHADOW_VOLUMETRIC_FOG_FADE" value="18" enum="Param">
 		</constant>
-		<constant name="PARAM_TRANSMITTANCE_BIAS" value="18" enum="Param">
+		<constant name="PARAM_TRANSMITTANCE_BIAS" value="19" enum="Param">
 			Constant for accessing [member shadow_transmittance_bias].
 		</constant>
-		<constant name="PARAM_MAX" value="19" enum="Param">
+		<constant name="PARAM_MAX" value="20" enum="Param">
 			Represents the size of the [enum Param] enum.
 		</constant>
 		<constant name="BAKE_DISABLED" value="0" enum="BakeMode">

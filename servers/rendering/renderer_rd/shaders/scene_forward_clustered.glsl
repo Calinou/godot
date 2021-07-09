@@ -1908,8 +1908,12 @@ void main() {
 #endif //USE_NO_SHADING
 
 	// Draw "fixed" fog before volumetric fog to ensure volumetric fog can appear in front of the sky.
-	frag_color.rgb = mix(frag_color.rgb, fog.rgb, fog.a);
-	;
+	if (scene_data.volumetric_fog_enabled) {
+		// TODO: Do this properly to support fixed + volumetric fog scenarios, and add an option.
+		frag_color.rgb += fog.rgb;
+	} else {
+		frag_color.rgb = mix(frag_color.rgb, fog.rgb, fog.a);
+	}
 
 #endif //MODE_MULTIPLE_RENDER_TARGETS
 

@@ -580,6 +580,10 @@ private:
 			float color[3];
 			float attenuation;
 
+			float volumetric_fog_energy;
+			uint32_t pad[2];
+			uint32_t pad2;
+
 			float inv_spot_attenuation;
 			float cos_spot_angle;
 			float specular_amount;
@@ -611,7 +615,8 @@ private:
 			uint32_t shadow_enabled;
 			float fade_from;
 			float fade_to;
-			uint32_t pad[2];
+			float volumetric_fog_energy;
+			uint32_t pad;
 			uint32_t bake_mode;
 			float shadow_volumetric_fog_fade;
 			float shadow_bias[4];

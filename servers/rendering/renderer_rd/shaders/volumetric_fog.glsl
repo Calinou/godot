@@ -369,7 +369,7 @@ void main() {
 			shadow_attenuation = mix(shadow_color, vec3(1.0), shadow);
 		}
 
-		total_light += shadow_attenuation * directional_lights.data[i].color * directional_lights.data[i].energy / M_PI;
+		total_light += shadow_attenuation * directional_lights.data[i].color * directional_lights.data[i].energy * directional_lights.data[i].volumetric_fog_energy / M_PI;
 	}
 
 	//compute lights from cluster
@@ -452,7 +452,7 @@ void main() {
 
 						shadow_attenuation = exp(min(0.0, (depth - splane.z)) / omni_lights.data[light_index].inv_radius * omni_lights.data[light_index].shadow_volumetric_fog_fade);
 					}
-					total_light += light * attenuation * shadow_attenuation;
+					total_light += light * attenuation * shadow_attenuation * omni_lights.data[light_index].volumetric_fog_energy;
 				}
 			}
 		}
@@ -525,7 +525,7 @@ void main() {
 						shadow_attenuation = exp(min(0.0, (depth - splane.z)) / spot_lights.data[light_index].inv_radius * spot_lights.data[light_index].shadow_volumetric_fog_fade);
 					}
 
-					total_light += light * attenuation * shadow_attenuation;
+					total_light += light * attenuation * shadow_attenuation * spot_lights.data[light_index].volumetric_fog_energy;
 				}
 			}
 		}
