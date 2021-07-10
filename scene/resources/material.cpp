@@ -890,8 +890,61 @@ void BaseMaterial3D::_update_shader() {
 		code += "\treturn samp;\n";
 		code += "}\n";
 	}
+	code += R"(
+float parallaxSoftShadowMultiplier(in vec3 L, in vec2 initialTexCoord, in float initialHeight, in sampler2D p_texture_heightmap, in float p_heightmap_scale) {
+	float shadowMultiplier = 1.0;
+
+	// TODO: Use number of layers from the uniform.
+	const float minLayers = 15.0;
+	const float maxLayers = 30.0;
+
+	// Calculate lighting only for surface oriented to the light source.
+	if (dot(vec3(0.0, 0.0, 1.0), L) > 0.0) {
+		// Calculate initial parameters.
+		float numSamplesUnderSurface = 0.0;
+		shadowMultiplier = 0.0;
+		float numLayers = mix(maxLayers, minLayers, abs(dot(vec3(0.0, 0.0, 1.0), L)));
+		float layerHeight = initialHeight / numLayers;
+		vec2 texStep = p_heightmap_scale * L.xy / L.z / numLayers;
+
+		// Current parameters.
+		float currentLayerHeight = initialHeight - layerHeight;
+		vec2 currentTextureCoords = initialTexCoord + texStep;
+		float heightFromTexture = texture(p_texture_heightmap, currentTextureCoords).r;
+		float stepIndex = 1.0;
+
+		// While point is below depth 0.0:
+		while (currentLayerHeight > 0.0) {
+			// If point is under the surface:
+			if (heightFromTexture < currentLayerHeight) {
+				// Calculate partial shadowing factor.
+				numSamplesUnderSurface += 1.0;
+				float newShadowMultiplier = (currentLayerHeight - heightFromTexture) * (1.0 - stepIndex / numLayers);
+				shadowMultiplier = max(shadowMultiplier, newShadowMultiplier);
+			}
+
+			// Offset to the next layer.
+			stepIndex += 1.0;
+			currentLayerHeight -= layerHeight;
+			currentTextureCoords += texStep;
+			heightFromTexture = texture(p_texture_heightmap, currentTextureCoords).r;
+		}
+
+		// Shadowing factor should be 1 if there were no points under the surface.
+		if (numSamplesUnderSurface < 1.0) {
+			shadowMultiplier = 1.0;
+		} else {
+			shadowMultiplier = 1.0 - shadowMultiplier;
+		}
+	}
+
+	return shadowMultiplier;
+}
+)";
+
 	code += "\n\n";
 	code += "void fragment() {\n";
+	code += "float shadow = 1.0;\n";
 
 	if (!flags[FLAG_UV1_USE_TRIPLANAR]) {
 		code += "\tvec2 base_uv = UV;\n";
@@ -961,6 +1014,8 @@ void BaseMaterial3D::_update_shader() {
 		}
 
 		code += "\t\tbase_uv=ofs;\n";
+		// FIXME: Doesn't work as expected (everything is shaded by "stripes", which indicates the result of the function is incorrect).
+		code += "\t\tshadow = parallaxSoftShadowMultiplier(view_dir, ofs, weight - 0.05, texture_heightmap, heightmap_scale);\n";
 		if (features[FEATURE_DETAIL] && detail_uv == DETAIL_UV_2) {
 			code += "\t\tbase_uv2-=ofs;\n";
 		}
@@ -985,7 +1040,7 @@ void BaseMaterial3D::_update_shader() {
 	if (flags[FLAG_ALBEDO_FROM_VERTEX_COLOR]) {
 		code += "\talbedo_tex *= COLOR;\n";
 	}
-	code += "\tALBEDO = albedo.rgb * albedo_tex.rgb;\n";
+	code += "\tALBEDO = albedo.rgb * albedo_tex.rgb * shadow;\n";
 
 	if (!orm) {
 		if (flags[FLAG_UV1_USE_TRIPLANAR]) {
