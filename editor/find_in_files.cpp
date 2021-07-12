@@ -34,6 +34,7 @@
 #include "core/os/os.h"
 #include "editor_node.h"
 #include "editor_scale.h"
+#include "modules/regex/regex.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
 #include "scene/gui/check_box.h"
@@ -58,14 +59,25 @@ static bool is_text_char(char32_t c) {
 	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_';
 }
 
-static bool find_next(const String &line, String pattern, int from, bool match_case, bool whole_words, int &out_begin, int &out_end) {
+static bool find_next(const String &line, String pattern, int from, bool match_case, bool whole_words, bool use_regular_expression, int &out_begin, int &out_end) {
 	int end = from;
 
 	while (true) {
-		int begin = match_case ? line.find(pattern, end) : line.findn(pattern, end);
+		int begin = -1;
+		if (use_regular_expression) {
+			RegEx regex(pattern);
+			const Ref<RegExMatch> match = regex.search(line, end);
+			begin = match->get_start(0);
 
-		if (begin == -1) {
-			return false;
+			if (!match.is_valid() || begin == -1) {
+				return false;
+			}
+		} else {
+			begin = match_case ? line.find(pattern, end) : line.findn(pattern, end);
+
+			if (begin == -1) {
+				return false;
+			}
 		}
 
 		end = begin + pattern.length();
@@ -91,12 +103,16 @@ void FindInFiles::set_search_text(String p_pattern) {
 	_pattern = p_pattern;
 }
 
+void FindInFiles::set_match_case(bool p_match_case) {
+	_match_case = p_match_case;
+}
+
 void FindInFiles::set_whole_words(bool p_whole_word) {
 	_whole_words = p_whole_word;
 }
 
-void FindInFiles::set_match_case(bool p_match_case) {
-	_match_case = p_match_case;
+void FindInFiles::set_use_regular_expression(bool p_use_regular_expression) {
+	_use_regular_expression = p_use_regular_expression;
 }
 
 void FindInFiles::set_folder(String folder) {
@@ -266,7 +282,7 @@ void FindInFiles::_scan_file(String fpath) {
 
 		String line = f->get_line();
 
-		while (find_next(line, _pattern, end, _match_case, _whole_words, begin, end)) {
+		while (find_next(line, _pattern, end, _match_case, _whole_words, _use_regular_expression, begin, end)) {
 			emit_signal(SIGNAL_RESULT_FOUND, fpath, line_number, begin, end, line);
 		}
 	}
@@ -330,13 +346,17 @@ FindInFilesDialog::FindInFilesDialog() {
 	{
 		HBoxContainer *hbc = memnew(HBoxContainer);
 
+		_match_case_checkbox = memnew(CheckBox);
+		_match_case_checkbox->set_text(TTR("Match Case"));
+		hbc->add_child(_match_case_checkbox);
+
 		_whole_words_checkbox = memnew(CheckBox);
 		_whole_words_checkbox->set_text(TTR("Whole Words"));
 		hbc->add_child(_whole_words_checkbox);
 
-		_match_case_checkbox = memnew(CheckBox);
-		_match_case_checkbox->set_text(TTR("Match Case"));
-		hbc->add_child(_match_case_checkbox);
+		_use_regular_expression_checkbox = memnew(CheckBox);
+		_use_regular_expression_checkbox->set_text(TTR("Use Regular Expressions"));
+		hbc->add_child(_use_regular_expression_checkbox);
 
 		gc->add_child(hbc);
 	}
@@ -434,6 +454,10 @@ bool FindInFilesDialog::is_match_case() const {
 
 bool FindInFilesDialog::is_whole_words() const {
 	return _whole_words_checkbox->is_pressed();
+}
+
+bool FindInFilesDialog::is_using_regular_expression() const {
+	return _use_regular_expression_checkbox->is_pressed();
 }
 
 String FindInFilesDialog::get_folder() const {
@@ -928,7 +952,7 @@ void FindInFilesPanel::apply_replaces_in_file(String fpath, const Vector<Result>
 		int repl_end = locations[i].end + offset;
 
 		int _;
-		if (!find_next(line, search_text, repl_begin, _finder->is_match_case(), _finder->is_whole_words(), _, _)) {
+		if (!find_next(line, search_text, repl_begin, _finder->is_match_case(), _finder->is_whole_words(), false, _, _)) {
 			// Make sure the replace is still valid in case the file was tampered with.
 			print_verbose(String("Occurrence no longer matches, replace will be ignored in {0}: line {1}, col {2}").format(varray(fpath, repl_line_number, repl_begin)));
 			continue;

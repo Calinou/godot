@@ -43,15 +43,17 @@ public:
 	static const char *SIGNAL_FINISHED;
 
 	void set_search_text(String p_pattern);
-	void set_whole_words(bool p_whole_word);
 	void set_match_case(bool p_match_case);
+	void set_whole_words(bool p_whole_word);
+	void set_use_regular_expression(bool p_use_regular_expression);
 	void set_folder(String folder);
 	void set_filter(const Set<String> &exts);
 
 	String get_search_text() const { return _pattern; }
 
-	bool is_whole_words() const { return _whole_words; }
 	bool is_match_case() const { return _match_case; }
+	bool is_whole_words() const { return _whole_words; }
+	bool is_using_regular_expression() const { return _use_regular_expression; }
 
 	void start();
 	void stop();
@@ -74,8 +76,9 @@ private:
 	String _pattern;
 	Set<String> _extension_filter;
 	String _root_dir;
-	bool _whole_words = true;
 	bool _match_case = true;
+	bool _whole_words = true;
+	bool _use_regular_expression = false;
 
 	// State
 	bool _searching = false;
@@ -114,6 +117,7 @@ public:
 	String get_replace_text() const;
 	bool is_match_case() const;
 	bool is_whole_words() const;
+	bool is_using_regular_expression() const;
 	String get_folder() const;
 	Set<String> get_filter() const;
 
@@ -140,6 +144,7 @@ private:
 	LineEdit *_folder_line_edit;
 	CheckBox *_match_case_checkbox;
 	CheckBox *_whole_words_checkbox;
+	CheckBox *_use_regular_expression_checkbox;
 	Button *_find_button;
 	Button *_replace_button;
 	FileDialog *_folder_dialog;
