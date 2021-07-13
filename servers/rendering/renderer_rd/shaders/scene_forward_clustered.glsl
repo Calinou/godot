@@ -820,12 +820,29 @@ void main() {
 						//convert to view space, use xzy because y is up
 						decal_normal = (decals.data[decal_index].normal_xform * decal_normal.xzy).xyz;
 
-						normal = normalize(mix(normal, decal_normal, decal_albedo.a));
+						// Mix between "additive blending" and "replace" depending on albedo mix value.
+						// This allows the underyling surface's normal map to be seen if albedo mix is lower than 1.0.
+						// With albedo mix = 0.0, pure "additive blending" mode is used.
+						// With albedo mix = 1.0, pure "replace" mode is used.
+						// Use the UDN blending formula which is cheap, but more correct than linear blending.
+						vec3 normal_full = mix(normal, decal_normal, decal_albedo.a);
+						vec3 normal_blend_udn = normalize(vec3(normal.xy + normal_full.xy, normal.z));
+						// <https://blog.selfshadow.com/publications/blending-in-detail/>
+						// const vec3 c = vec3(2, 1, 0);
+						// vec3 normal_blend_udn = normalize((normal_full * c.yyz + normal.xyz) * c.xxx - c.xxy);
+						normal = normalize(mix(normal_blend_udn, normal_full, decals.data[decal_index].albedo_mix));
 					}
 
 					if (decals.data[decal_index].orm_rect != vec4(0.0)) {
 						vec3 decal_orm = textureGrad(sampler2D(decal_atlas, material_samplers[SAMPLER_LINEAR_WITH_MIPMAPS_CLAMP]), uv_local.xz * decals.data[decal_index].orm_rect.zw + decals.data[decal_index].orm_rect.xy, ddx * decals.data[decal_index].orm_rect.zw, ddy * decals.data[decal_index].orm_rect.zw).xyz;
-						ao = mix(ao, decal_orm.r, decal_albedo.a);
+
+						// Mix between "minimum" and "replace" depending on albedo mix value.
+						// With alebdo mix = 0.0, use the darkest value between the underlying surface and the decal
+						// (similar to SSAO/AO map interactions).
+						// With albedo mix = 1.0, replace the AO channel entirely.
+						float ao_decal_albedo_alpha = mix(ao, decal_orm.r, decal_albedo.a);
+						ao = mix(min(ao, ao_decal_albedo_alpha), ao_decal_albedo_alpha, decals.data[decal_index].albedo_mix);
+
 						roughness = mix(roughness, decal_orm.g, decal_albedo.a);
 						metallic = mix(metallic, decal_orm.b, decal_albedo.a);
 					}
