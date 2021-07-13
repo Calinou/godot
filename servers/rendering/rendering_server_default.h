@@ -388,6 +388,8 @@ public:
 
 	FUNC2(decal_set_extents, RID, const Vector3 &)
 	FUNC3(decal_set_texture, RID, DecalTexture, RID)
+	FUNC2(decal_set_normal_strength, RID, float)
+	FUNC2(decal_set_orm_strength, RID, float)
 	FUNC2(decal_set_emission_energy, RID, float)
 	FUNC2(decal_set_albedo_mix, RID, float)
 	FUNC2(decal_set_modulate, RID, const Color &)

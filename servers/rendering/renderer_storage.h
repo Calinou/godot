@@ -384,6 +384,8 @@ public:
 
 	virtual void decal_set_extents(RID p_decal, const Vector3 &p_extents) = 0;
 	virtual void decal_set_texture(RID p_decal, RS::DecalTexture p_type, RID p_texture) = 0;
+	virtual void decal_set_normal_strength(RID p_decal, float p_normal_strength) = 0;
+	virtual void decal_set_orm_strength(RID p_decal, float p_orm_strength) = 0;
 	virtual void decal_set_emission_energy(RID p_decal, float p_energy) = 0;
 	virtual void decal_set_albedo_mix(RID p_decal, float p_mix) = 0;
 	virtual void decal_set_modulate(RID p_decal, const Color &p_modulate) = 0;

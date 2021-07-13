@@ -8,6 +8,8 @@ struct DecalData {
 	vec4 orm_rect;
 	vec4 emission_rect;
 	vec4 modulate;
+	float normal_strength;
+	float orm_strength;
 	float emission_energy;
 	uint mask;
 	float upper_fade;

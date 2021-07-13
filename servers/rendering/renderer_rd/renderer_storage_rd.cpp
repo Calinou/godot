@@ -6359,6 +6359,18 @@ void RendererStorageRD::decal_set_texture(RID p_decal, RS::DecalTexture p_type, 
 	decal->dependency.changed_notify(DEPENDENCY_CHANGED_DECAL);
 }
 
+void RendererStorageRD::decal_set_normal_strength(RID p_decal, float p_normal_strength) {
+	Decal *decal = decal_owner.getornull(p_decal);
+	ERR_FAIL_COND(!decal);
+	decal->normal_strength = p_normal_strength;
+}
+
+void RendererStorageRD::decal_set_orm_strength(RID p_decal, float p_orm_strength) {
+	Decal *decal = decal_owner.getornull(p_decal);
+	ERR_FAIL_COND(!decal);
+	decal->orm_strength = p_orm_strength;
+}
+
 void RendererStorageRD::decal_set_emission_energy(RID p_decal, float p_energy) {
 	Decal *decal = decal_owner.getornull(p_decal);
 	ERR_FAIL_COND(!decal);

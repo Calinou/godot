@@ -2933,6 +2933,8 @@ void RendererSceneRenderRD::_setup_decals(const PagedArray<RID> &p_decals, const
 		dd.modulate[2] = modulate.b;
 		dd.modulate[3] = modulate.a * fade;
 		dd.emission_energy = storage->decal_get_emission_energy(decal) * fade;
+		dd.normal_strength = storage->decal_get_normal_strength(decal);
+		dd.orm_strength = storage->decal_get_orm_strength(decal);
 		dd.albedo_mix = storage->decal_get_albedo_mix(decal);
 		dd.mask = storage->decal_get_cull_mask(decal);
 		dd.upper_fade = storage->decal_get_upper_fade(decal);

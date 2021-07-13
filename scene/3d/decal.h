@@ -51,6 +51,8 @@ private:
 	RID decal;
 	Vector3 extents = Vector3(1, 1, 1);
 	Ref<Texture2D> textures[TEXTURE_MAX];
+	float normal_strength = 1.0;
+	float orm_strength = 1.0;
 	float emission_energy = 1.0;
 	float albedo_mix = 1.0;
 	Color modulate = Color(1, 1, 1, 1);
@@ -74,6 +76,12 @@ public:
 
 	void set_texture(DecalTexture p_type, const Ref<Texture2D> &p_texture);
 	Ref<Texture2D> get_texture(DecalTexture p_type) const;
+
+	void set_normal_strength(float p_bump_strength);
+	float get_normal_strength() const;
+
+	void set_orm_strength(float p_orm_strength);
+	float get_orm_strength() const;
 
 	void set_emission_energy(float p_energy);
 	float get_emission_energy() const;

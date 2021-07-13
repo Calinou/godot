@@ -455,6 +455,8 @@ public:
 	void decal_initialize(RID p_rid) override {}
 	void decal_set_extents(RID p_decal, const Vector3 &p_extents) override {}
 	void decal_set_texture(RID p_decal, RS::DecalTexture p_type, RID p_texture) override {}
+	void decal_set_normal_strength(RID p_decal, float p_normal_strength) override {}
+	void decal_set_orm_strength(RID p_decal, float p_orm_strength) override {}
 	void decal_set_emission_energy(RID p_decal, float p_energy) override {}
 	void decal_set_albedo_mix(RID p_decal, float p_mix) override {}
 	void decal_set_modulate(RID p_decal, const Color &p_modulate) override {}

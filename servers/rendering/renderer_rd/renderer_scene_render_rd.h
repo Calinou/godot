@@ -588,6 +588,8 @@ private:
 			float orm_rect[4];
 			float emission_rect[4];
 			float modulate[4];
+			float normal_strength;
+			float orm_strength;
 			float emission_energy;
 			uint32_t mask;
 			float upper_fade;

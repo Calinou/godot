@@ -1050,6 +1050,8 @@ private:
 	struct Decal {
 		Vector3 extents = Vector3(1, 1, 1);
 		RID textures[RS::DECAL_TEXTURE_MAX];
+		float normal_strength = 1.0;
+		float orm_strength = 1.0;
 		float emission_energy = 1.0;
 		float albedo_mix = 1.0;
 		Color modulate = Color(1, 1, 1, 1);
@@ -1961,6 +1963,8 @@ public:
 
 	virtual void decal_set_extents(RID p_decal, const Vector3 &p_extents);
 	virtual void decal_set_texture(RID p_decal, RS::DecalTexture p_type, RID p_texture);
+	virtual void decal_set_normal_strength(RID p_decal, float p_normal_strength);
+	virtual void decal_set_orm_strength(RID p_decal, float p_orm_strength);
 	virtual void decal_set_emission_energy(RID p_decal, float p_energy);
 	virtual void decal_set_albedo_mix(RID p_decal, float p_mix);
 	virtual void decal_set_modulate(RID p_decal, const Color &p_modulate);
@@ -1982,6 +1986,16 @@ public:
 	_FORCE_INLINE_ Color decal_get_modulate(RID p_decal) {
 		const Decal *decal = decal_owner.getornull(p_decal);
 		return decal->modulate;
+	}
+
+	_FORCE_INLINE_ float decal_get_normal_strength(RID p_decal) {
+		const Decal *decal = decal_owner.getornull(p_decal);
+		return decal->normal_strength;
+	}
+
+	_FORCE_INLINE_ float decal_get_orm_strength(RID p_decal) {
+		const Decal *decal = decal_owner.getornull(p_decal);
+		return decal->orm_strength;
 	}
 
 	_FORCE_INLINE_ float decal_get_emission_energy(RID p_decal) {

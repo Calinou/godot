@@ -53,13 +53,13 @@ Ref<Texture2D> Decal::get_texture(DecalTexture p_type) const {
 	return textures[p_type];
 }
 
-void Decal::set_emission_energy(float p_energy) {
-	emission_energy = p_energy;
-	RS::get_singleton()->decal_set_emission_energy(decal, emission_energy);
+void Decal::set_modulate(Color p_modulate) {
+	modulate = p_modulate;
+	RS::get_singleton()->decal_set_modulate(decal, p_modulate);
 }
 
-float Decal::get_emission_energy() const {
-	return emission_energy;
+Color Decal::get_modulate() const {
+	return modulate;
 }
 
 void Decal::set_albedo_mix(float p_mix) {
@@ -69,6 +69,33 @@ void Decal::set_albedo_mix(float p_mix) {
 
 float Decal::get_albedo_mix() const {
 	return albedo_mix;
+}
+
+void Decal::set_normal_strength(float p_normal_strength) {
+	normal_strength = p_normal_strength;
+	RS::get_singleton()->decal_set_normal_strength(decal, normal_strength);
+}
+
+float Decal::get_normal_strength() const {
+	return normal_strength;
+}
+
+void Decal::set_orm_strength(float p_orm_strength) {
+	orm_strength = p_orm_strength;
+	RS::get_singleton()->decal_set_orm_strength(decal, orm_strength);
+}
+
+float Decal::get_orm_strength() const {
+	return orm_strength;
+}
+
+void Decal::set_emission_energy(float p_energy) {
+	emission_energy = p_energy;
+	RS::get_singleton()->decal_set_emission_energy(decal, emission_energy);
+}
+
+float Decal::get_emission_energy() const {
+	return emission_energy;
 }
 
 void Decal::set_upper_fade(float p_fade) {
@@ -96,15 +123,6 @@ void Decal::set_normal_fade(float p_fade) {
 
 float Decal::get_normal_fade() const {
 	return normal_fade;
-}
-
-void Decal::set_modulate(Color p_modulate) {
-	modulate = p_modulate;
-	RS::get_singleton()->decal_set_modulate(decal, p_modulate);
-}
-
-Color Decal::get_modulate() const {
-	return modulate;
 }
 
 void Decal::set_enable_distance_fade(bool p_enable) {
@@ -190,14 +208,20 @@ void Decal::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_texture", "type", "texture"), &Decal::set_texture);
 	ClassDB::bind_method(D_METHOD("get_texture", "type"), &Decal::get_texture);
 
-	ClassDB::bind_method(D_METHOD("set_emission_energy", "energy"), &Decal::set_emission_energy);
-	ClassDB::bind_method(D_METHOD("get_emission_energy"), &Decal::get_emission_energy);
+	ClassDB::bind_method(D_METHOD("set_modulate", "color"), &Decal::set_modulate);
+	ClassDB::bind_method(D_METHOD("get_modulate"), &Decal::get_modulate);
 
 	ClassDB::bind_method(D_METHOD("set_albedo_mix", "energy"), &Decal::set_albedo_mix);
 	ClassDB::bind_method(D_METHOD("get_albedo_mix"), &Decal::get_albedo_mix);
 
-	ClassDB::bind_method(D_METHOD("set_modulate", "color"), &Decal::set_modulate);
-	ClassDB::bind_method(D_METHOD("get_modulate"), &Decal::get_modulate);
+	ClassDB::bind_method(D_METHOD("set_normal_strength", "normal_strength"), &Decal::set_normal_strength);
+	ClassDB::bind_method(D_METHOD("get_normal_strength"), &Decal::get_normal_strength);
+
+	ClassDB::bind_method(D_METHOD("set_orm_strength", "orm_strength"), &Decal::set_orm_strength);
+	ClassDB::bind_method(D_METHOD("get_orm_strength"), &Decal::get_orm_strength);
+
+	ClassDB::bind_method(D_METHOD("set_emission_energy", "energy"), &Decal::set_emission_energy);
+	ClassDB::bind_method(D_METHOD("get_emission_energy"), &Decal::get_emission_energy);
 
 	ClassDB::bind_method(D_METHOD("set_upper_fade", "fade"), &Decal::set_upper_fade);
 	ClassDB::bind_method(D_METHOD("get_upper_fade"), &Decal::get_upper_fade);
@@ -227,9 +251,11 @@ void Decal::_bind_methods() {
 	ADD_PROPERTYI(PropertyInfo(Variant::OBJECT, "texture_orm", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_texture", "get_texture", TEXTURE_ORM);
 	ADD_PROPERTYI(PropertyInfo(Variant::OBJECT, "texture_emission", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_texture", "get_texture", TEXTURE_EMISSION);
 	ADD_GROUP("Parameters", "");
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "emission_energy", PROPERTY_HINT_RANGE, "0,128,0.01"), "set_emission_energy", "get_emission_energy");
 	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "modulate"), "set_modulate", "get_modulate");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "albedo_mix", PROPERTY_HINT_RANGE, "0,1,0.01"), "set_albedo_mix", "get_albedo_mix");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "normal_strength", PROPERTY_HINT_RANGE, "0,128,0.01"), "set_normal_strength", "get_normal_strength");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "orm_strength", PROPERTY_HINT_RANGE, "0,128,0.01"), "set_orm_strength", "get_orm_strength");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "emission_energy", PROPERTY_HINT_RANGE, "0,128,0.01"), "set_emission_energy", "get_emission_energy");
 	// A Normal Fade of 1.0 causes the decal to be invisible even if fully perpendicular to a surface.
 	// Due to this, limit Normal Fade to 0.999.
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "normal_fade", PROPERTY_HINT_RANGE, "0,0.999,0.001"), "set_normal_fade", "get_normal_fade");

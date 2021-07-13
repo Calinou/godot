@@ -815,13 +815,13 @@ void main() {
 						decal_normal.xy = decal_normal.xy * vec2(2.0, -2.0) - vec2(1.0, -1.0); //users prefer flipped y normal maps in most authoring software
 						decal_normal.z = sqrt(max(0.0, 1.0 - dot(decal_normal.xy, decal_normal.xy)));
 						//convert to view space, use xzy because y is up
-						decal_normal = (decals.data[decal_index].normal_xform * decal_normal.xzy).xyz;
+						decal_normal = (decals.data[decal_index].normal_xform * decal_normal.xzy).xyz * decals.data[decal_index].normal_strength;
 
 						normal = normalize(mix(normal, decal_normal, decal_albedo.a));
 					}
 
 					if (decals.data[decal_index].orm_rect != vec4(0.0)) {
-						vec3 decal_orm = textureGrad(sampler2D(decal_atlas, material_samplers[SAMPLER_LINEAR_WITH_MIPMAPS_CLAMP]), uv_local.xz * decals.data[decal_index].orm_rect.zw + decals.data[decal_index].orm_rect.xy, ddx * decals.data[decal_index].orm_rect.zw, ddy * decals.data[decal_index].orm_rect.zw).xyz;
+						vec3 decal_orm = textureGrad(sampler2D(decal_atlas, material_samplers[SAMPLER_LINEAR_WITH_MIPMAPS_CLAMP]), uv_local.xz * decals.data[decal_index].orm_rect.zw + decals.data[decal_index].orm_rect.xy, ddx * decals.data[decal_index].orm_rect.zw, ddy * decals.data[decal_index].orm_rect.zw).xyz * decals.data[decal_index].orm_strength;
 						ao = mix(ao, decal_orm.r, decal_albedo.a);
 						roughness = mix(roughness, decal_orm.g, decal_albedo.a);
 						metallic = mix(metallic, decal_orm.b, decal_albedo.a);
