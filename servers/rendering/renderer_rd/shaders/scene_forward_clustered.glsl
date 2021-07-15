@@ -677,7 +677,8 @@ void main() {
 
 #ifdef NORMAL_MAP_USED
 
-	normal_map.xy = normal_map.xy * 2.0 - 1.0;
+	// Use DirectX-style normal maps (Y+) as these are more common overall.
+	normal_map.xy = normal_map.xy * vec2(2.0, -2.0) - vec2(1.0, -1.0);
 	normal_map.z = sqrt(max(0.0, 1.0 - dot(normal_map.xy, normal_map.xy))); //always ignore Z, as it can be RG packed, Z may be pos/neg, etc.
 
 	normal = normalize(mix(normal, tangent * normal_map.x + binormal * normal_map.y + normal * normal_map.z, normal_map_depth));
@@ -815,9 +816,10 @@ void main() {
 
 					if (decals.data[decal_index].normal_rect != vec4(0.0)) {
 						vec3 decal_normal = textureGrad(sampler2D(decal_atlas, material_samplers[SAMPLER_LINEAR_WITH_MIPMAPS_CLAMP]), uv_local.xz * decals.data[decal_index].normal_rect.zw + decals.data[decal_index].normal_rect.xy, ddx * decals.data[decal_index].normal_rect.zw, ddy * decals.data[decal_index].normal_rect.zw).xyz;
-						decal_normal.xy = decal_normal.xy * vec2(2.0, -2.0) - vec2(1.0, -1.0); //users prefer flipped y normal maps in most authoring software
+						// Use DirectX-style normal maps (Y+) as these are more common overall.
+						decal_normal.xy = decal_normal.xy * 2.0 - 1.0;
 						decal_normal.z = sqrt(max(0.0, 1.0 - dot(decal_normal.xy, decal_normal.xy)));
-						//convert to view space, use xzy because y is up
+						// Convert to view space; use XZY because Y is up.
 						decal_normal = (decals.data[decal_index].normal_xform * decal_normal.xzy).xyz;
 
 						normal = normalize(mix(normal, decal_normal, decal_albedo.a));
