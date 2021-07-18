@@ -3289,6 +3289,69 @@ void CanvasItemEditor::_draw_selection() {
 			for (int i = 0; i < 4; i++) {
 				viewport->draw_line(endpoints[i], endpoints[(i + 1) % 4], c, Math::round(2 * EDSCALE));
 			}
+
+			if (EDITOR_GET("editors/2d/show_selection_size")) {
+				// Draw the box's dimensions on each side.
+				// Add some margin to prevent the text from overlapping the rectangle and its handles.
+				const int size_label_margin = 16 * EDSCALE;
+				const int size_label_min_width = 48 * EDSCALE;
+				const Ref<Font> font = get_theme_font("font", "Label");
+				const int x_distance = Math::round(endpoints[0].distance_to(endpoints[1]) / zoom);
+				const int y_distance = Math::round(endpoints[1].distance_to(endpoints[2]) / zoom);
+
+				if (x_distance >= 2) {
+					//Top:
+					viewport->draw_string(
+							font,
+							endpoints[0] - Vector2(0, size_label_margin),
+							vformat("%d px", x_distance),
+							HALIGN_CENTER,
+							MAX(size_label_min_width, endpoints[0].distance_to(endpoints[1])),
+							-1, // Default font size.
+							c,
+							Math::round(EDSCALE), Color(0, 0, 0, 0.25));
+					if (y_distance >= size_label_margin / zoom) {
+						// Don't repeat a label with the same text very close to the other one.
+						// Bottom:
+						viewport->draw_string(
+								font,
+								endpoints[3] + Vector2(0, size_label_margin),
+								vformat("%d px", x_distance),
+								HALIGN_CENTER,
+								MAX(size_label_min_width, endpoints[0].distance_to(endpoints[1])),
+								-1, // Default font size.
+								c,
+								Math::round(EDSCALE), Color(0, 0, 0, 0.25));
+					}
+				}
+
+				if (y_distance >= 2) {
+					// Left:
+					viewport->draw_string(
+							font,
+							endpoints[3].lerp(endpoints[0], 0.5) - Vector2(size_label_margin, 0),
+							vformat("%d px", y_distance),
+							HALIGN_RIGHT,
+							-1,
+							-1, // Default font size.
+							c,
+							Math::round(EDSCALE), Color(0, 0, 0, 0.25));
+					if (x_distance >= size_label_margin / zoom) {
+						// Don't repeat a label with the same text very close to the other one.
+						// Right:
+						viewport->draw_string(
+								font,
+								endpoints[1].lerp(endpoints[2], 0.5) + Vector2(size_label_margin, 0),
+								vformat("%d px", y_distance),
+								HALIGN_LEFT,
+								-1,
+								-1, // Default font size.
+								c,
+								Math::round(EDSCALE), Color(0, 0, 0, 0.25));
+					}
+				}
+			}
+
 		} else {
 			Transform2D unscaled_transform = (xform * canvas_item->get_transform().affine_inverse() * canvas_item->_edit_get_transform()).orthonormalized();
 			Transform2D simple_xform = viewport->get_transform() * unscaled_transform;
