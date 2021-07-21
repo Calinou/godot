@@ -1618,6 +1618,9 @@ void EffectsRD::generate_ssao(RID p_depth_buffer, RID p_normal_buffer, RID p_dep
 	RD::get_singleton()->buffer_update(ssao.importance_map_load_counter, 0, sizeof(uint32_t), &zero, 0); //no barrier
 }
 
+void EffectsRD::generate_ssao(RID p_depth_buffer, RID p_smaa) {
+}
+
 void EffectsRD::roughness_limit(RID p_source_normal, RID p_roughness, const Size2i &p_size, float p_curve) {
 	roughness_limiter.push_constant.screen_size[0] = p_size.x;
 	roughness_limiter.push_constant.screen_size[1] = p_size.y;
