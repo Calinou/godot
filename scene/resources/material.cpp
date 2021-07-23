@@ -344,6 +344,11 @@ void SpatialMaterial::init_shaders() {
 	shader_names->texture_names[TEXTURE_DETAIL_MASK] = "texture_detail_mask";
 	shader_names->texture_names[TEXTURE_DETAIL_ALBEDO] = "texture_detail_albedo";
 	shader_names->texture_names[TEXTURE_DETAIL_NORMAL] = "texture_detail_normal";
+
+	shader_names->alpha_scissor_threshold = "alpha_scissor_threshold";
+	shader_names->alpha_hash_scale = "alpha_hash_scale";
+	shader_names->alpha_antialiasing_edge = "alpha_antialiasing_edge";
+	shader_names->albedo_texture_size = "albedo_texture_size";
 }
 
 Ref<SpatialMaterial> SpatialMaterial::materials_for_2d[SpatialMaterial::MAX_MATERIALS_FOR_2D];
@@ -492,6 +497,17 @@ void SpatialMaterial::_update_shader() {
 	if (flags[FLAG_USE_SHADOW_TO_OPACITY]) {
 		code += ",shadow_to_opacity";
 	}
+	// Although it's technically possible to do alpha antialiasing without using alpha hash or alpha scissor,
+	// it is restricted in the base material because it has no use, and abusing it with regular Alpha blending can
+	// saturate the MSAA mask.
+	if (transparency == TRANSPARENCY_ALPHA_HASH || transparency == TRANSPARENCY_ALPHA_SCISSOR) {
+		// Alpha antialiasing is only useful in ALPHA_HASH or ALPHA_SCISSOR.
+		if (alpha_antialiasing_mode == ALPHA_ANTIALIASING_ALPHA_TO_COVERAGE) {
+			code += ",alpha_to_coverage";
+		} else if (alpha_antialiasing_mode == ALPHA_ANTIALIASING_ALPHA_TO_COVERAGE_AND_TO_ONE) {
+			code += ",alpha_to_coverage_and_one";
+		}
+	}
 	code += ";\n";
 
 	code += "uniform vec4 albedo : hint_color;\n";
@@ -510,8 +526,18 @@ void SpatialMaterial::_update_shader() {
 		code += "uniform float distance_fade_max;\n";
 	}
 
+	// Alpha scissor is only valid if there is not antialiasing edge
+	// alpha hash is valid whenever, but not with alpha scissor.
 	if (flags[FLAG_USE_ALPHA_SCISSOR]) {
 		code += "uniform float alpha_scissor_threshold;\n";
+	} else if (flags[FLAG_USE_ALPHA_HASH]) {
+		code += "uniform float alpha_hash_scale;\n";
+	}
+
+	// If alpha antialiasing isn't off, add in the edge variable.
+	if (alpha_antialiasing_mode != ALPHA_ANTIALIASING_OFF && (flags[FLAG_USE_ALPHA_SCISSOR || flags[FLAG_USE_ALPHA_HASH])) {
+		code += "uniform float alpha_antialiasing_edge;\n";
+		code += "uniform ivec2 albedo_texture_size;\n";
 	}
 	code += "uniform float roughness : hint_range(0,1);\n";
 	code += "uniform float point_size : hint_range(0,128);\n";
@@ -880,6 +906,18 @@ void SpatialMaterial::_update_shader() {
 
 	} else if (features[FEATURE_TRANSPARENT] || flags[FLAG_USE_ALPHA_SCISSOR] || flags[FLAG_USE_SHADOW_TO_OPACITY] || (distance_fade == DISTANCE_FADE_PIXEL_ALPHA) || proximity_fade_enabled) {
 		code += "\tALPHA = albedo.a * albedo_tex.a;\n";
+	}
+
+	if (transparency == TRANSPARENCY_ALPHA_HASH) {
+		code += "\tALPHA_HASH_SCALE = alpha_hash_scale;\n";
+	} else if (transparency == TRANSPARENCY_ALPHA_SCISSOR) {
+		code += "\tif (albedo.a * albedo_tex.a < alpha_scissor_threshold) discard;\n";
+		code += "\tALPHA_SCISSOR_THRESHOLD = alpha_scissor_threshold;\n";
+	}
+
+	if (alpha_antialiasing_mode != ALPHA_ANTIALIASING_OFF && (transparency == TRANSPARENCY_ALPHA_HASH || transparency == TRANSPARENCY_ALPHA_SCISSOR)) {
+		code += "\tALPHA_ANTIALIASING_EDGE = alpha_antialiasing_edge;\n";
+		code += "\tALPHA_TEXTURE_COORDINATE = UV * vec2(albedo_texture_size);\n";
 	}
 
 	if (proximity_fade_enabled) {
@@ -1266,6 +1304,20 @@ SpatialMaterial::BlendMode SpatialMaterial::get_detail_blend_mode() const {
 	return detail_blend_mode;
 }
 
+void SpatialMaterial::set_alpha_antialiasing(AlphaAntiAliasing p_alpha_aa) {
+	if (alpha_antialiasing_mode == p_alpha_aa) {
+		return;
+	}
+
+	alpha_antialiasing_mode = p_alpha_aa;
+	_queue_shader_change();
+	_change_notify();
+}
+
+SpatialMaterial::AlphaAntiAliasing SpatialMaterial::get_alpha_antialiasing() const {
+	return alpha_antialiasing_mode;
+}
+
 void SpatialMaterial::set_depth_draw_mode(DepthDrawMode p_mode) {
 	if (depth_draw_mode == p_mode) {
 		return;
@@ -1354,6 +1406,10 @@ void SpatialMaterial::set_texture(TextureParam p_param, const Ref<Texture> &p_te
 	textures[p_param] = p_texture;
 	RID rid = p_texture.is_valid() ? p_texture->get_rid() : RID();
 	VS::get_singleton()->material_set_param(_get_material(), shader_names->texture_names[p_param], rid);
+	if (p_texture.is_valid() && p_param == TEXTURE_ALBEDO) {
+		VS::get_singleton()->material_set_param(_get_material(), shader_names->albedo_texture_size,
+				Vector2(p_texture->get_width(), p_texture->get_height()));
+	}
 	_change_notify();
 	_queue_shader_change();
 }
@@ -1420,7 +1476,31 @@ void SpatialMaterial::_validate_property(PropertyInfo &property) const {
 		property.usage = 0;
 	}
 
+	// You can only enable anti-aliasing (in mataerials) on alpha scissor and alpha hash.
+	const bool can_select_aa = (transparency == TRANSPARENCY_ALPHA_SCISSOR || transparency == TRANSPARENCY_ALPHA_HASH);
+	// Alpha anti aliasiasing is only enabled when you can select antialiasing.
+	const bool alpha_aa_enabled = (alpha_antialiasing_mode != ALPHA_ANTIALIASING_OFF) && can_select_aa;
+
+	// Alpha scissor slider isn't needed when alpha antialiasing is enabled.
 	if (property.name == "params_alpha_scissor_threshold" && !flags[FLAG_USE_ALPHA_SCISSOR]) {
+		property.usage = 0;
+	}
+
+	// Alpha hash scale slider is only needed if transparency is alpha hash.
+	if (property.name == "alpha_hash_scale" && transparency != TRANSPARENCY_ALPHA_HASH) {
+		property.usage = 0;
+	}
+
+	if (property.name == "alpha_antialiasing_mode" && !can_select_aa) {
+		property.usage = 0;
+	}
+
+	// We can't choose an antialiasing mode if alpha isn't possible.
+	if (property.name == "alpha_antialiasing_edge" && !alpha_aa_enabled) {
+		property.usage = 0;
+	}
+
+	if (property.name == "blend_mode" && alpha_aa_enabled) {
 		property.usage = 0;
 	}
 
@@ -1639,6 +1719,24 @@ void SpatialMaterial::set_alpha_scissor_threshold(float p_threshold) {
 
 float SpatialMaterial::get_alpha_scissor_threshold() const {
 	return alpha_scissor_threshold;
+}
+
+void SpatialMaterial::set_alpha_hash_scale(float p_scale) {
+	alpha_hash_scale = p_scale;
+	RS::get_singleton()->material_set_param(_get_material(), shader_names->alpha_hash_scale, p_scale);
+}
+
+float SpatialMaterial::get_alpha_hash_scale() const {
+	return alpha_hash_scale;
+}
+
+void SpatialMaterial::set_alpha_antialiasing_edge(float p_edge) {
+	alpha_antialiasing_edge = p_edge;
+	RS::get_singleton()->material_set_param(_get_material(), shader_names->alpha_antialiasing_edge, p_edge);
+}
+
+float SpatialMaterial::get_alpha_antialiasing_edge() const {
+	return alpha_antialiasing_edge;
 }
 
 void SpatialMaterial::set_grow(float p_grow) {
@@ -1908,6 +2006,12 @@ void SpatialMaterial::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_detail_blend_mode", "detail_blend_mode"), &SpatialMaterial::set_detail_blend_mode);
 	ClassDB::bind_method(D_METHOD("get_detail_blend_mode"), &SpatialMaterial::get_detail_blend_mode);
 
+	ClassDB::bind_method(D_METHOD("set_alpha_antialiasing", "alpha_aa"), &SpatialMaterial::set_alpha_antialiasing);
+	ClassDB::bind_method(D_METHOD("get_alpha_antialiasing"), &SpatialMaterial::get_alpha_antialiasing);
+
+	ClassDB::bind_method(D_METHOD("set_alpha_antialiasing_edge", "edge"), &SpatialMaterial::set_alpha_antialiasing_edge);
+	ClassDB::bind_method(D_METHOD("get_alpha_antialiasing_edge"), &SpatialMaterial::get_alpha_antialiasing_edge);
+
 	ClassDB::bind_method(D_METHOD("set_uv1_scale", "scale"), &SpatialMaterial::set_uv1_scale);
 	ClassDB::bind_method(D_METHOD("get_uv1_scale"), &SpatialMaterial::get_uv1_scale);
 
@@ -1964,6 +2068,9 @@ void SpatialMaterial::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("set_alpha_scissor_threshold", "threshold"), &SpatialMaterial::set_alpha_scissor_threshold);
 	ClassDB::bind_method(D_METHOD("get_alpha_scissor_threshold"), &SpatialMaterial::get_alpha_scissor_threshold);
+
+	ClassDB::bind_method(D_METHOD("set_alpha_hash_scale", "threshold"), &SpatialMaterial::set_alpha_hash_scale);
+	ClassDB::bind_method(D_METHOD("get_alpha_hash_scale"), &SpatialMaterial::get_alpha_hash_scale);
 
 	ClassDB::bind_method(D_METHOD("set_grow_enabled", "enable"), &SpatialMaterial::set_grow_enabled);
 	ClassDB::bind_method(D_METHOD("is_grow_enabled"), &SpatialMaterial::is_grow_enabled);
@@ -2026,6 +2133,9 @@ void SpatialMaterial::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::REAL, "params_grow_amount", PROPERTY_HINT_RANGE, "-16,16,0.001"), "set_grow", "get_grow");
 	ADD_PROPERTYI(PropertyInfo(Variant::BOOL, "params_use_alpha_scissor"), "set_flag", "get_flag", FLAG_USE_ALPHA_SCISSOR);
 	ADD_PROPERTY(PropertyInfo(Variant::REAL, "params_alpha_scissor_threshold", PROPERTY_HINT_RANGE, "0,1,0.01"), "set_alpha_scissor_threshold", "get_alpha_scissor_threshold");
+	ADD_PROPERTY(PropertyInfo(Variant::REAL, "params_alpha_hash_scale", PROPERTY_HINT_RANGE, "0,2,0.01"), "set_alpha_hash_scale", "get_alpha_hash_scale");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "params_alpha_antialiasing_mode", PROPERTY_HINT_ENUM, "Disabled,Alpha Edge Blend,Alpha Edge Clip"), "set_alpha_antialiasing", "get_alpha_antialiasing");
+	ADD_PROPERTY(PropertyInfo(Variant::REAL, "params_alpha_antialiasing_edge", PROPERTY_HINT_RANGE, "0,1,0.01"), "set_alpha_antialiasing_edge", "get_alpha_antialiasing_edge");
 	ADD_GROUP("Particles Anim", "particles_anim_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "particles_anim_h_frames", PROPERTY_HINT_RANGE, "1,128,1"), "set_particles_anim_h_frames", "get_particles_anim_h_frames");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "particles_anim_v_frames", PROPERTY_HINT_RANGE, "1,128,1"), "set_particles_anim_v_frames", "get_particles_anim_v_frames");
@@ -2177,6 +2287,10 @@ void SpatialMaterial::_bind_methods() {
 	BIND_ENUM_CONSTANT(BLEND_MODE_SUB);
 	BIND_ENUM_CONSTANT(BLEND_MODE_MUL);
 
+	BIND_ENUM_CONSTANT(ALPHA_ANTIALIASING_OFF);
+	BIND_ENUM_CONSTANT(ALPHA_ANTIALIASING_ALPHA_TO_COVERAGE);
+	BIND_ENUM_CONSTANT(ALPHA_ANTIALIASING_ALPHA_TO_COVERAGE_AND_TO_ONE);
+
 	BIND_ENUM_CONSTANT(DEPTH_DRAW_OPAQUE_ONLY);
 	BIND_ENUM_CONSTANT(DEPTH_DRAW_ALWAYS);
 	BIND_ENUM_CONSTANT(DEPTH_DRAW_DISABLED);
@@ -2199,6 +2313,7 @@ void SpatialMaterial::_bind_methods() {
 	BIND_ENUM_CONSTANT(FLAG_AO_ON_UV2);
 	BIND_ENUM_CONSTANT(FLAG_EMISSION_ON_UV2);
 	BIND_ENUM_CONSTANT(FLAG_USE_ALPHA_SCISSOR);
+	BIND_ENUM_CONSTANT(FLAG_USE_ALPHA_HASH);
 	BIND_ENUM_CONSTANT(FLAG_TRIPLANAR_USE_WORLD);
 	BIND_ENUM_CONSTANT(FLAG_ALBEDO_TEXTURE_FORCE_SRGB);
 	BIND_ENUM_CONSTANT(FLAG_DONT_RECEIVE_SHADOWS);
@@ -2271,6 +2386,9 @@ SpatialMaterial::SpatialMaterial() :
 	set_particles_anim_v_frames(1);
 	set_particles_anim_loop(false);
 	set_alpha_scissor_threshold(0.98);
+	set_alpha_antialiasing(ALPHA_ANTIALIASING_OFF);
+	set_alpha_hash_scale(1.0);
+	set_alpha_antialiasing_edge(0.3);
 	emission_op = EMISSION_OP_ADD;
 
 	proximity_fade_enabled = false;
