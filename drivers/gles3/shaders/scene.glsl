@@ -2092,10 +2092,25 @@ FRAGMENT_SHADER_CODE
 
 		//one one sample
 
+#ifdef LIGHT_USE_PSSM_BLEND
+#ifdef LIGHT_USE_PSSM_BLEND_DITHER
+		// Use cheap dithering to fade splits between each other.
+		if (use_blend) {
+			// Interleaved Gradient Noise
+			// http://www.iryoku.com/next-generation-post-processing-in-call-of-duty-advanced-warfare
+			const vec3 magic = vec3(0.06711056f, 0.00583715f, 52.9829189f);
+			float dither = fract(magic.z * fract(dot(gl_FragCoord.xy, magic.xy)));
+			if (dither < pssm_blend * 0.1) {
+				pssm_coord = pssm_coord2;
+			}
+		}
+#endif //LIGHT_USE_PSSM_BLEND_DITHER
+#endif //LIGHT_USE_PSSM_BLEND
+
 		float shadow = sample_shadow(directional_shadow, directional_shadow_pixel_size, pssm_coord.xy, pssm_coord.z, light_clamp);
 
-#if defined(LIGHT_USE_PSSM_BLEND)
-
+#if defined(LIGHT_USE_PSSM_BLEND) && !defined(LIGHT_USE_PSSM_BLEND_DITHER)
+		// Use more expensive blending to fade splits between each other.
 		if (use_blend) {
 			shadow = mix(shadow, sample_shadow(directional_shadow, directional_shadow_pixel_size, pssm_coord2.xy, pssm_coord2.z, light_clamp), pssm_blend);
 		}

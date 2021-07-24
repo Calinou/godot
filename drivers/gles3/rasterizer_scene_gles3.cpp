@@ -2025,10 +2025,12 @@ void RasterizerSceneGLES3::_render_list(RenderList::Element **p_elements, int p_
 								case VS::LIGHT_DIRECTIONAL_SHADOW_PARALLEL_2_SPLITS:
 									state.scene_shader.set_conditional(SceneShaderGLES3::LIGHT_USE_PSSM2, true);
 									state.scene_shader.set_conditional(SceneShaderGLES3::LIGHT_USE_PSSM_BLEND, directional_light->light_ptr->directional_blend_splits);
+									state.scene_shader.set_conditional(SceneShaderGLES3::LIGHT_USE_PSSM_BLEND_DITHER, GLOBAL_GET("rendering/quality/directional_shadow/blend_splits_use_dithering"));
 									break;
 								case VS::LIGHT_DIRECTIONAL_SHADOW_PARALLEL_4_SPLITS:
 									state.scene_shader.set_conditional(SceneShaderGLES3::LIGHT_USE_PSSM4, true);
 									state.scene_shader.set_conditional(SceneShaderGLES3::LIGHT_USE_PSSM_BLEND, directional_light->light_ptr->directional_blend_splits);
+									state.scene_shader.set_conditional(SceneShaderGLES3::LIGHT_USE_PSSM_BLEND_DITHER, GLOBAL_GET("rendering/quality/directional_shadow/blend_splits_use_dithering"));
 									break;
 							}
 						}
