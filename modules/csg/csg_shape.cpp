@@ -652,7 +652,7 @@ CSGCombiner3D::CSGCombiner3D() {
 
 /////////////////////
 
-CSGBrush *CSGPrimitive3D::_create_brush_from_arrays(const Vector<Vector3> &p_vertices, const Vector<Vector2> &p_uv, const Vector<bool> &p_smooth, const Vector<Ref<Material>> &p_materials) {
+CSGBrush *CSGPrimitive3D::_create_brush_from_arrays(const Vector<Vector3> &p_vertices, const Vector<Color> &p_colors, const Vector<Vector2> &p_uv, const Vector<bool> &p_smooth, const Vector<Ref<Material>> &p_materials) {
 	CSGBrush *brush = memnew(CSGBrush);
 
 	Vector<bool> invert;
@@ -664,7 +664,7 @@ CSGBrush *CSGPrimitive3D::_create_brush_from_arrays(const Vector<Vector3> &p_ver
 			w[i] = invert_faces;
 		}
 	}
-	brush->build_from_faces(p_vertices, p_uv, p_smooth, p_materials, invert);
+	brush->build_from_faces(p_vertices, p_colors, p_uv, p_smooth, p_materials, invert);
 
 	return brush;
 }
@@ -705,6 +705,7 @@ CSGBrush *CSGMesh3D::_build_brush() {
 	Vector<bool> smooth;
 	Vector<Ref<Material>> materials;
 	Vector<Vector2> uvs;
+	Vector<Color> colors;
 	Ref<Material> material = get_material();
 
 	for (int i = 0; i < mesh->get_surface_count(); i++) {
@@ -732,6 +733,8 @@ CSGBrush *CSGMesh3D::_build_brush() {
 			nr = anormals.ptr();
 		}
 
+		Vector<Color> acolors;
+
 		Vector<Vector2> auvs = arrays[Mesh::ARRAY_TEX_UV];
 		const Vector2 *uvr = nullptr;
 		if (auvs.size()) {
@@ -754,8 +757,10 @@ CSGBrush *CSGMesh3D::_build_brush() {
 			smooth.resize((as + is) / 3);
 			materials.resize((as + is) / 3);
 			uvs.resize(as + is);
+			colors.resize(as + is);
 
 			Vector3 *vw = vertices.ptrw();
+			Color *cw = colors.ptrw();
 			bool *sw = smooth.ptrw();
 			Vector2 *uvw = uvs.ptrw();
 			Ref<Material> *mw = materials.ptrw();
@@ -766,9 +771,11 @@ CSGBrush *CSGMesh3D::_build_brush() {
 				Vector3 vertex[3];
 				Vector3 normal[3];
 				Vector2 uv[3];
+				Color color[3];
 
 				for (int k = 0; k < 3; k++) {
 					int idx = ir[j + k];
+					color[k] = Color(Math::randf(), Math::randf(), Math::randf());
 					vertex[k] = vr[idx];
 					if (nr) {
 						normal[k] = nr[idx];
@@ -783,6 +790,10 @@ CSGBrush *CSGMesh3D::_build_brush() {
 				vw[as + j + 0] = vertex[0];
 				vw[as + j + 1] = vertex[1];
 				vw[as + j + 2] = vertex[2];
+
+				cw[as + j + 0] = color[0];
+				cw[as + j + 1] = color[1];
+				cw[as + j + 2] = color[2];
 
 				uvw[as + j + 0] = uv[0];
 				uvw[as + j + 1] = uv[1];
@@ -799,8 +810,10 @@ CSGBrush *CSGMesh3D::_build_brush() {
 			smooth.resize((as + is) / 3);
 			uvs.resize(as + is);
 			materials.resize((as + is) / 3);
+			colors.resize(as + is);
 
 			Vector3 *vw = vertices.ptrw();
+			Color *cw = colors.ptrw();
 			bool *sw = smooth.ptrw();
 			Vector2 *uvw = uvs.ptrw();
 			Ref<Material> *mw = materials.ptrw();
@@ -809,9 +822,11 @@ CSGBrush *CSGMesh3D::_build_brush() {
 				Vector3 vertex[3];
 				Vector3 normal[3];
 				Vector2 uv[3];
+				Color color[3];
 
 				for (int k = 0; k < 3; k++) {
 					vertex[k] = vr[j + k];
+					color[k] = Color(Math::randf(), Math::randf(), Math::randf());
 					if (nr) {
 						normal[k] = nr[j + k];
 					}
@@ -825,6 +840,10 @@ CSGBrush *CSGMesh3D::_build_brush() {
 				vw[as + j + 0] = vertex[0];
 				vw[as + j + 1] = vertex[1];
 				vw[as + j + 2] = vertex[2];
+
+				cw[as + j + 0] = color[0];
+				cw[as + j + 1] = color[1];
+				cw[as + j + 2] = color[2];
 
 				uvw[as + j + 0] = uv[0];
 				uvw[as + j + 1] = uv[1];
@@ -840,7 +859,7 @@ CSGBrush *CSGMesh3D::_build_brush() {
 		return memnew(CSGBrush);
 	}
 
-	return _create_brush_from_arrays(vertices, uvs, smooth, materials);
+	return _create_brush_from_arrays(vertices, colors, uvs, smooth, materials);
 }
 
 void CSGMesh3D::_mesh_changed() {
@@ -1003,7 +1022,7 @@ CSGBrush *CSGSphere3D::_build_brush() {
 		}
 	}
 
-	brush->build_from_faces(faces, uvs, smooth, materials, invert);
+	brush->build_from_faces(faces, Vector<Color>(), uvs, smooth, materials, invert);
 
 	return brush;
 }
@@ -1184,7 +1203,7 @@ CSGBrush *CSGBox3D::_build_brush() {
 		}
 	}
 
-	brush->build_from_faces(faces, uvs, smooth, materials, invert);
+	brush->build_from_faces(faces, Vector<Color>(), uvs, smooth, materials, invert);
 
 	return brush;
 }
@@ -1349,7 +1368,7 @@ CSGBrush *CSGCylinder3D::_build_brush() {
 		}
 	}
 
-	brush->build_from_faces(faces, uvs, smooth, materials, invert);
+	brush->build_from_faces(faces, Vector<Color>(), uvs, smooth, materials, invert);
 
 	return brush;
 }
@@ -1568,7 +1587,7 @@ CSGBrush *CSGTorus3D::_build_brush() {
 		}
 	}
 
-	brush->build_from_faces(faces, uvs, smooth, materials, invert);
+	brush->build_from_faces(faces, Vector<Color>(), uvs, smooth, materials, invert);
 
 	return brush;
 }
@@ -2141,7 +2160,7 @@ CSGBrush *CSGPolygon3D::_build_brush() {
 		}
 	}
 
-	brush->build_from_faces(faces, uvs, smooth, materials, invert);
+	brush->build_from_faces(faces, Vector<Color>(), uvs, smooth, materials, invert);
 
 	return brush;
 }

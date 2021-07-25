@@ -194,7 +194,7 @@ void CSGBrush::_regen_face_aabbs() {
 	}
 }
 
-void CSGBrush::build_from_faces(const Vector<Vector3> &p_vertices, const Vector<Vector2> &p_uvs, const Vector<bool> &p_smooth, const Vector<Ref<Material>> &p_materials, const Vector<bool> &p_invert_faces) {
+void CSGBrush::build_from_faces(const Vector<Vector3> &p_vertices, const Vector<Color> &p_colors, const Vector<Vector2> &p_uvs, const Vector<bool> &p_smooth, const Vector<Ref<Material>> &p_materials, const Vector<bool> &p_invert_faces) {
 	faces.clear();
 
 	int vc = p_vertices.size();
@@ -203,6 +203,8 @@ void CSGBrush::build_from_faces(const Vector<Vector3> &p_vertices, const Vector<
 
 	const Vector3 *rv = p_vertices.ptr();
 	int uvc = p_uvs.size();
+	const Color *cv = p_colors.ptr();
+	int cc = p_colors.size();
 	const Vector2 *ruv = p_uvs.ptr();
 	int sc = p_smooth.size();
 	const bool *rs = p_smooth.ptr();
@@ -220,6 +222,12 @@ void CSGBrush::build_from_faces(const Vector<Vector3> &p_vertices, const Vector<
 		f.vertices[0] = rv[i * 3 + 0];
 		f.vertices[1] = rv[i * 3 + 1];
 		f.vertices[2] = rv[i * 3 + 2];
+
+		if (cc == vc) {
+			f.colors[0] = cv[i * 3 + 0];
+			f.colors[1] = cv[i * 3 + 1];
+			f.colors[2] = cv[i * 3 + 2];
+		}
 
 		if (uvc == vc) {
 			f.uvs[0] = ruv[i * 3 + 0];
