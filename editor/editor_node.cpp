@@ -7005,7 +7005,7 @@ EditorNode::~EditorNode() {
 	EditorInspector::cleanup_plugins();
 
 	remove_print_handler(&print_handler);
-	memdelete(EditorHelp::get_doc_data());
+	EditorHelp::cleanup_doc();
 	memdelete(editor_selection);
 	memdelete(editor_plugins_over);
 	memdelete(editor_plugins_force_over);
