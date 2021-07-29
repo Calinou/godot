@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="VisualScriptSelf" inherits="VisualScriptNode" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Outputs a reference to the current instance.
 	</brief_description>

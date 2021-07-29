@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="Transform3D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		3D transformation (3×4 matrix).
 	</brief_description>

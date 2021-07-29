@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="Basis" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		3×3 matrix datatype.
 	</brief_description>

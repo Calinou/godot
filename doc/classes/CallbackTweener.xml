@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="CallbackTweener" inherits="Tweener" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Calls the specified method after optional delay.
 	</brief_description>

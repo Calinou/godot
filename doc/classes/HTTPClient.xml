@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="HTTPClient" inherits="RefCounted" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Low-level hyper-text transfer protocol client.
 	</brief_description>

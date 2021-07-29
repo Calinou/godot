@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="CameraTexture" inherits="Texture2D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Texture provided by a [CameraFeed].
 	</brief_description>

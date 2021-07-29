@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="BaseMaterial3D" inherits="Material" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Default 3D rendering material.
 	</brief_description>

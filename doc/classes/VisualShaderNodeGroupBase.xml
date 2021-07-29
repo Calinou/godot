@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="VisualShaderNodeGroupBase" inherits="VisualShaderNodeResizableBase" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Base class for a family of nodes with variable amount of input and output ports within the visual shader graph.
 	</brief_description>

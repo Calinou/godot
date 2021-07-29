@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="Sky" inherits="Resource" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Background that uses a [Material] to draw a sky.
 	</brief_description>

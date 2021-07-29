@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="RandomNumberGenerator" inherits="RefCounted" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		A class for generating pseudo-random numbers.
 	</brief_description>

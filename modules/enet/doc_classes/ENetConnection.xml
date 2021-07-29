@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="ENetConnection" inherits="RefCounted" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		A wrapper class for an [url=http://enet.bespin.org/group__host.html]ENetHost[/url].
 	</brief_description>

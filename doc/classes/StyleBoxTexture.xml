@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="StyleBoxTexture" inherits="StyleBox" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Texture-based nine-patch [StyleBox].
 	</brief_description>

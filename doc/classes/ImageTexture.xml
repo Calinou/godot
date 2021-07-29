@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="ImageTexture" inherits="Texture2D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		A [Texture2D] based on an [Image].
 	</brief_description>

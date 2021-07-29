@@ -116,6 +116,14 @@ public:
 		}
 	};
 
+	struct KeywordDoc {
+		// The keyword to use as an alias for searching. Use this to improve search results.
+		String keyword;
+		// The reference string for a class item such as a property or method (optional).
+		// If left empty, the keyword is assumed to refer to the class itself.
+		String reference;
+	};
+
 	struct TutorialDoc {
 		String link;
 		String title;
@@ -127,6 +135,7 @@ public:
 		String category;
 		String brief_description;
 		String description;
+		Vector<KeywordDoc> keywords;
 		Vector<TutorialDoc> tutorials;
 		Vector<MethodDoc> methods;
 		Vector<MethodDoc> signals;

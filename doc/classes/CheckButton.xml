@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="CheckButton" inherits="Button" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Checkable button. See also [CheckBox].
 	</brief_description>

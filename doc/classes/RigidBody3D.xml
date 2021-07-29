@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="RigidBody3D" inherits="PhysicsBody3D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Physics Body whose position is determined through physics simulation in 3D space.
 	</brief_description>

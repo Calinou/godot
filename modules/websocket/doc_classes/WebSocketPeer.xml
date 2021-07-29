@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="WebSocketPeer" inherits="PacketPeer" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		A class representing a specific WebSocket connection.
 	</brief_description>

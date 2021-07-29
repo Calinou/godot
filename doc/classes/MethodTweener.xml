@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="MethodTweener" inherits="Tweener" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Interpolates an abstract value and supplies it to a method called over time.
 	</brief_description>

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="PackedInt64Array" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		A packed [Array] of 64-bit integers.
 	</brief_description>

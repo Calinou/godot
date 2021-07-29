@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="XRAnchor3D" inherits="Node3D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		An anchor point in AR space.
 	</brief_description>

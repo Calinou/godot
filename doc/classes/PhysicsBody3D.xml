@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="PhysicsBody3D" inherits="CollisionObject3D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Base class for all objects affected by physics in 3D space.
 	</brief_description>

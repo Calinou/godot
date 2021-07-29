@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="HSplitContainer" inherits="SplitContainer" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Horizontal split container.
 	</brief_description>

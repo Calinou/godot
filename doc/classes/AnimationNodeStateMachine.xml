@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="AnimationNodeStateMachine" inherits="AnimationRootNode" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		State machine for control of animations.
 	</brief_description>

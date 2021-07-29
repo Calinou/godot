@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="WebXRInterface" inherits="XRInterface" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		AR/VR interface using WebXR.
 	</brief_description>

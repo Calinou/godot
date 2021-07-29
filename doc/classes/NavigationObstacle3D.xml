@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="NavigationObstacle3D" inherits="Node" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		3D Obstacle used in navigation for collision avoidance.
 	</brief_description>

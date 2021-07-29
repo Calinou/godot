@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="OmniLight3D" inherits="Light3D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Omnidirectional light, such as a light bulb or a candle.
 	</brief_description>

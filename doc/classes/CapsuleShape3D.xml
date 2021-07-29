@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="CapsuleShape3D" inherits="Shape3D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Capsule shape for collisions.
 	</brief_description>

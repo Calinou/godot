@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="InputEvent" inherits="Resource" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Generic input event.
 	</brief_description>

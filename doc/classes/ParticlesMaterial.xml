@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="ParticlesMaterial" inherits="Material" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Particle properties for [GPUParticles3D] and [GPUParticles2D] nodes.
 	</brief_description>

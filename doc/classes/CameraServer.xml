@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="CameraServer" inherits="Object" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Server keeping track of different cameras accessible in Godot.
 	</brief_description>

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="VisualShaderNodeMultiplyAdd" inherits="VisualShaderNode" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Performs a fused multiply-add operation within the visual shader graph.
 	</brief_description>

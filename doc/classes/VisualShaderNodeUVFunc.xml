@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="VisualShaderNodeUVFunc" inherits="VisualShaderNode" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Contains functions to modify texture coordinates ([code]uv[/code]) to be used within the visual shader graph.
 	</brief_description>

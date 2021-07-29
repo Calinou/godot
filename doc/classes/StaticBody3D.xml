@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="StaticBody3D" inherits="PhysicsBody3D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Static body for 3D physics.
 	</brief_description>

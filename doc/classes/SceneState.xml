@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="SceneState" inherits="RefCounted" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		A script interface to a scene file's data.
 	</brief_description>

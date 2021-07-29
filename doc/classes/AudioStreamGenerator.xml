@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="AudioStreamGenerator" inherits="AudioStream" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Audio stream that generates sounds procedurally.
 	</brief_description>

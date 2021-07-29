@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="SliderJoint3D" inherits="Joint3D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Slider between two PhysicsBodies in 3D.
 	</brief_description>

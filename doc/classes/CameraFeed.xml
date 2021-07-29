@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="CameraFeed" inherits="RefCounted" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		A camera feed gives you access to a single physical camera attached to your device.
 	</brief_description>

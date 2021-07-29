@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="EditorImportPlugin" inherits="ResourceImporter" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Registers a custom resource importer in the editor. Use the class to parse any file and import it as a new resource type.
 	</brief_description>

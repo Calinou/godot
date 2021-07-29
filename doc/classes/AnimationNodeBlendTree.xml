@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="AnimationNodeBlendTree" inherits="AnimationRootNode" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		[AnimationTree] node resource that contains many blend type nodes.
 	</brief_description>

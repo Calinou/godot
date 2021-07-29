@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="SkeletonModification2DTwoBoneIK" inherits="SkeletonModification2D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		A modification that rotates two bones using the law of cosigns to reach the target.
 	</brief_description>

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="EditorResourcePreview" inherits="Node" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Helper to generate previews of resources or files.
 	</brief_description>

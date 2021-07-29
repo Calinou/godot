@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="Sprite3D" inherits="SpriteBase3D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		2D sprite node in a 3D world.
 	</brief_description>

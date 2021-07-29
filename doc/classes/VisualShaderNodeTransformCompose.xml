@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="VisualShaderNodeTransformCompose" inherits="VisualShaderNode" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Composes a [Transform3D] from four [Vector3]s within the visual shader graph.
 	</brief_description>

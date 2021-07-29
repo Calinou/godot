@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="Material" inherits="Resource" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Abstract base [Resource] for coloring and shading geometry.
 	</brief_description>

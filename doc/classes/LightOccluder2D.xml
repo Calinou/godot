@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="LightOccluder2D" inherits="Node2D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Occludes light cast by a Light2D, casting shadows.
 	</brief_description>

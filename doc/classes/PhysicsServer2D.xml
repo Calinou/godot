@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="PhysicsServer2D" inherits="Object" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Server interface for low-level 2D physics access.
 	</brief_description>

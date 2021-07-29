@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="SphereMesh" inherits="PrimitiveMesh" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Class representing a spherical [PrimitiveMesh].
 	</brief_description>

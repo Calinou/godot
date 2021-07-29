@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="VisualShader" inherits="Shader" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		A custom shader program with a visual editor.
 	</brief_description>

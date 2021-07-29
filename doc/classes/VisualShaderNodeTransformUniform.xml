@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="VisualShaderNodeTransformUniform" inherits="VisualShaderNodeUniform" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		A [Transform3D] uniform for use within the visual shader graph.
 	</brief_description>

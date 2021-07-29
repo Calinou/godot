@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="AnimationTree" inherits="Node" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		A node to be used for advanced animation transitions in an [AnimationPlayer].
 	</brief_description>

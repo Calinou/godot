@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="VoxelGI" inherits="VisualInstance3D" version="4.0">
+	<keywords>
+		<keyword>giprobe</keyword>
+		<keyword reference="subdiv">subdivision</keyword>
+	</keywords>
 	<brief_description>
 		Real-time global illumination (GI) probe.
 	</brief_description>

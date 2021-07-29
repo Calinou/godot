@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="RigidBody2D" inherits="PhysicsBody2D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		A body that is controlled by the 2D physics engine.
 	</brief_description>

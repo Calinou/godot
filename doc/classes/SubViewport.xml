@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="SubViewport" inherits="Viewport" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Creates a sub-view into the screen.
 	</brief_description>

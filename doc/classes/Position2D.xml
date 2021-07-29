@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="Position2D" inherits="Node2D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Generic 2D position hint for editing.
 	</brief_description>

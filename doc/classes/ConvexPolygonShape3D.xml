@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="ConvexPolygonShape3D" inherits="Shape3D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Convex polygon shape for 3D physics.
 	</brief_description>

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="AnimationNodeAdd2" inherits="AnimationNode" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Blends two animations additively inside of an [AnimationNodeBlendTree].
 	</brief_description>

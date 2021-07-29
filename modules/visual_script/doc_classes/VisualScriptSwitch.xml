@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="VisualScriptSwitch" inherits="VisualScriptNode" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Branches program flow based on a given input's value.
 	</brief_description>

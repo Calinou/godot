@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="Light3D" inherits="VisualInstance3D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Provides a base class for different kinds of light nodes.
 	</brief_description>

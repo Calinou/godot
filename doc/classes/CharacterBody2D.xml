@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="CharacterBody2D" inherits="PhysicsBody2D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Character body 2D node.
 	</brief_description>

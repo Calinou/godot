@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="ReflectionProbe" inherits="VisualInstance3D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Captures its surroundings to create reflections.
 	</brief_description>

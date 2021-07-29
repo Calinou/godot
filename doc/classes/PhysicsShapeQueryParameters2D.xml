@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="PhysicsShapeQueryParameters2D" inherits="RefCounted" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Parameters to be sent to a 2D shape physics query.
 	</brief_description>

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="EditorPlugin" inherits="Node" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Used by the editor to extend its functionality.
 	</brief_description>

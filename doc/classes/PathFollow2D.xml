@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="PathFollow2D" inherits="Node2D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Point sampler for a [Path2D].
 	</brief_description>

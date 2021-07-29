@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="AudioEffectPanner" inherits="AudioEffect" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Adds a panner audio effect to an Audio bus. Pans sound left or right.
 	</brief_description>

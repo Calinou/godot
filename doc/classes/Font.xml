@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="Font" inherits="Resource" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Font class is set of font data sources used to draw text.
 	</brief_description>

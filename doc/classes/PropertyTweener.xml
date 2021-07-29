@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="PropertyTweener" inherits="Tweener" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Interpolates an [Object]'s property over time.
 	</brief_description>

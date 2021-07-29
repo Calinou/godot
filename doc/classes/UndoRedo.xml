@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="UndoRedo" inherits="Object" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Helper to manage undo/redo operations in the editor or custom tools.
 	</brief_description>

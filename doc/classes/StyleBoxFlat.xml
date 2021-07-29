@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="StyleBoxFlat" inherits="StyleBox" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Customizable [StyleBox] with a given set of parameters (no texture required).
 	</brief_description>

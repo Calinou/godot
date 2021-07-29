@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="AnimationNodeBlendSpace1D" inherits="AnimationRootNode" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Blends linearly between two of any number of [AnimationNode] of any type placed on a virtual axis.
 	</brief_description>

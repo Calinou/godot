@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="SubViewportContainer" inherits="Container" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Control for holding [SubViewport]s.
 	</brief_description>

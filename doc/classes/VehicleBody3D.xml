@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="VehicleBody3D" inherits="RigidBody3D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Physics body that simulates the behavior of a car.
 	</brief_description>

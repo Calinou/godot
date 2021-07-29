@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="EditorNode3DGizmo" inherits="Node3DGizmo" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Gizmo for editing Node3D objects.
 	</brief_description>

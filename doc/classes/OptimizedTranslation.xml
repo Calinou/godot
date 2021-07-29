@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="OptimizedTranslation" inherits="Translation" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Optimized translation.
 	</brief_description>

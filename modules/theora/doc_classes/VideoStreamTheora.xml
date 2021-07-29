@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="VideoStreamTheora" inherits="VideoStream" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		[VideoStream] resource for Ogg Theora videos.
 	</brief_description>

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="CollisionObject3D" inherits="Node3D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Base node for collision objects.
 	</brief_description>

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="MeshInstance3D" inherits="GeometryInstance3D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Node that instances meshes into a scenario.
 	</brief_description>

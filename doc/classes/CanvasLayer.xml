@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="CanvasLayer" inherits="Node" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Canvas drawing layer.
 	</brief_description>

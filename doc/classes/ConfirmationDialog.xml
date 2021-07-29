@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="ConfirmationDialog" inherits="AcceptDialog" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Dialog for confirmation of actions.
 	</brief_description>

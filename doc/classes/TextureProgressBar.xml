@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="TextureProgressBar" inherits="Range" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Texture-based progress bar. Useful for loading screens and life or stamina bars.
 	</brief_description>

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="VisibleOnScreenNotifier2D" inherits="Node2D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Detects when the node extents are visible on screen.
 	</brief_description>

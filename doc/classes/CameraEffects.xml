@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="CameraEffects" inherits="Resource" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Contains camera-specific effects such as depth of field and exposure override.
 	</brief_description>

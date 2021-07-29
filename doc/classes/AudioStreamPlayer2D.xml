@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="AudioStreamPlayer2D" inherits="Node2D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Plays positional sound in 2D space.
 	</brief_description>

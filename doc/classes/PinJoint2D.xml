@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="PinJoint2D" inherits="Joint2D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Pin joint for 2D shapes.
 	</brief_description>

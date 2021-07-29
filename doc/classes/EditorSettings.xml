@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="EditorSettings" inherits="Resource" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Object that holds the project-independent editor settings.
 	</brief_description>

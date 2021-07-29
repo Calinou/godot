@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="VSlider" inherits="Slider" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Vertical slider.
 	</brief_description>

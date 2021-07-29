@@ -986,7 +986,30 @@ Error DocTools::_load(Ref<XMLParser> parser) {
 			if (parser->get_node_type() == XMLParser::NODE_ELEMENT) {
 				String name2 = parser->get_node_name();
 
-				if (name2 == "brief_description") {
+				if (name2 == "keywords") {
+					while (parser->read() == OK) {
+						if (parser->get_node_type() == XMLParser::NODE_ELEMENT) {
+							const String name3 = parser->get_node_name();
+
+							if (name3 == "keyword") {
+								DocData::KeywordDoc keyword;
+								if (parser->has_attribute("reference")) {
+									keyword.reference = parser->get_attribute_value("reference");
+								}
+								parser->read();
+								if (parser->get_node_type() == XMLParser::NODE_TEXT) {
+									keyword.keyword = parser->get_node_data().strip_edges();
+									print_line(vformat("pushing %s", keyword.keyword));
+									c.keywords.push_back(keyword);
+								}
+							} else {
+								ERR_FAIL_V_MSG(ERR_FILE_CORRUPT, "Invalid tag in doc file: " + name3 + ".");
+							}
+						} else if (parser->get_node_type() == XMLParser::NODE_ELEMENT_END && parser->get_node_name() == "keywords") {
+							break; // End of <keywords>.
+						}
+					}
+				} else if (name2 == "brief_description") {
 					parser->read();
 					if (parser->get_node_type() == XMLParser::NODE_TEXT) {
 						c.brief_description = parser->get_node_data();
@@ -1172,6 +1195,15 @@ Error DocTools::save_classes(const String &p_default_path, const Map<String, Str
 		header += String(" version=\"") + VERSION_BRANCH + "\"";
 		header += ">";
 		_write_string(f, 0, header);
+
+		_write_string(f, 1, "<keywords>");
+		for (int i = 0; i < c.keywords.size(); i++) {
+			print_line("keyword to add");
+			DocData::KeywordDoc keyword = c.keywords.get(i);
+			const String reference_attribute = (!keyword.reference.is_empty()) ? " reference=\"" + keyword.reference.xml_escape() + "\"" : "";
+			_write_string(f, 2, "<keyword" + reference_attribute + ">" + keyword.keyword.xml_escape() + "</keyword>");
+		}
+		_write_string(f, 1, "</keywords>");
 
 		_write_string(f, 1, "<brief_description>");
 		_write_string(f, 2, c.brief_description.strip_edges().xml_escape());

@@ -328,6 +328,17 @@ bool EditorHelpSearch::Runner::_phase_match_classes() {
 		// Match class name.
 		if (search_flags & SEARCH_CLASSES) {
 			match.name = term == "" || _match_string(term, class_doc.name);
+			if (!match.name) {
+				// Search for keyword aliases too.
+				for (int i = 0; i < class_doc.keywords.size(); i++) {
+					if (_match_string(term, class_doc.keywords[i].keyword)) {
+						match.name = true;
+						print_line(vformat("%s - Matched keyword: %s", class_doc.name, class_doc.keywords[i].keyword));
+						// We found a keyword, no need to look at other keywords.
+						continue;
+					}
+				}
+			}
 		}
 
 		// Match members if the term is long enough.

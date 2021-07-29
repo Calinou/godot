@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="Geometry3D" inherits="Object" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Helper node to calculate generic geometry operations in 3D space.
 	</brief_description>

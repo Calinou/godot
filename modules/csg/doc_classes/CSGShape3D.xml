@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="CSGShape3D" inherits="GeometryInstance3D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		The CSG base class.
 	</brief_description>

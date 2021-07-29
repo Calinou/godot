@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="InputEventJoypadButton" inherits="InputEvent" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Input event for gamepad buttons.
 	</brief_description>

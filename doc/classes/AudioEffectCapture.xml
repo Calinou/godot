@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="AudioEffectCapture" inherits="AudioEffect" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Captures audio from an audio bus in real-time.
 	</brief_description>

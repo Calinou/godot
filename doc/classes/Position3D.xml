@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="Position3D" inherits="Node3D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Generic 3D position hint for editing.
 	</brief_description>

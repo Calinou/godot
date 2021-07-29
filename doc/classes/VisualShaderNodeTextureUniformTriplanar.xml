@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="VisualShaderNodeTextureUniformTriplanar" inherits="VisualShaderNodeTextureUniform" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Performs a uniform texture lookup with triplanar within the visual shader graph.
 	</brief_description>

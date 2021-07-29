@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="IntervalTweener" inherits="Tweener" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Creates an idle interval in a [Tween] animation.
 	</brief_description>

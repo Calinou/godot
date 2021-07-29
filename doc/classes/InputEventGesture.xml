@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="InputEventGesture" inherits="InputEventWithModifiers" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Base class for touch control gestures.
 	</brief_description>

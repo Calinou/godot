@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="LineEdit" inherits="Control" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Control that provides single-line string editing.
 	</brief_description>

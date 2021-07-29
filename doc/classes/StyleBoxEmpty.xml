@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="StyleBoxEmpty" inherits="StyleBox" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Empty stylebox (does not display anything).
 	</brief_description>

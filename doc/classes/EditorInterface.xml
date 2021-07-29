@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="EditorInterface" inherits="Node" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Godot editor's interface.
 	</brief_description>

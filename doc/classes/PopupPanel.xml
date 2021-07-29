@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="PopupPanel" inherits="Popup" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Class for displaying popups with a panel background.
 	</brief_description>

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="GrooveJoint2D" inherits="Joint2D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Groove constraint for 2D physics.
 	</brief_description>

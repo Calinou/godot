@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="StreamPeerTCP" inherits="StreamPeer" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		TCP stream peer.
 	</brief_description>

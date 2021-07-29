@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="QuadMesh" inherits="PrimitiveMesh" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Class representing a square mesh.
 	</brief_description>

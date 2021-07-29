@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="AudioStreamRandomPitch" inherits="AudioStream" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Plays audio with random pitch shifting.
 	</brief_description>

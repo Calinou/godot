@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="Animation" inherits="Resource" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Contains data used to animate everything in the engine.
 	</brief_description>

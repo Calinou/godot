@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="VisualShaderNodeTextureUniform" inherits="VisualShaderNodeUniform" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Performs a uniform texture lookup within the visual shader graph.
 	</brief_description>

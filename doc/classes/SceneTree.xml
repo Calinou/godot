@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="SceneTree" inherits="MainLoop" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Manages the game loop via a hierarchy of nodes.
 	</brief_description>

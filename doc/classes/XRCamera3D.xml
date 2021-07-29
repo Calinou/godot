@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="XRCamera3D" inherits="Camera3D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		A camera node with a few overrules for AR/VR applied, such as location tracking.
 	</brief_description>

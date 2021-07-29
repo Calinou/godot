@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="VisualShaderNodeFloatUniform" inherits="VisualShaderNodeUniform" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		A scalar float uniform to be used within the visual shader graph.
 	</brief_description>

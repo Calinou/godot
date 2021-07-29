@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="CSGPolygon3D" inherits="CSGPrimitive3D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Extrudes a 2D polygon shape to create a 3D mesh.
 	</brief_description>

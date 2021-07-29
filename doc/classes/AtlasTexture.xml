@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="AtlasTexture" inherits="Texture2D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Crops out one part of a texture, such as a texture from a texture atlas.
 	</brief_description>

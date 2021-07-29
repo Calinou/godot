@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="TextServerManager" inherits="Object" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Manager for the font and complex text layout servers.
 	</brief_description>

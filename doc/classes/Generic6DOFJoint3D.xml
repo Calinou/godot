@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="Generic6DOFJoint3D" inherits="Joint3D" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		The generic 6-degrees-of-freedom joint can implement a variety of joint types by locking certain axes' rotation or translation.
 	</brief_description>

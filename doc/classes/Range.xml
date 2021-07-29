@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="Range" inherits="Control" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Abstract base class for range-based controls.
 	</brief_description>

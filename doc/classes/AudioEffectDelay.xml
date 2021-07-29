@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="AudioEffectDelay" inherits="AudioEffect" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Adds a delay audio effect to an audio bus. Plays input signal back after a period of time.
 		Two tap delay and feedback options.

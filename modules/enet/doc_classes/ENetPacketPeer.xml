@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="ENetPacketPeer" inherits="PacketPeer" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		A wrapper class for an [url=http://enet.bespin.org/group__peer.html]ENetPeer[/url].
 	</brief_description>

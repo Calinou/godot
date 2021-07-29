@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="AudioStreamOGGVorbis" inherits="AudioStream" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		OGG Vorbis audio stream driver.
 	</brief_description>

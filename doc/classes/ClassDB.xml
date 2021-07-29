@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="ClassDB" inherits="Object" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Class information repository.
 	</brief_description>

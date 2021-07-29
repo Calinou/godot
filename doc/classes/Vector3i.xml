@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="Vector3i" version="4.0">
+	<keywords>
+	</keywords>
 	<brief_description>
 		Vector used for 3D math using integer coordinates.
 	</brief_description>
