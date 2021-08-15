@@ -627,6 +627,30 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	theme->set_color("icon_hover_color", "Button", icon_hover_color);
 	theme->set_color("icon_pressed_color", "Button", icon_pressed_color);
 
+	// Highlighted buttons for context-specific menus at the top of the 2D/3D editors.
+	Ref<StyleBoxFlat> style_widget_context = style_widget->duplicate();
+	style_widget_context->set_bg_color(accent_color * Color(1, 1, 1, 0.1));
+	// Add an underline to the StyleBox, but prevent its minimum vertical size from changing.
+	style_widget_context->set_border_color(accent_color);
+	style_widget_context->set_border_width(SIDE_BOTTOM, Math::round(2 * EDSCALE));
+	style_widget_context->set_default_margin(SIDE_BOTTOM, 0);
+	theme->set_stylebox("context_button_normal", "EditorStyles", style_widget_context);
+
+	Ref<StyleBoxFlat> style_widget_context_hover = style_widget_context->duplicate();
+	style_widget_context_hover->set_bg_color(accent_color.lightened(0.1) * Color(1, 1, 1, 0.1));
+	style_widget_context_hover->set_border_color(accent_color.lightened(0.1));
+	theme->set_stylebox("context_button_hover", "EditorStyles", style_widget_context_hover);
+
+	Ref<StyleBoxFlat> style_widget_context_pressed = style_widget_context->duplicate();
+	style_widget_context_hover->set_bg_color(accent_color.darkened(0.1) * Color(1, 1, 1, 0.1));
+	style_widget_context_hover->set_border_color(accent_color.darkened(0.1));
+	theme->set_stylebox("context_button_pressed", "EditorStyles", style_widget_context_pressed);
+
+	Ref<StyleBoxFlat> style_widget_context_disabled = style_widget_context->duplicate();
+	style_widget_context_hover->set_bg_color(accent_color * Color(1, 1, 1, 0.05));
+	style_widget_context_hover->set_border_color(accent_color * Color(1, 1, 1, 0.5));
+	theme->set_stylebox("context_button_disabled", "EditorStyles", style_widget_context_disabled);
+
 	// OptionButton
 	theme->set_stylebox("focus", "OptionButton", style_widget_focus);
 

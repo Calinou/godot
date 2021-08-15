@@ -6025,18 +6025,6 @@ void fragment() {
 	_generate_selection_boxes();
 }
 
-void Node3DEditor::_update_context_menu_stylebox() {
-	// This must be called when the theme changes to follow the new accent color.
-	Ref<StyleBoxFlat> context_menu_stylebox = memnew(StyleBoxFlat);
-	const Color accent_color = EditorNode::get_singleton()->get_gui_base()->get_theme_color("accent_color", "Editor");
-	context_menu_stylebox->set_bg_color(accent_color * Color(1, 1, 1, 0.1));
-	// Add an underline to the StyleBox, but prevent its minimum vertical size from changing.
-	context_menu_stylebox->set_border_color(accent_color);
-	context_menu_stylebox->set_border_width(SIDE_BOTTOM, Math::round(2 * EDSCALE));
-	context_menu_stylebox->set_default_margin(SIDE_BOTTOM, 0);
-	context_menu_container->add_theme_style_override("panel", context_menu_stylebox);
-}
-
 void Node3DEditor::_update_gizmos_menu() {
 	gizmos_menu->clear();
 
@@ -6646,7 +6634,6 @@ void Node3DEditor::_notification(int p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			_update_theme();
 			_update_gizmos_menu_theme();
-			_update_context_menu_stylebox();
 			sun_title->add_theme_font_override("font", get_theme_font(SNAME("title_font"), SNAME("Window")));
 			environ_title->add_theme_font_override("font", get_theme_font(SNAME("title_font"), SNAME("Window")));
 		} break;
@@ -6695,11 +6682,19 @@ Vector<int> Node3DEditor::get_subgizmo_selection() {
 }
 
 void Node3DEditor::add_control_to_menu_panel(Control *p_control) {
-	hbc_context_menu->add_child(p_control);
+	hbc_menu->add_child(p_control);
+	p_control->add_theme_style_override("normal", editor->get_gui_base()->get_theme_stylebox(SNAME("context_button_normal"), SNAME("EditorStyles")));
+	p_control->add_theme_style_override("hover", editor->get_gui_base()->get_theme_stylebox(SNAME("context_button_hover"), SNAME("EditorStyles")));
+	p_control->add_theme_style_override("pressed", editor->get_gui_base()->get_theme_stylebox(SNAME("context_button_pressed"), SNAME("EditorStyles")));
+	p_control->add_theme_style_override("disabled", editor->get_gui_base()->get_theme_stylebox(SNAME("context_button_disabled"), SNAME("EditorStyles")));
 }
 
 void Node3DEditor::remove_control_from_menu_panel(Control *p_control) {
-	hbc_context_menu->remove_child(p_control);
+	hbc_menu->remove_child(p_control);
+	p_control->remove_theme_style_override("normal");
+	p_control->remove_theme_style_override("hover");
+	p_control->remove_theme_style_override("pressed");
+	p_control->remove_theme_style_override("disabled");
 }
 
 void Node3DEditor::set_can_preview(Camera3D *p_preview) {
@@ -7281,17 +7276,6 @@ Node3DEditor::Node3DEditor(EditorNode *p_editor) {
 	view_menu->set_switch_on_hover(true);
 	view_menu->set_shortcut_context(this);
 	hbc_menu->add_child(view_menu);
-
-	hbc_menu->add_child(memnew(VSeparator));
-
-	context_menu_container = memnew(PanelContainer);
-	hbc_context_menu = memnew(HBoxContainer);
-	context_menu_container->add_child(hbc_context_menu);
-	// Use a custom stylebox to make contextual menu items stand out from the rest.
-	// This helps with editor usability as contextual menu items change when selecting nodes,
-	// even though it may not be immediately obvious at first.
-	hbc_menu->add_child(context_menu_container);
-	_update_context_menu_stylebox();
 
 	// Get the view menu popup and have it stay open when a checkable item is selected
 	p = view_menu->get_popup();

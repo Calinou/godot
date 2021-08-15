@@ -3856,8 +3856,6 @@ void CanvasItemEditor::_notification(int p_what) {
 		key_auto_insert_button->add_theme_color_override("icon_pressed_color", key_auto_color.lerp(Color(1, 0, 0), 0.55));
 		animation_menu->set_icon(get_theme_icon(SNAME("GuiTabMenuHl"), SNAME("EditorIcons")));
 
-		_update_context_menu_stylebox();
-
 		presets_menu->set_icon(get_theme_icon(SNAME("ControlLayout"), SNAME("EditorIcons")));
 
 		PopupMenu *p = presets_menu->get_popup();
@@ -3958,18 +3956,6 @@ void CanvasItemEditor::edit(CanvasItem *p_canvas_item) {
 		editor_selection->clear(); //_clear_canvas_items();
 		editor_selection->add_node(p_canvas_item);
 	}
-}
-
-void CanvasItemEditor::_update_context_menu_stylebox() {
-	// This must be called when the theme changes to follow the new accent color.
-	Ref<StyleBoxFlat> context_menu_stylebox = memnew(StyleBoxFlat);
-	const Color accent_color = EditorNode::get_singleton()->get_gui_base()->get_theme_color("accent_color", "Editor");
-	context_menu_stylebox->set_bg_color(accent_color * Color(1, 1, 1, 0.1));
-	// Add an underline to the StyleBox, but prevent its minimum vertical size from changing.
-	context_menu_stylebox->set_border_color(accent_color);
-	context_menu_stylebox->set_border_width(SIDE_BOTTOM, Math::round(2 * EDSCALE));
-	context_menu_stylebox->set_default_margin(SIDE_BOTTOM, 0);
-	context_menu_container->add_theme_style_override("panel", context_menu_stylebox);
 }
 
 void CanvasItemEditor::_update_scrollbars() {
@@ -5145,11 +5131,19 @@ void CanvasItemEditor::remove_control_from_info_overlay(Control *p_control) {
 void CanvasItemEditor::add_control_to_menu_panel(Control *p_control) {
 	ERR_FAIL_COND(!p_control);
 
-	hbc_context_menu->add_child(p_control);
+	hb->add_child(p_control);
+	p_control->add_theme_style_override("normal", editor->get_gui_base()->get_theme_stylebox(SNAME("context_button_normal"), SNAME("EditorStyles")));
+	p_control->add_theme_style_override("hover", editor->get_gui_base()->get_theme_stylebox(SNAME("context_button_hover"), SNAME("EditorStyles")));
+	p_control->add_theme_style_override("pressed", editor->get_gui_base()->get_theme_stylebox(SNAME("context_button_pressed"), SNAME("EditorStyles")));
+	p_control->add_theme_style_override("disabled", editor->get_gui_base()->get_theme_stylebox(SNAME("context_button_disabled"), SNAME("EditorStyles")));
 }
 
 void CanvasItemEditor::remove_control_from_menu_panel(Control *p_control) {
-	hbc_context_menu->remove_child(p_control);
+	hb->remove_child(p_control);
+	p_control->remove_theme_style_override("normal");
+	p_control->remove_theme_style_override("hover");
+	p_control->remove_theme_style_override("pressed");
+	p_control->remove_theme_style_override("disabled");
 }
 
 HSplitContainer *CanvasItemEditor::get_palette_split() {
@@ -5536,19 +5530,10 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 
 	hb->add_child(memnew(VSeparator));
 
-	context_menu_container = memnew(PanelContainer);
-	hbc_context_menu = memnew(HBoxContainer);
-	context_menu_container->add_child(hbc_context_menu);
-	// Use a custom stylebox to make contextual menu items stand out from the rest.
-	// This helps with editor usability as contextual menu items change when selecting nodes,
-	// even though it may not be immediately obvious at first.
-	hb->add_child(context_menu_container);
-	_update_context_menu_stylebox();
-
 	presets_menu = memnew(MenuButton);
 	presets_menu->set_shortcut_context(this);
 	presets_menu->set_text(TTR("Layout"));
-	hbc_context_menu->add_child(presets_menu);
+	hb->add_child(presets_menu);
 	presets_menu->hide();
 	presets_menu->set_switch_on_hover(true);
 
@@ -5562,18 +5547,17 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 
 	anchor_mode_button = memnew(Button);
 	anchor_mode_button->set_flat(true);
-	hbc_context_menu->add_child(anchor_mode_button);
+	hb->add_child(anchor_mode_button);
 	anchor_mode_button->set_toggle_mode(true);
 	anchor_mode_button->hide();
 	anchor_mode_button->connect("toggled", callable_mp(this, &CanvasItemEditor::_button_toggle_anchor_mode));
 
 	animation_hb = memnew(HBoxContainer);
-	hbc_context_menu->add_child(animation_hb);
+	hb->add_child(animation_hb);
 	animation_hb->add_child(memnew(VSeparator));
 	animation_hb->hide();
 
 	key_loc_button = memnew(Button);
-	key_loc_button->set_flat(true);
 	key_loc_button->set_toggle_mode(true);
 	key_loc_button->set_pressed(true);
 	key_loc_button->set_focus_mode(FOCUS_NONE);
@@ -5582,7 +5566,6 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 	animation_hb->add_child(key_loc_button);
 
 	key_rot_button = memnew(Button);
-	key_rot_button->set_flat(true);
 	key_rot_button->set_toggle_mode(true);
 	key_rot_button->set_pressed(true);
 	key_rot_button->set_focus_mode(FOCUS_NONE);
@@ -5591,7 +5574,6 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 	animation_hb->add_child(key_rot_button);
 
 	key_scale_button = memnew(Button);
-	key_scale_button->set_flat(true);
 	key_scale_button->set_toggle_mode(true);
 	key_scale_button->set_focus_mode(FOCUS_NONE);
 	key_scale_button->connect("pressed", callable_mp(this, &CanvasItemEditor::_popup_callback), varray(ANIM_INSERT_SCALE));
@@ -5599,7 +5581,6 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 	animation_hb->add_child(key_scale_button);
 
 	key_insert_button = memnew(Button);
-	key_insert_button->set_flat(true);
 	key_insert_button->set_focus_mode(FOCUS_NONE);
 	key_insert_button->connect("pressed", callable_mp(this, &CanvasItemEditor::_popup_callback), varray(ANIM_INSERT_KEY));
 	key_insert_button->set_tooltip(TTR("Insert keys (based on mask)."));
@@ -5608,7 +5589,6 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 	animation_hb->add_child(key_insert_button);
 
 	key_auto_insert_button = memnew(Button);
-	key_auto_insert_button->set_flat(true);
 	key_auto_insert_button->set_toggle_mode(true);
 	key_auto_insert_button->set_focus_mode(FOCUS_NONE);
 	key_auto_insert_button->set_tooltip(TTR("Auto insert keys when objects are translated, rotated or scaled (based on mask).\nKeys are only added to existing tracks, no new tracks will be created.\nKeys must be inserted manually for the first time."));
