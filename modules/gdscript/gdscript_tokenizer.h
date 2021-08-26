@@ -104,6 +104,7 @@ public:
 		TK_PR_SETGET,
 		TK_PR_CONST,
 		TK_PR_VAR,
+		TK_PR_LET,
 		TK_PR_AS,
 		TK_PR_VOID,
 		TK_PR_ENUM,

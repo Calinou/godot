@@ -167,6 +167,11 @@ public:
 			OperatorNode *initial_assignment;
 			MultiplayerAPI::RPCMode rpc_mode;
 			int usages;
+			// If `true`, the variable cannot be reassigned after it was assigned
+			// once (used with the `let` keyword). This does not provide data
+			// immutability for the variable's contents, but it can still be used to
+			// avoid mistakes.
+			bool immutable;
 		};
 
 		struct Constant {
@@ -281,6 +286,11 @@ public:
 		OperatorNode *assign_op;
 		int assignments;
 		int usages;
+		// If `true`, the variable cannot be reassigned after it was assigned
+		// once (used with the `let` keyword). This does not provide data
+		// immutability for the variable's contents, but it can still be used to
+		// avoid mistakes.
+		bool immutable;
 		DataType datatype;
 		virtual DataType get_datatype() const { return datatype; }
 		virtual void set_datatype(const DataType &p_datatype) { datatype = p_datatype; }
@@ -290,6 +300,7 @@ public:
 			assign_op = nullptr;
 			assignments = 0;
 			usages = 0;
+			immutable = false;
 		}
 	};
 

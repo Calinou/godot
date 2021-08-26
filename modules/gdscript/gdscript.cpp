@@ -1743,6 +1743,7 @@ void GDScriptLanguage::get_reserved_words(List<String> *p_words) const {
 		"const",
 		"enum",
 		"export",
+		"let",
 		"onready",
 		"static",
 		"var",

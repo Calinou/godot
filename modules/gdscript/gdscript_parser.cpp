@@ -749,7 +749,6 @@ GDScriptParser::Node *GDScriptParser::_parse_expression(Node *p_parent, bool p_s
 					expr = id;
 					bfn = true;
 
-#ifdef DEBUG_ENABLED
 					LocalVarNode *lv = b->variables[identifier];
 					switch (tokenizer->get_token()) {
 						case GDScriptTokenizer::TK_OP_ASSIGN_ADD:
@@ -772,6 +771,10 @@ GDScriptParser::Node *GDScriptParser::_parse_expression(Node *p_parent, bool p_s
 							FALLTHROUGH;
 						}
 						case GDScriptTokenizer::TK_OP_ASSIGN: {
+							if (lv->immutable && lv->assignments >= 1) {
+								_set_error(vformat("Cannot reassign immutable variable \"%s\". If reassigning is required, use \"var\" instead of \"let\".", id->name));
+								return nullptr;
+							}
 							lv->assignments += 1;
 							lv->usages--; // Assignment is not really usage
 						} break;
@@ -779,7 +782,6 @@ GDScriptParser::Node *GDScriptParser::_parse_expression(Node *p_parent, bool p_s
 							lv->usages++;
 						}
 					}
-#endif // DEBUG_ENABLED
 					break;
 				}
 				b = b->parent_block;
@@ -2900,6 +2902,7 @@ void GDScriptParser::_parse_block(BlockNode *p_block, bool p_static) {
 					tokenizer->advance();
 				}
 			} break;
+			case GDScriptTokenizer::TK_PR_LET:
 			case GDScriptTokenizer::TK_PR_VAR: {
 				// Variable declaration and (eventual) initialization.
 
@@ -2932,6 +2935,7 @@ void GDScriptParser::_parse_block(BlockNode *p_block, bool p_static) {
 				LocalVarNode *lv = alloc_node<LocalVarNode>();
 				lv->name = n;
 				lv->line = var_line;
+				lv->immutable = token == GDScriptTokenizer::TK_PR_LET;
 				p_block->statements.push_back(lv);
 
 				Node *assigned = nullptr;
@@ -2962,6 +2966,10 @@ void GDScriptParser::_parse_block(BlockNode *p_block, bool p_static) {
 					lv->assignments++;
 					assigned = subexpr;
 				} else {
+					if (lv->immutable) {
+						_set_error("Expected initializer for immutable local variable declaration (\"let variable = value\").");
+						return;
+					}
 					assigned = _get_default_value_for_type(lv->datatype, var_line);
 				}
 				//must be added later, to avoid self-referencing.
@@ -3300,6 +3308,11 @@ void GDScriptParser::_parse_block(BlockNode *p_block, bool p_static) {
 				LocalVarNode *lv = alloc_node<LocalVarNode>();
 				lv->name = id->name;
 				lv->line = id->line;
+				if (lv->immutable && lv->assignments >= 1) {
+					// FIXME: Doesn't work as expected.
+					_set_error(vformat("Cannot reassign immutable variable \"%s\". If reassigning is required, use \"var\" instead of \"let\".", id->name));
+					return;
+				}
 				lv->assignments++;
 				id->declared_block = cf_for->body;
 				lv->set_datatype(iter_type);
@@ -4833,6 +4846,7 @@ void GDScriptParser::_parse_class(ClassNode *p_class) {
 				rpc_mode = MultiplayerAPI::RPC_MODE_PUPPETSYNC;
 				continue;
 			} break;
+			case GDScriptTokenizer::TK_PR_LET:
 			case GDScriptTokenizer::TK_PR_VAR: {
 				// variable declaration and (eventual) initialization
 
@@ -4857,6 +4871,7 @@ void GDScriptParser::_parse_class(ClassNode *p_class) {
 				member._export.name = member.identifier;
 				member.line = tokenizer->get_token_line();
 				member.usages = 0;
+				member.immutable = token == GDScriptTokenizer::TK_PR_LET;
 				member.rpc_mode = rpc_mode;
 
 				if (current_class->constant_expressions.has(member.identifier)) {
@@ -5039,6 +5054,11 @@ void GDScriptParser::_parse_class(ClassNode *p_class) {
 					member.initial_assignment = op;
 
 				} else {
+					if (member.immutable) {
+						_set_error("Expected initializer for immutable member variable declaration (\"let variable = value\").");
+						return;
+					}
+
 					if (autoexport && !member.data_type.has_type) {
 						_set_error("Type-less export needs a constant expression assigned to infer type.");
 						return;
