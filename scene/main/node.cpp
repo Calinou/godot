@@ -2872,7 +2872,11 @@ String Node::_get_name_num_separator() {
 	return " ";
 }
 
-Node::Node() {
+Node::Node(const String &p_name) {
+	if (p_name != String()) {
+		set_name(p_name);
+	}
+	print_line(vformat("new node: %s", get_name()));
 	orphan_node_count++;
 }
 

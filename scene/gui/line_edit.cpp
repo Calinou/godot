@@ -2295,7 +2295,7 @@ void LineEdit::_ensure_menu() {
 	}
 }
 
-LineEdit::LineEdit() {
+LineEdit::LineEdit(const String &p_placeholder) {
 	text_rid = TS->create_shaped_text();
 	_create_undo_state();
 
@@ -2303,6 +2303,7 @@ LineEdit::LineEdit() {
 	set_focus_mode(FOCUS_ALL);
 	set_default_cursor_shape(CURSOR_IBEAM);
 	set_mouse_filter(MOUSE_FILTER_STOP);
+	set_placeholder(p_placeholder);
 
 	caret_blink_timer = memnew(Timer);
 	add_child(caret_blink_timer, false, INTERNAL_MODE_FRONT);

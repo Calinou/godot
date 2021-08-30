@@ -477,7 +477,7 @@ public:
 	Ref<MultiplayerAPI> get_custom_multiplayer() const;
 	void set_custom_multiplayer(Ref<MultiplayerAPI> p_multiplayer);
 
-	Node();
+	Node(const String &p_name = String());
 	~Node();
 };
 
