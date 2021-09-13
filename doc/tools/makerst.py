@@ -6,8 +6,7 @@ import re
 import xml.etree.ElementTree as ET
 from collections import OrderedDict
 
-# Uncomment to do type checks. I have it commented out so it works below Python 3.5
-# from typing import List, Dict, TextIO, Tuple, Iterable, Optional, DefaultDict, Any, Union
+from typing import List, Dict, TextIO, Tuple, Iterable, Optional, DefaultDict, Any, Union
 
 # http(s)://docs.godotengine.org/<langcode>/<tag>/path/to/page.html(#fragment-tag)
 GODOT_DOCS_PATTERN = re.compile(
@@ -15,17 +14,17 @@ GODOT_DOCS_PATTERN = re.compile(
 )
 
 
-def print_error(error, state):  # type: (str, State) -> None
+def print_error(error: str, state: State) -> None:
     print("ERROR: {}".format(error))
     state.errored = True
 
 
 class TypeName:
-    def __init__(self, type_name, enum=None):  # type: (str, Optional[str]) -> None
+    def __init__(self, type_name: str, enum: Optional[str] = None) -> None:
         self.type_name = type_name
         self.enum = enum
 
-    def to_rst(self, state):  # type: ("State") -> str
+    def to_rst(self, state: State) -> str:
         if self.enum is not None:
             return make_enum(self.enum, state)
         elif self.type_name == "void":
@@ -34,14 +33,21 @@ class TypeName:
             return make_type(self.type_name, state)
 
     @classmethod
-    def from_element(cls, element):  # type: (ET.Element) -> "TypeName"
+    def from_element(cls, element: ET.Element) -> TypeName:
         return cls(element.attrib["type"], element.get("enum"))
 
 
 class PropertyDef:
     def __init__(
-        self, name, type_name, setter, getter, text, default_value, overridden
-    ):  # type: (str, TypeName, Optional[str], Optional[str], Optional[str], Optional[str], Optional[bool]) -> None
+        self,
+        name: TypeName,
+        type_name: Optional[str],
+        setter: Optional[str],
+        getter: Optional[str],
+        text: Optional[str],
+        default_value: Optional[str],
+        overridden: Optional[bool],
+    ) -> None:
         self.name = name
         self.type_name = type_name
         self.setter = setter
@@ -52,14 +58,14 @@ class PropertyDef:
 
 
 class ParameterDef:
-    def __init__(self, name, type_name, default_value):  # type: (str, TypeName, Optional[str]) -> None
+    def __init__(self, name: str, type_name: TypeName, default_value: Optional[str]) -> None:
         self.name = name
         self.type_name = type_name
         self.default_value = default_value
 
 
 class SignalDef:
-    def __init__(self, name, parameters, description):  # type: (str, List[ParameterDef], Optional[str]) -> None
+    def __init__(self, name: str, parameters: List[ParameterDef], description: Optional[str]) -> None:
         self.name = name
         self.parameters = parameters
         self.description = description
@@ -67,8 +73,13 @@ class SignalDef:
 
 class MethodDef:
     def __init__(
-        self, name, return_type, parameters, description, qualifiers
-    ):  # type: (str, TypeName, List[ParameterDef], Optional[str], Optional[str]) -> None
+        self,
+        name: str,
+        return_type: TypeName,
+        parameters: List[ParameterDef],
+        description: Optional[str],
+        qualifiers: Optional[str],
+    ) -> None:
         self.name = name
         self.return_type = return_type
         self.parameters = parameters
@@ -77,22 +88,22 @@ class MethodDef:
 
 
 class ConstantDef:
-    def __init__(self, name, value, text):  # type: (str, str, Optional[str]) -> None
+    def __init__(self, name: str, value: str, text: Optional[str]) -> None:
         self.name = name
         self.value = value
         self.text = text
 
 
 class EnumDef:
-    def __init__(self, name):  # type: (str) -> None
+    def __init__(self, name: str) -> None:
         self.name = name
-        self.values = OrderedDict()  # type: OrderedDict[str, ConstantDef]
+        self.values: OrderedDict[str, ConstantDef] = OrderedDict()
 
 
 class ThemeItemDef:
     def __init__(
-        self, name, type_name, data_name, text, default_value
-    ):  # type: (str, TypeName, str, Optional[str], Optional[str]) -> None
+        self, name: str, type_name: TypeName, data_name: str, text: Optional[str], default_value: Optional[str]
+    ) -> None:
         self.name = name
         self.type_name = type_name
         self.data_name = data_name
@@ -101,31 +112,31 @@ class ThemeItemDef:
 
 
 class ClassDef:
-    def __init__(self, name):  # type: (str) -> None
+    def __init__(self, name: str) -> None:
         self.name = name
-        self.constants = OrderedDict()  # type: OrderedDict[str, ConstantDef]
-        self.enums = OrderedDict()  # type: OrderedDict[str, EnumDef]
-        self.properties = OrderedDict()  # type: OrderedDict[str, PropertyDef]
-        self.methods = OrderedDict()  # type: OrderedDict[str, List[MethodDef]]
-        self.signals = OrderedDict()  # type: OrderedDict[str, SignalDef]
-        self.theme_items = OrderedDict()  # type: OrderedDict[str, ThemeItemDef]
-        self.inherits = None  # type: Optional[str]
-        self.brief_description = None  # type: Optional[str]
-        self.description = None  # type: Optional[str]
-        self.tutorials = []  # type: List[Tuple[str, str]]
+        self.constants: OrderedDict[str, ConstantDef] = OrderedDict()
+        self.enums: OrderedDict[str, EnumDef] = OrderedDict()
+        self.properties: OrderedDict[str, PropertyDef] = OrderedDict()
+        self.methods: OrderedDict[str, MethodDef] = OrderedDict()
+        self.signals: OrderedDict[str, SignalDef] = OrderedDict()
+        self.theme_items: OrderedDict[str, ThemeItemDef] = OrderedDict()
+        self.inherits: Optional[str] = None
+        self.brief_description: Optional[str] = None
+        self.description: Optional[str] = None
+        self.tutorials: List[Tuple[str, str]] = []
 
         # Used to match the class with XML source for output filtering purposes.
-        self.filepath = ""  # type: str
+        self.filepath = ""
 
 
 class State:
-    def __init__(self):  # type: () -> None
+    def __init__(self) -> None:
         # Has any error been reported?
         self.errored = False
         self.classes = OrderedDict()  # type: OrderedDict[str, ClassDef]
         self.current_class = ""  # type: str
 
-    def parse_class(self, class_root, filepath):  # type: (ET.Element, str) -> None
+    def parse_class(self, class_root: ET.Element, filepath: str) -> None:
         class_name = class_root.attrib["name"]
 
         class_def = ClassDef(class_name)
@@ -280,13 +291,13 @@ class State:
                 if link.text is not None:
                     class_def.tutorials.append((link.text.strip(), link.get("title", "")))
 
-    def sort_classes(self):  # type: () -> None
+    def sort_classes(self) -> None:
         self.classes = OrderedDict(sorted(self.classes.items(), key=lambda t: t[0]))
 
 
-def parse_arguments(root):  # type: (ET.Element) -> List[ParameterDef]
+def parse_arguments(root: ET.Element) -> List[ParameterDef]:
     param_elements = root.findall("argument")
-    params = [None] * len(param_elements)  # type: Any
+    params: Any = [None] * len(param_elements)
     for param_element in param_elements:
         param_name = param_element.attrib["name"]
         index = int(param_element.attrib["index"])
@@ -295,12 +306,12 @@ def parse_arguments(root):  # type: (ET.Element) -> List[ParameterDef]
 
         params[index] = ParameterDef(param_name, type_name, default)
 
-    cast = params  # type: List[ParameterDef]
+    cast: List[ParameterDef] = params
 
     return cast
 
 
-def main():  # type: () -> None
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("path", nargs="+", help="A path to an XML file or a directory containing XML files to parse.")
     parser.add_argument("--filter", default="", help="The filepath pattern for XML files to filter.")
@@ -315,7 +326,7 @@ def main():  # type: () -> None
 
     print("Checking for errors in the XML class reference...")
 
-    file_list = []  # type: List[str]
+    file_list: List[str] = []
 
     for path in args.path:
         # Cut off trailing slashes so os.path.basename doesn't choke.
@@ -339,7 +350,7 @@ def main():  # type: () -> None
 
             file_list.append(path)
 
-    classes = {}  # type: Dict[str, ET.Element]
+    classes: Dict[str, ET.Element] = {}
     state = State()
 
     for cur_file in file_list:
@@ -389,7 +400,7 @@ def main():  # type: () -> None
         exit(1)
 
 
-def make_rst_class(class_def, state, dry_run, output_dir):  # type: (ClassDef, State, bool, str) -> None
+def make_rst_class(class_def: ClassDef, state: State, dry_run: bool, output_dir: str) -> None:
     class_name = class_def.name
 
     if dry_run:
@@ -397,7 +408,7 @@ def make_rst_class(class_def, state, dry_run, output_dir):  # type: (ClassDef, S
     else:
         f = open(os.path.join(output_dir, "class_" + class_name.lower() + ".rst"), "w", encoding="utf-8")
 
-    # Warn contributors not to edit this file directly
+    # Warn contributors not to edit this file directly.
     f.write(":github_url: hide\n\n")
     f.write(".. Generated automatically by doc/tools/makerst.py in Godot's source tree.\n")
     f.write(".. DO NOT EDIT THIS FILE, but the " + class_name + ".xml source instead.\n")
@@ -628,7 +639,7 @@ def make_rst_class(class_def, state, dry_run, output_dir):  # type: (ClassDef, S
     f.write(make_footer())
 
 
-def escape_rst(text, until_pos=-1):  # type: (str) -> str
+def escape_rst(text: str, until_pos: int = -1) -> str:
     # Escape \ character, otherwise it ends up as an escape character in rst
     pos = 0
     while True:
@@ -662,7 +673,7 @@ def escape_rst(text, until_pos=-1):  # type: (str) -> str
     return text
 
 
-def format_codeblock(code_type, post_text, indent_level, state):  # types: str, str, int, state
+def format_codeblock(code_type: str, post_text: str, indent_level: int, state: State) -> Optional[List[Any]]:
     end_pos = post_text.find("[/" + code_type + "]")
     if end_pos == -1:
         print_error("[" + code_type + "] without a closing tag, file: {}".format(state.current_class), state)
@@ -699,7 +710,7 @@ def format_codeblock(code_type, post_text, indent_level, state):  # types: str, 
     return ["\n[" + code_type + "]" + code_text + post_text, len("\n[" + code_type + "]" + code_text)]
 
 
-def rstize_text(text, state):  # type: (str, State) -> str
+def rstize_text(text: str, state: State) -> str:
     # Linebreak + tabs in the XML should become two line breaks unless in a "codeblock"
     pos = 0
     while True:
@@ -975,7 +986,7 @@ def rstize_text(text, state):  # type: (str, State) -> str
     return text
 
 
-def format_table(f, data, remove_empty_columns=False):  # type: (TextIO, Iterable[Tuple[str, ...]]) -> None
+def format_table(f: TextIO, data: Iterable[Tuple[str, ...]], remove_empty_columns: bool =False) -> None:
     if len(data) == 0:
         return
 
@@ -1006,19 +1017,20 @@ def format_table(f, data, remove_empty_columns=False):  # type: (TextIO, Iterabl
     f.write("\n")
 
 
-def make_type(klass, state):  # type: (str, State) -> str
-    if klass.find("*") != -1:  # Pointer, ignore
-        return klass
-    link_type = klass
+# `class` is a reserved keyword, so use `kind` instead.
+def make_type(kind: str, state: State) -> str:
+    if kind.find("*") != -1:  # Pointer, ignore
+        return kind
+    link_type = kind
     if link_type.endswith("[]"):  # Typed array, strip [] to link to contained type.
         link_type = link_type[:-2]
     if link_type in state.classes:
-        return ":ref:`{}<class_{}>`".format(klass, link_type)
-    print_error("Unresolved type '{}', file: {}".format(klass, state.current_class), state)
-    return klass
+        return ":ref:`{}<class_{}>`".format(kind, link_type)
+    print_error("Unresolved type '{}', file: {}".format(kind, state.current_class), state)
+    return kind
 
 
-def make_enum(t, state):  # type: (str, State) -> str
+def make_enum(t: str, state: State) -> str:
     p = t.find(".")
     if p >= 0:
         c = t[0:p]
@@ -1044,8 +1056,8 @@ def make_enum(t, state):  # type: (str, State) -> str
 
 
 def make_method_signature(
-    class_def, method_def, make_ref, state
-):  # type: (ClassDef, Union[MethodDef, SignalDef], bool, State) -> Tuple[str, str]
+    class_def: ClassDef, method_def: Union[MethodDef, SignalDef], make_ref: bool, state: State
+) -> Tuple[str, str]:
     ret_type = " "
 
     ref_type = "signal"
@@ -1089,11 +1101,11 @@ def make_method_signature(
     return ret_type, out
 
 
-def make_heading(title, underline):  # type: (str, str) -> str
+def make_heading(title: str, underline: str) -> str:
     return title + "\n" + (underline * len(title)) + "\n\n"
 
 
-def make_footer():  # type: () -> str
+def make_footer() -> str:
     # Generate reusable abbreviation substitutions.
     # This way, we avoid bloating the generated rST with duplicate abbreviations.
     # fmt: off
@@ -1107,7 +1119,7 @@ def make_footer():  # type: () -> str
     # fmt: on
 
 
-def make_link(url, title):  # type: (str, str) -> str
+def make_link(url: str, title: str) -> str:
     match = GODOT_DOCS_PATTERN.search(url)
     if match:
         groups = match.groups()
@@ -1115,20 +1127,17 @@ def make_link(url, title):  # type: (str, str) -> str
             # Doc reference with fragment identifier: emit direct link to section with reference to page, for example:
             # `#calling-javascript-from-script in Exporting For Web`
             return "`" + groups[1] + " <../" + groups[0] + ".html" + groups[1] + ">`_ in :doc:`../" + groups[0] + "`"
-            # Commented out alternative: Instead just emit:
-            # `Subsection in Exporting For Web`
-            # return "`Subsection <../" + groups[0] + ".html" + groups[1] + ">`__ in :doc:`../" + groups[0] + "`"
-        elif match.lastindex == 1:
-            # Doc reference, for example:
-            # `Math`
-            return ":doc:`../" + groups[0] + "`"
-    else:
-        # External link, for example:
-        # `http://enet.bespin.org/usergroup0.html`
-        if title != "":
-            return "`" + title + " <" + url + ">`_"
-        else:
-            return "`" + url + " <" + url + ">`_"
+
+        # Doc reference, for example:
+        # `Math`
+        return ":doc:`../" + groups[0] + "`"
+
+    # External link, for example:
+    # `http://enet.bespin.org/usergroup0.html`
+    if title != "":
+        return "`" + title + " <" + url + ">`_"
+
+    return "`" + url + " <" + url + ">`_"
 
 
 if __name__ == "__main__":
