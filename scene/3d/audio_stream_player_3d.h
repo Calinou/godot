@@ -118,7 +118,7 @@ private:
 
 	DopplerTracking doppler_tracking = DOPPLER_TRACKING_DISABLED;
 
-	OutOfRangeMode out_of_range_mode = OUT_OF_RANGE_MIX;
+	OutOfRangeMode out_of_range_mode = OUT_OF_RANGE_PAUSE;
 
 	float _get_attenuation_db(float p_distance) const;
 
