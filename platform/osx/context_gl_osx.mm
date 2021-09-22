@@ -30,7 +30,7 @@
 
 #include "context_gl_osx.h"
 
-#if defined(OPENGL_ENABLED) || defined(GLES_ENABLED)
+#if defined(OPENGL_ENABLED)
 
 void ContextGL_OSX::release_current() {
 	[NSOpenGLContext clearCurrentContext];

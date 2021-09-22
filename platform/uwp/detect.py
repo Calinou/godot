@@ -158,7 +158,6 @@ def configure(env):
 
     env.Prepend(CPPPATH=["#platform/uwp", "#drivers/windows"])
     env.Append(CPPDEFINES=["UWP_ENABLED", "WINDOWS_ENABLED", "TYPED_METHOD_BIND"])
-    env.Append(CPPDEFINES=["GLES_ENABLED", "GL_GLEXT_PROTOTYPES", "EGL_EGLEXT_PROTOTYPES", "ANGLE_ENABLED"])
     winver = "0x0602"  # Windows 8 is the minimum target for UWP build
     env.Append(CPPDEFINES=[("WINVER", winver), ("_WIN32_WINNT", winver), "WIN32"])
 

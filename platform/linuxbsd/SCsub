@@ -14,7 +14,6 @@ common_linuxbsd = [
 
 if "x11" in env and env["x11"]:
     common_linuxbsd += [
-        "context_gl_x11.cpp",
         "detect_prime_x11.cpp",
         "display_server_x11.cpp",
         "key_mapping_x11.cpp",
@@ -22,6 +21,9 @@ if "x11" in env and env["x11"]:
 
 if "vulkan" in env and env["vulkan"]:
     common_linuxbsd.append("vulkan_context_x11.cpp")
+
+if "opengl" in env and env["opengl"]:
+    common_linuxbsd.append("gl_manager_x11.cpp")
 
 if "udev" in env and env["udev"]:
     common_linuxbsd.append("libudev-so_wrap.c")

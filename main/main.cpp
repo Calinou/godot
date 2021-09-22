@@ -128,6 +128,7 @@ static bool _start_success = false;
 
 String tablet_driver = "";
 String text_driver = "";
+String rendering_driver = "";
 
 static int text_driver_idx = -1;
 static int display_driver_idx = -1;
@@ -727,6 +728,48 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 				OS::get_singleton()->print("Missing video driver argument, aborting.\n");
 				goto error;
 			}
+		} else if (I->get() == "--rendering-driver") {
+			if (I->next()) {
+				rendering_driver = I->next()->get();
+
+				// as the rendering drivers available may depend on the display driver selected,
+				// we can't do an exhaustive check here, but we can look through all the options in
+				// all the display drivers for a match
+
+				bool found = false;
+				for (int i = 0; i < DisplayServer::get_create_function_count(); i++) {
+					Vector<String> r_drivers = DisplayServer::get_create_function_rendering_drivers(i);
+
+					for (int d = 0; d < r_drivers.size(); d++) {
+						if (rendering_driver == r_drivers[d]) {
+							found = true;
+							break;
+						}
+					}
+				}
+
+				if (!found) {
+					OS::get_singleton()->print("Unknown rendering driver '%s', aborting.\nValid options are ",
+							rendering_driver.utf8().get_data());
+
+					for (int i = 0; i < DisplayServer::get_create_function_count(); i++) {
+						Vector<String> r_drivers = DisplayServer::get_create_function_rendering_drivers(i);
+
+						for (int d = 0; d < r_drivers.size(); d++) {
+							OS::get_singleton()->print("'%s', ", r_drivers[d].utf8().get_data());
+						}
+					}
+
+					OS::get_singleton()->print(".\n");
+
+					goto error;
+				}
+
+				N = I->next()->next();
+			} else {
+				OS::get_singleton()->print("Missing rendering driver argument, aborting.\n");
+				goto error;
+			}
 		} else if (I->get() == "-f" || I->get() == "--fullscreen") { // force fullscreen
 
 			init_fullscreen = true;
@@ -1222,7 +1265,7 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 	ProjectSettings::get_singleton()->set_custom_property_info("rendering/driver/driver_name",
 			PropertyInfo(Variant::STRING,
 					"rendering/driver/driver_name",
-					PROPERTY_HINT_ENUM, "Vulkan"));
+					PROPERTY_HINT_ENUM, "Vulkan (More Features),OpenGL (More Compatible)"));
 	if (display_driver == "") {
 		display_driver = GLOBAL_GET("rendering/driver/driver_name");
 	}

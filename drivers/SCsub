@@ -26,6 +26,10 @@ SConscript("winmidi/SCsub")
 if env["vulkan"]:
     SConscript("vulkan/SCsub")
 
+if env["opengl"]:
+    SConscript("gles3/SCsub")
+    SConscript("gl_context/SCsub")
+
 # Core dependencies
 SConscript("png/SCsub")
 SConscript("spirv-reflect/SCsub")

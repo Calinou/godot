@@ -47,7 +47,7 @@
 #include "servers/rendering_server.h"
 
 #if defined(OPENGL_ENABLED)
-#include "context_gl_x11.h"
+#include "gl_manager_x11.h"
 #endif
 
 #if defined(VULKAN_ENABLED)
@@ -99,9 +99,6 @@ class DisplayServerX11 : public DisplayServer {
 	Atom requested;
 	int xdnd_version;
 
-#if defined(OPENGL_ENABLED)
-	ContextGL_X11 *context_gles2;
-#endif
 #if defined(VULKAN_ENABLED)
 	VulkanContextX11 *context_vulkan;
 	RenderingDeviceVulkan *rendering_device_vulkan;

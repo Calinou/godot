@@ -39,8 +39,12 @@
 #include "main/main.h"
 #include "scene/resources/texture.h"
 
-#if defined(VULKAN_ENABLED)
+#ifdef VULKAN_ENABLED
 #include "servers/rendering/renderer_rd/renderer_compositor_rd.h"
+#endif
+
+#ifdef GLES_X11_ENABLED
+#include "drivers/gles3/rasterizer_gles3.h"
 #endif
 
 #include <limits.h>
@@ -837,6 +841,12 @@ void DisplayServerX11::delete_sub_window(WindowID p_id) {
 		context_vulkan->window_destroy(p_id);
 	}
 #endif
+#ifdef GLES_X11_ENABLED
+	if (gl_manager) {
+		gl_manager->window_destroy(p_id);
+	}
+#endif
+
 	XUnmapWindow(x11_display, wd.x11_window);
 	XDestroyWindow(x11_display, wd.x11_window);
 	if (wd.xic) {
@@ -2563,9 +2573,14 @@ void DisplayServerX11::_window_changed(XEvent *event) {
 	wd.position = new_rect.position;
 	wd.size = new_rect.size;
 
-#if defined(VULKAN_ENABLED)
+#ifdef VULKAN_ENABLED
 	if (rendering_driver == "vulkan") {
 		context_vulkan->window_resize(window_id, wd.size.width, wd.size.height);
+	}
+#endif
+#ifdef GLES_X11_ENABLED
+	if (gl_manager) {
+		gl_manager->window_resize(window_id, wd.size.width, wd.size.height);
 	}
 #endif
 
@@ -3437,12 +3452,23 @@ void DisplayServerX11::process_events() {
 }
 
 void DisplayServerX11::release_rendering_thread() {
+#ifdef GLES_X11_ENABLED
+//gl_manager->release_current();
+#endif
 }
 
 void DisplayServerX11::make_rendering_thread() {
+#ifdef GLES_X11_ENABLED
+//gl_manager->make_current();
+#endif
 }
 
 void DisplayServerX11::swap_buffers() {
+#ifdef GLES_X11_ENABLED
+	if (gl_manager) {
+		gl_manager->swap_buffers();
+	}
+#endif
 }
 
 void DisplayServerX11::_update_context(WindowData &wd) {
@@ -3603,8 +3629,8 @@ Vector<String> DisplayServerX11::get_rendering_drivers_func() {
 #ifdef VULKAN_ENABLED
 	drivers.push_back("vulkan");
 #endif
-#ifdef OPENGL_ENABLED
-	drivers.push_back("opengl");
+#ifdef GLES_X11_ENABLED
+	drivers.push_back("gles3");
 #endif
 
 	return drivers;
@@ -3783,10 +3809,17 @@ DisplayServerX11::WindowID DisplayServerX11::_create_window(WindowMode p_mode, V
 
 		_update_size_hints(id);
 
-#if defined(VULKAN_ENABLED)
+#ifdef VULKAN_ENABLED
 		if (context_vulkan) {
 			Error err = context_vulkan->window_create(id, p_vsync_mode, wd.x11_window, x11_display, p_rect.size.width, p_rect.size.height);
 			ERR_FAIL_COND_V_MSG(err != OK, INVALID_WINDOW_ID, "Can't create a Vulkan window");
+		}
+#endif
+#ifdef GLES_X11_ENABLED
+		print_line("rendering_driver " + rendering_driver);
+		if (gl_manager) {
+			Error err = gl_manager->window_create(id, wd.x11_window, x11_display, p_rect.size.width, p_rect.size.height);
+			ERR_FAIL_COND_V_MSG(err != OK, INVALID_WINDOW_ID, "Can't create an OpenGL ES 3.0 window");
 		}
 #endif
 
@@ -3970,15 +4003,12 @@ DisplayServerX11::DisplayServerX11(const String &p_rendering_driver, WindowMode 
 	xdnd_selection = XInternAtom(x11_display, "XdndSelection", False);
 
 	//!!!!!!!!!!!!!!!!!!!!!!!!!!
-	//TODO - do Vulkan and GLES2 support checks, driver selection and fallback
+	//TODO - do Vulkan and GLES3 support checks, driver selection and fallback
 	rendering_driver = p_rendering_driver;
 
-#ifndef _MSC_VER
-#warning Forcing vulkan rendering driver because OpenGL not implemented yet
-#endif
-	rendering_driver = "vulkan";
+	// Initialize context and rendering device.
 
-#if defined(VULKAN_ENABLED)
+#ifdef VULKAN_ENABLED
 	if (rendering_driver == "vulkan") {
 		context_vulkan = memnew(VulkanContextX11);
 		if (context_vulkan->initialize() != OK) {
@@ -3989,9 +4019,9 @@ DisplayServerX11::DisplayServerX11(const String &p_rendering_driver, WindowMode 
 		}
 	}
 #endif
-	// Init context and rendering device
-#if defined(OPENGL_ENABLED)
-	if (rendering_driver == "opengl_es") {
+#ifdef GLES_X11_ENABLED
+	print_line("rendering_driver " + rendering_driver);
+	if (rendering_driver == "gles3") {
 		if (getenv("DRI_PRIME") == nullptr) {
 			int use_prime = -1;
 
@@ -4005,10 +4035,7 @@ DisplayServerX11::DisplayServerX11(const String &p_rendering_driver, WindowMode 
 				use_prime = 0;
 			}
 
-			// Some tools use fake libGL libraries and have them override the real one using
-			// LD_LIBRARY_PATH, so we skip them. *But* Steam also sets LD_LIBRARY_PATH for its
-			// runtime and includes system `/lib` and `/lib64`... so ignore Steam.
-			if (use_prime == -1 && getenv("LD_LIBRARY_PATH") && !getenv("STEAM_RUNTIME_LIBRARY_PATH")) {
+			if (getenv("LD_LIBRARY_PATH")) {
 				String ld_library_path(getenv("LD_LIBRARY_PATH"));
 				Vector<String> libraries = ld_library_path.split(":");
 
@@ -4033,25 +4060,29 @@ DisplayServerX11::DisplayServerX11(const String &p_rendering_driver, WindowMode 
 			}
 		}
 
-		ContextGL_X11::ContextType opengl_api_type = ContextGL_X11::GLES_2_0_COMPATIBLE;
+		GLManager_X11::ContextType opengl_api_type = GLManager_X11::GLES_3_0_COMPATIBLE;
 
-		context_gles2 = memnew(ContextGL_X11(x11_display, x11_window, current_videomode, opengl_api_type));
+		gl_manager = memnew(GLManager_X11(p_resolution, opengl_api_type));
 
-		if (context_gles2->initialize() != OK) {
-			memdelete(context_gles2);
-			context_gles2 = nullptr;
-			ERR_FAIL_V(ERR_UNAVAILABLE);
+		if (gl_manager->initialize() != OK) {
+			memdelete(gl_manager);
+			gl_manager = nullptr;
+			r_error = ERR_UNAVAILABLE;
+			return;
 		}
+		driver_found = true;
 
-		context_gles2->set_use_vsync(current_videomode.use_vsync);
+		//gl_manager->set_use_vsync(current_videomode.use_vsync);
 
-		if (RasterizerGLES2::is_viable() == OK) {
-			RasterizerGLES2::register_config();
-			RasterizerGLES2::make_current();
+		if (true) {
+			//		if (RasterizerGLES3::is_viable() == OK) {
+			//		RasterizerGLES3::register_config();
+			RasterizerGLES3::make_current();
 		} else {
-			memdelete(context_gles2);
-			context_gles2 = nullptr;
-			ERR_FAIL_V(ERR_UNAVAILABLE);
+			memdelete(gl_manager);
+			gl_manager = nullptr;
+			r_error = ERR_UNAVAILABLE;
+			return;
 		}
 	}
 #endif
@@ -4274,6 +4305,11 @@ DisplayServerX11::~DisplayServerX11() {
 			context_vulkan->window_destroy(E->key());
 		}
 #endif
+#ifdef GLES_X11_ENABLED
+		if (gl_manager) {
+			gl_manager->window_destroy(p_id);
+		}
+#endif
 
 		WindowData &wd = E->get();
 		if (wd.xic) {
@@ -4285,7 +4321,7 @@ DisplayServerX11::~DisplayServerX11() {
 	}
 
 	//destroy drivers
-#if defined(VULKAN_ENABLED)
+#ifdef VULKAN_ENABLED
 	if (rendering_driver == "vulkan") {
 		if (rendering_device_vulkan) {
 			rendering_device_vulkan->finalize();
@@ -4295,6 +4331,12 @@ DisplayServerX11::~DisplayServerX11() {
 		if (context_vulkan) {
 			memdelete(context_vulkan);
 		}
+	}
+#endif
+#ifdef GLES_X11_ENABLED
+	if (gl_manager) {
+		memdelete(gl_manager);
+		gl_manager = nullptr;
 	}
 #endif
 
@@ -4329,4 +4371,4 @@ void DisplayServerX11::register_x11_driver() {
 	register_create_function("x11", create_func, get_rendering_drivers_func);
 }
 
-#endif // X11 enabled
+#endif // X11_ENABLED

@@ -156,6 +156,17 @@ Files extracted from upstream source:
 - `docs/{FTL.TXT,LICENSE.TXT}`
 
 
+## glad
+
+- Upstream: https://github.com/Dav1dde/glad
+- Version: 0.1.34 (a5ca31c88a4cc5847ea012629aff3690f261c7c4, 2020)
+- License: MIT
+
+The files we package are automatically generated.
+See the header of glad.c for instructions on how to generate them for
+the GLES version Godot targets.
+
+
 ## glslang
 
 - Upstream: https://github.com/KhronosGroup/glslang
@@ -757,4 +768,3 @@ Files extracted from upstream source:
 
 - lib/{common/,compress/,decompress/,zstd.h}
 - LICENSE
-

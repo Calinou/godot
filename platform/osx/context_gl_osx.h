@@ -31,7 +31,7 @@
 #ifndef CONTEXT_GL_OSX_H
 #define CONTEXT_GL_OSX_H
 
-#if defined(OPENGL_ENABLED) || defined(GLES_ENABLED)
+#if defined(OPENGL_ENABLED)
 
 #include "core/error/error_list.h"
 #include "core/os/os.h"

@@ -28,10 +28,9 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifdef X11_ENABLED
-#if defined(OPENGL_ENABLED)
+#if defined(X11_ENABLED) && defined(GLES_X11_ENABLED)
 
-#include "detect_prime.h"
+#include "detect_prime_x11.h"
 
 #include "core/string/print_string.h"
 #include "core/string/ustring.h"
@@ -236,5 +235,4 @@ int detect_prime() {
 	return preferred;
 }
 
-#endif
 #endif

@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  detect_prime_x11.h                                                   */
+/*  rasterizer_platforms.h                                               */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,11 +28,44 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef DETECT_PRIME_X11_H
-#define DETECT_PRIME_X11_H
+#ifdef RASTERIZER_PLATFORMS_H
 
-#if defined(X11_ENABLED) && defined(GLES_X11_ENABLED)
-int detect_prime();
+/////////////////////////////////////////////////////
+// Override for autocompletion. ONLY FOR DEVELOPMENT
+//#ifndef X11_ENABLED
+//#define X11_ENABLED
+//#endif
+//#define GLES3_BACKEND_ENABLED
+/////////////////////////////////////////////////////
+
+#if defined(OPENGL_ENABLED) || defined(GLES_ENABLED)
+
+// Platform-specific defines to compile in / out GLES support.
+// These can later be made from SCons.
+#ifdef X11_ENABLED
+#define GLES_X11_ENABLED
 #endif
 
-#endif // DETECT_PRIME_X11_H
+#ifdef WINDOWS_ENABLED
+//#define GLES_WINDOWS_ENABLED
+#endif
+
+#ifdef IPHONE_ENABLED
+//#define GLES_IPHONE_ENABLED
+#endif
+
+#ifdef OSX_ENABLED
+//#define GLES_OSX_ENABLED
+#endif
+
+#ifdef ANDROID_ENABLED
+//#define GLES_ANDROID_ENABLED
+#endif
+
+#if defined(GLES_X11_ENABLED) || defined(GLES_WINDOW_ENABLED) || defined(GLES_IPHONE_ENABLED) || defined(GLES_OSX_ENABLED) || defined(GLES_ANDROID_ENABLED)
+#define GLES3_BACKEND_ENABLED
+#endif
+
+#endif // defined(OPENGL_ENABLED) || defined(GLES_ENABLED)
+
+#endif // RASTERIZER_PLATFORMS_H

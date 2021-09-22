@@ -283,7 +283,7 @@ def configure(env):
             " -fno-strict-aliasing".split()
         )
     )
-    env.Append(CPPDEFINES=["NO_STATVFS", "GLES_ENABLED"])
+    env.Append(CPPDEFINES=["NO_STATVFS"])
 
     if get_platform(env["ndk_platform"]) >= 24:
         env.Append(CPPDEFINES=[("_FILE_OFFSET_BITS", 64)])
