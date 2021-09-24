@@ -645,17 +645,17 @@
 		<constant name="FLAG_MAX" value="20" enum="Flags">
 			Represents the size of the [enum Flags] enum.
 		</constant>
-		<constant name="DIFFUSE_BURLEY" value="0" enum="DiffuseMode">
-			Default diffuse scattering algorithm.
+		<constant name="DIFFUSE_LAMBERT" value="0" enum="DiffuseMode">
+			Default diffuse scattering algorithm that ignores roughness. Lambert isn't as physically accurate as [constant DIFFUSE_BURLEY], but it's often close in practice and is faster.
 		</constant>
-		<constant name="DIFFUSE_LAMBERT" value="1" enum="DiffuseMode">
-			Diffuse scattering ignores roughness.
+		<constant name="DIFFUSE_LAMBERT_WRAP" value="1" enum="DiffuseMode">
+			Extends Lambert to cover more than 90 degrees when roughness increases. This can be used to provide fake subsurface scattering at a low performance cost. This makes Lambert Wrap useful for materials such as skin and marble.
 		</constant>
-		<constant name="DIFFUSE_LAMBERT_WRAP" value="2" enum="DiffuseMode">
-			Extends Lambert to cover more than 90 degrees when roughness increases.
+		<constant name="DIFFUSE_BURLEY" value="2" enum="DiffuseMode">
+			Diffuse scattering algorithm that takes roughness into account. This is the most accurate diffuse mode, but also the slowest.
 		</constant>
 		<constant name="DIFFUSE_TOON" value="3" enum="DiffuseMode">
-			Uses a hard cut for lighting, with smoothing affected by roughness.
+			Uses a hard cut for lighting, with smoothing affected by roughness. Works best with [member specular_mode] set to [constant SPECULAR_TOON] or [constant SPECULAR_DISABLED].
 		</constant>
 		<constant name="SPECULAR_SCHLICK_GGX" value="0" enum="SpecularMode">
 			Default specular blob.
@@ -667,7 +667,7 @@
 			Older specular algorithm, included for compatibility.
 		</constant>
 		<constant name="SPECULAR_TOON" value="3" enum="SpecularMode">
-			Toon blob which changes size based on roughness.
+			Toon blob which changes size based on roughness. Works best with [member diffuse_mode] set to [constant DIFFUSE_TOON].
 		</constant>
 		<constant name="SPECULAR_DISABLED" value="4" enum="SpecularMode">
 			No specular blob.

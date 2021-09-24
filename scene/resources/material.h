@@ -242,9 +242,9 @@ public:
 	};
 
 	enum DiffuseMode {
-		DIFFUSE_BURLEY,
 		DIFFUSE_LAMBERT,
 		DIFFUSE_LAMBERT_WRAP,
+		DIFFUSE_BURLEY,
 		DIFFUSE_TOON,
 		DIFFUSE_MAX
 	};
@@ -508,7 +508,7 @@ private:
 	CullMode cull_mode = CULL_BACK;
 	bool flags[FLAG_MAX] = {};
 	SpecularMode specular_mode = SPECULAR_SCHLICK_GGX;
-	DiffuseMode diffuse_mode = DIFFUSE_BURLEY;
+	DiffuseMode diffuse_mode = DIFFUSE_LAMBERT;
 	BillboardMode billboard_mode;
 	EmissionOperator emission_op = EMISSION_OP_ADD;
 

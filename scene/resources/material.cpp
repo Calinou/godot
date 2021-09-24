@@ -526,14 +526,14 @@ void BaseMaterial3D::_update_shader() {
 			break; // Internal value, skip.
 	}
 	switch (diffuse_mode) {
-		case DIFFUSE_BURLEY:
-			code += ",diffuse_burley";
-			break;
 		case DIFFUSE_LAMBERT:
 			code += ",diffuse_lambert";
 			break;
 		case DIFFUSE_LAMBERT_WRAP:
 			code += ",diffuse_lambert_wrap";
+			break;
+		case DIFFUSE_BURLEY:
+			code += ",diffuse_burley";
 			break;
 		case DIFFUSE_TOON:
 			code += ",diffuse_toon";
@@ -2436,7 +2436,7 @@ void BaseMaterial3D::_bind_methods() {
 
 	ADD_GROUP("Shading", "");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "shading_mode", PROPERTY_HINT_ENUM, "Unshaded,Per-Pixel,Per-Vertex"), "set_shading_mode", "get_shading_mode");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "diffuse_mode", PROPERTY_HINT_ENUM, "Burley,Lambert,Lambert Wrap,Toon"), "set_diffuse_mode", "get_diffuse_mode");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "diffuse_mode", PROPERTY_HINT_ENUM, "Lambert,Lambert Wrap,Burley (Slower),Toon"), "set_diffuse_mode", "get_diffuse_mode");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "specular_mode", PROPERTY_HINT_ENUM, "SchlickGGX,Blinn,Phong,Toon,Disabled"), "set_specular_mode", "get_specular_mode");
 	ADD_PROPERTYI(PropertyInfo(Variant::BOOL, "disable_ambient_light"), "set_flag", "get_flag", FLAG_DISABLE_AMBIENT_LIGHT);
 
@@ -2686,9 +2686,9 @@ void BaseMaterial3D::_bind_methods() {
 	BIND_ENUM_CONSTANT(FLAG_PARTICLE_TRAILS_MODE);
 	BIND_ENUM_CONSTANT(FLAG_MAX);
 
-	BIND_ENUM_CONSTANT(DIFFUSE_BURLEY);
 	BIND_ENUM_CONSTANT(DIFFUSE_LAMBERT);
 	BIND_ENUM_CONSTANT(DIFFUSE_LAMBERT_WRAP);
+	BIND_ENUM_CONSTANT(DIFFUSE_BURLEY);
 	BIND_ENUM_CONSTANT(DIFFUSE_TOON);
 
 	BIND_ENUM_CONSTANT(SPECULAR_SCHLICK_GGX);

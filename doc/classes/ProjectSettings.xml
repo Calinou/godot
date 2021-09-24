@@ -1673,7 +1673,7 @@
 			Lower-end override for [member rendering/shading/overrides/force_blinn_over_ggx] on mobile devices, due to performance concerns or driver support.
 		</member>
 		<member name="rendering/shading/overrides/force_lambert_over_burley" type="bool" setter="" getter="" default="false">
-			If [code]true[/code], uses faster but lower-quality Lambert material lighting model instead of Burley.
+			If [code]true[/code], uses faster but less realistic Lambert material lighting model instead of Burley.
 		</member>
 		<member name="rendering/shading/overrides/force_lambert_over_burley.mobile" type="bool" setter="" getter="" default="true">
 			Lower-end override for [member rendering/shading/overrides/force_lambert_over_burley] on mobile devices, due to performance concerns or driver support.
