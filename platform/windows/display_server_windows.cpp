@@ -38,7 +38,7 @@
 
 #include <avrt.h>
 
-#if defined(GLES_WINDOWS_ENABLED)
+#if defined(OPENGL_WINDOWS_ENABLED)
 #include "drivers/opengl/rasterizer_opengl.h"
 #endif
 
@@ -539,7 +539,7 @@ void DisplayServerWindows::delete_sub_window(WindowID p_window) {
 		context_vulkan->window_destroy(p_window);
 	}
 #endif
-#ifdef GLES_WINDOWS_ENABLED
+#ifdef OPENGL_WINDOWS_ENABLED
 	if (rendering_driver == "opengl") {
 		gl_manager->window_destroy(p_window);
 	}
@@ -554,7 +554,7 @@ void DisplayServerWindows::delete_sub_window(WindowID p_window) {
 }
 
 void DisplayServerWindows::gl_window_make_current(DisplayServer::WindowID p_window_id) {
-#if defined(GLES_WINDOWS_ENABLED)
+#if defined(OPENGL_WINDOWS_ENABLED)
 	gl_manager->window_make_current(p_window_id);
 #endif
 }
@@ -829,7 +829,7 @@ void DisplayServerWindows::window_set_size(const Size2i p_size, WindowID p_windo
 		context_vulkan->window_resize(p_window, w, h);
 	}
 #endif
-#if defined(GLES_WINDOWS_ENABLED)
+#if defined(OPENGL_WINDOWS_ENABLED)
 	if (rendering_driver == "opengl") {
 		gl_manager->window_resize(p_window, w, h);
 	}
@@ -1577,7 +1577,7 @@ void DisplayServerWindows::make_rendering_thread() {
 }
 
 void DisplayServerWindows::swap_buffers() {
-#if defined(GLES_WINDOWS_ENABLED)
+#if defined(OPENGL_WINDOWS_ENABLED)
 	gl_manager->swap_buffers();
 #endif
 }
@@ -3075,7 +3075,7 @@ DisplayServer::WindowID DisplayServerWindows::_create_window(WindowMode p_mode, 
 		}
 #endif
 
-#ifdef GLES_WINDOWS_ENABLED
+#ifdef OPENGL_WINDOWS_ENABLED
 		print_line("rendering_driver " + rendering_driver);
 		if (rendering_driver == "opengl") {
 			Error err = gl_manager->window_create(id, wd.hWnd, hInstance, WindowRect.right - WindowRect.left, WindowRect.bottom - WindowRect.top);
@@ -3303,7 +3303,7 @@ DisplayServerWindows::DisplayServerWindows(const String &p_rendering_driver, Win
 	}
 #endif
 	// Init context and rendering device
-#if defined(GLES_WINDOWS_ENABLED)
+#if defined(OPENGL_WINDOWS_ENABLED)
 
 	if (rendering_driver == "opengl") {
 		GLManager_Windows::ContextType opengl_api_type = GLManager_Windows::GLES_3_0_COMPATIBLE;
@@ -3411,7 +3411,7 @@ Vector<String> DisplayServerWindows::get_rendering_drivers_func() {
 #ifdef VULKAN_ENABLED
 	drivers.push_back("vulkan");
 #endif
-#ifdef GLES_WINDOWS_ENABLED
+#ifdef OPENGL_WINDOWS_ENABLED
 	drivers.push_back("opengl");
 #endif
 
@@ -3442,7 +3442,7 @@ DisplayServerWindows::~DisplayServerWindows() {
 		SetWindowLongPtr(windows[MAIN_WINDOW_ID].hWnd, GWLP_WNDPROC, (LONG_PTR)user_proc);
 	};
 
-#ifdef GLES_WINDOWS_ENABLED
+#ifdef OPENGL_WINDOWS_ENABLED
 		// destroy windows .. NYI?
 #endif
 
@@ -3474,7 +3474,7 @@ DisplayServerWindows::~DisplayServerWindows() {
 	if (restore_mouse_trails > 1) {
 		SystemParametersInfoA(SPI_SETMOUSETRAILS, restore_mouse_trails, 0, 0);
 	}
-#ifdef GLES_WINDOWS_ENABLED
+#ifdef OPENGL_WINDOWS_ENABLED
 	if (gl_manager) {
 		memdelete(gl_manager);
 		gl_manager = nullptr;
