@@ -169,12 +169,14 @@ public:
 		Vector<Vector2> uv2;
 		Vector<Vector3> normal;
 		Vector<TextureDef> albedo;
+		Vector<TextureDef> normal_tex;
 		Vector<TextureDef> emission;
 		Vector<int> surface_facecounts;
 		Variant userdata;
 	};
 
 	virtual void add_albedo_texture(Ref<Texture> p_texture) = 0;
+	virtual void add_normal_texture(Ref<Texture> p_texture) = 0;
 	virtual void add_emission_texture(Ref<Texture> p_texture) = 0;
 	virtual void add_mesh(const MeshData &p_mesh, Vector2i p_size) = 0;
 	virtual void add_directional_light(bool p_bake_direct, const Vector3 &p_direction, const Color &p_color, float p_energy, float p_indirect_multiplier, float p_size) = 0;

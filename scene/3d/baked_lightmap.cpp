@@ -449,7 +449,7 @@ void BakedLightmap::_find_meshes_and_lights(Node *p_at_node, Vector<MeshesFound>
 	}
 }
 
-void BakedLightmap::_get_material_images(const MeshesFound &p_found_mesh, Lightmapper::MeshData &r_mesh_data, Vector<Ref<Texture>> &r_albedo_textures, Vector<Ref<Texture>> &r_emission_textures) {
+void BakedLightmap::_get_material_images(const MeshesFound &p_found_mesh, Lightmapper::MeshData &r_mesh_data, Vector<Ref<Texture>> &r_albedo_textures, Vector<Ref<Texture>> &r_normal_textures, Vector<Ref<Texture>> &r_emission_textures) {
 	for (int i = 0; i < p_found_mesh.mesh->get_surface_count(); ++i) {
 		Ref<SpatialMaterial> mat = p_found_mesh.overrides[i];
 
@@ -460,6 +460,9 @@ void BakedLightmap::_get_material_images(const MeshesFound &p_found_mesh, Lightm
 		Ref<Texture> albedo_texture;
 		Color albedo_add = Color(1, 1, 1, 1);
 		Color albedo_mul = Color(1, 1, 1, 1);
+
+		// Normal map's blue channel is ignored.
+		Ref<Texture> normal_texture;
 
 		Ref<Texture> emission_texture;
 		Color emission_add = Color(0, 0, 0, 0);
@@ -474,6 +477,9 @@ void BakedLightmap::_get_material_images(const MeshesFound &p_found_mesh, Lightm
 			} else {
 				albedo_add = mat->get_albedo();
 			}
+
+			normal_texture = mat->get_texture(SpatialMaterial::TEXTURE_NORMAL);
+			//float normal_scale = mat->get_normal_scale();
 
 			emission_texture = mat->get_texture(SpatialMaterial::TEXTURE_EMISSION);
 			Color emission_color = mat->get_emission();
@@ -496,8 +502,19 @@ void BakedLightmap::_get_material_images(const MeshesFound &p_found_mesh, Lightm
 			albedo.tex_rid = albedo_texture->get_rid();
 			r_albedo_textures.push_back(albedo_texture);
 		}
-
 		r_mesh_data.albedo.push_back(albedo);
+
+		Lightmapper::MeshData::TextureDef normal;
+		// Always include the texture as-is.
+		// TODO: Handle material's normal map scale.
+		normal.mul = Color(1, 1, 1, 1);
+		normal.add = Color(0, 0, 0, 0);
+
+		if (normal_texture.is_valid()) {
+			normal.tex_rid = normal_texture->get_rid();
+			r_normal_textures.push_back(normal_texture);
+		}
+		r_mesh_data.normal_tex.push_back(normal);
 
 		Lightmapper::MeshData::TextureDef emission;
 		emission.mul = emission_mul;
@@ -734,12 +751,17 @@ BakedLightmap::BakeError BakedLightmap::bake(Node *p_from_node, String p_data_sa
 		}
 
 		Vector<Ref<Texture>> albedo_textures;
+		Vector<Ref<Texture>> normal_textures;
 		Vector<Ref<Texture>> emission_textures;
 
-		_get_material_images(mf, md, albedo_textures, emission_textures);
+		_get_material_images(mf, md, albedo_textures, normal_textures, emission_textures);
 
 		for (int j = 0; j < albedo_textures.size(); j++) {
 			lightmapper->add_albedo_texture(albedo_textures[j]);
+		}
+
+		for (int j = 0; j < normal_textures.size(); j++) {
+			lightmapper->add_normal_texture(normal_textures[j]);
 		}
 
 		for (int j = 0; j < emission_textures.size(); j++) {

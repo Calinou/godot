@@ -69,6 +69,7 @@ class LightmapperCPU : public Lightmapper {
 	struct LightmapTexel {
 		Vector3 albedo;
 		float alpha;
+		Vector3 normal_tex;
 		Vector3 emission;
 		Vector3 pos;
 		Vector3 normal;
@@ -125,6 +126,7 @@ class LightmapperCPU : public Lightmapper {
 
 	LocalVector<Ref<Image>> bake_textures;
 	Map<RID, Ref<Image>> albedo_textures;
+	Map<RID, Ref<Image>> normal_textures;
 	Map<RID, Ref<Image>> emission_textures;
 
 	LocalVector<MeshInstance> mesh_instances;
@@ -149,7 +151,7 @@ class LightmapperCPU : public Lightmapper {
 	Ref<Image> _init_bake_texture(const MeshData::TextureDef &p_texture_def, const Map<RID, Ref<Image>> &p_tex_cache, Image::Format p_default_format);
 	Color _bilinear_sample(const Ref<Image> &p_img, const Vector2 &p_uv, bool p_clamp_x = false, bool p_clamp_y = false);
 	Vector3 _fix_sample_position(const Vector3 &p_position, const Vector3 &p_texel_center, const Vector3 &p_normal, const Vector3 &p_tangent, const Vector3 &p_bitangent, const Vector2 &p_texel_size);
-	void _plot_triangle(const Vector2 *p_vertices, const Vector3 *p_positions, const Vector3 *p_normals, const Vector2 *p_uvs, const Ref<Image> &p_albedo_texture, const Ref<Image> &p_emission_texture, Vector2i p_size, LocalVector<LightmapTexel> &r_texels, LocalVector<int> &r_lightmap_indices);
+	void _plot_triangle(const Vector2 *p_vertices, const Vector3 *p_positions, const Vector3 *p_normals, const Vector2 *p_uvs, const Ref<Image> &p_albedo_texture, const Ref<Image> &p_normal_texture, const Ref<Image> &p_emission_texture, Vector2i p_size, LocalVector<LightmapTexel> &r_texels, LocalVector<int> &r_lightmap_indices);
 
 	void _compute_direct_light(uint32_t p_idx, void *r_lightmap);
 
@@ -165,6 +167,7 @@ class LightmapperCPU : public Lightmapper {
 
 public:
 	virtual void add_albedo_texture(Ref<Texture> p_texture);
+	virtual void add_normal_texture(Ref<Texture> p_texture);
 	virtual void add_emission_texture(Ref<Texture> p_texture);
 	virtual void add_mesh(const MeshData &p_mesh, Vector2i p_size);
 	virtual void add_directional_light(bool p_bake_direct, const Vector3 &p_direction, const Color &p_color, float p_energy, float p_indirect_multiplier, float p_size);

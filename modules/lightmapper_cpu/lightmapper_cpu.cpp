@@ -284,10 +284,13 @@ void LightmapperCPU::_generate_buffer(uint32_t p_idx, void *p_unused) {
 	MeshData &md = mesh_instances[p_idx].data;
 
 	LocalVector<Ref<Image>> albedo_images;
+	LocalVector<Ref<Image>> normal_images;
 	LocalVector<Ref<Image>> emission_images;
 
 	for (int surface_id = 0; surface_id < md.albedo.size(); surface_id++) {
 		albedo_images.push_back(_init_bake_texture(md.albedo[surface_id], albedo_textures, Image::FORMAT_RGBA8));
+		// TODO: Test FORMAT_RG8 (or FORMAT_RGB8 if FORMAT_RG8 fails).
+		normal_images.push_back(_init_bake_texture(md.normal_tex[surface_id], normal_textures, Image::FORMAT_RGBA8));
 		emission_images.push_back(_init_bake_texture(md.emission[surface_id], emission_textures, Image::FORMAT_RGBH));
 	}
 
@@ -300,12 +303,15 @@ void LightmapperCPU::_generate_buffer(uint32_t p_idx, void *p_unused) {
 
 	for (int i = 0; i < md.points.size() / 3; i++) {
 		Ref<Image> albedo = albedo_images[surface_id];
+		Ref<Image> normal = normal_images[surface_id];
 		Ref<Image> emission = emission_images[surface_id];
 
 		albedo->lock();
+		normal->lock();
 		emission->lock();
-		_plot_triangle(&(uv2s_ptr[i * 3]), &(points_ptr[i * 3]), &(normals_ptr[i * 3]), uvs_ptr ? &(uvs_ptr[i * 3]) : nullptr, albedo, emission, size, lightmap, lightmap_indices);
+		_plot_triangle(&(uv2s_ptr[i * 3]), &(points_ptr[i * 3]), &(normals_ptr[i * 3]), uvs_ptr ? &(uvs_ptr[i * 3]) : nullptr, albedo, normal, emission, size, lightmap, lightmap_indices);
 		albedo->unlock();
+		normal->unlock();
 		emission->unlock();
 
 		surface_facecount++;
@@ -405,7 +411,7 @@ Vector3 LightmapperCPU::_fix_sample_position(const Vector3 &p_position, const Ve
 	return corrected;
 }
 
-void LightmapperCPU::_plot_triangle(const Vector2 *p_vertices, const Vector3 *p_positions, const Vector3 *p_normals, const Vector2 *p_uvs, const Ref<Image> &p_albedo, const Ref<Image> &p_emission, Vector2i p_size, LocalVector<LightmapTexel> &r_lightmap, LocalVector<int> &r_lightmap_indices) {
+void LightmapperCPU::_plot_triangle(const Vector2 *p_vertices, const Vector3 *p_positions, const Vector3 *p_normals, const Vector2 *p_uvs, const Ref<Image> &p_albedo_texture, const Ref<Image> &p_normal_texture, const Ref<Image> &p_emission_texture, Vector2i p_size, LocalVector<LightmapTexel> &r_lightmap, LocalVector<int> &r_lightmap_indices) {
 	Vector2 pv0 = p_vertices[0];
 	Vector2 pv1 = p_vertices[1];
 	Vector2 pv2 = p_vertices[2];
@@ -662,8 +668,9 @@ void LightmapperCPU::_plot_triangle(const Vector2 *p_vertices, const Vector3 *p_
 			Vector3 normal = n0 * barycentric_coords[0] + n1 * barycentric_coords[1] + n2 * barycentric_coords[2];
 
 			Vector2 uv = uv0 * barycentric_coords[0] + uv1 * barycentric_coords[1] + uv2 * barycentric_coords[2];
-			Color c = _bilinear_sample(p_albedo, uv);
-			Color e = _bilinear_sample(p_emission, uv);
+			Color c = _bilinear_sample(p_albedo_texture, uv);
+			Color n = _bilinear_sample(p_normal_texture, uv);
+			Color e = _bilinear_sample(p_emission_texture, uv);
 
 			Vector2 texel_center = Vector2(i, j) + Vector2(0.5f, 0.5f);
 			Vector3 texel_center_bary = Geometry::barycentric_coordinates_2d(texel_center, v0, v1, v2);
@@ -678,6 +685,7 @@ void LightmapperCPU::_plot_triangle(const Vector2 *p_vertices, const Vector3 *p_
 			texel.pos = pos;
 			texel.albedo = Vector3(c.r, c.g, c.b);
 			texel.alpha = c.a;
+			texel.normal_tex = Vector3(n.r, n.g, n.b);
 			texel.emission = Vector3(e.r, e.g, e.b);
 			texel.area_coverage = area_coverage;
 			r_lightmap.push_back(texel);
@@ -699,7 +707,8 @@ void LightmapperCPU::_compute_direct_light(uint32_t p_idx, void *r_lightmap) {
 	LightmapTexel *lightmap = (LightmapTexel *)r_lightmap;
 	for (unsigned int i = 0; i < lights.size(); ++i) {
 		const Light &light = lights[i];
-		Vector3 normal = lightmap[p_idx].normal;
+		// FIXME: use proper way to determine normal direction. Requires mesh tangents to be sent, and binormal to be calculated.
+		Vector3 normal = lightmap[p_idx].normal - lightmap[p_idx].normal_tex + Vector3(0.5, 0.5, 0);
 		Vector3 position = lightmap[p_idx].pos;
 		Color c = light.color;
 		Vector3 light_energy = Vector3(c.r, c.g, c.b) * light.energy;
@@ -799,7 +808,21 @@ void LightmapperCPU::_compute_direct_light(uint32_t p_idx, void *r_lightmap) {
 			penumbra = (float)hits / shadowing_ray_count;
 		} else {
 			LightmapRaycaster::Ray ray = LightmapRaycaster::Ray(position, -light_to_point, parameters.bias, dist);
-			if (!raycaster->intersect(ray)) {
+			if (raycaster->intersect(ray)) {
+				// unsigned int hit_mesh_id = ray.geomID;
+				// const Vector2i &size = mesh_instances[hit_mesh_id].size;
+
+				// int x = CLAMP(ray.u * size.x, 0, size.x - 1);
+				// int y = CLAMP(ray.v * size.y, 0, size.y - 1);
+
+				// const int idx = scene_lightmap_indices[hit_mesh_id][y * size.x + x];
+
+				// if (idx < 0) {
+				// 	break;
+				// }
+
+				// const LightmapTexel &sample = scene_lightmaps[hit_mesh_id][idx];
+			} else {
 				penumbra = 1.0f;
 			}
 		}
@@ -1374,6 +1397,7 @@ LightmapperCPU::BakeError LightmapperCPU::bake(BakeQuality p_quality, bool p_use
 	}
 
 	albedo_textures.clear();
+	normal_textures.clear();
 	emission_textures.clear();
 
 	for (unsigned int i = 0; i < mesh_instances.size(); i++) {
@@ -1575,6 +1599,32 @@ void LightmapperCPU::add_albedo_texture(Ref<Texture> p_texture) {
 	albedo_textures.insert(texture_rid, texture_data);
 }
 
+void LightmapperCPU::add_normal_texture(Ref<Texture> p_texture) {
+	if (p_texture.is_null()) {
+		return;
+	}
+
+	RID texture_rid = p_texture->get_rid();
+	if (!texture_rid.is_valid() || normal_textures.has(texture_rid)) {
+		return;
+	}
+
+	Ref<Image> texture_data = p_texture->get_data();
+
+	if (texture_data.is_null()) {
+		return;
+	}
+
+	if (texture_data->is_compressed()) {
+		texture_data->decompress();
+	}
+
+	// TODO: Try FORMAT_RG8.
+	texture_data->convert(Image::FORMAT_RGBA8);
+
+	normal_textures.insert(texture_rid, texture_data);
+}
+
 void LightmapperCPU::add_emission_texture(Ref<Texture> p_texture) {
 	if (p_texture.is_null()) {
 		return;
@@ -1606,6 +1656,7 @@ void LightmapperCPU::add_mesh(const MeshData &p_mesh, Vector2i p_size) {
 	ERR_FAIL_COND(p_mesh.points.size() != p_mesh.normal.size());
 	ERR_FAIL_COND(!p_mesh.uv.empty() && p_mesh.points.size() != p_mesh.uv.size());
 	ERR_FAIL_COND(p_mesh.surface_facecounts.size() != p_mesh.albedo.size());
+	ERR_FAIL_COND(p_mesh.surface_facecounts.size() != p_mesh.normal_tex.size());
 	ERR_FAIL_COND(p_mesh.surface_facecounts.size() != p_mesh.emission.size());
 
 	MeshInstance mi;
