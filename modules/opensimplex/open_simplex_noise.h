@@ -78,6 +78,9 @@ public:
 	Ref<Image> get_image(int p_width, int p_height, const Vector2 &p_noise_offset = Vector2()) const;
 	Ref<Image> get_seamless_image(int p_size) const;
 
+	Vector<Ref<Image>> get_image_3d(int p_width, int p_height, int p_depth, const Vector3 &p_noise_offset = Vector3()) const;
+	Vector<Ref<Image>> get_seamless_image_3d(int p_size) const;
+
 	float get_noise_1d(float x) const;
 	float get_noise_2d(float x, float y) const;
 	float get_noise_3d(float x, float y, float z) const;

@@ -145,6 +145,34 @@ Ref<Image> OpenSimplexNoise::get_seamless_image(int p_size) const {
 	return image;
 }
 
+Vector<Ref<Image>> OpenSimplexNoise::get_image_3d(int p_width, int p_height, int p_depth, const Vector3 &p_noise_offset) const {
+	Vector<Ref<Image>> images;
+
+	for (int i = 0; i < p_depth; i++) {
+		Vector<uint8_t> data;
+		data.resize(p_width * p_height);
+		uint8_t *wd8 = data.ptrw();
+
+		for (int j = 0; j < p_height; j++) {
+			for (int k = 0; k < p_width; k++) {
+				float v = get_noise_3d(float(k) + p_noise_offset.x, float(j) + p_noise_offset.y, float(i) + p_noise_offset.z);
+				v = v * 0.5 + 0.5; // Normalize [0..1]
+				wd8[(j * p_width + k)] = uint8_t(CLAMP(v * 255.0, 0, 255));
+			}
+		}
+
+		Ref<Image> image = memnew(Image(p_width, p_height, false, Image::FORMAT_L8, data));
+		images.push_back(image);
+	}
+
+	return images;
+}
+
+Vector<Ref<Image>> OpenSimplexNoise::get_seamless_image_3d(int p_size) const {
+	// TODO
+	return Vector<Ref<Image>>();
+}
+
 void OpenSimplexNoise::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_seed"), &OpenSimplexNoise::get_seed);
 	ClassDB::bind_method(D_METHOD("set_seed", "seed"), &OpenSimplexNoise::set_seed);
