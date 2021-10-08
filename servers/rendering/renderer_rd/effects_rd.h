@@ -72,6 +72,18 @@ class EffectsRD {
 private:
 	bool prefer_raster_effects;
 
+	struct SMAARasterPushConstant {
+		float SourceSize[4];
+		float OriginalSize[4];
+		float OutputSize[4];
+		uint FrameCount;
+		float SMAA_EDT;
+		float SMAA_THRESHOLD;
+		float SMAA_MAX_SEARCH_STEPS;
+		float SMAA_MAX_SEARCH_STEPS_DIAG;
+		float SMAA_LOCAL_CONTRAST_ADAPTATION_FACTOR;
+	};
+
 	enum BlurRasterMode {
 		BLUR_MIPMAP,
 

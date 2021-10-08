@@ -237,6 +237,52 @@ RID EffectsRD::_get_compute_uniform_set_from_image_pair(RID p_texture1, RID p_te
 	return uniform_set;
 }
 
+void EffectsRD::smaa_upscale(RID p_source_rd_texture, RID p_secondary_texture, RID p_destination_texture, const Size2i &p_size) {
+	memset(&smaa_raster.push_constant, 0, sizeof(SMAARasterPushConstant));
+
+	smaa_raster.push_constant.pixel_size[0] = p_pixel_size.x;
+	smaa_raster.push_constant.pixel_size[1] = p_pixel_size.y;
+
+	smaa_raster.push_constant.glow_strength = p_strength;
+	smaa_raster.push_constant.glow_bloom = p_bloom;
+	smaa_raster.push_constant.glow_hdr_threshold = p_hdr_bleed_treshold;
+	smaa_raster.push_constant.glow_hdr_scale = p_hdr_bleed_scale;
+	smaa_raster.push_constant.glow_exposure = p_exposure;
+	smaa_raster.push_constant.glow_white = 0; //actually unused
+	smaa_raster.push_constant.glow_luminance_cap = p_luminance_cap;
+
+	smaa_raster.push_constant.glow_auto_exposure_grey = p_auto_exposure_grey; //unused also
+
+	//HORIZONTAL
+	RD::DrawListID draw_list = RD::get_singleton()->draw_list_begin(p_framebuffer_half, RD::INITIAL_ACTION_KEEP, RD::FINAL_ACTION_READ, RD::INITIAL_ACTION_KEEP, RD::FINAL_ACTION_DISCARD);
+	RD::get_singleton()->draw_list_bind_render_pipeline(draw_list, smaa_raster.pipelines[smaa_mode].get_render_pipeline(RD::INVALID_ID, RD::get_singleton()->framebuffer_get_format(p_framebuffer_half)));
+	RD::get_singleton()->draw_list_bind_uniform_set(draw_list, _get_uniform_set_from_texture(p_source_rd_texture), 0);
+	if (p_auto_exposure.is_valid() && p_first_pass) {
+		RD::get_singleton()->draw_list_bind_uniform_set(draw_list, _get_uniform_set_from_texture(p_auto_exposure), 1);
+	}
+	RD::get_singleton()->draw_list_bind_index_array(draw_list, index_array);
+
+	smaa_raster.push_constant.flags = base_flags | smaa_FLAG_HORIZONTAL | (p_first_pass ? smaa_FLAG_GLOW_FIRST_PASS : 0);
+	RD::get_singleton()->draw_list_set_push_constant(draw_list, &smaa_raster.push_constant, sizeof(SMAARasterPushConstant));
+
+	RD::get_singleton()->draw_list_draw(draw_list, true);
+	RD::get_singleton()->draw_list_end();
+
+	smaa_mode = smaa_MODE_GAUSSIAN_GLOW;
+
+	//VERTICAL
+	draw_list = RD::get_singleton()->draw_list_begin(p_dest_framebuffer, RD::INITIAL_ACTION_KEEP, RD::FINAL_ACTION_READ, RD::INITIAL_ACTION_KEEP, RD::FINAL_ACTION_DISCARD);
+	RD::get_singleton()->draw_list_bind_render_pipeline(draw_list, smaa_raster.pipelines[smaa_mode].get_render_pipeline(RD::INVALID_ID, RD::get_singleton()->framebuffer_get_format(p_dest_framebuffer)));
+	RD::get_singleton()->draw_list_bind_uniform_set(draw_list, _get_uniform_set_from_texture(p_rd_texture_half), 0);
+	RD::get_singleton()->draw_list_bind_index_array(draw_list, index_array);
+
+	smaa_raster.push_constant.flags = base_flags;
+	RD::get_singleton()->draw_list_set_push_constant(draw_list, &smaa_raster.push_constant, sizeof(SMAARasterPushConstant));
+
+	RD::get_singleton()->draw_list_draw(draw_list, true);
+	RD::get_singleton()->draw_list_end();
+}
+
 void EffectsRD::copy_to_atlas_fb(RID p_source_rd_texture, RID p_dest_framebuffer, const Rect2 &p_uv_rect, RD::DrawListID p_draw_list, bool p_flip_y, bool p_panorama) {
 	memset(&copy_to_fb.push_constant, 0, sizeof(CopyToFbPushConstant));
 
@@ -1918,6 +1964,18 @@ EffectsRD::EffectsRD(bool p_prefer_raster_effects) {
 		}
 	}
 
+	{
+		// Initialize SMAA shader
+
+		Vector<String> smaa_opts;
+
+		smaa_raster.shader.initialize(smaa_opts);
+		memset(&smaa_raster.push_constant, 0, sizeof(SMAARasterPushConstant));
+		smaa_raster.shader_version = smaa_raster.shader.version_create();
+
+		smaa_raster.pipelines[0].setup(smaa_raster.shader.version_get_shader(smaa_raster.shader_version, i), RD::RENDER_PRIMITIVE_TRIANGLES, RD::PipelineRasterizationState(), RD::PipelineMultisampleState(), RD::PipelineDepthStencilState(), RD::PipelineColorBlendState::create_disabled(), 0);
+	}
+
 	if (!prefer_raster_effects) { // Initialize copy
 		Vector<String> copy_modes;
 		copy_modes.push_back("\n#define MODE_GAUSSIAN_BLUR\n");
@@ -2559,6 +2617,7 @@ EffectsRD::~EffectsRD() {
 		RD::get_singleton()->free(ssao.gather_constants_buffer);
 		RD::get_singleton()->free(ssao.importance_map_load_counter);
 	}
+	smaa_raster.shader.version_free(smaa_raster.shader_version);
 	copy_to_fb.shader.version_free(copy_to_fb.shader_version);
 	cube_to_dp.shader.version_free(cube_to_dp.shader_version);
 	sort.shader.version_free(sort.shader_version);
