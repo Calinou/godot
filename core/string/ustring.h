@@ -363,6 +363,7 @@ public:
 	String left(int p_pos) const;
 	String right(int p_pos) const;
 	String dedent() const;
+	String strip_diacritics() const;
 	String strip_edges(bool left = true, bool right = true) const;
 	String strip_escapes() const;
 	String lstrip(const String &p_chars) const;

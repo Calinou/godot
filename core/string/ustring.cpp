@@ -3547,6 +3547,24 @@ String String::dedent() const {
 	return new_string;
 }
 
+String String::strip_diacritics() const {
+	const String accents_inp = "ÀÁÂÃÄÅàáâãäåÒÓÔÕÕÖØòóôõöøÈÉÊËèéêëðÇçÐÌÍÎÏìíîïÙÚÛÜùúûüÑñŠšŸÿýŽž";
+	const String accents_out = "AAAAAAaaaaaaOOOOOOOooooooEEEEeeeeeCcDIIIIiiiiUUUUuuuuNnSsYyyZz";
+
+	String new_string;
+	for (int i = 0; i < length(); i++) {
+		const int accent_index = accents_inp.find_char(get(i));
+		if (accent_index != -1) {
+			print_line("accent");
+			new_string += accents_out.get(accent_index);
+		} else {
+			new_string += get(i);
+		}
+	}
+
+	return new_string;
+}
+
 String String::strip_edges(bool left, bool right) const {
 	int len = length();
 	int beg = 0, end = len;
