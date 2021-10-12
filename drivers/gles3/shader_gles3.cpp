@@ -211,7 +211,7 @@ ShaderGLES3::Version *ShaderGLES3::get_current_version() {
 	}
 
 	for (int j = 0; j < conditional_count; j++) {
-		bool enable = ((1 << j) & conditional_version.version);
+		bool enable = ((uint64_t(1) << j) & conditional_version.version);
 		strings.push_back(enable ? conditional_defines[j] : "");
 
 		if (enable) {
@@ -540,8 +540,8 @@ GLint ShaderGLES3::get_uniform_location(const String &p_name) const {
 
 void ShaderGLES3::setup(const char **p_conditional_defines, int p_conditional_count, const char **p_uniform_names, int p_uniform_count, const AttributePair *p_attribute_pairs, int p_attribute_count, const TexUnitPair *p_texunit_pairs, int p_texunit_pair_count, const UBOPair *p_ubo_pairs, int p_ubo_pair_count, const Feedback *p_feedback, int p_feedback_count, const char *p_vertex_code, const char *p_fragment_code, int p_vertex_code_start, int p_fragment_code_start) {
 	ERR_FAIL_COND(version);
-	conditional_version.key = 0;
-	new_conditional_version.key = 0;
+	memset(conditional_version.key, 0, sizeof(conditional_version.key));
+	memset(new_conditional_version.key, 0, sizeof(new_conditional_version.key));
 	uniform_count = p_uniform_count;
 	conditional_count = p_conditional_count;
 	conditional_defines = p_conditional_defines;
@@ -703,7 +703,7 @@ void ShaderGLES3::free_custom_shader(uint32_t p_code_id) {
 
 	VersionKey key;
 	key.code_version = p_code_id;
-	for (Set<uint32_t>::Element *E = custom_code_map[p_code_id].versions.front(); E; E = E->next()) {
+	for (Set<uint64_t>::Element *E = custom_code_map[p_code_id].versions.front(); E; E = E->next()) {
 		key.version = E->get();
 		ERR_CONTINUE(!version_map.has(key));
 		Version &v = version_map[key];
