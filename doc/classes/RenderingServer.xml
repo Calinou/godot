@@ -1514,7 +1514,7 @@
 				Sets the shadow mode for this directional light. Equivalent to [member DirectionalLight3D.directional_shadow_mode]. See [enum LightDirectionalShadowMode] for options.
 			</description>
 		</method>
-		<method name="light_directional_set_sky_only">
+		<method name="light_directional_set_sky_mode">
 			<return type="void" />
 			<argument index="0" name="light" type="RID" />
 			<argument index="1" name="enable" type="bool" />
