@@ -2247,7 +2247,7 @@ bool VisualServerScene::_light_instance_update_shadow(Instance *p_instance, cons
 
 				float radius = VSG::storage->light_get_param(p_instance->base, VS::LIGHT_PARAM_RANGE);
 				CameraMatrix cm;
-				cm.set_perspective(90, 1, 0.01, radius);
+				cm.set_perspective(90, 1, radius * 0.005f, radius);
 
 				for (int i = 0; i < 6; i++) {
 					//using this one ensures that raster deferred will have it
@@ -2305,7 +2305,7 @@ bool VisualServerScene::_light_instance_update_shadow(Instance *p_instance, cons
 			float angle = VSG::storage->light_get_param(p_instance->base, VS::LIGHT_PARAM_SPOT_ANGLE);
 
 			CameraMatrix cm;
-			cm.set_perspective(angle * 2.0, 1.0, 0.01, radius);
+			cm.set_perspective(angle * 2.0, 1.0, radius * 0.005f, radius);
 
 			Vector<Plane> planes = cm.get_projection_planes(light_transform);
 			int cull_count = _cull_convex_from_point(p_scenario, light_transform.origin, planes, instance_shadow_cull_result, MAX_INSTANCE_CULL, light->previous_room_id_hint, VS::INSTANCE_GEOMETRY_MASK);
