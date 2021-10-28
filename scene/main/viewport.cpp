@@ -705,6 +705,19 @@ bool Viewport::use_arvr() {
 	return arvr;
 }
 
+void Viewport::set_scale_3d(const float p_scale_3d) {
+	// Clamp to reasonable values that are actually useful.
+	// Values above 2.0 don't serve a practical purpose since the viewport
+	// isn't displayed with mipmaps.
+	scale_3d = CLAMP(p_scale_3d, 0.1, 2.0);
+
+	VS::get_singleton()->viewport_set_scale_3d(viewport, scale_3d);
+}
+
+float Viewport::get_scale_3d() const {
+	return scale_3d;
+}
+
 void Viewport::update_canvas_items() {
 	if (!is_inside_tree()) {
 		return;
@@ -3104,6 +3117,9 @@ void Viewport::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_use_arvr", "use"), &Viewport::set_use_arvr);
 	ClassDB::bind_method(D_METHOD("use_arvr"), &Viewport::use_arvr);
 
+	ClassDB::bind_method(D_METHOD("set_scale_3d", "scale_3d"), &Viewport::set_scale_3d);
+	ClassDB::bind_method(D_METHOD("get_scale_3d"), &Viewport::get_scale_3d);
+
 	ClassDB::bind_method(D_METHOD("set_size", "size"), &Viewport::set_size);
 	ClassDB::bind_method(D_METHOD("get_size"), &Viewport::get_size);
 	ClassDB::bind_method(D_METHOD("set_world_2d", "world_2d"), &Viewport::set_world_2d);
@@ -3235,7 +3251,6 @@ void Viewport::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_process_picking", "ignore_paused"), &Viewport::_process_picking);
 
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "arvr"), "set_use_arvr", "use_arvr");
-
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "size"), "set_size", "get_size");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "size_override_stretch"), "set_size_override_stretch", "is_size_override_stretch_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "own_world"), "set_use_own_world", "is_using_own_world");
@@ -3249,9 +3264,10 @@ void Viewport::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "debanding"), "set_use_debanding", "get_use_debanding");
 	ADD_PROPERTY(PropertyInfo(Variant::REAL, "sharpen_intensity"), "set_sharpen_intensity", "get_sharpen_intensity");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "hdr"), "set_hdr", "get_hdr");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "usage", PROPERTY_HINT_ENUM, "2D,2D Without Sampling,3D,3D Without Effects"), "set_usage", "get_usage");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "disable_3d"), "set_disable_3d", "is_3d_disabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "keep_3d_linear"), "set_keep_3d_linear", "get_keep_3d_linear");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "usage", PROPERTY_HINT_ENUM, "2D,2D Without Sampling,3D,3D Without Effects"), "set_usage", "get_usage");
+	ADD_PROPERTY(PropertyInfo(Variant::REAL, "scale_3d", PROPERTY_HINT_RANGE, "0.25,2.0,0.01"), "set_scale_3d", "get_scale_3d");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "render_direct_to_screen"), "set_use_render_direct_to_screen", "is_using_render_direct_to_screen");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "debug_draw", PROPERTY_HINT_ENUM, "Disabled,Unshaded,Overdraw,Wireframe"), "set_debug_draw", "get_debug_draw");
 	ADD_GROUP("Render Target", "render_target_");
@@ -3388,12 +3404,17 @@ Viewport::Viewport() {
 	disable_input = false;
 	disable_3d = false;
 	keep_3d_linear = false;
+	scale_3d = 1.0;
 
 	// Window tooltip.
 	gui.tooltip_timer = -1;
 
 	gui.tooltip_delay = GLOBAL_DEF("gui/timers/tooltip_delay_sec", 0.5);
 	ProjectSettings::get_singleton()->set_custom_property_info("gui/timers/tooltip_delay_sec", PropertyInfo(Variant::REAL, "gui/timers/tooltip_delay_sec", PROPERTY_HINT_RANGE, "0,5,0.01,or_greater")); // No negative numbers
+
+#ifndef _3D_DISABLED
+	set_scale_3d(GLOBAL_GET("rendering/3d/viewport/scale"));
+#endif // _3D_DISABLED
 
 	gui.tooltip_control = nullptr;
 	gui.tooltip_label = nullptr;

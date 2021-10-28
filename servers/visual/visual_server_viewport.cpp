@@ -541,6 +541,13 @@ void VisualServerViewport::viewport_set_keep_3d_linear(RID p_viewport, bool p_ke
 	VSG::storage->render_target_set_flag(viewport->render_target, RasterizerStorage::RENDER_TARGET_KEEP_3D_LINEAR, p_keep_3d_linear);
 }
 
+void VisualServerViewport::viewport_set_scale_3d(RID p_viewport, float p_scale_3d) {
+	Viewport *viewport = viewport_owner.getornull(p_viewport);
+	ERR_FAIL_COND(!viewport);
+
+	viewport->scale_3d = p_scale_3d;
+}
+
 void VisualServerViewport::viewport_attach_camera(RID p_viewport, RID p_camera) {
 	Viewport *viewport = viewport_owner.getornull(p_viewport);
 	ERR_FAIL_COND(!viewport);

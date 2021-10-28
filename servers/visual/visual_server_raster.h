@@ -472,6 +472,7 @@ public:
 	BIND2(viewport_set_disable_environment, RID, bool)
 	BIND2(viewport_set_disable_3d, RID, bool)
 	BIND2(viewport_set_keep_3d_linear, RID, bool)
+	BIND2(viewport_set_scale_3d, RID, float)
 
 	BIND2(viewport_attach_camera, RID, RID)
 	BIND2(viewport_set_scenario, RID, RID)

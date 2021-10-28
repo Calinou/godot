@@ -269,6 +269,7 @@ private:
 
 	bool disable_3d;
 	bool keep_3d_linear;
+	float scale_3d;
 	UpdateMode update_mode;
 	RID texture_rid;
 	uint32_t texture_flags;
@@ -438,6 +439,9 @@ public:
 
 	void set_use_arvr(bool p_use_arvr);
 	bool use_arvr();
+
+	void set_scale_3d(float p_scale_3d);
+	float get_scale_3d() const;
 
 	void set_as_audio_listener(bool p_enable);
 	bool is_audio_listener() const;
