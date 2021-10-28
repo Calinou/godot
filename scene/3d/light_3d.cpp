@@ -274,6 +274,9 @@ void Light3D::_bind_methods() {
 	BIND_ENUM_CONSTANT(PARAM_SHADOW_SPLIT_1_OFFSET);
 	BIND_ENUM_CONSTANT(PARAM_SHADOW_SPLIT_2_OFFSET);
 	BIND_ENUM_CONSTANT(PARAM_SHADOW_SPLIT_3_OFFSET);
+	BIND_ENUM_CONSTANT(PARAM_SHADOW_SPLIT_1_CULL_MASK);
+	BIND_ENUM_CONSTANT(PARAM_SHADOW_SPLIT_2_CULL_MASK);
+	BIND_ENUM_CONSTANT(PARAM_SHADOW_SPLIT_3_CULL_MASK);
 	BIND_ENUM_CONSTANT(PARAM_SHADOW_FADE_START);
 	BIND_ENUM_CONSTANT(PARAM_SHADOW_NORMAL_BIAS);
 	BIND_ENUM_CONSTANT(PARAM_SHADOW_BIAS);
@@ -323,6 +326,10 @@ Light3D::Light3D(RenderingServer::LightType p_type) {
 	set_param(PARAM_SHADOW_SPLIT_1_OFFSET, 0.1);
 	set_param(PARAM_SHADOW_SPLIT_2_OFFSET, 0.2);
 	set_param(PARAM_SHADOW_SPLIT_3_OFFSET, 0.5);
+	set_param(PARAM_SHADOW_SPLIT_0_CULL_MASK, 0xfffff);
+	set_param(PARAM_SHADOW_SPLIT_1_CULL_MASK, 0xfffff);
+	set_param(PARAM_SHADOW_SPLIT_2_CULL_MASK, 0xfffff);
+	set_param(PARAM_SHADOW_SPLIT_3_CULL_MASK, 0xfffff);
 	set_param(PARAM_SHADOW_FADE_START, 0.8);
 	set_param(PARAM_SHADOW_PANCAKE_SIZE, 20.0);
 	set_param(PARAM_SHADOW_BLUR, 1.0);
@@ -410,6 +417,10 @@ void DirectionalLight3D::_bind_methods() {
 	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "directional_shadow_split_1", PROPERTY_HINT_RANGE, "0,1,0.001"), "set_param", "get_param", PARAM_SHADOW_SPLIT_1_OFFSET);
 	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "directional_shadow_split_2", PROPERTY_HINT_RANGE, "0,1,0.001"), "set_param", "get_param", PARAM_SHADOW_SPLIT_2_OFFSET);
 	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "directional_shadow_split_3", PROPERTY_HINT_RANGE, "0,1,0.001"), "set_param", "get_param", PARAM_SHADOW_SPLIT_3_OFFSET);
+	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "directional_shadow_cull_mask_0", PROPERTY_HINT_LAYERS_3D_RENDER), "set_param", "get_param", PARAM_SHADOW_SPLIT_0_CULL_MASK);
+	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "directional_shadow_cull_mask_1", PROPERTY_HINT_LAYERS_3D_RENDER), "set_param", "get_param", PARAM_SHADOW_SPLIT_1_CULL_MASK);
+	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "directional_shadow_cull_mask_2", PROPERTY_HINT_LAYERS_3D_RENDER), "set_param", "get_param", PARAM_SHADOW_SPLIT_2_CULL_MASK);
+	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "directional_shadow_cull_mask_3", PROPERTY_HINT_LAYERS_3D_RENDER), "set_param", "get_param", PARAM_SHADOW_SPLIT_3_CULL_MASK);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "directional_shadow_blend_splits"), "set_blend_splits", "is_blend_splits_enabled");
 	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "directional_shadow_fade_start", PROPERTY_HINT_RANGE, "0,1,0.01"), "set_param", "get_param", PARAM_SHADOW_FADE_START);
 	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "directional_shadow_max_distance", PROPERTY_HINT_RANGE, "0,8192,0.1,or_greater,exp"), "set_param", "get_param", PARAM_SHADOW_MAX_DISTANCE);
