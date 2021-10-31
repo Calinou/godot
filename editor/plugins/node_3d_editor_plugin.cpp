@@ -2571,6 +2571,10 @@ static bool is_shortcut_pressed(const String &p_path) {
 	}
 	const Input &input = *Input::get_singleton();
 	Key keycode = k->get_keycode();
+	if (keycode == 0) {
+		// Shortcut is for a physical keycode, so check for physical keycode instead.
+		keycode = k->get_physical_keycode();
+	}
 	return input.is_key_pressed(keycode);
 }
 
@@ -4388,11 +4392,11 @@ Node3DEditorViewport::Node3DEditorViewport(Node3DEditor *p_spatial_editor, Edito
 		view_menu->get_popup()->set_item_tooltip(shadeless_idx, unsupported_tooltip);
 	}
 
-	ED_SHORTCUT("spatial_editor/freelook_left", TTR("Freelook Left"), KEY_A);
-	ED_SHORTCUT("spatial_editor/freelook_right", TTR("Freelook Right"), KEY_D);
-	ED_SHORTCUT("spatial_editor/freelook_forward", TTR("Freelook Forward"), KEY_W);
-	ED_SHORTCUT("spatial_editor/freelook_backwards", TTR("Freelook Backwards"), KEY_S);
-	ED_SHORTCUT("spatial_editor/freelook_up", TTR("Freelook Up"), KEY_E);
+	ED_SHORTCUT("spatial_editor/freelook_left", TTR("Freelook Left"), KEY_A, KEY_LEFT);
+	ED_SHORTCUT("spatial_editor/freelook_right", TTR("Freelook Right"), KEY_D, KEY_RIGHT);
+	ED_SHORTCUT("spatial_editor/freelook_forward", TTR("Freelook Forward"), KEY_W, KEY_UP);
+	ED_SHORTCUT("spatial_editor/freelook_backwards", TTR("Freelook Backwards"), KEY_S, KEY_DOWN);
+	ED_SHORTCUT("spatial_editor/freelook_up", TTR("Freelook Up"), KEY_E, KEY_SPACE);
 	ED_SHORTCUT("spatial_editor/freelook_down", TTR("Freelook Down"), KEY_Q);
 	ED_SHORTCUT("spatial_editor/freelook_speed_modifier", TTR("Freelook Speed Modifier"), KEY_SHIFT);
 	ED_SHORTCUT("spatial_editor/freelook_slow_modifier", TTR("Freelook Slow Modifier"), KEY_ALT);

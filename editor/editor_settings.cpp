@@ -1477,12 +1477,15 @@ Ref<Shortcut> ED_GET_SHORTCUT(const String &p_path) {
 	return sc;
 }
 
-void ED_SHORTCUT_OVERRIDE(const String &p_path, const String &p_feature, Key p_keycode) {
+void ED_SHORTCUT_OVERRIDE(const String &p_path, const String &p_feature, Key p_keycode1, Key p_keycode2) {
 	Ref<Shortcut> sc = EditorSettings::get_singleton()->get_shortcut(p_path);
 	ERR_FAIL_COND_MSG(!sc.is_valid(), "Used ED_SHORTCUT_OVERRIDE with invalid shortcut: " + p_path + ".");
 
 	PackedInt32Array arr;
-	arr.push_back(p_keycode);
+	arr.push_back(p_keycode1);
+	if (p_keycode2 != KEY_NONE) {
+		arr.push_back(p_keycode2);
+	}
 
 	ED_SHORTCUT_OVERRIDE_ARRAY(p_path, p_feature, arr);
 }
@@ -1520,9 +1523,12 @@ void ED_SHORTCUT_OVERRIDE_ARRAY(const String &p_path, const String &p_feature, c
 	sc->set_meta("original", events.duplicate(true));
 }
 
-Ref<Shortcut> ED_SHORTCUT(const String &p_path, const String &p_name, Key p_keycode) {
+Ref<Shortcut> ED_SHORTCUT(const String &p_path, const String &p_name, Key p_keycode1, Key p_keycode2) {
 	PackedInt32Array arr;
-	arr.push_back(p_keycode);
+	arr.push_back(p_keycode1);
+	if (p_keycode2 != KEY_NONE) {
+		arr.push_back(p_keycode2);
+	}
 	return ED_SHORTCUT_ARRAY(p_path, p_name, arr);
 }
 
