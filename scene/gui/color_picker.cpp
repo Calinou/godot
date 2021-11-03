@@ -261,6 +261,10 @@ void ColorPicker::_set_pick_color(const Color &p_color, bool p_update_sliders) {
 	_update_color(p_update_sliders);
 }
 
+void ColorPicker::set_is_popup(bool p_is_popup) {
+	is_popup = p_is_popup;
+}
+
 void ColorPicker::set_pick_color(const Color &p_color) {
 	_set_pick_color(p_color, true); //because setters can't have more arguments
 }
@@ -333,6 +337,11 @@ void ColorPicker::_html_submitted(const String &p_html) {
 
 	set_pick_color(color);
 	emit_signal(SNAME("color_changed"), color);
+
+	if (is_popup && Input::get_singleton()->is_key_pressed(KEY_CTRL)) {
+		// FIXME: Hide correctly.
+		hide();
+	}
 }
 
 void ColorPicker::_update_color(bool p_update_sliders) {
@@ -1406,6 +1415,7 @@ void ColorPickerButton::_update_picker() {
 		picker->connect("color_changed", callable_mp(this, &ColorPickerButton::_color_changed));
 		popup->connect("about_to_popup", callable_mp(this, &ColorPickerButton::_about_to_popup));
 		popup->connect("popup_hide", callable_mp(this, &ColorPickerButton::_modal_closed));
+		picker->set_is_popup(true);
 		picker->set_pick_color(color);
 		picker->set_edit_alpha(edit_alpha);
 		picker->set_display_old_color(true);

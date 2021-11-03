@@ -120,6 +120,7 @@ private:
 	bool spinning = false;
 	bool presets_enabled = true;
 	bool presets_visible = true;
+	bool is_popup = false;
 
 	float h = 0.0;
 	float s = 0.0;
@@ -160,6 +161,8 @@ public:
 
 	void set_edit_alpha(bool p_show);
 	bool is_editing_alpha() const;
+
+	void set_is_popup(bool p_is_popup);
 
 	void _set_pick_color(const Color &p_color, bool p_update_sliders);
 	void set_pick_color(const Color &p_color);
