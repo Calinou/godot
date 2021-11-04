@@ -286,13 +286,12 @@ protected:
 			float z_near;
 
 			uint32_t ssao_enabled;
-			float ssao_light_affect;
-			float ssao_ao_affect;
+			float ssao_direct_light_affect;
 			uint32_t roughness_limiter_enabled;
-
 			float roughness_limiter_amount;
+
 			float roughness_limiter_limit;
-			uint32_t roughness_limiter_pad[2];
+			uint32_t roughness_limiter_pad[3];
 
 			// Fog
 			uint32_t fog_enabled;

@@ -162,13 +162,12 @@ layout(set = 1, binding = 0, std140) uniform SceneData {
 	highp float z_near;
 
 	bool ssao_enabled;
-	mediump float ssao_light_affect;
-	mediump float ssao_ao_affect;
+	mediump float ssao_direct_light_affect;
 	bool roughness_limiter_enabled;
-
 	mediump float roughness_limiter_amount;
+
 	mediump float roughness_limiter_limit;
-	uvec2 roughness_limiter_pad;
+	uvec3 roughness_limiter_pad;
 
 	bool fog_enabled;
 	highp float fog_density;

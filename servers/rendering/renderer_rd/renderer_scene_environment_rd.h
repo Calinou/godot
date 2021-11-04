@@ -113,7 +113,6 @@ public:
 	float ssao_horizon = 0.06;
 	float ssao_sharpness = 0.98;
 	float ssao_direct_light_affect = 0.0;
-	float ssao_ao_channel_affect = 0.0;
 
 	/// SSR
 	///
@@ -151,7 +150,7 @@ public:
 	void set_fog(bool p_enable, const Color &p_light_color, float p_light_energy, float p_sun_scatter, float p_density, float p_height, float p_height_density, float p_fog_aerial_perspective);
 	void set_volumetric_fog(bool p_enable, float p_density, const Color &p_scatterin, const Color &p_emission, float p_emission_energy, float p_anisotropy, float p_length, float p_detail_spread, float p_gi_inject, bool p_temporal_reprojection, float p_temporal_reprojection_amount, float p_ambient_inject);
 	void set_ssr(bool p_enable, int p_max_steps, float p_fade_int, float p_fade_out, float p_depth_tolerance);
-	void set_ssao(bool p_enable, float p_radius, float p_intensity, float p_power, float p_detail, float p_horizon, float p_sharpness, float p_light_affect, float p_ao_channel_affect);
+	void set_ssao(bool p_enable, float p_radius, float p_intensity, float p_power, float p_detail, float p_horizon, float p_sharpness, float p_direct_light_affect);
 };
 
 #endif /* !RENDERING_SERVER_SCENE_ENVIRONMENT_RD_H */

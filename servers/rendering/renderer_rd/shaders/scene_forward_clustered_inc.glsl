@@ -202,13 +202,12 @@ layout(set = 1, binding = 0, std140) uniform SceneData {
 	float z_near;
 
 	bool ssao_enabled;
-	float ssao_light_affect;
-	float ssao_ao_affect;
+	float ssao_direct_light_affect;
 	bool roughness_limiter_enabled;
-
 	float roughness_limiter_amount;
+
 	float roughness_limiter_limit;
-	uvec2 roughness_limiter_pad;
+	uvec3 roughness_limiter_pad;
 
 	mat4 sdf_to_bounds;
 

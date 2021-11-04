@@ -115,7 +115,7 @@ void RendererSceneEnvironmentRD::set_ssr(bool p_enable, int p_max_steps, float p
 	ssr_depth_tolerance = p_depth_tolerance;
 }
 
-void RendererSceneEnvironmentRD::set_ssao(bool p_enable, float p_radius, float p_intensity, float p_power, float p_detail, float p_horizon, float p_sharpness, float p_light_affect, float p_ao_channel_affect) {
+void RendererSceneEnvironmentRD::set_ssao(bool p_enable, float p_radius, float p_intensity, float p_power, float p_detail, float p_horizon, float p_sharpness, float p_direct_light_affect) {
 	ssao_enabled = p_enable;
 	ssao_radius = p_radius;
 	ssao_intensity = p_intensity;
@@ -123,6 +123,5 @@ void RendererSceneEnvironmentRD::set_ssao(bool p_enable, float p_radius, float p
 	ssao_detail = p_detail;
 	ssao_horizon = p_horizon;
 	ssao_sharpness = p_sharpness;
-	ssao_direct_light_affect = p_light_affect;
-	ssao_ao_channel_affect = p_ao_channel_affect;
+	ssao_direct_light_affect = p_direct_light_affect;
 }

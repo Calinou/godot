@@ -139,7 +139,6 @@ private:
 	float ssao_horizon = 0.06;
 	float ssao_sharpness = 0.98;
 	float ssao_direct_light_affect = 0.0;
-	float ssao_ao_channel_affect = 0.0;
 	void _update_ssao();
 
 	// SDFGI
@@ -293,8 +292,6 @@ public:
 	float get_ssao_sharpness() const;
 	void set_ssao_direct_light_affect(float p_direct_light_affect);
 	float get_ssao_direct_light_affect() const;
-	void set_ssao_ao_channel_affect(float p_ao_channel_affect);
-	float get_ssao_ao_channel_affect() const;
 
 	// SDFGI
 	void set_sdfgi_enabled(bool p_enabled);

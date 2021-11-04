@@ -414,7 +414,7 @@ private:
 		StringName proximity_fade_distance;
 		StringName distance_fade_min;
 		StringName distance_fade_max;
-		StringName ao_light_affect;
+		StringName ao_direct_light_affect;
 
 		StringName metallic_texture_channel;
 		StringName ao_texture_channel;
@@ -471,7 +471,7 @@ private:
 	float alpha_hash_scale;
 	float alpha_antialiasing_edge;
 	bool grow_enabled = false;
-	float ao_light_affect;
+	float ao_direct_light_affect;
 	float grow;
 	int particles_anim_h_frames;
 	int particles_anim_v_frames;
@@ -567,8 +567,8 @@ public:
 	void set_rim_tint(float p_rim_tint);
 	float get_rim_tint() const;
 
-	void set_ao_light_affect(float p_ao_light_affect);
-	float get_ao_light_affect() const;
+	void set_ao_direct_light_affect(float p_ao_direct_light_affect);
+	float get_ao_direct_light_affect() const;
 
 	void set_clearcoat(float p_clearcoat);
 	float get_clearcoat() const;

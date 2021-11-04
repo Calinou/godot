@@ -1000,7 +1000,7 @@ ShaderCompilerGLES3::ShaderCompilerGLES3() {
 	actions[RS::SHADER_SPATIAL].renames["SSS_STRENGTH"] = "sss_strength";
 	actions[RS::SHADER_SPATIAL].renames["TRANSMISSION"] = "transmission";
 	actions[RS::SHADER_SPATIAL].renames["AO"] = "ao";
-	actions[RS::SHADER_SPATIAL].renames["AO_LIGHT_AFFECT"] = "ao_light_affect";
+	actions[RS::SHADER_SPATIAL].renames["AO_DIRECT_LIGHT_AFFECT"] = "ao_direct_light_affect";
 	actions[RS::SHADER_SPATIAL].renames["EMISSION"] = "emission";
 	actions[RS::SHADER_SPATIAL].renames["POINT_COORD"] = "gl_PointCoord";
 	actions[RS::SHADER_SPATIAL].renames["INSTANCE_CUSTOM"] = "instance_custom";
@@ -1029,7 +1029,7 @@ ShaderCompilerGLES3::ShaderCompilerGLES3() {
 	actions[RS::SHADER_SPATIAL].usage_defines["ANISOTROPY"] = "#define LIGHT_USE_ANISOTROPY\n";
 	actions[RS::SHADER_SPATIAL].usage_defines["ANISOTROPY_FLOW"] = "@ANISOTROPY";
 	actions[RS::SHADER_SPATIAL].usage_defines["AO"] = "#define ENABLE_AO\n";
-	actions[RS::SHADER_SPATIAL].usage_defines["AO_LIGHT_AFFECT"] = "#define ENABLE_AO\n";
+	actions[RS::SHADER_SPATIAL].usage_defines["AO_DIRECT_LIGHT_AFFECT"] = "#define ENABLE_AO\n";
 	actions[RS::SHADER_SPATIAL].usage_defines["UV"] = "#define ENABLE_UV_INTERP\n";
 	actions[RS::SHADER_SPATIAL].usage_defines["UV2"] = "#define ENABLE_UV2_INTERP\n";
 	actions[RS::SHADER_SPATIAL].usage_defines["NORMALMAP"] = "#define ENABLE_NORMALMAP\n";

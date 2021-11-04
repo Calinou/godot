@@ -411,11 +411,11 @@ RS::EnvironmentSSRRoughnessQuality RendererSceneRenderRD::environment_get_ssr_ro
 	return ssr_roughness_quality;
 }
 
-void RendererSceneRenderRD::environment_set_ssao(RID p_env, bool p_enable, float p_radius, float p_intensity, float p_power, float p_detail, float p_horizon, float p_sharpness, float p_light_affect, float p_ao_channel_affect) {
+void RendererSceneRenderRD::environment_set_ssao(RID p_env, bool p_enable, float p_radius, float p_intensity, float p_power, float p_detail, float p_horizon, float p_sharpness, float p_direct_light_affect) {
 	RendererSceneEnvironmentRD *env = environment_owner.get_or_null(p_env);
 	ERR_FAIL_COND(!env);
 
-	env->set_ssao(p_enable, p_radius, p_intensity, p_power, p_detail, p_horizon, p_sharpness, p_light_affect, p_ao_channel_affect);
+	env->set_ssao(p_enable, p_radius, p_intensity, p_power, p_detail, p_horizon, p_sharpness, p_direct_light_affect);
 }
 
 void RendererSceneRenderRD::environment_set_ssao_quality(RS::EnvironmentSSAOQuality p_quality, bool p_half_size, float p_adaptive_target, int p_blur_passes, float p_fadeout_from, float p_fadeout_to) {
@@ -433,13 +433,7 @@ bool RendererSceneRenderRD::environment_is_ssao_enabled(RID p_env) const {
 	return env->ssao_enabled;
 }
 
-float RendererSceneRenderRD::environment_get_ssao_ao_affect(RID p_env) const {
-	RendererSceneEnvironmentRD *env = environment_owner.get_or_null(p_env);
-	ERR_FAIL_COND_V(!env, 0.0);
-	return env->ssao_ao_channel_affect;
-}
-
-float RendererSceneRenderRD::environment_get_ssao_light_affect(RID p_env) const {
+float RendererSceneRenderRD::environment_get_ssao_direct_light_affect(RID p_env) const {
 	RendererSceneEnvironmentRD *env = environment_owner.get_or_null(p_env);
 	ERR_FAIL_COND_V(!env, 0.0);
 	return env->ssao_direct_light_affect;

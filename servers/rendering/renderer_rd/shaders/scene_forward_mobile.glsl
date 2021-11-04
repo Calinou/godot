@@ -601,7 +601,7 @@ void main() {
 #endif
 
 	float ao = 1.0;
-	float ao_light_affect = 0.0;
+	float ao_direct_light_affect = 0.0;
 
 	float alpha = 1.0;
 
@@ -1009,7 +1009,7 @@ void main() {
 	ambient_light *= ao;
 
 	// convert ao to direct light ao
-	ao = mix(1.0, ao, ao_light_affect);
+	ao = mix(1.0, ao, ao_direct_light_affect);
 
 	//this saves some VGPRs
 	vec3 f0 = F0(metallic, specular, albedo);

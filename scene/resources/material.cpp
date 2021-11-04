@@ -353,7 +353,7 @@ void BaseMaterial3D::init_shaders() {
 
 	shader_names->grow = "grow";
 
-	shader_names->ao_light_affect = "ao_light_affect";
+	shader_names->ao_direct_light_affect = "ao_direct_light_affect";
 
 	shader_names->proximity_fade_distance = "proximity_fade_distance";
 	shader_names->distance_fade_min = "distance_fade_min";
@@ -700,7 +700,7 @@ void BaseMaterial3D::_update_shader() {
 	if (features[FEATURE_AMBIENT_OCCLUSION]) {
 		code += "uniform sampler2D texture_ambient_occlusion : hint_white, " + texfilter_str + ";\n";
 		code += "uniform vec4 ao_texture_channel;\n";
-		code += "uniform float ao_light_affect;\n";
+		code += "uniform float ao_direct_light_affect;\n";
 	}
 
 	if (features[FEATURE_DETAIL]) {
@@ -1198,7 +1198,7 @@ void BaseMaterial3D::_update_shader() {
 			code += "	AO = orm_tex.r;\n";
 		}
 
-		code += "	AO_LIGHT_AFFECT = ao_light_affect;\n";
+		code += "	AO_DIRECT_LIGHT_AFFECT = ao_direct_light_affect;\n";
 	}
 
 	if (features[FEATURE_SUBSURFACE_SCATTERING]) {
@@ -1390,13 +1390,13 @@ float BaseMaterial3D::get_rim_tint() const {
 	return rim_tint;
 }
 
-void BaseMaterial3D::set_ao_light_affect(float p_ao_light_affect) {
-	ao_light_affect = p_ao_light_affect;
-	RS::get_singleton()->material_set_param(_get_material(), shader_names->ao_light_affect, p_ao_light_affect);
+void BaseMaterial3D::set_ao_direct_light_affect(float p_ao_direct_light_affect) {
+	ao_direct_light_affect = p_ao_direct_light_affect;
+	RS::get_singleton()->material_set_param(_get_material(), shader_names->ao_direct_light_affect, p_ao_direct_light_affect);
 }
 
-float BaseMaterial3D::get_ao_light_affect() const {
-	return ao_light_affect;
+float BaseMaterial3D::get_ao_direct_light_affect() const {
+	return ao_direct_light_affect;
 }
 
 void BaseMaterial3D::set_clearcoat(float p_clearcoat) {
@@ -2380,8 +2380,8 @@ void BaseMaterial3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_emission_operator", "operator"), &BaseMaterial3D::set_emission_operator);
 	ClassDB::bind_method(D_METHOD("get_emission_operator"), &BaseMaterial3D::get_emission_operator);
 
-	ClassDB::bind_method(D_METHOD("set_ao_light_affect", "amount"), &BaseMaterial3D::set_ao_light_affect);
-	ClassDB::bind_method(D_METHOD("get_ao_light_affect"), &BaseMaterial3D::get_ao_light_affect);
+	ClassDB::bind_method(D_METHOD("set_ao_direct_light_affect", "amount"), &BaseMaterial3D::set_ao_direct_light_affect);
+	ClassDB::bind_method(D_METHOD("get_ao_direct_light_affect"), &BaseMaterial3D::get_ao_direct_light_affect);
 
 	ClassDB::bind_method(D_METHOD("set_alpha_scissor_threshold", "threshold"), &BaseMaterial3D::set_alpha_scissor_threshold);
 	ClassDB::bind_method(D_METHOD("get_alpha_scissor_threshold"), &BaseMaterial3D::get_alpha_scissor_threshold);
@@ -2491,7 +2491,7 @@ void BaseMaterial3D::_bind_methods() {
 
 	ADD_GROUP("Ambient Occlusion", "ao_");
 	ADD_PROPERTYI(PropertyInfo(Variant::BOOL, "ao_enabled"), "set_feature", "get_feature", FEATURE_AMBIENT_OCCLUSION);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "ao_light_affect", PROPERTY_HINT_RANGE, "0,1,0.01"), "set_ao_light_affect", "get_ao_light_affect");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "ao_direct_light_affect", PROPERTY_HINT_RANGE, "0,1,0.01"), "set_ao_direct_light_affect", "get_ao_direct_light_affect");
 	ADD_PROPERTYI(PropertyInfo(Variant::OBJECT, "ao_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D"), "set_texture", "get_texture", TEXTURE_AMBIENT_OCCLUSION);
 	ADD_PROPERTYI(PropertyInfo(Variant::BOOL, "ao_on_uv2"), "set_flag", "get_flag", FLAG_AO_ON_UV2);
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "ao_texture_channel", PROPERTY_HINT_ENUM, "Red,Green,Blue,Alpha,Gray"), "set_ao_texture_channel", "get_ao_texture_channel");
@@ -2758,7 +2758,7 @@ BaseMaterial3D::BaseMaterial3D(bool p_orm) :
 	set_distance_fade_min_distance(0);
 	set_distance_fade_max_distance(10);
 
-	set_ao_light_affect(0.0);
+	set_ao_direct_light_affect(0.0);
 
 	set_metallic_texture_channel(TEXTURE_CHANNEL_RED);
 	set_roughness_texture_channel(TEXTURE_CHANNEL_RED);

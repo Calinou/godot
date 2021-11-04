@@ -1445,7 +1445,7 @@ void main() {
 
 #if defined(ENABLE_AO)
 	float ao = 1.0;
-	float ao_light_affect = 0.0;
+	float ao_direct_light_affect = 0.0;
 #endif
 
 #if defined(ENABLE_TANGENT_INTERP) || defined(ENABLE_NORMALMAP)
@@ -2068,9 +2068,9 @@ FRAGMENT_SHADER_CODE
 
 #if defined(ENABLE_AO)
 	ambient_light *= ao;
-	ao_light_affect = mix(1.0, ao, ao_light_affect);
-	specular_light *= ao_light_affect;
-	diffuse_light *= ao_light_affect;
+	ao_direct_light_affect = mix(1.0, ao, ao_direct_light_affect);
+	specular_light *= ao_direct_light_affect;
+	diffuse_light *= ao_direct_light_affect;
 #endif
 
 	diffuse_light *= 1.0 - metallic;

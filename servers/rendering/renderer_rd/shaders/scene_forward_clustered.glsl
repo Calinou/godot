@@ -595,7 +595,7 @@ void main() {
 #endif
 
 	float ao = 1.0;
-	float ao_light_affect = 0.0;
+	float ao_direct_light_affect = 0.0;
 
 	float alpha = float(instances.data[instance_index].flags >> INSTANCE_FLAGS_FADE_SHIFT) / float(255.0);
 
@@ -1152,7 +1152,6 @@ void main() {
 	if (scene_data.ssao_enabled) {
 		float ssao = texture(sampler2D(ao_buffer, material_samplers[SAMPLER_LINEAR_CLAMP]), screen_uv).r;
 		ao = min(ao, ssao);
-		ao_light_affect = mix(ao_light_affect, max(ao_light_affect, scene_data.ssao_light_affect), scene_data.ssao_ao_affect);
 	}
 
 	{ // process reflections
@@ -1217,7 +1216,7 @@ void main() {
 	ambient_light *= ao;
 
 	// convert ao to direct light ao
-	ao = mix(1.0, ao, ao_light_affect);
+	ao = mix(1.0, ao, ao_direct_light_affect);
 
 	//this saves some VGPRs
 	vec3 f0 = F0(metallic, specular, albedo);

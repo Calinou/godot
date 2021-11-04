@@ -90,7 +90,7 @@
 		<member name="ao_enabled" type="bool" setter="set_feature" getter="get_feature" default="false">
 			If [code]true[/code], ambient occlusion is enabled. Ambient occlusion darkens areas based on the [member ao_texture].
 		</member>
-		<member name="ao_light_affect" type="float" setter="set_ao_light_affect" getter="get_ao_light_affect" default="0.0">
+		<member name="ao_direct_light_affect" type="float" setter="set_ao_direct_light_affect" getter="get_ao_direct_light_affect" default="0.0">
 			Amount that ambient occlusion affects lighting from lights. If [code]0[/code], ambient occlusion only affects ambient light. If [code]1[/code], ambient occlusion affects lights just as much as it affects ambient light. This can be used to impact the strength of the ambient occlusion effect, but typically looks unrealistic.
 		</member>
 		<member name="ao_on_uv2" type="bool" setter="set_flag" getter="get_flag" default="false">
