@@ -7382,10 +7382,10 @@ Node3DEditor::Node3DEditor(EditorNode *p_editor) {
 	preview_node = memnew(Node3D);
 	preview_bounds = AABB();
 
-	ED_SHORTCUT("spatial_editor/bottom_view", TTR("Bottom View"), KEY_MASK_ALT + KEY_KP_7);
-	ED_SHORTCUT("spatial_editor/top_view", TTR("Top View"), KEY_KP_7);
-	ED_SHORTCUT("spatial_editor/rear_view", TTR("Rear View"), KEY_MASK_ALT + KEY_KP_1);
-	ED_SHORTCUT("spatial_editor/front_view", TTR("Front View"), KEY_KP_1);
+	ED_SHORTCUT("spatial_editor/bottom_view", TTR("Bottom View"), KEY_MASK_ALT + KEY_KP_7, KEY_MASK_ALT + KEY_HOME);
+	ED_SHORTCUT("spatial_editor/top_view", TTR("Top View"), KEY_KP_7, KEY_HOME);
+	ED_SHORTCUT("spatial_editor/rear_view", TTR("Rear View"), KEY_MASK_ALT + KEY_KP_1, KEY_MASK_ALT + KEY_END);
+	ED_SHORTCUT("spatial_editor/front_view", TTR("Front View"), KEY_KP_1, KEY_END);
 	ED_SHORTCUT("spatial_editor/left_view", TTR("Left View"), KEY_MASK_ALT + KEY_KP_3);
 	ED_SHORTCUT("spatial_editor/right_view", TTR("Right View"), KEY_KP_3);
 	ED_SHORTCUT("spatial_editor/orbit_view_down", TTR("Orbit View Down"), KEY_KP_2);
