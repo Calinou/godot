@@ -930,23 +930,92 @@ Vector<Ref<Shape3D>> ImporterMesh::convex_decompose(const Mesh::ConvexDecomposit
 }
 
 Ref<Shape3D> ImporterMesh::create_trimesh_shape() const {
-	Vector<Face3> faces = get_faces();
-	if (faces.size() == 0) {
+	ERR_FAIL_COND_V(!SurfaceTool::simplify_func, Ref<Shape3D>());
+
+	print_line("Simplifying collision trimesh shape.");
+
+	// Get original mesh's faces to simplify them.
+	const Vector<Face3> original_faces = get_faces();
+	int face_count = original_faces.size();
+
+	Vector<Vector3> original_vertices;
+	uint32_t vertex_count = 0;
+	original_vertices.resize(face_count * 3);
+	Vector<uint32_t> original_indices;
+	original_indices.resize(face_count * 3);
+	{
+		Map<Vector3, uint32_t> vertex_map;
+		Vector3 *vertex_w = original_vertices.ptrw();
+		uint32_t *index_w = original_indices.ptrw();
+		for (int i = 0; i < face_count; i++) {
+			for (int j = 0; j < 3; j++) {
+				const Vector3 &vertex = original_faces[i].vertex[j];
+				Map<Vector3, uint32_t>::Element *found_vertex = vertex_map.find(vertex);
+				uint32_t index;
+				if (found_vertex) {
+					index = found_vertex->get();
+				} else {
+					index = ++vertex_count;
+					vertex_map[vertex] = index;
+					vertex_w[index] = vertex;
+				}
+				index_w[i * 3 + j] = index;
+			}
+		}
+	}
+	original_vertices.resize(vertex_count);
+
+	// Generate a simplified mesh using meshoptimizer.
+	Ref<SurfaceTool> st = memnew(SurfaceTool);
+	st->begin(Mesh::PRIMITIVE_TRIANGLES);
+
+	for (int j = 0; j < original_vertices.size(); j++) {
+		st->add_vertex(original_vertices[j]);
+	}
+	for (int j = 0; j < original_indices.size(); j++) {
+		st->add_index(original_indices[j]);
+	}
+
+	const float simplify = 0.05;
+	PackedInt32Array new_indices = st->generate_lod(simplify);
+
+	// Put back the faces together and create a collision shape.
+	Vector<Face3> new_faces;
+
+	if (new_indices.size()) {
+		for (int j = 0; j < new_indices.size(); j += 3) {
+			Face3 f;
+			f.vertex[0] = original_vertices[new_indices[j + 0]];
+			f.vertex[1] = original_vertices[new_indices[j + 1]];
+			f.vertex[2] = original_vertices[new_indices[j + 2]];
+			new_faces.push_back(f);
+		}
+	} else {
+		for (int j = 0; j < original_vertices.size(); j += 3) {
+			Face3 f;
+			f.vertex[0] = original_vertices[j + 0];
+			f.vertex[1] = original_vertices[j + 1];
+			f.vertex[2] = original_vertices[j + 2];
+			new_faces.push_back(f);
+		}
+	}
+
+	if (new_faces.size() == 0) {
 		return Ref<Shape3D>();
 	}
 
-	Vector<Vector3> face_points;
-	face_points.resize(faces.size() * 3);
+	Vector<Vector3> new_face_points;
+	new_face_points.resize(new_faces.size() * 3);
 
-	for (int i = 0; i < face_points.size(); i += 3) {
-		Face3 f = faces.get(i / 3);
-		face_points.set(i, f.vertex[0]);
-		face_points.set(i + 1, f.vertex[1]);
-		face_points.set(i + 2, f.vertex[2]);
+	for (int i = 0; i < new_face_points.size(); i += 3) {
+		const Face3 f = new_faces.get(i / 3);
+		new_face_points.set(i, f.vertex[0]);
+		new_face_points.set(i + 1, f.vertex[1]);
+		new_face_points.set(i + 2, f.vertex[2]);
 	}
 
 	Ref<ConcavePolygonShape3D> shape = memnew(ConcavePolygonShape3D);
-	shape->set_faces(face_points);
+	shape->set_faces(new_face_points);
 	return shape;
 }
 
