@@ -130,10 +130,10 @@ private:
 	bool can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const;
 	void drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from);
 
-	EditorFileDialog *export_pck_zip;
+	EditorFileDialog *export_pck_pcz;
 	EditorFileDialog *export_project;
 	CheckBox *export_debug;
-	CheckBox *export_pck_zip_debug;
+	CheckBox *export_pck_pcz_debug;
 
 	CheckButton *enc_pck;
 	CheckButton *enc_directory;
@@ -142,8 +142,8 @@ private:
 
 	void _open_export_template_manager();
 
-	void _export_pck_zip();
-	void _export_pck_zip_selected(const String &p_path);
+	void _export_pck_pcz();
+	void _export_pck_pcz_selected(const String &p_path);
 
 	void _validate_export_path(const String &p_path);
 	void _export_project();

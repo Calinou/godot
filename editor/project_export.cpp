@@ -64,7 +64,7 @@ void ProjectExportDialog::_notification(int p_what) {
 		case NOTIFICATION_READY: {
 			duplicate_preset->set_icon(presets->get_theme_icon(SNAME("Duplicate"), SNAME("EditorIcons")));
 			delete_preset->set_icon(presets->get_theme_icon(SNAME("Remove"), SNAME("EditorIcons")));
-			connect("confirmed", callable_mp(this, &ProjectExportDialog::_export_pck_zip));
+			connect("confirmed", callable_mp(this, &ProjectExportDialog::_export_pck_pcz));
 			_update_export_all();
 		} break;
 	}
@@ -841,26 +841,26 @@ void ProjectExportDialog::_refresh_parent_checks(TreeItem *p_item) {
 	_refresh_parent_checks(parent);
 }
 
-void ProjectExportDialog::_export_pck_zip() {
+void ProjectExportDialog::_export_pck_pcz() {
 	Ref<EditorExportPreset> current = get_current_preset();
 	ERR_FAIL_COND(current.is_null());
 
 	String dir = current->get_export_path().get_base_dir();
-	export_pck_zip->set_current_dir(dir);
+	export_pck_pcz->set_current_dir(dir);
 
-	export_pck_zip->popup_file_dialog();
+	export_pck_pcz->popup_file_dialog();
 }
 
-void ProjectExportDialog::_export_pck_zip_selected(const String &p_path) {
+void ProjectExportDialog::_export_pck_pcz_selected(const String &p_path) {
 	Ref<EditorExportPreset> current = get_current_preset();
 	ERR_FAIL_COND(current.is_null());
 	Ref<EditorExportPlatform> platform = current->get_platform();
 	ERR_FAIL_COND(platform.is_null());
 
-	if (p_path.ends_with(".zip")) {
-		platform->export_zip(current, export_pck_zip_debug->is_pressed(), p_path);
+	if (p_path.ends_with(".pcz")) {
+		platform->export_pcz(current, export_pck_pcz_debug->is_pressed(), p_path);
 	} else if (p_path.ends_with(".pck")) {
-		platform->export_pack(current, export_pck_zip_debug->is_pressed(), p_path);
+		platform->export_pack(current, export_pck_pcz_debug->is_pressed(), p_path);
 	}
 }
 
@@ -1214,7 +1214,7 @@ ProjectExportDialog::ProjectExportDialog() {
 	updating = false;
 
 	get_cancel_button()->set_text(TTR("Close"));
-	get_ok_button()->set_text(TTR("Export PCK/ZIP..."));
+	get_ok_button()->set_text(TTR("Export PCK/PCZ..."));
 	export_button = add_button(TTR("Export Project..."), !DisplayServer::get_singleton()->get_swap_cancel_ok(), "export");
 	export_button->connect("pressed", callable_mp(this, &ProjectExportDialog::_export_project));
 	// Disable initially before we select a valid preset
@@ -1234,13 +1234,13 @@ ProjectExportDialog::ProjectExportDialog() {
 	export_all_button->connect("pressed", callable_mp(this, &ProjectExportDialog::_export_all_dialog));
 	export_all_button->set_disabled(true);
 
-	export_pck_zip = memnew(EditorFileDialog);
-	export_pck_zip->add_filter("*.zip ; " + TTR("ZIP File"));
-	export_pck_zip->add_filter("*.pck ; " + TTR("Godot Project Pack"));
-	export_pck_zip->set_access(EditorFileDialog::ACCESS_FILESYSTEM);
-	export_pck_zip->set_file_mode(EditorFileDialog::FILE_MODE_SAVE_FILE);
-	add_child(export_pck_zip);
-	export_pck_zip->connect("file_selected", callable_mp(this, &ProjectExportDialog::_export_pck_zip_selected));
+	export_pck_pcz = memnew(EditorFileDialog);
+	export_pck_pcz->add_filter("*.pcz ; " + TTR("Godot ZIP Project Pack"));
+	export_pck_pcz->add_filter("*.pck ; " + TTR("Godot Project Pack"));
+	export_pck_pcz->set_access(EditorFileDialog::ACCESS_FILESYSTEM);
+	export_pck_pcz->set_file_mode(EditorFileDialog::FILE_MODE_SAVE_FILE);
+	add_child(export_pck_pcz);
+	export_pck_pcz->connect("file_selected", callable_mp(this, &ProjectExportDialog::_export_pck_pcz_selected));
 
 	export_error = memnew(Label);
 	main_vb->add_child(export_error);
@@ -1280,11 +1280,11 @@ ProjectExportDialog::ProjectExportDialog() {
 	export_debug->set_h_size_flags(Control::SIZE_SHRINK_CENTER);
 	export_project->get_vbox()->add_child(export_debug);
 
-	export_pck_zip_debug = memnew(CheckBox);
-	export_pck_zip_debug->set_text(TTR("Export With Debug"));
-	export_pck_zip_debug->set_pressed(true);
-	export_pck_zip_debug->set_h_size_flags(Control::SIZE_SHRINK_CENTER);
-	export_pck_zip->get_vbox()->add_child(export_pck_zip_debug);
+	export_pck_pcz_debug = memnew(CheckBox);
+	export_pck_pcz_debug->set_text(TTR("Export With Debug"));
+	export_pck_pcz_debug->set_pressed(true);
+	export_pck_pcz_debug->set_h_size_flags(Control::SIZE_SHRINK_CENTER);
+	export_pck_pcz->get_vbox()->add_child(export_pck_pcz_debug);
 
 	set_hide_on_ok(false);
 

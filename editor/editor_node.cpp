@@ -922,11 +922,11 @@ void EditorNode::_fs_changed() {
 				export_error = vformat("Export preset \"%s\" doesn't have a matching platform.", preset_name);
 			} else {
 				Error err = OK;
-				if (export_defer.pack_only) { // Only export .pck or .zip data pack.
-					if (export_path.ends_with(".zip")) {
-						err = platform->export_zip(preset, export_defer.debug, export_path);
-					} else if (export_path.ends_with(".pck")) {
+				if (export_defer.pack_only) { // Only export .pck or .pcz data pack.
+					if (export_path.ends_with(".pck")) {
 						err = platform->export_pack(preset, export_defer.debug, export_path);
+					} else if (export_path.ends_with(".pcz")) {
+						err = platform->export_zip(preset, export_defer.debug, export_path);
 					}
 				} else { // Normal project export.
 					String config_error;
