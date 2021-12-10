@@ -3225,6 +3225,8 @@ static EditorPropertyRangeHint _parse_range_hint(PropertyHint p_hint, const Stri
 				hint.exp_range = true;
 			} else if (slice.begins_with("suffix:")) {
 				hint.suffix = " " + slice.replace_first("suffix:", "").strip_edges();
+			} else if (!slice.is_numeric()) {
+				WARN_PRINT(vformat("Unknown property range hint \"%s\". Source hint text: \"%s\"", slice, p_hint_text));
 			}
 		}
 	}
