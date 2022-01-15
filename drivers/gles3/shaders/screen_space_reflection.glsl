@@ -54,17 +54,17 @@ vec2 view_to_screen(vec3 view_pos, out float w) {
 #define M_PI 3.14159265359
 
 void main() {
-	vec4 diffuse = texture(source_diffuse, uv_interp);
-	vec4 normal_roughness = texture(source_normal_roughness, uv_interp);
+	vec4 diffuse = texture(source_diffuse, uv_interp + vec2(0, -0.5 * pixel_size.y));
+	vec4 normal_roughness = texture(source_normal_roughness, uv_interp + vec2(0, -0.5 * pixel_size.y));
 
 	vec3 normal;
 	normal = normal_roughness.xyz * 2.0 - 1.0;
 
 	float roughness = normal_roughness.w;
 
-	float depth_tex = texture(source_depth, uv_interp).r;
+	float depth_tex = texture(source_depth, uv_interp + vec2(0, -0.5 * pixel_size.y)).r;
 
-	vec4 world_pos = inverse_projection * vec4(uv_interp * 2.0 - 1.0, depth_tex * 2.0 - 1.0, 1.0);
+	vec4 world_pos = inverse_projection * vec4((uv_interp + vec2(0, -0.5 * pixel_size.y)) * 2.0 - 1.0, depth_tex * 2.0 - 1.0, 1.0);
 	vec3 vertex = world_pos.xyz / world_pos.w;
 
 	vec3 view_dir = normalize(vertex);
