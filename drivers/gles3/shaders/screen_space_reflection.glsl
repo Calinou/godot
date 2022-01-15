@@ -40,6 +40,7 @@ uniform int num_steps;
 uniform float depth_tolerance;
 uniform float distance_fade;
 uniform float curve_fade_in;
+uniform float step_resolution;
 
 layout(location = 0) out vec4 frag_color;
 
@@ -170,8 +171,8 @@ void main() {
 	if (found) {
 		float margin_blend = 1.0;
 
-		vec2 margin = vec2((viewport_size.x + viewport_size.y) * 0.5 * 0.05); // make a uniform margin
-		if (any(bvec4(lessThan(pos, vec2(0.0, 0.0)), greaterThan(pos, viewport_size * 0.5)))) {
+		vec2 margin = vec2((viewport_size.x + viewport_size.y) * step_resolution * 0.05); // make a uniform margin
+		if (any(bvec4(lessThan(pos, vec2(0.0, 0.0)), greaterThan(pos, viewport_size * step_resolution)))) {
 			// clip at the screen edges
 			frag_color = vec4(0.0);
 			return;
@@ -179,10 +180,8 @@ void main() {
 
 		{
 			//blend fading out towards inner margin
-			// 0.25 = midpoint of half-resolution reflection
-			vec2 margin_grad = mix(viewport_size * 0.5 - pos, pos, lessThan(pos, viewport_size * 0.25));
+			vec2 margin_grad = mix(viewport_size * step_resolution  - pos, pos, lessThan(pos, viewport_size * step_resolution  * 0.5));
 			margin_blend = smoothstep(0.0, margin.x * margin.y, margin_grad.x * margin_grad.y);
-			//margin_blend = 1.0;
 		}
 
 		vec2 final_pos;

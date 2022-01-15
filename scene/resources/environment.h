@@ -122,6 +122,7 @@ private:
 	float ssr_fade_out;
 	float ssr_depth_tolerance;
 	bool ssr_roughness;
+	float ssr_step_resolution;
 
 	bool ssao_enabled;
 	float ssao_radius;
@@ -267,6 +268,9 @@ public:
 
 	void set_ssr_rough(bool p_enable);
 	bool is_ssr_rough() const;
+
+	void set_ssr_step_resolution(float p_step_resolution);
+	float get_ssr_step_resolution() const;
 
 	void set_ssao_enabled(bool p_enable);
 	bool is_ssao_enabled() const;
