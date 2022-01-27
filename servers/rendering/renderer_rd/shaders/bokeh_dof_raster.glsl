@@ -75,6 +75,14 @@ float get_blur_size(float depth) {
 
 #endif
 
+#ifdef MODE_BOKEH_CIRCULAR
+
+float remap(float value, vec2 from, vec2 to) {
+	return to.x + (value - from.x) * (to.y - to.x) / (from.y - from.x);
+}
+
+#endif
+
 #if defined(MODE_BOKEH_BOX) || defined(MODE_BOKEH_HEXAGONAL)
 
 vec4 weighted_filter_dir(vec2 dir, vec2 uv, vec2 pixel_size) {
@@ -199,29 +207,25 @@ void main() {
 
 	vec4 color_accum = color;
 	float accum = 1.0;
-
 	float radius = params.blur_scale;
+
+	// A smaller `blur_scaler` means linearly slower convergence of the circle's `radius` to `blur_size`
+	// A bigger `blur_size` maps to a faster convergence of the circle's `radius` to `blur_size`
+	float radius_growth_rate = params.blur_scale * max(0.4, remap(params.blur_size, vec2(12.5, 62.5), vec2(0.5, 1.6)));
+
 	for (float ang = 0.0; radius < params.blur_size; ang += GOLDEN_ANGLE) {
 		vec2 uv_adj = uv + vec2(cos(ang), sin(ang)) * pixel_size * radius;
 
 		vec4 sample_color = texture(source_color, uv_adj);
 		sample_color.a = texture(source_weight, uv_adj).r;
 
-		float limit;
-
-		if (sample_color.a < color.a) {
-			limit = abs(sample_color.a);
-		} else {
-			limit = abs(color.a);
-		}
-
-		limit -= DEPTH_GAP;
+		float limit = abs(min(sample_color.a, color.a)) - DEPTH_GAP;
 
 		float m = smoothstep(radius - 0.5, radius + 0.5, limit);
 		color_accum += mix(color_accum / accum, sample_color, m);
 		accum += 1.0;
 
-		radius += params.blur_scale / radius;
+		radius += radius_growth_rate * inversesqrt(radius); // divide by sqrt(radius) to sample more points closer to center of circle
 	}
 
 	color_accum = color_accum / accum;

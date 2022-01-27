@@ -2380,9 +2380,9 @@ void RendererSceneRenderRD::_render_buffers_post_process_and_tonemap(const Rende
 		buffers.half_texture[0] = rb->blur[1].mipmaps[0].texture;
 		buffers.half_texture[1] = rb->blur[0].mipmaps[1].texture;
 
-		float bokeh_size = camfx->dof_blur_amount * 64.0 * resolution_factor;
+		float bokeh_size = camfx->dof_blur_amount * 64.0;
 		if (can_use_storage) {
-			storage->get_effects()->bokeh_dof(buffers, camfx->dof_blur_far_enabled, camfx->dof_blur_far_distance, camfx->dof_blur_far_transition, camfx->dof_blur_near_enabled, camfx->dof_blur_near_distance, camfx->dof_blur_near_transition, bokeh_size, dof_blur_bokeh_shape, dof_blur_quality, dof_blur_use_jitter, p_render_data->z_near, p_render_data->z_far, p_render_data->cam_ortogonal);
+			storage->get_effects()->bokeh_dof(buffers, camfx->dof_blur_far_enabled, camfx->dof_blur_far_distance, camfx->dof_blur_far_transition, camfx->dof_blur_near_enabled, camfx->dof_blur_near_distance, camfx->dof_blur_near_transition, bokeh_size, dof_blur_bokeh_shape, dof_blur_quality, resolution_factor, dof_blur_use_jitter, p_render_data->z_near, p_render_data->z_far, p_render_data->cam_ortogonal);
 		} else {
 			// Set framebuffers.
 			buffers.base_fb = rb->texture_fb;
@@ -2397,7 +2397,7 @@ void RendererSceneRenderRD::_render_buffers_post_process_and_tonemap(const Rende
 			// Set weight buffers.
 			buffers.base_weight_fb = rb->base_weight_fb;
 
-			storage->get_effects()->bokeh_dof_raster(buffers, camfx->dof_blur_far_enabled, camfx->dof_blur_far_distance, camfx->dof_blur_far_transition, camfx->dof_blur_near_enabled, camfx->dof_blur_near_distance, camfx->dof_blur_near_transition, bokeh_size, dof_blur_bokeh_shape, dof_blur_quality, p_render_data->z_near, p_render_data->z_far, p_render_data->cam_ortogonal);
+			storage->get_effects()->bokeh_dof_raster(buffers, camfx->dof_blur_far_enabled, camfx->dof_blur_far_distance, camfx->dof_blur_far_transition, camfx->dof_blur_near_enabled, camfx->dof_blur_near_distance, camfx->dof_blur_near_transition, bokeh_size, dof_blur_bokeh_shape, dof_blur_quality, resolution_factor, p_render_data->z_near, p_render_data->z_far, p_render_data->cam_ortogonal);
 		}
 		RD::get_singleton()->draw_command_end_label();
 	}

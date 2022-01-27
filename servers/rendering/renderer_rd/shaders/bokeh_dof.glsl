@@ -53,6 +53,14 @@ float get_blur_size(float depth) {
 
 #endif
 
+#ifdef MODE_BOKEH_CIRCULAR
+
+float remap(float value, vec2 from, vec2 to) {
+	return to.x + (value - from.x) * (to.y - to.x) / (from.y - from.x);
+}
+
+#endif
+
 #if defined(MODE_BOKEH_BOX) || defined(MODE_BOKEH_HEXAGONAL)
 
 vec4 weighted_filter_dir(vec2 dir, vec2 uv, vec2 pixel_size) {
@@ -77,15 +85,8 @@ vec4 weighted_filter_dir(vec2 dir, vec2 uv, vec2 pixel_size) {
 		radius = abs(radius);
 
 		vec4 sample_color = texture(color_texture, suv);
-		float limit;
 
-		if (sample_color.a < color.a) {
-			limit = abs(sample_color.a);
-		} else {
-			limit = abs(color.a);
-		}
-
-		limit -= DEPTH_GAP;
+		float limit = abs(min(sample_color.a, color.a)) - DEPTH_GAP;
 
 		float m = smoothstep(radius - 0.5, radius + 0.5, limit);
 
@@ -172,21 +173,42 @@ void main() {
 	uv += pixel_size * 0.5; //half pixel to read centers
 
 	vec4 color = texture(color_texture, uv);
+	float initial_blur = color.a;
 	float accum = 1.0;
 	float radius = params.blur_scale;
 
+	//radius -= smoothstep(0.0, params.blur_size * -0.25, color.a) * smoothstep(-params.blur_size, params.blur_size * -0.75, color.a) * 0.5 * radius;
+	
+	// A smaller `blur_scaler` means linearly slower convergence of the circle's `radius` to `blur_size`
+	// A bigger `blur_size` maps to a faster convergence of the circle's `radius` to `blur_size`
+	float _blur_size_performance = max(0.4, remap(params.blur_size, vec2(12.5, 62.5), vec2(0.4, 1.6)));
+	
+	float base_radius_growth_rate = radius * _blur_size_performance;
+	float radius_growth_rate = base_radius_growth_rate * (1.0 + 1.1 * abs(initial_blur) / params.blur_size);
+	
 	for (float ang = 0.0; radius < params.blur_size; ang += GOLDEN_ANGLE) {
 		vec2 suv = uv + vec2(cos(ang), sin(ang)) * pixel_size * radius;
 		vec4 sample_color = texture(color_texture, suv);
 		float sample_size = abs(sample_color.a);
-		if (sample_color.a > color.a) {
-			sample_size = clamp(sample_size, 0.0, abs(color.a) * 2.0);
+		if (sample_color.a > initial_blur) {
+			sample_size = clamp(sample_size, 0.0, abs(initial_blur) * remap(params.blur_size, vec2(12.5, 62.5), vec2(1.0, 2.0)));
 		}
 
 		float m = smoothstep(radius - 0.5, radius + 0.5, sample_size);
-		color += mix(color / accum, sample_color, m);
-		accum += 1.0;
-		radius += params.blur_scale / radius;
+		float _m = abs(m - 0.5) * 2.0;
+		
+// 		radius_growth_rate = mix(radius_growth_rate + 0.4 * radius_growth_rate * _m, base_radius_growth_rate, _m * pow(m, 3.0));
+
+		// since the radius is growing increasingly faster, but we still want a uniform coverage, we'll account for that by increasing their influence
+		float strength = remap(color.a, vec2(-params.blur_size, params.blur_size), vec2(radius_growth_rate / base_radius_growth_rate, 1.0));
+		color += mix(color / accum, sample_color, m) * strength;
+		accum += strength;
+		
+		radius_growth_rate *= (
+			1.0 
+			+ mix(0.01 * _m, 0.005, hash12n(uv) * 0.5)// * (1.0 - 0.5 * smoothstep(0.0, params.blur_size * -0.25, color.a / accum) * smoothstep(-params.blur_size, params.blur_size * -0.5, color.a / accum))
+		);
+		radius += radius_growth_rate / radius; // divide by sqrt(radius) to sample more points closer to center of circle * mix(inversesqrt(radius), 1.0 / radius, m);
 	}
 
 	color /= accum;

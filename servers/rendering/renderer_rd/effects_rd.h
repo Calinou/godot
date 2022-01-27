@@ -928,8 +928,8 @@ public:
 		RID weight_texture[4];
 	};
 
-	void bokeh_dof(const BokehBuffers &p_buffers, bool p_dof_far, float p_dof_far_begin, float p_dof_far_size, bool p_dof_near, float p_dof_near_begin, float p_dof_near_size, float p_bokeh_size, RS::DOFBokehShape p_bokeh_shape, RS::DOFBlurQuality p_quality, bool p_use_jitter, float p_cam_znear, float p_cam_zfar, bool p_cam_orthogonal);
-	void bokeh_dof_raster(const BokehBuffers &p_buffers, bool p_dof_far, float p_dof_far_begin, float p_dof_far_size, bool p_dof_near, float p_dof_near_begin, float p_dof_near_size, float p_dof_blur_amount, RenderingServer::DOFBokehShape p_bokeh_shape, RS::DOFBlurQuality p_quality, float p_cam_znear, float p_cam_zfar, bool p_cam_orthogonal);
+	void bokeh_dof(const BokehBuffers &p_buffers, bool p_dof_far, float p_dof_far_begin, float p_dof_far_size, bool p_dof_near, float p_dof_near_begin, float p_dof_near_size, float p_bokeh_size, RS::DOFBokehShape p_bokeh_shape, RS::DOFBlurQuality p_quality, float dof_resolution_influence, bool p_use_jitter, float p_cam_znear, float p_cam_zfar, bool p_cam_orthogonal);
+	void bokeh_dof_raster(const BokehBuffers &p_buffers, bool p_dof_far, float p_dof_far_begin, float p_dof_far_size, bool p_dof_near, float p_dof_near_begin, float p_dof_near_size, float p_dof_blur_amount, RenderingServer::DOFBokehShape p_bokeh_shape, RS::DOFBlurQuality p_quality, float dof_resolution_influence, float p_cam_znear, float p_cam_zfar, bool p_cam_orthogonal);
 
 	struct TonemapSettings {
 		bool use_glow = false;

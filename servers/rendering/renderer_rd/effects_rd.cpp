@@ -989,7 +989,7 @@ void EffectsRD::luminance_reduction_raster(RID p_source_texture, const Size2i p_
 	}
 }
 
-void EffectsRD::bokeh_dof(const BokehBuffers &p_buffers, bool p_dof_far, float p_dof_far_begin, float p_dof_far_size, bool p_dof_near, float p_dof_near_begin, float p_dof_near_size, float p_bokeh_size, RenderingServer::DOFBokehShape p_bokeh_shape, RS::DOFBlurQuality p_quality, bool p_use_jitter, float p_cam_znear, float p_cam_zfar, bool p_cam_orthogonal) {
+void EffectsRD::bokeh_dof(const BokehBuffers &p_buffers, bool p_dof_far, float p_dof_far_begin, float p_dof_far_size, bool p_dof_near, float p_dof_near_begin, float p_dof_near_size, float p_bokeh_size, RenderingServer::DOFBokehShape p_bokeh_shape, RS::DOFBlurQuality p_quality, float dof_resolution_influence, bool p_use_jitter, float p_cam_znear, float p_cam_zfar, bool p_cam_orthogonal) {
 	ERR_FAIL_COND_MSG(prefer_raster_effects, "Can't use compute version of BOKEH DOF with the mobile renderer.");
 
 	bokeh.push_constant.blur_far_active = p_dof_far;
@@ -1005,12 +1005,12 @@ void EffectsRD::bokeh_dof(const BokehBuffers &p_buffers, bool p_dof_far, float p
 	bokeh.push_constant.z_near = p_cam_znear;
 	bokeh.push_constant.z_far = p_cam_zfar;
 	bokeh.push_constant.orthogonal = p_cam_orthogonal;
-	bokeh.push_constant.blur_size = p_bokeh_size;
+	bokeh.push_constant.blur_size = p_bokeh_size * dof_resolution_influence;
 
 	bokeh.push_constant.second_pass = false;
 	bokeh.push_constant.half_size = false;
 
-	bokeh.push_constant.blur_scale = 0.5;
+	bokeh.push_constant.blur_scale = 1.0 / Math::pow(dof_resolution_influence, 1.0 / 4.0);
 
 	RD::ComputeListID compute_list = RD::get_singleton()->compute_list_begin();
 
@@ -1100,10 +1100,10 @@ void EffectsRD::bokeh_dof(const BokehBuffers &p_buffers, bool p_dof_far, float p
 		//second pass
 		RD::get_singleton()->compute_list_bind_compute_pipeline(compute_list, bokeh.compute_pipelines[BOKEH_GEN_BOKEH_CIRCULAR]);
 
-		static const float quality_scale[4] = { 8.0, 4.0, 1.0, 0.5 };
+		static const float quality_scale[4] = { 7.2, 3.2, 1.4, 0.6 };
 
 		bokeh.push_constant.steps = 0;
-		bokeh.push_constant.blur_scale = quality_scale[p_quality];
+		bokeh.push_constant.blur_scale = quality_scale[p_quality] / Math::pow(dof_resolution_influence, 1.0 / 5.0);
 
 		//circle always runs in half size, otherwise too expensive
 
@@ -1141,7 +1141,7 @@ void EffectsRD::bokeh_dof(const BokehBuffers &p_buffers, bool p_dof_far, float p
 	RD::get_singleton()->compute_list_end();
 }
 
-void EffectsRD::bokeh_dof_raster(const BokehBuffers &p_buffers, bool p_dof_far, float p_dof_far_begin, float p_dof_far_size, bool p_dof_near, float p_dof_near_begin, float p_dof_near_size, float p_dof_blur_amount, RenderingServer::DOFBokehShape p_bokeh_shape, RS::DOFBlurQuality p_quality, float p_cam_znear, float p_cam_zfar, bool p_cam_orthogonal) {
+void EffectsRD::bokeh_dof_raster(const BokehBuffers &p_buffers, bool p_dof_far, float p_dof_far_begin, float p_dof_far_size, bool p_dof_near, float p_dof_near_begin, float p_dof_near_size, float p_dof_blur_amount, RenderingServer::DOFBokehShape p_bokeh_shape, RS::DOFBlurQuality p_quality, float dof_resolution_influence, float p_cam_znear, float p_cam_zfar, bool p_cam_orthogonal) {
 	ERR_FAIL_COND_MSG(!prefer_raster_effects, "Can't use blur DOF with the clustered renderer.");
 
 	memset(&bokeh.push_constant, 0, sizeof(BokehPushConstant));
@@ -1196,7 +1196,7 @@ void EffectsRD::bokeh_dof_raster(const BokehBuffers &p_buffers, bool p_dof_far, 
 			}
 
 			static const int quality_samples[4] = { 6, 12, 12, 24 };
-			bokeh.push_constant.blur_scale = 0.5;
+			bokeh.push_constant.blur_scale = 1.0 / Math::sqrt(dof_resolution_influence);
 			bokeh.push_constant.steps = quality_samples[p_quality];
 
 			RID framebuffer = bokeh.push_constant.half_size ? p_buffers.half_fb[0] : p_buffers.secondary_fb;
@@ -1265,8 +1265,8 @@ void EffectsRD::bokeh_dof_raster(const BokehBuffers &p_buffers, bool p_dof_far, 
 				// bokeh.push_constant.blur_size *= 0.5;
 			}
 
-			static const float quality_scale[4] = { 8.0, 4.0, 1.0, 0.5 };
-			bokeh.push_constant.blur_scale = quality_scale[p_quality];
+			static const float quality_scale[4] = { 7.2, 3.2, 1.4, 0.6 };
+			bokeh.push_constant.blur_scale = quality_scale[p_quality] / Math::pow(dof_resolution_influence, 1.0 / 5.0);
 			bokeh.push_constant.steps = 0.0;
 
 			RID framebuffer = bokeh.push_constant.half_size ? p_buffers.half_fb[0] : p_buffers.secondary_fb;
