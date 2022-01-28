@@ -440,8 +440,9 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	EDITOR_SETTING(Variant::INT, PROPERTY_HINT_RANGE, "interface/inspector/max_array_dictionary_items_per_page", 20, "10,100,1")
 
 	// Theme
-	EDITOR_SETTING(Variant::STRING, PROPERTY_HINT_ENUM, "interface/theme/preset", "Default", "Default,Breeze Dark,Godot 2,Grey,Light,Solarized (Dark),Solarized (Light),Custom")
-	EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "interface/theme/icon_and_font_color", 0, "Auto,Dark,Light")
+	EDITOR_SETTING(Variant::STRING, PROPERTY_HINT_ENUM, "interface/theme/mode", "Dark", "Dark,Light")
+	EDITOR_SETTING(Variant::STRING, PROPERTY_HINT_ENUM, "interface/theme/dark_preset", "Default", "Default,Gray,Breeze Dark,Godot 2,Solarized Dark,Custom")
+	EDITOR_SETTING(Variant::STRING, PROPERTY_HINT_ENUM, "interface/theme/light_preset", "Default", "Default,Solarized Light,Custom")
 	EDITOR_SETTING(Variant::COLOR, PROPERTY_HINT_NONE, "interface/theme/base_color", Color(0.2, 0.23, 0.31), "")
 	EDITOR_SETTING(Variant::COLOR, PROPERTY_HINT_NONE, "interface/theme/accent_color", Color(0.41, 0.61, 0.91), "")
 	EDITOR_SETTING(Variant::FLOAT, PROPERTY_HINT_RANGE, "interface/theme/contrast", 0.3, "-1,1,0.01")
@@ -492,7 +493,8 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	/* Text editor */
 
 	// Theme
-	EDITOR_SETTING(Variant::STRING, PROPERTY_HINT_ENUM, "text_editor/theme/color_theme", "Default", "Default,Godot 2,Custom")
+	EDITOR_SETTING(Variant::STRING, PROPERTY_HINT_ENUM, "text_editor/theme/dark_color_theme", "Default", "Default,Godot 2,Custom")
+	EDITOR_SETTING(Variant::STRING, PROPERTY_HINT_ENUM, "text_editor/theme/light_color_theme", "Default", "Default,Godot 2,Custom")
 
 	// Theme: Highlighting
 	_load_godot2_text_editor_theme();
@@ -786,7 +788,7 @@ bool EditorSettings::_save_text_editor_theme(String p_file) {
 }
 
 bool EditorSettings::_is_default_text_editor_theme(String p_theme_name) {
-	return p_theme_name == "default" || p_theme_name == "godot 2" || p_theme_name == "custom";
+	return p_theme_name == "default dark" || p_theme_name == "default light" || p_theme_name == "godot 2" || p_theme_name == "custom";
 }
 
 // PUBLIC METHODS
@@ -1153,16 +1155,28 @@ void EditorSettings::load_favorites() {
 	}
 }
 
-bool EditorSettings::is_dark_theme() {
-	int AUTO_COLOR = 0;
-	int LIGHT_COLOR = 2;
-	Color base_color = get("interface/theme/base_color");
-	int icon_font_color_setting = get("interface/theme/icon_and_font_color");
-	return (icon_font_color_setting == AUTO_COLOR && base_color.get_luminance() < 0.5) || icon_font_color_setting == LIGHT_COLOR;
+bool EditorSettings::is_dark_theme() const {
+	return String(EDITOR_GET("interface/theme/mode")) == "Dark";
+}
+
+String EditorSettings::get_interface_theme_preset() const {
+	if (is_dark_theme()) {
+		return String(EditorSettings::get_singleton()->get("interface/theme/dark_preset"));
+	}
+
+	return String(EditorSettings::get_singleton()->get("interface/theme/light_preset"));
+}
+
+String EditorSettings::get_text_editor_color_theme() const {
+	if (is_dark_theme()) {
+		return String(EditorSettings::get_singleton()->get("text_editor/theme/dark_color_theme"));
+	}
+
+	return String(EditorSettings::get_singleton()->get("text_editor/theme/light_color_theme"));
 }
 
 void EditorSettings::list_text_editor_themes() {
-	String themes = "Default,Godot 2,Custom";
+	String themes = "Default Dark,Default Light,Godot 2,Custom";
 
 	DirAccess *d = DirAccess::open(get_text_editor_themes_dir());
 	if (d) {
@@ -1183,11 +1197,14 @@ void EditorSettings::list_text_editor_themes() {
 			themes += "," + E;
 		}
 	}
-	add_property_hint(PropertyInfo(Variant::STRING, "text_editor/theme/color_theme", PROPERTY_HINT_ENUM, themes));
+
+	// Using a dark color theme on a light editor theme (and vice versa) is allowed.
+	add_property_hint(PropertyInfo(Variant::STRING, "text_editor/theme/dark_color_theme", PROPERTY_HINT_ENUM, themes));
+	add_property_hint(PropertyInfo(Variant::STRING, "text_editor/theme/light_color_theme", PROPERTY_HINT_ENUM, themes));
 }
 
 void EditorSettings::load_text_editor_theme() {
-	String p_file = get("text_editor/theme/color_theme");
+	String p_file = get_text_editor_color_theme();
 
 	if (_is_default_text_editor_theme(p_file.get_file().to_lower())) {
 		if (p_file == "Godot 2") {
@@ -1227,7 +1244,7 @@ bool EditorSettings::import_text_editor_theme(String p_file) {
 	if (!p_file.ends_with(".tet")) {
 		return false;
 	} else {
-		if (p_file.get_file().to_lower() == "default.tet") {
+		if (p_file.get_file().to_lower() == "default dark.tet" || p_file.get_file().to_lower() == "default light.tet") {
 			return false;
 		}
 
@@ -1242,7 +1259,7 @@ bool EditorSettings::import_text_editor_theme(String p_file) {
 }
 
 bool EditorSettings::save_text_editor_theme() {
-	String p_file = get("text_editor/theme/color_theme");
+	const String p_file = get_text_editor_color_theme();
 
 	if (_is_default_text_editor_theme(p_file.get_file().to_lower())) {
 		return false;
@@ -1265,7 +1282,11 @@ bool EditorSettings::save_text_editor_theme_as(String p_file) {
 		String theme_name = p_file.substr(0, p_file.length() - 4).get_file();
 
 		if (p_file.get_base_dir() == get_text_editor_themes_dir()) {
-			_initial_set("text_editor/theme/color_theme", theme_name);
+			if (EditorSettings::get_singleton()->is_dark_theme()) {
+				_initial_set("text_editor/theme/dark_color_theme", theme_name);
+			} else {
+				_initial_set("text_editor/theme/light_color_theme", theme_name);
+			}
 			load_text_editor_theme();
 		}
 		return true;
@@ -1274,7 +1295,8 @@ bool EditorSettings::save_text_editor_theme_as(String p_file) {
 }
 
 bool EditorSettings::is_default_text_editor_theme() {
-	String p_file = get("text_editor/theme/color_theme");
+	const String p_file = get_text_editor_color_theme();
+
 	return _is_default_text_editor_theme(p_file.get_file().to_lower());
 }
 

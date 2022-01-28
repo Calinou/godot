@@ -1536,7 +1536,7 @@ void ScriptEditor::_show_save_theme_as_dialog() {
 	file_dialog_option = THEME_SAVE_AS;
 	file_dialog->clear_filters();
 	file_dialog->add_filter("*.tet");
-	file_dialog->set_current_path(EditorSettings::get_singleton()->get_text_editor_themes_dir().plus_file(EditorSettings::get_singleton()->get("text_editor/theme/color_theme")));
+	file_dialog->set_current_path(EditorSettings::get_singleton()->get_text_editor_themes_dir().plus_file(EditorSettings::get_singleton()->get_text_editor_color_theme()));
 	file_dialog->popup_file_dialog();
 	file_dialog->set_title(TTR("Save Theme As..."));
 }
@@ -2705,9 +2705,9 @@ void ScriptEditor::_editor_settings_changed() {
 	_update_autosave_timer();
 
 	if (current_theme.is_empty()) {
-		current_theme = EditorSettings::get_singleton()->get("text_editor/theme/color_theme");
-	} else if (current_theme != String(EditorSettings::get_singleton()->get("text_editor/theme/color_theme"))) {
-		current_theme = EditorSettings::get_singleton()->get("text_editor/theme/color_theme");
+		current_theme = EditorSettings::get_singleton()->get_text_editor_color_theme();
+	} else if (current_theme != String(EditorSettings::get_singleton()->get_text_editor_color_theme())) {
+		current_theme = EditorSettings::get_singleton()->get_text_editor_color_theme();
 		EditorSettings::get_singleton()->load_text_editor_theme();
 	}
 

@@ -306,7 +306,8 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	float icon_saturation = EDITOR_GET("interface/theme/icon_saturation");
 	float relationship_line_opacity = EDITOR_GET("interface/theme/relationship_line_opacity");
 
-	String preset = EDITOR_GET("interface/theme/preset");
+	const bool dark_theme = EditorSettings::get_singleton()->is_dark_theme();
+	const String preset = EditorSettings::get_singleton()->get_interface_theme_preset();
 
 	int border_size = EDITOR_GET("interface/theme/border_size");
 	int corner_radius = EDITOR_GET("interface/theme/corner_radius");
@@ -336,11 +337,6 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 		preset_accent_color = Color(0.72, 0.89, 1.00);
 		preset_base_color = Color(0.24, 0.24, 0.24);
 		preset_contrast = default_contrast;
-	} else if (preset == "Light") {
-		preset_accent_color = Color(0.18, 0.50, 1.00);
-		preset_base_color = Color(0.9, 0.9, 0.9);
-		// A negative contrast rate looks better for light themes, since it better follows the natural order of UI "elevation".
-		preset_contrast = -0.08;
 	} else if (preset == "Solarized (Dark)") {
 		preset_accent_color = Color(0.15, 0.55, 0.82);
 		preset_base_color = Color(0.04, 0.23, 0.27);
@@ -351,9 +347,16 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 		// A negative contrast rate looks better for light themes, since it better follows the natural order of UI "elevation".
 		preset_contrast = -0.08;
 	} else { // Default
-		preset_accent_color = Color(0.44, 0.73, 0.98);
-		preset_base_color = Color(0.21, 0.24, 0.29);
-		preset_contrast = default_contrast;
+		if (dark_theme) {
+			preset_accent_color = Color(0.44, 0.73, 0.98);
+			preset_base_color = Color(0.21, 0.24, 0.29);
+			preset_contrast = default_contrast;
+		} else {
+			preset_accent_color = Color(0.18, 0.50, 1.00);
+			preset_base_color = Color(0.9, 0.9, 0.9);
+			// A negative contrast rate looks better for light themes, since it better follows the natural order of UI "elevation".
+			preset_contrast = -0.08;
+		}
 	}
 
 	if (preset != "Custom") {
@@ -365,13 +368,16 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 		EditorSettings::get_singleton()->set_initial_value("interface/theme/contrast", contrast);
 	}
 
-	EditorSettings::get_singleton()->set_manually("interface/theme/preset", preset);
+	if (dark_theme) {
+		EditorSettings::get_singleton()->set_manually("interface/theme/dark_preset", preset);
+	} else {
+		EditorSettings::get_singleton()->set_manually("interface/theme/light_preset", preset);
+	}
 	EditorSettings::get_singleton()->set_manually("interface/theme/accent_color", accent_color);
 	EditorSettings::get_singleton()->set_manually("interface/theme/base_color", base_color);
 	EditorSettings::get_singleton()->set_manually("interface/theme/contrast", contrast);
 
 	// Colors
-	bool dark_theme = EditorSettings::get_singleton()->is_dark_theme();
 
 	const Color dark_color_1 = base_color.lerp(Color(0, 0, 0, 1), contrast);
 	const Color dark_color_2 = base_color.lerp(Color(0, 0, 0, 1), contrast * 1.5);
@@ -1511,7 +1517,8 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	const Color search_result_border_color = Color(0.41, 0.61, 0.91, 0.38);
 
 	EditorSettings *setting = EditorSettings::get_singleton();
-	String text_editor_color_theme = setting->get("text_editor/theme/color_theme");
+	const String text_editor_color_theme = setting->get_text_editor_color_theme();
+
 	if (text_editor_color_theme == "Default") {
 		setting->set_initial_value("text_editor/theme/highlighting/symbol_color", symbol_color, true);
 		setting->set_initial_value("text_editor/theme/highlighting/keyword_color", keyword_color, true);

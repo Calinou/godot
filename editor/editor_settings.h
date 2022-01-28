@@ -163,7 +163,9 @@ public:
 	Vector<String> get_recent_dirs() const;
 	void load_favorites();
 
-	bool is_dark_theme();
+	bool is_dark_theme() const;
+	String get_interface_theme_preset() const;
+	String get_text_editor_color_theme() const;
 
 	void list_text_editor_themes();
 	void load_text_editor_theme();
