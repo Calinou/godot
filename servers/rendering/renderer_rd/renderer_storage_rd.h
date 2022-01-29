@@ -1019,6 +1019,7 @@ private:
 		Color shadow_color;
 		RID projector;
 		bool shadow = false;
+		bool shadow_frozen = false;
 		bool negative = false;
 		bool reverse_cull = false;
 		RS::LightBakeMode bake_mode = RS::LIGHT_BAKE_DYNAMIC;
@@ -1833,6 +1834,7 @@ public:
 	void light_set_color(RID p_light, const Color &p_color);
 	void light_set_param(RID p_light, RS::LightParam p_param, float p_value);
 	void light_set_shadow(RID p_light, bool p_enabled);
+	void light_set_shadow_frozen(RID p_light, bool p_enabled);
 	void light_set_shadow_color(RID p_light, const Color &p_color);
 	void light_set_projector(RID p_light, RID p_texture);
 	void light_set_negative(RID p_light, bool p_enable);
@@ -1900,6 +1902,13 @@ public:
 		ERR_FAIL_COND_V(!light, RS::LIGHT_DIRECTIONAL);
 
 		return light->shadow;
+	}
+
+	_FORCE_INLINE_ bool light_is_shadow_frozen(RID p_light) const {
+		const Light *light = light_owner.get_or_null(p_light);
+		ERR_FAIL_COND_V(!light, false);
+
+		return light->shadow_frozen;
 	}
 
 	_FORCE_INLINE_ bool light_has_projector(RID p_light) const {

@@ -6495,6 +6495,15 @@ void RendererStorageRD::light_set_shadow(RID p_light, bool p_enabled) {
 	light->dependency.changed_notify(DEPENDENCY_CHANGED_LIGHT);
 }
 
+void RendererStorageRD::light_set_shadow_frozen(RID p_light, bool p_enabled) {
+	Light *light = light_owner.get_or_null(p_light);
+	ERR_FAIL_COND(!light);
+	light->shadow_frozen = p_enabled;
+
+	light->version++;
+	light->dependency.changed_notify(DEPENDENCY_CHANGED_LIGHT);
+}
+
 void RendererStorageRD::light_set_shadow_color(RID p_light, const Color &p_color) {
 	Light *light = light_owner.get_or_null(p_light);
 	ERR_FAIL_COND(!light);

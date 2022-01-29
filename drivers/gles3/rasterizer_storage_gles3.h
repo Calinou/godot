@@ -898,6 +898,7 @@ public:
 	void light_set_color(RID p_light, const Color &p_color) override;
 	void light_set_param(RID p_light, RS::LightParam p_param, float p_value) override;
 	void light_set_shadow(RID p_light, bool p_enabled) override;
+	void light_set_shadow_frozen(RID p_light, bool p_enabled) override;
 	void light_set_shadow_color(RID p_light, const Color &p_color) override;
 	void light_set_projector(RID p_light, RID p_texture) override;
 	void light_set_negative(RID p_light, bool p_enable) override;
@@ -918,6 +919,7 @@ public:
 	RS::LightOmniShadowMode light_omni_get_shadow_mode(RID p_light) override;
 
 	bool light_has_shadow(RID p_light) const override;
+	bool light_is_shadow_frozen(RID p_light) const override;
 	bool light_has_projector(RID p_light) const override;
 
 	RS::LightType light_get_type(RID p_light) const override;

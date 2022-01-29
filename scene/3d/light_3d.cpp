@@ -65,6 +65,15 @@ bool Light3D::has_shadow() const {
 	return shadow;
 }
 
+void Light3D::set_shadow_frozen(bool p_enable) {
+	shadow_frozen = p_enable;
+	RS::get_singleton()->light_set_shadow_frozen(light, p_enable);
+}
+
+bool Light3D::is_shadow_frozen() const {
+	return shadow_frozen;
+}
+
 void Light3D::set_negative(bool p_enable) {
 	negative = p_enable;
 	RS::get_singleton()->light_set_negative(light, p_enable);
@@ -217,6 +226,9 @@ void Light3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_shadow", "enabled"), &Light3D::set_shadow);
 	ClassDB::bind_method(D_METHOD("has_shadow"), &Light3D::has_shadow);
 
+	ClassDB::bind_method(D_METHOD("set_shadow_frozen", "enabled"), &Light3D::set_shadow_frozen);
+	ClassDB::bind_method(D_METHOD("is_shadow_frozen"), &Light3D::is_shadow_frozen);
+
 	ClassDB::bind_method(D_METHOD("set_negative", "enabled"), &Light3D::set_negative);
 	ClassDB::bind_method(D_METHOD("is_negative"), &Light3D::is_negative);
 
@@ -256,6 +268,7 @@ void Light3D::_bind_methods() {
 	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "shadow_normal_bias", PROPERTY_HINT_RANGE, "0,10,0.001"), "set_param", "get_param", PARAM_SHADOW_NORMAL_BIAS);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "shadow_reverse_cull_face"), "set_shadow_reverse_cull_face", "get_shadow_reverse_cull_face");
 	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "shadow_transmittance_bias", PROPERTY_HINT_RANGE, "-16,16,0.01"), "set_param", "get_param", PARAM_TRANSMITTANCE_BIAS);
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "shadow_frozen"), "set_shadow_frozen", "is_shadow_frozen");
 	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "shadow_fog_fade", PROPERTY_HINT_RANGE, "0.01,10,0.01"), "set_param", "get_param", PARAM_SHADOW_VOLUMETRIC_FOG_FADE);
 	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "shadow_blur", PROPERTY_HINT_RANGE, "0.1,8,0.01"), "set_param", "get_param", PARAM_SHADOW_BLUR);
 	ADD_GROUP("Editor", "");

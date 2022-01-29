@@ -2254,6 +2254,9 @@ void RasterizerStorageGLES3::light_set_param(RID p_light, RS::LightParam p_param
 void RasterizerStorageGLES3::light_set_shadow(RID p_light, bool p_enabled) {
 }
 
+void RasterizerStorageGLES3::light_set_shadow_frozen(RID p_light, bool p_enabled) {
+}
+
 void RasterizerStorageGLES3::light_set_shadow_color(RID p_light, const Color &p_color) {
 }
 
@@ -2304,6 +2307,10 @@ RS::LightOmniShadowMode RasterizerStorageGLES3::light_omni_get_shadow_mode(RID p
 }
 
 bool RasterizerStorageGLES3::light_has_shadow(RID p_light) const {
+	return false;
+}
+
+bool RasterizerStorageGLES3::light_is_shadow_frozen(RID p_light) const {
 	return false;
 }
 

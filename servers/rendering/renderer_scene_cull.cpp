@@ -3070,7 +3070,7 @@ void RendererSceneCull::_render_scene(const RendererSceneRender::CameraData *p_c
 		for (uint32_t i = 0; i < (uint32_t)scene_cull_result.lights.size(); i++) {
 			Instance *ins = scene_cull_result.lights[i];
 
-			if (!p_shadow_atlas.is_valid() || !RSG::storage->light_has_shadow(ins->base)) {
+			if (!p_shadow_atlas.is_valid() || !RSG::storage->light_has_shadow(ins->base) || RSG::storage->light_is_shadow_frozen(ins->base)) {
 				continue;
 			}
 

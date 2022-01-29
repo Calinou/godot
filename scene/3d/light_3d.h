@@ -72,6 +72,7 @@ private:
 	real_t param[PARAM_MAX] = {};
 	Color shadow_color;
 	bool shadow = false;
+	bool shadow_frozen = false;
 	bool negative = false;
 	bool reverse_cull = false;
 	uint32_t cull_mask = 0;
@@ -118,6 +119,9 @@ public:
 
 	void set_shadow_reverse_cull_face(bool p_enable);
 	bool get_shadow_reverse_cull_face() const;
+
+	void set_shadow_frozen(bool p_enable);
+	bool is_shadow_frozen() const;
 
 	void set_bake_mode(BakeMode p_mode);
 	BakeMode get_bake_mode() const;
