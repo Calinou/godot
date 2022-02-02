@@ -1396,25 +1396,34 @@ void main() {
 				} else { //no soft shadows
 
 					vec4 pssm_coord;
-					if (depth_z < directional_lights.data[i].shadow_split_offsets.x) {
+
+					vec4 view_pos = vec4(normalize(vertex_interp).xyz, 1.0f);
+					vec4 pos1 = view_pos * directional_lights.data[i].shadow_matrix1;
+					vec4 pos2 = view_pos * directional_lights.data[i].shadow_matrix2;
+					vec4 pos3 = view_pos * directional_lights.data[i].shadow_matrix3;
+					vec3 shadow_proj1 = pos1.xyz / pos1.w;
+					vec3 shadow_proj2 = pos2.xyz / pos2.w;
+					vec3 shadow_proj3 = pos3.xyz / pos3.w;
+
+					// if (depth_z < directional_lights.data[i].shadow_split_offsets.x)
+					if (shadow_proj1.x > 0.0 && shadow_proj1.x < 0.5 && shadow_proj1.y > 0.0 && shadow_proj1.y < 0.5 && shadow_proj1.z >= 0.0 && shadow_proj1.z < 1.0) {
 						vec4 v = vec4(vertex, 1.0);
 
 						BIAS_FUNC(v, 0)
 
 						pssm_coord = (directional_lights.data[i].shadow_matrix1 * v);
-					} else if (depth_z < directional_lights.data[i].shadow_split_offsets.y) {
+					} else if (shadow_proj2.x >= 0.5 && shadow_proj2.x < 1.0 && shadow_proj2.y > 0.0 && shadow_proj2.y < 0.5 && shadow_proj2.z >= 0.0 && shadow_proj2.z < 1.0) {
 						vec4 v = vec4(vertex, 1.0);
 
 						BIAS_FUNC(v, 1)
 
 						pssm_coord = (directional_lights.data[i].shadow_matrix2 * v);
-					} else if (depth_z < directional_lights.data[i].shadow_split_offsets.z) {
+					} else if (shadow_proj3.x >= 0.5 && shadow_proj3.x < 1.0 && shadow_proj3.y >= 0.5 && shadow_proj3.y < 1.0 && shadow_proj3.z >= 0.0 && shadow_proj3.z < 1.0) {
 						vec4 v = vec4(vertex, 1.0);
 
 						BIAS_FUNC(v, 2)
 
 						pssm_coord = (directional_lights.data[i].shadow_matrix3 * v);
-
 					} else {
 						vec4 v = vec4(vertex, 1.0);
 
