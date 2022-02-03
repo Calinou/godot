@@ -59,6 +59,10 @@ float remap(float value, vec2 from, vec2 to) {
 	return to.x + (value - from.x) * (to.y - to.x) / (from.y - from.x);
 }
 
+float linearstep(float lo, float hi, float x) {
+	return (clamp(x, lo, hi) - lo) / (hi - lo);
+}
+ 
 #endif
 
 #if defined(MODE_BOKEH_BOX) || defined(MODE_BOKEH_HEXAGONAL)
@@ -108,7 +112,7 @@ void main() {
 	}
 
 	vec2 pixel_size = 1.0 / vec2(params.size);
-	vec2 uv = vec2(pos) / vec2(params.size);
+	vec2 uv = vec2(pos) * pixel_size;
 
 #ifdef MODE_GEN_BLUR_SIZE
 	uv += pixel_size * 0.5;
@@ -183,32 +187,69 @@ void main() {
 	// A bigger `blur_size` maps to a faster convergence of the circle's `radius` to `blur_size`
 	float _blur_size_performance = max(0.4, remap(params.blur_size, vec2(12.5, 62.5), vec2(0.4, 1.6)));
 	
+	// this is used to get a uniform blur although sampling is not done uniformly
 	float base_radius_growth_rate = radius * _blur_size_performance;
-	float radius_growth_rate = base_radius_growth_rate * (1.0 + 1.1 * abs(initial_blur) / params.blur_size);
 	
-	for (float ang = 0.0; radius < params.blur_size; ang += GOLDEN_ANGLE) {
+	// decide how detailed the sampling should be for optimization purposes, based on `initial_blur` and `params.blur_size`
+	float radius_growth_rate = base_radius_growth_rate * (1.0 + 1.1 * abs(initial_blur) / params.blur_size);
+	// sample increasingly less towards the end, but for near DoF we don't want this that much, because it starts to look worse quicker than far DoF
+	float radius_growth_rate_acceleration = 1.0 + 0.01 * linearstep(params.blur_size * -2.0, params.blur_size * -0.01, initial_blur);
+	
+	// hash the initial angle to get rid of some moire patterns; multiplying by 0.5 seems to improve the fps a bit; also don't hash unfocused points
+	float ang = hash12n(uv) * 0.5 * step(0.0, abs(initial_blur));
+
+	for (; radius < params.blur_size; ) {
+		ang += GOLDEN_ANGLE;
+
 		vec2 suv = uv + vec2(cos(ang), sin(ang)) * pixel_size * radius;
 		vec4 sample_color = texture(color_texture, suv);
 		float sample_size = abs(sample_color.a);
+
+		// limit how much of the far blur will affect the near blur
 		if (sample_color.a > initial_blur) {
-			sample_size = clamp(sample_size, 0.0, abs(initial_blur) * remap(params.blur_size, vec2(12.5, 62.5), vec2(1.0, 2.0)));
+			// the remap scales the clamping to avoid a type of artifacting at higher `params.blur_size`, that manifests like aliasing at geometry edges (probably because of half-size rendering?)
+			sample_size = clamp(sample_size, 0.0, abs(initial_blur) * remap(params.blur_size, vec2(12.5, 62.5), vec2(3.0, 9.0)));
 		}
 
-		float m = smoothstep(radius - 0.5, radius + 0.5, sample_size);
-		float _m = abs(m - 0.5) * 2.0;
-		
-// 		radius_growth_rate = mix(radius_growth_rate + 0.4 * radius_growth_rate * _m, base_radius_growth_rate, _m * pow(m, 3.0));
+		float contribution = linearstep(radius - 0.5, radius + 0.5, sample_size);
 
-		// since the radius is growing increasingly faster, but we still want a uniform coverage, we'll account for that by increasing their influence
-		float strength = remap(color.a, vec2(-params.blur_size, params.blur_size), vec2(radius_growth_rate / base_radius_growth_rate, 1.0));
-		color += mix(color / accum, sample_color, m) * strength;
-		accum += strength;
-		
-		radius_growth_rate *= (
-			1.0 
-			+ mix(0.01 * _m, 0.005, hash12n(uv) * 0.5)// * (1.0 - 0.5 * smoothstep(0.0, params.blur_size * -0.25, color.a / accum) * smoothstep(-params.blur_size, params.blur_size * -0.5, color.a / accum))
-		);
-		radius += radius_growth_rate / radius; // divide by sqrt(radius) to sample more points closer to center of circle * mix(inversesqrt(radius), 1.0 / radius, m);
+		// since the radius_growth_rate is not constant, but we still want a uniform coverage, we'll account for that by increasing the sample's weight (in addition to it's contribution)
+		float weight = radius_growth_rate / base_radius_growth_rate;
+
+		color += mix(color / accum, sample_color, contribution) * weight;
+		accum += weight;
+
+		// add a growth rate to the growth rate for a performance/quality ratio increase
+		radius_growth_rate *= radius_growth_rate_acceleration;
+		radius += radius_growth_rate / radius;
+
+		//////
+// 		ang += GOLDEN_ANGLE;
+// 		
+// 		suv = uv + vec2(cos(ang), sin(ang)) * pixel_size * radius;
+// 		sample_color = texture(color_texture, suv);
+// 		sample_size = abs(sample_color.a);
+// 		
+// 		limit how much of the far blur will affect the near blur
+// 		if (sample_color.a > initial_blur) {
+// 			the remap scales the clamping to avoid a type of artifacting at higher `params.blur_size`, that manifests like aliasing at geometry edges
+// 			sample_size = clamp(sample_size, 0.0, abs(initial_blur) * remap(params.blur_size, vec2(12.5, 62.5), vec2(3.0, 6.0)));
+// 			                                   mix(abs(initial_blur), abs(color.a), smoothstep(0.2, 5.0, abs(initial_blur) / abs(sample_color.a))) * remap(params.blur_size, vec2(12.5, 62.5), vec2(2.0, 3.0)));
+// 		}
+// 
+// 		m = linearstep(radius - 0.5, radius + 0.5, sample_size);
+// 		
+// 		since the radius is growing increasingly faster, but we still want a uniform coverage, we'll account for that by increasing the sample's influence
+// 		influence = radius_growth_rate / base_radius_growth_rate;
+// 		color += mix(color / accum, sample_color, m) * influence;
+// 		accum += influence;
+// 		
+// 		add a growth rate to the growth rate for a performance/quality ratio increase
+// 		radius_growth_rate *= (
+// 			1.0 
+// 			+ 0.02 * abs(m - 0.5) * linearstep(-params.blur_size * 2.0, -params.blur_size * 0.05, sample_color.a)
+// 		);
+// 		radius += radius_growth_rate / radius;
 	}
 
 	color /= accum;

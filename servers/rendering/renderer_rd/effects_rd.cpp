@@ -1100,7 +1100,7 @@ void EffectsRD::bokeh_dof(const BokehBuffers &p_buffers, bool p_dof_far, float p
 		//second pass
 		RD::get_singleton()->compute_list_bind_compute_pipeline(compute_list, bokeh.compute_pipelines[BOKEH_GEN_BOKEH_CIRCULAR]);
 
-		static const float quality_scale[4] = { 7.2, 3.2, 1.4, 0.6 };
+		static const float quality_scale[4] = { 6.4, 2.8, 1.1, 0.4 };
 
 		bokeh.push_constant.steps = 0;
 		bokeh.push_constant.blur_scale = quality_scale[p_quality] / Math::pow(dof_resolution_influence, 1.0 / 5.0);
@@ -1265,7 +1265,7 @@ void EffectsRD::bokeh_dof_raster(const BokehBuffers &p_buffers, bool p_dof_far, 
 				// bokeh.push_constant.blur_size *= 0.5;
 			}
 
-			static const float quality_scale[4] = { 7.2, 3.2, 1.4, 0.6 };
+			static const float quality_scale[4] = { 6.4, 2.8, 1.1, 0.4 };
 			bokeh.push_constant.blur_scale = quality_scale[p_quality] / Math::pow(dof_resolution_influence, 1.0 / 5.0);
 			bokeh.push_constant.steps = 0.0;
 
