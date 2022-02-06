@@ -5461,11 +5461,14 @@ String VisualShaderNodeTextureUniform::generate_global(Shader::Mode p_mode, Visu
 		String repeat_code;
 
 		switch (texture_repeat) {
+			case REPEAT_DISABLED:
+				repeat_code = "repeat_disable";
+				break;
 			case REPEAT_ENABLED:
 				repeat_code = "repeat_enable";
 				break;
-			case REPEAT_DISABLED:
-				repeat_code = "repeat_disable";
+			case REPEAT_MIRROR:
+				repeat_code = "repeat_mirror";
 				break;
 			default:
 				break;
@@ -5610,7 +5613,7 @@ void VisualShaderNodeTextureUniform::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "texture_type", PROPERTY_HINT_ENUM, "Data,Color,Normal Map,Anisotropic"), "set_texture_type", "get_texture_type");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "color_default", PROPERTY_HINT_ENUM, "White,Black"), "set_color_default", "get_color_default");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "texture_filter", PROPERTY_HINT_ENUM, "Default,Nearest,Linear,Nearest Mipmap,Linear Mipmap,Nearest Mipmap Anisotropic,Linear Mipmap Anisotropic"), "set_texture_filter", "get_texture_filter");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "texture_repeat", PROPERTY_HINT_ENUM, "Default,Enabled,Disabled"), "set_texture_repeat", "get_texture_repeat");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "texture_repeat", PROPERTY_HINT_ENUM, "Default,Disabled,Enabled,Mirror"), "set_texture_repeat", "get_texture_repeat");
 
 	BIND_ENUM_CONSTANT(TYPE_DATA);
 	BIND_ENUM_CONSTANT(TYPE_COLOR);
@@ -5632,8 +5635,9 @@ void VisualShaderNodeTextureUniform::_bind_methods() {
 	BIND_ENUM_CONSTANT(FILTER_MAX);
 
 	BIND_ENUM_CONSTANT(REPEAT_DEFAULT);
-	BIND_ENUM_CONSTANT(REPEAT_ENABLED);
 	BIND_ENUM_CONSTANT(REPEAT_DISABLED);
+	BIND_ENUM_CONSTANT(REPEAT_ENABLED);
+	BIND_ENUM_CONSTANT(REPEAT_MIRROR);
 	BIND_ENUM_CONSTANT(REPEAT_MAX);
 }
 

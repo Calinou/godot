@@ -151,6 +151,13 @@ public:
 		TEXTURE_FILTER_MAX
 	};
 
+	enum TextureRepeat {
+		TEXTURE_REPEAT_DISABLED,
+		TEXTURE_REPEAT_ENABLED,
+		TEXTURE_REPEAT_MIRROR,
+		TEXTURE_REPEAT_MAX,
+	};
+
 	enum DetailUV {
 		DETAIL_UV_1,
 		DETAIL_UV_2,
@@ -294,6 +301,7 @@ private:
 	struct MaterialKey {
 		// enum values
 		uint64_t texture_filter : get_num_bits(TEXTURE_FILTER_MAX - 1);
+		uint64_t texture_repeat : get_num_bits(TEXTURE_REPEAT_MAX - 1);
 		uint64_t detail_uv : get_num_bits(DETAIL_UV_MAX - 1);
 		uint64_t transparency : get_num_bits(TRANSPARENCY_MAX - 1);
 		uint64_t alpha_antialiasing_mode : get_num_bits(ALPHA_ANTIALIASING_MAX - 1);
@@ -347,6 +355,7 @@ private:
 		mk.depth_draw_mode = depth_draw_mode;
 		mk.cull_mode = cull_mode;
 		mk.texture_filter = texture_filter;
+		mk.texture_repeat = texture_repeat;
 		mk.transparency = transparency;
 		mk.shading_mode = shading_mode;
 		mk.roughness_channel = roughness_texture_channel;
@@ -479,6 +488,7 @@ private:
 	ShadingMode shading_mode = SHADING_MODE_PER_PIXEL;
 
 	TextureFilter texture_filter = TEXTURE_FILTER_LINEAR_WITH_MIPMAPS;
+	TextureRepeat texture_repeat = TEXTURE_REPEAT_ENABLED;
 
 	Vector3 uv1_scale;
 	Vector3 uv1_offset;
@@ -661,6 +671,9 @@ public:
 	void set_texture_filter(TextureFilter p_filter);
 	TextureFilter get_texture_filter() const;
 
+	void set_texture_repeat(TextureRepeat p_repeat);
+	TextureRepeat get_texture_repeat() const;
+
 	void set_feature(Feature p_feature, bool p_enabled);
 	bool get_feature(Feature p_feature) const;
 
@@ -750,6 +763,7 @@ public:
 
 VARIANT_ENUM_CAST(BaseMaterial3D::TextureParam)
 VARIANT_ENUM_CAST(BaseMaterial3D::TextureFilter)
+VARIANT_ENUM_CAST(BaseMaterial3D::TextureRepeat)
 VARIANT_ENUM_CAST(BaseMaterial3D::ShadingMode)
 VARIANT_ENUM_CAST(BaseMaterial3D::Transparency)
 VARIANT_ENUM_CAST(BaseMaterial3D::AlphaAntiAliasing)

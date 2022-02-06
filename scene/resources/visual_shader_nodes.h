@@ -2064,8 +2064,9 @@ public:
 
 	enum TextureRepeat {
 		REPEAT_DEFAULT,
-		REPEAT_ENABLED,
 		REPEAT_DISABLED,
+		REPEAT_ENABLED,
+		REPEAT_MIRROR,
 		REPEAT_MAX,
 	};
 

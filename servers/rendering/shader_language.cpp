@@ -204,8 +204,9 @@ const char *ShaderLanguage::token_names[TK_MAX] = {
 	"FILTER_LINEAR_MIPMAP",
 	"FILTER_NEAREST_MIPMAP_ANISOTROPIC",
 	"FILTER_LINEAR_MIPMAP_ANISOTROPIC",
-	"REPEAT_ENABLE",
 	"REPEAT_DISABLE",
+	"REPEAT_ENABLE",
+	"REPEAT_MIRROR",
 	"SHADER_TYPE",
 	"CURSOR",
 	"ERROR",
@@ -318,8 +319,9 @@ const ShaderLanguage::KeyWord ShaderLanguage::keyword_list[] = {
 	{ TK_FILTER_LINEAR_MIPMAP, "filter_linear_mipmap" },
 	{ TK_FILTER_NEAREST_MIPMAP_ANISOTROPIC, "filter_nearest_mipmap_anisotropic" },
 	{ TK_FILTER_LINEAR_MIPMAP_ANISOTROPIC, "filter_linear_mipmap_anisotropic" },
-	{ TK_REPEAT_ENABLE, "repeat_enable" },
 	{ TK_REPEAT_DISABLE, "repeat_disable" },
+	{ TK_REPEAT_ENABLE, "repeat_enable" },
+	{ TK_REPEAT_MIRROR, "repeat_mirror" },
 	{ TK_SHADER_TYPE, "shader_type" },
 	{ TK_ERROR, nullptr }
 };
@@ -8110,6 +8112,8 @@ Error ShaderLanguage::_parse_shader(const Map<StringName, FunctionInfo> &p_funct
 								uniform2.repeat = REPEAT_DISABLE;
 							} else if (tk.type == TK_REPEAT_ENABLE) {
 								uniform2.repeat = REPEAT_ENABLE;
+							} else if (tk.type == TK_REPEAT_MIRROR) {
+								uniform2.repeat = REPEAT_MIRROR;
 							}
 
 							if (uniform2.hint != ShaderNode::Uniform::HINT_RANGE && uniform2.hint != ShaderNode::Uniform::HINT_NONE && uniform2.hint != ShaderNode::Uniform::HINT_COLOR && type <= TYPE_MAT4) {
@@ -9524,8 +9528,9 @@ Error ShaderLanguage::complete(const String &p_code, const ShaderCompileInfo &p_
 					options.push_back("hint_roughness_normal");
 					options.push_back("hint_roughness_r");
 					options.push_back("hint_white");
-					options.push_back("repeat_enable");
 					options.push_back("repeat_disable");
+					options.push_back("repeat_enable");
+					options.push_back("repeat_mirror");
 				}
 
 				for (int i = 0; i < options.size(); i++) {

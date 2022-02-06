@@ -435,6 +435,7 @@ void BaseMaterial3D::_update_shader() {
 	}
 
 	String texfilter_str;
+
 	switch (texture_filter) {
 		case TEXTURE_FILTER_NEAREST:
 			texfilter_str = "filter_nearest";
@@ -458,10 +459,18 @@ void BaseMaterial3D::_update_shader() {
 			break; // Internal value, skip.
 	}
 
-	if (flags[FLAG_USE_TEXTURE_REPEAT]) {
-		texfilter_str += ",repeat_enable";
-	} else {
-		texfilter_str += ",repeat_disable";
+	switch (texture_repeat) {
+		case TEXTURE_REPEAT_DISABLED:
+			texfilter_str += ", repeat_disable";
+			break;
+		case TEXTURE_REPEAT_ENABLED:
+			texfilter_str += ", repeat_enable";
+			break;
+		case TEXTURE_REPEAT_MIRROR:
+			texfilter_str += ", repeat_mirror";
+			break;
+		case TEXTURE_REPEAT_MAX:
+			break; // Internal value, skip.
 	}
 
 	//must create a shader!
@@ -601,7 +610,7 @@ void BaseMaterial3D::_update_shader() {
 	code += ";\n";
 
 	code += "uniform vec4 albedo : hint_color;\n";
-	code += "uniform sampler2D texture_albedo : hint_albedo," + texfilter_str + ";\n";
+	code += "uniform sampler2D texture_albedo : hint_albedo, " + texfilter_str + ";\n";
 	if (grow_enabled) {
 		code += "uniform float grow;\n";
 	}
@@ -633,23 +642,23 @@ void BaseMaterial3D::_update_shader() {
 	//TODO ALL HINTS
 	if (!orm) {
 		code += "uniform float roughness : hint_range(0,1);\n";
-		code += "uniform sampler2D texture_metallic : hint_white," + texfilter_str + ";\n";
+		code += "uniform sampler2D texture_metallic : hint_white, " + texfilter_str + ";\n";
 		code += "uniform vec4 metallic_texture_channel;\n";
 		switch (roughness_texture_channel) {
 			case TEXTURE_CHANNEL_RED: {
-				code += "uniform sampler2D texture_roughness : hint_roughness_r," + texfilter_str + ";\n";
+				code += "uniform sampler2D texture_roughness : hint_roughness_r, " + texfilter_str + ";\n";
 			} break;
 			case TEXTURE_CHANNEL_GREEN: {
-				code += "uniform sampler2D texture_roughness : hint_roughness_g," + texfilter_str + ";\n";
+				code += "uniform sampler2D texture_roughness : hint_roughness_g, " + texfilter_str + ";\n";
 			} break;
 			case TEXTURE_CHANNEL_BLUE: {
-				code += "uniform sampler2D texture_roughness : hint_roughness_b," + texfilter_str + ";\n";
+				code += "uniform sampler2D texture_roughness : hint_roughness_b, " + texfilter_str + ";\n";
 			} break;
 			case TEXTURE_CHANNEL_ALPHA: {
-				code += "uniform sampler2D texture_roughness : hint_roughness_a," + texfilter_str + ";\n";
+				code += "uniform sampler2D texture_roughness : hint_roughness_a, " + texfilter_str + ";\n";
 			} break;
 			case TEXTURE_CHANNEL_GRAYSCALE: {
-				code += "uniform sampler2D texture_roughness : hint_roughness_gray," + texfilter_str + ";\n";
+				code += "uniform sampler2D texture_roughness : hint_roughness_gray, " + texfilter_str + ";\n";
 			} break;
 			case TEXTURE_CHANNEL_MAX:
 				break; // Internal value, skip.
@@ -658,7 +667,7 @@ void BaseMaterial3D::_update_shader() {
 		code += "uniform float specular;\n";
 		code += "uniform float metallic;\n";
 	} else {
-		code += "uniform sampler2D texture_orm : hint_roughness_g," + texfilter_str + ";\n";
+		code += "uniform sampler2D texture_orm : hint_roughness_g, " + texfilter_str + ";\n";
 	}
 
 	if (billboard_mode == BILLBOARD_PARTICLES) {
@@ -668,7 +677,7 @@ void BaseMaterial3D::_update_shader() {
 	}
 
 	if (features[FEATURE_EMISSION]) {
-		code += "uniform sampler2D texture_emission : hint_black_albedo," + texfilter_str + ";\n";
+		code += "uniform sampler2D texture_emission : hint_black_albedo, " + texfilter_str + ";\n";
 		code += "uniform vec4 emission : hint_color;\n";
 		code += "uniform float emission_energy;\n";
 	}
@@ -680,22 +689,22 @@ void BaseMaterial3D::_update_shader() {
 	}
 
 	if (features[FEATURE_NORMAL_MAPPING]) {
-		code += "uniform sampler2D texture_normal : hint_roughness_normal," + texfilter_str + ";\n";
+		code += "uniform sampler2D texture_normal : hint_roughness_normal, " + texfilter_str + ";\n";
 		code += "uniform float normal_scale : hint_range(-16,16);\n";
 	}
 	if (features[FEATURE_RIM]) {
 		code += "uniform float rim : hint_range(0,1);\n";
 		code += "uniform float rim_tint : hint_range(0,1);\n";
-		code += "uniform sampler2D texture_rim : hint_white," + texfilter_str + ";\n";
+		code += "uniform sampler2D texture_rim : hint_white, " + texfilter_str + ";\n";
 	}
 	if (features[FEATURE_CLEARCOAT]) {
 		code += "uniform float clearcoat : hint_range(0,1);\n";
 		code += "uniform float clearcoat_gloss : hint_range(0,1);\n";
-		code += "uniform sampler2D texture_clearcoat : hint_white," + texfilter_str + ";\n";
+		code += "uniform sampler2D texture_clearcoat : hint_white, " + texfilter_str + ";\n";
 	}
 	if (features[FEATURE_ANISOTROPY]) {
 		code += "uniform float anisotropy_ratio : hint_range(0,256);\n";
-		code += "uniform sampler2D texture_flowmap : hint_anisotropy," + texfilter_str + ";\n";
+		code += "uniform sampler2D texture_flowmap : hint_anisotropy, " + texfilter_str + ";\n";
 	}
 	if (features[FEATURE_AMBIENT_OCCLUSION]) {
 		code += "uniform sampler2D texture_ambient_occlusion : hint_white, " + texfilter_str + ";\n";
@@ -704,30 +713,30 @@ void BaseMaterial3D::_update_shader() {
 	}
 
 	if (features[FEATURE_DETAIL]) {
-		code += "uniform sampler2D texture_detail_albedo : hint_albedo," + texfilter_str + ";\n";
-		code += "uniform sampler2D texture_detail_normal : hint_normal," + texfilter_str + ";\n";
-		code += "uniform sampler2D texture_detail_mask : hint_white," + texfilter_str + ";\n";
+		code += "uniform sampler2D texture_detail_albedo : hint_albedo, " + texfilter_str + ";\n";
+		code += "uniform sampler2D texture_detail_normal : hint_normal, " + texfilter_str + ";\n";
+		code += "uniform sampler2D texture_detail_mask : hint_white, " + texfilter_str + ";\n";
 	}
 
 	if (features[FEATURE_SUBSURFACE_SCATTERING]) {
 		code += "uniform float subsurface_scattering_strength : hint_range(0,1);\n";
-		code += "uniform sampler2D texture_subsurface_scattering : hint_white," + texfilter_str + ";\n";
+		code += "uniform sampler2D texture_subsurface_scattering : hint_white, " + texfilter_str + ";\n";
 	}
 
 	if (features[FEATURE_SUBSURFACE_TRANSMITTANCE]) {
 		code += "uniform vec4 transmittance_color : hint_color;\n";
 		code += "uniform float transmittance_depth;\n";
-		code += "uniform sampler2D texture_subsurface_transmittance : hint_white," + texfilter_str + ";\n";
+		code += "uniform sampler2D texture_subsurface_transmittance : hint_white, " + texfilter_str + ";\n";
 		code += "uniform float transmittance_boost;\n";
 	}
 
 	if (features[FEATURE_BACKLIGHT]) {
 		code += "uniform vec4 backlight : hint_color;\n";
-		code += "uniform sampler2D texture_backlight : hint_black," + texfilter_str + ";\n";
+		code += "uniform sampler2D texture_backlight : hint_black, " + texfilter_str + ";\n";
 	}
 
 	if (features[FEATURE_HEIGHT_MAPPING]) {
-		code += "uniform sampler2D texture_heightmap : hint_black," + texfilter_str + ";\n";
+		code += "uniform sampler2D texture_heightmap : hint_black, " + texfilter_str + ";\n";
 		code += "uniform float heightmap_scale;\n";
 		code += "uniform int heightmap_min_layers;\n";
 		code += "uniform int heightmap_max_layers;\n";
@@ -1626,7 +1635,7 @@ void BaseMaterial3D::set_flag(Flags p_flag, bool p_enabled) {
 	}
 
 	flags[p_flag] = p_enabled;
-	if (p_flag == FLAG_USE_SHADOW_TO_OPACITY || p_flag == FLAG_USE_TEXTURE_REPEAT || p_flag == FLAG_SUBSURFACE_MODE_SKIN || p_flag == FLAG_USE_POINT_SIZE) {
+	if (p_flag == FLAG_USE_SHADOW_TO_OPACITY || p_flag == FLAG_SUBSURFACE_MODE_SKIN || p_flag == FLAG_USE_POINT_SIZE) {
 		notify_property_list_changed();
 	}
 	if (p_flag == FLAG_PARTICLE_TRAILS_MODE) {
@@ -1694,6 +1703,15 @@ void BaseMaterial3D::set_texture_filter(TextureFilter p_filter) {
 
 BaseMaterial3D::TextureFilter BaseMaterial3D::get_texture_filter() const {
 	return texture_filter;
+}
+
+void BaseMaterial3D::set_texture_repeat(TextureRepeat p_repeat) {
+	texture_repeat = p_repeat;
+	_queue_shader_change();
+}
+
+BaseMaterial3D::TextureRepeat BaseMaterial3D::get_texture_repeat() const {
+	return texture_repeat;
 }
 
 void BaseMaterial3D::_validate_feature(const String &text, Feature feature, PropertyInfo &property) const {
@@ -2323,6 +2341,9 @@ void BaseMaterial3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_texture_filter", "mode"), &BaseMaterial3D::set_texture_filter);
 	ClassDB::bind_method(D_METHOD("get_texture_filter"), &BaseMaterial3D::get_texture_filter);
 
+	ClassDB::bind_method(D_METHOD("set_texture_repeat", "mode"), &BaseMaterial3D::set_texture_repeat);
+	ClassDB::bind_method(D_METHOD("get_texture_repeat"), &BaseMaterial3D::get_texture_repeat);
+
 	ClassDB::bind_method(D_METHOD("set_feature", "feature", "enable"), &BaseMaterial3D::set_feature);
 	ClassDB::bind_method(D_METHOD("get_feature", "feature"), &BaseMaterial3D::get_feature);
 
@@ -2558,7 +2579,7 @@ void BaseMaterial3D::_bind_methods() {
 
 	ADD_GROUP("Sampling", "texture_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "texture_filter", PROPERTY_HINT_ENUM, "Nearest,Linear,Nearest Mipmap,Linear Mipmap,Nearest Mipmap Anisotropic,Linear Mipmap Anisotropic"), "set_texture_filter", "get_texture_filter");
-	ADD_PROPERTYI(PropertyInfo(Variant::BOOL, "texture_repeat"), "set_flag", "get_flag", FLAG_USE_TEXTURE_REPEAT);
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "texture_repeat", PROPERTY_HINT_ENUM, "Disabled,Enabled,Mirror"), "set_texture_repeat", "get_texture_repeat");
 
 	ADD_GROUP("Shadows", "");
 	ADD_PROPERTYI(PropertyInfo(Variant::BOOL, "disable_receive_shadows"), "set_flag", "get_flag", FLAG_DONT_RECEIVE_SHADOWS);
@@ -2616,6 +2637,11 @@ void BaseMaterial3D::_bind_methods() {
 	BIND_ENUM_CONSTANT(TEXTURE_FILTER_NEAREST_WITH_MIPMAPS_ANISOTROPIC);
 	BIND_ENUM_CONSTANT(TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC);
 	BIND_ENUM_CONSTANT(TEXTURE_FILTER_MAX);
+
+	BIND_ENUM_CONSTANT(TEXTURE_REPEAT_DISABLED);
+	BIND_ENUM_CONSTANT(TEXTURE_REPEAT_ENABLED);
+	BIND_ENUM_CONSTANT(TEXTURE_REPEAT_MIRROR);
+	BIND_ENUM_CONSTANT(TEXTURE_REPEAT_MAX);
 
 	BIND_ENUM_CONSTANT(DETAIL_UV_1);
 	BIND_ENUM_CONSTANT(DETAIL_UV_2);
@@ -2679,7 +2705,6 @@ void BaseMaterial3D::_bind_methods() {
 	BIND_ENUM_CONSTANT(FLAG_DONT_RECEIVE_SHADOWS);
 	BIND_ENUM_CONSTANT(FLAG_DISABLE_AMBIENT_LIGHT);
 	BIND_ENUM_CONSTANT(FLAG_USE_SHADOW_TO_OPACITY);
-	BIND_ENUM_CONSTANT(FLAG_USE_TEXTURE_REPEAT);
 	BIND_ENUM_CONSTANT(FLAG_INVERT_HEIGHTMAP);
 	BIND_ENUM_CONSTANT(FLAG_SUBSURFACE_MODE_SKIN);
 	BIND_ENUM_CONSTANT(FLAG_PARTICLE_TRAILS_MODE);
@@ -2773,8 +2798,6 @@ BaseMaterial3D::BaseMaterial3D(bool p_orm) :
 	set_heightmap_deep_parallax_min_layers(8);
 	set_heightmap_deep_parallax_max_layers(32);
 	set_heightmap_deep_parallax_flip_tangent(false); //also sets binormal
-
-	flags[FLAG_USE_TEXTURE_REPEAT] = true;
 
 	is_initialized = true;
 	_queue_shader_change();
