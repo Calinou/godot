@@ -435,7 +435,7 @@ void main() {
 #endif //USE_RADIANCE_CUBEMAP_ARRAY
 			}
 
-			total_light += mix(params.ambient_color, mix(isotropic, anisotropic, abs(params.phase_g)), params.sky_contribution) * params.ambient_inject;
+			total_light += (params.ambient_color + mix(isotropic, anisotropic, abs(params.phase_g)) * params.sky_contribution) * params.ambient_inject;
 		}
 
 		//compute lights from cluster

@@ -509,9 +509,9 @@ Ref<Image> RendererSceneRenderRD::environment_bake_panorama(RID p_env, bool p_ba
 	use_cube_map = use_cube_map || (environment_background == RS::ENV_BG_SKY && env->sky.is_valid());
 
 	Color ambient_color;
-	float ambient_color_sky_mix;
+	float ambient_color_sky_factor;
 	if (use_ambient_light) {
-		ambient_color_sky_mix = env->ambient_sky_contribution;
+		ambient_color_sky_factor = env->ambient_sky_contribution;
 		const float ambient_energy = env->ambient_light_energy;
 		ambient_color = env->ambient_light;
 		ambient_color = ambient_color.to_linear();
@@ -525,7 +525,7 @@ Ref<Image> RendererSceneRenderRD::environment_bake_panorama(RID p_env, bool p_ba
 		if (use_ambient_light) {
 			for (int x = 0; x < p_size.width; x++) {
 				for (int y = 0; y < p_size.height; y++) {
-					panorama->set_pixel(x, y, ambient_color.lerp(panorama->get_pixel(x, y), ambient_color_sky_mix));
+					panorama->set_pixel(x, y, ambient_color + panorama->get_pixel(x, y) * ambient_color_sky_factor);
 				}
 			}
 		}
@@ -539,7 +539,7 @@ Ref<Image> RendererSceneRenderRD::environment_bake_panorama(RID p_env, bool p_ba
 		panorama_color.b *= bg_energy;
 
 		if (use_ambient_light) {
-			panorama_color = ambient_color.lerp(panorama_color, ambient_color_sky_mix);
+			panorama_color = ambient_color + panorama_color * ambient_color_sky_factor;
 		}
 
 		Ref<Image> panorama;

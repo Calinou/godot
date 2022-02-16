@@ -1537,7 +1537,7 @@ FRAGMENT_SHADER_CODE
 		vec3 env_ambient = textureCubeLod(radiance_map, ambient_dir, 4.0).xyz * bg_energy;
 		env_ambient *= 1.0 - F;
 
-		ambient_light = mix(ambient_color.rgb, env_ambient, ambient_sky_contribution);
+		ambient_light = ambient_color.rgb + env_ambient * ambient_sky_contribution;
 	}
 #endif
 
