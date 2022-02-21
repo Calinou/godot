@@ -1,0 +1,16 @@
+{
+  "name": "godot-ui-tests",
+	"private": true,
+  "version": "1.0.0",
+  "description": "Automated UI tests for the Godot Engine editor and project manager",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "author": "Godot Engine contributors",
+	"license": "MIT",
+  "dependencies": {
+    "@nut-tree/nut-js": "^2.0.1",
+    "@nut-tree/template-matcher": "^1.0.1"
+  }
+}
