@@ -1256,12 +1256,12 @@ void main() {
 		}
 
 		if (reflection_accum.a > 0.0) {
-			specular_light = reflection_accum.rgb / reflection_accum.a;
+			specular_light = mix(specular_light, reflection_accum.rgb, reflection_accum.a);
 		}
 
 #if !defined(USE_LIGHTMAP)
 		if (ambient_accum.a > 0.0) {
-			ambient_light = ambient_accum.rgb / ambient_accum.a;
+			ambient_light = mix(ambient_light, ambient_accum.rgb, ambient_accum.a);
 		}
 #endif
 	}

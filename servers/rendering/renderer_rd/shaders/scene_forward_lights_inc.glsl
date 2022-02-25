@@ -870,6 +870,10 @@ void light_process_spot(uint idx, vec3 vertex, vec3 eye_vec, vec3 normal, vec3 v
 }
 
 void reflection_process(uint ref_index, vec3 vertex, vec3 normal, float roughness, vec3 ambient_light, vec3 specular_light, inout vec4 ambient_accum, inout vec4 reflection_accum) {
+	if (reflections.data[ref_index].intensity < 0.001) {
+		return;
+	}
+
 	vec3 box_extents = reflections.data[ref_index].box_extents;
 	vec3 local_pos = (reflections.data[ref_index].local_matrix * vec4(vertex, 1.0)).xyz;
 
@@ -884,39 +888,35 @@ void reflection_process(uint ref_index, vec3 vertex, vec3 normal, float roughnes
 	//make blend more rounded
 	blend = mix(length(inner_pos), blend, blend);
 	blend *= blend;
-	blend = max(0.0, 1.0 - blend);
+	blend = max(0.0, 1.0 - blend) * reflections.data[ref_index].intensity;
 
-	if (reflections.data[ref_index].intensity > 0.0) { // compute reflection
+	vec3 local_ref_vec = (reflections.data[ref_index].local_matrix * vec4(ref_vec, 0.0)).xyz;
 
-		vec3 local_ref_vec = (reflections.data[ref_index].local_matrix * vec4(ref_vec, 0.0)).xyz;
+	if (reflections.data[ref_index].box_project) { //box project
 
-		if (reflections.data[ref_index].box_project) { //box project
+		vec3 nrdir = normalize(local_ref_vec);
+		vec3 rbmax = (box_extents - local_pos) / nrdir;
+		vec3 rbmin = (-box_extents - local_pos) / nrdir;
 
-			vec3 nrdir = normalize(local_ref_vec);
-			vec3 rbmax = (box_extents - local_pos) / nrdir;
-			vec3 rbmin = (-box_extents - local_pos) / nrdir;
+		vec3 rbminmax = mix(rbmin, rbmax, greaterThan(nrdir, vec3(0.0, 0.0, 0.0)));
 
-			vec3 rbminmax = mix(rbmin, rbmax, greaterThan(nrdir, vec3(0.0, 0.0, 0.0)));
-
-			float fa = min(min(rbminmax.x, rbminmax.y), rbminmax.z);
-			vec3 posonbox = local_pos + nrdir * fa;
-			local_ref_vec = posonbox - reflections.data[ref_index].box_offset;
-		}
-
-		vec4 reflection;
-
-		reflection.rgb = textureLod(samplerCubeArray(reflection_atlas, material_samplers[SAMPLER_LINEAR_WITH_MIPMAPS_CLAMP]), vec4(local_ref_vec, reflections.data[ref_index].index), roughness * MAX_ROUGHNESS_LOD).rgb * sc_luminance_multiplier;
-
-		if (reflections.data[ref_index].exterior) {
-			reflection.rgb = mix(specular_light, reflection.rgb, blend);
-		}
-
-		reflection.rgb *= reflections.data[ref_index].intensity; //intensity
-		reflection.a = blend;
-		reflection.rgb *= reflection.a;
-
-		reflection_accum += reflection;
+		float fa = min(min(rbminmax.x, rbminmax.y), rbminmax.z);
+		vec3 posonbox = local_pos + nrdir * fa;
+		local_ref_vec = posonbox - reflections.data[ref_index].box_offset;
 	}
+
+	vec4 reflection;
+
+	reflection.rgb = textureLod(samplerCubeArray(reflection_atlas, material_samplers[SAMPLER_LINEAR_WITH_MIPMAPS_CLAMP]), vec4(local_ref_vec, reflections.data[ref_index].index), roughness * MAX_ROUGHNESS_LOD).rgb * sc_luminance_multiplier;
+
+	if (reflections.data[ref_index].exterior) {
+		reflection.rgb = mix(specular_light, reflection.rgb, blend);
+	}
+
+	reflection.a = blend;
+	//reflection.rgb *= reflection.a;
+
+	reflection_accum += reflection;
 
 	switch (reflections.data[ref_index].ambient_mode) {
 		case REFLECTION_AMBIENT_DISABLED: {
@@ -934,7 +934,7 @@ void reflection_process(uint ref_index, vec3 vertex, vec3 normal, float roughnes
 				ambient_out.rgb = mix(ambient_light, ambient_out.rgb, blend);
 			}
 
-			ambient_out.rgb *= ambient_out.a;
+			//ambient_out.rgb *= ambient_out.a;
 			ambient_accum += ambient_out;
 		} break;
 		case REFLECTION_AMBIENT_COLOR: {
@@ -944,7 +944,7 @@ void reflection_process(uint ref_index, vec3 vertex, vec3 normal, float roughnes
 			if (reflections.data[ref_index].exterior) {
 				ambient_out.rgb = mix(ambient_light, ambient_out.rgb, blend);
 			}
-			ambient_out.rgb *= ambient_out.a;
+			//ambient_out.rgb *= ambient_out.a;
 			ambient_accum += ambient_out;
 		} break;
 	}
