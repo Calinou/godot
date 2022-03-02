@@ -816,6 +816,7 @@ void LineEdit::_notification(int p_what) {
 				ofs_max -= r_icon->get_width();
 			}
 
+			const int caret_width = get_constant("caret_width");
 			int caret_height = font->get_height() > y_area ? y_area : font->get_height();
 			FontDrawer drawer(font, Color(1, 1, 1));
 			while (true) {
@@ -875,11 +876,7 @@ void LineEdit::_notification(int p_what) {
 
 				if (char_ofs == cursor_pos && draw_caret && !using_placeholder) {
 					if (ime_text.length() == 0) {
-#ifdef TOOLS_ENABLED
-						VisualServer::get_singleton()->canvas_item_add_rect(ci, Rect2(Point2(x_ofs, y_ofs), Size2(Math::round(EDSCALE), caret_height)), cursor_color);
-#else
-						VisualServer::get_singleton()->canvas_item_add_rect(ci, Rect2(Point2(x_ofs, y_ofs), Size2(1, caret_height)), cursor_color);
-#endif
+						VisualServer::get_singleton()->canvas_item_add_rect(ci, Rect2(Point2(x_ofs, y_ofs), Size2(caret_width, caret_height)), cursor_color);
 					}
 				}
 
@@ -935,11 +932,7 @@ void LineEdit::_notification(int p_what) {
 							} break;
 						}
 					}
-#ifdef TOOLS_ENABLED
-					VisualServer::get_singleton()->canvas_item_add_rect(ci, Rect2(Point2(caret_x_ofs, y_ofs), Size2(Math::round(EDSCALE), caret_height)), cursor_color);
-#else
-					VisualServer::get_singleton()->canvas_item_add_rect(ci, Rect2(Point2(caret_x_ofs, y_ofs), Size2(1, caret_height)), cursor_color);
-#endif
+					VisualServer::get_singleton()->canvas_item_add_rect(ci, Rect2(Point2(caret_x_ofs, y_ofs), Size2(caret_width, caret_height)), cursor_color);
 				}
 			}
 

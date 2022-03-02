@@ -258,6 +258,7 @@ private:
 		int fold_gutter_width;
 		int info_gutter_width;
 		int minimap_width;
+		int caret_width;
 		Cache() {
 			row_height = 0;
 			line_spacing = 0;
@@ -266,6 +267,7 @@ private:
 			fold_gutter_width = 0;
 			info_gutter_width = 0;
 			minimap_width = 0;
+			caret_width = 2;
 		}
 	} cache;
 

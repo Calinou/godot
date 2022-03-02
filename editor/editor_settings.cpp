@@ -357,8 +357,10 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	hints["interface/theme/relationship_line_opacity"] = PropertyInfo(Variant::REAL, "interface/theme/relationship_line_opacity", PROPERTY_HINT_RANGE, "0.00, 1, 0.01");
 	_initial_set("interface/theme/highlight_tabs", false);
 	_initial_set("interface/theme/border_size", 1);
-	_initial_set("interface/theme/use_graph_node_headers", false);
 	hints["interface/theme/border_size"] = PropertyInfo(Variant::INT, "interface/theme/border_size", PROPERTY_HINT_RANGE, "0,2,1", PROPERTY_USAGE_DEFAULT);
+	_initial_set("interface/theme/caret_width", 1);
+	hints["interface/theme/caret_width"] = PropertyInfo(Variant::INT, "interface/theme/caret_width", PROPERTY_HINT_RANGE, "1,6,1", PROPERTY_USAGE_DEFAULT);
+	_initial_set("interface/theme/use_graph_node_headers", false);
 	_initial_set("interface/theme/additional_spacing", 0);
 	hints["interface/theme/additional_spacing"] = PropertyInfo(Variant::REAL, "interface/theme/additional_spacing", PROPERTY_HINT_RANGE, "0,5,0.1", PROPERTY_USAGE_DEFAULT);
 	_initial_set("interface/theme/custom_theme", "");

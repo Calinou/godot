@@ -680,6 +680,9 @@
 		<theme_item name="word_highlighted_color" data_type="color" type="Color" default="Color( 0.8, 0.9, 0.9, 0.15 )">
 			Sets the highlight [Color] of multiple occurrences. [member highlight_all_occurrences] has to be enabled.
 		</theme_item>
+		<theme_item name="caret_width" data_type="constant" type="int" default="2">
+			The caret's width in pixels. Greater values can be used to improve accessibility by ensuring the caret is easily visible, or to ensure consistency with a large font size.
+		</theme_item>
 		<theme_item name="completion_lines" data_type="constant" type="int" default="7">
 		</theme_item>
 		<theme_item name="completion_max_width" data_type="constant" type="int" default="50">

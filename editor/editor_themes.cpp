@@ -297,8 +297,9 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 
 	String preset = EDITOR_GET("interface/theme/preset");
 
-	bool highlight_tabs = EDITOR_GET("interface/theme/highlight_tabs");
-	int border_size = EDITOR_GET("interface/theme/border_size");
+	const bool highlight_tabs = EDITOR_GET("interface/theme/highlight_tabs");
+	const int border_size = EDITOR_GET("interface/theme/border_size");
+	const int caret_width = EDITOR_GET("interface/theme/caret_width");
 
 	bool use_gn_headers = EDITOR_GET("interface/theme/use_graph_node_headers");
 
@@ -975,6 +976,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	theme->set_color("selection_color", "LineEdit", font_color_selection);
 	theme->set_color("clear_button_color", "LineEdit", font_color);
 	theme->set_color("clear_button_color_pressed", "LineEdit", accent_color);
+	theme->set_constant("caret_width", "LineEdit", Math::round(caret_width * EDSCALE));
 
 	// TextEdit
 	theme->set_stylebox("normal", "TextEdit", style_widget);
@@ -989,6 +991,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	theme->set_color("font_color_readonly", "TextEdit", font_color_readonly);
 	theme->set_color("caret_color", "TextEdit", font_color);
 	theme->set_color("selection_color", "TextEdit", font_color_selection);
+	theme->set_constant("caret_width", "TextEdit", Math::round(caret_width * EDSCALE));
 
 	// H/VSplitContainer
 	theme->set_stylebox("bg", "VSplitContainer", make_stylebox(theme->get_icon("GuiVsplitBg", "EditorIcons"), 1, 1, 1, 1));

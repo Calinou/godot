@@ -422,6 +422,7 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	theme->set_color("clear_button_color_pressed", "LineEdit", control_font_color_pressed);
 
 	theme->set_constant("minimum_spaces", "LineEdit", 12 * scale);
+	theme->set_constant("caret_width", "LineEdit", scale);
 
 	theme->set_icon("clear", "LineEdit", make_icon(line_edit_clear_png));
 
@@ -480,6 +481,7 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	theme->set_constant("completion_max_width", "TextEdit", 50);
 	theme->set_constant("completion_scroll_width", "TextEdit", 6 * scale);
 	theme->set_constant("line_spacing", "TextEdit", 4 * scale);
+	theme->set_constant("caret_width", "TextEdit", 2 * scale);
 
 	Ref<Texture> empty_icon = memnew(ImageTexture);
 

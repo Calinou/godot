@@ -1513,11 +1513,7 @@ void TextEdit::_notification(int p_what) {
 #endif
 										VisualServer::get_singleton()->canvas_item_add_rect(ci, Rect2(cursor_pos, Size2i(caret_w, caret_h)), cache.caret_color);
 									} else {
-#ifdef TOOLS_ENABLED
-										caret_w = (block_caret) ? caret_w : 2 * EDSCALE;
-#else
-										caret_w = (block_caret) ? caret_w : 2;
-#endif
+										caret_w = (block_caret) ? caret_w : cache.caret_width;
 
 										VisualServer::get_singleton()->canvas_item_add_rect(ci, Rect2(cursor_pos, Size2i(caret_w, cache.font->get_height())), cache.caret_color);
 									}
@@ -1611,8 +1607,8 @@ void TextEdit::_notification(int p_what) {
 						}
 						if (ime_text.length() == 0) {
 							if (draw_caret) {
+								int char_w = cache.font->get_char_size(' ').width;
 								if (insert_mode) {
-									int char_w = cache.font->get_char_size(' ').width;
 #ifdef TOOLS_ENABLED
 									int caret_h = (block_caret) ? 4 : 2 * EDSCALE;
 #else
@@ -1620,12 +1616,7 @@ void TextEdit::_notification(int p_what) {
 #endif
 									VisualServer::get_singleton()->canvas_item_add_rect(ci, Rect2(cursor_pos, Size2i(char_w, caret_h)), cache.caret_color);
 								} else {
-									int char_w = cache.font->get_char_size(' ').width;
-#ifdef TOOLS_ENABLED
-									int caret_w = (block_caret) ? char_w : 2 * EDSCALE;
-#else
-									int caret_w = (block_caret) ? char_w : 2;
-#endif
+									const int caret_w = (block_caret) ? char_w : cache.caret_width;
 
 									VisualServer::get_singleton()->canvas_item_add_rect(ci, Rect2(cursor_pos, Size2i(caret_w, cache.font->get_height())), cache.caret_color);
 								}
