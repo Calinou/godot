@@ -242,7 +242,7 @@ float quick_hash(vec2 pos) {
 	return fract(magic.z * fract(dot(pos, magic.xy)));
 }
 
-float sample_directional_pcf_shadow(texture2D shadow, vec2 shadow_pixel_size, vec4 coord) {
+float sample_directional_pcf_shadow(texture2D shadow, vec2 shadow_pixel_size, vec4 coord, vec2 taa_jitter) {
 	vec2 pos = coord.xy;
 	float depth = coord.z;
 
@@ -253,7 +253,7 @@ float sample_directional_pcf_shadow(texture2D shadow, vec2 shadow_pixel_size, ve
 
 	mat2 disk_rotation;
 	{
-		float r = quick_hash(gl_FragCoord.xy) * 2.0 * M_PI;
+		float r = quick_hash(gl_FragCoord.xy + taa_jitter.x * 3) * 2.0 * M_PI;
 		float sr = sin(r);
 		float cr = cos(r);
 		disk_rotation = mat2(vec2(cr, -sr), vec2(sr, cr));
@@ -268,7 +268,7 @@ float sample_directional_pcf_shadow(texture2D shadow, vec2 shadow_pixel_size, ve
 	return avg * (1.0 / float(sc_directional_soft_shadow_samples));
 }
 
-float sample_pcf_shadow(texture2D shadow, vec2 shadow_pixel_size, vec3 coord) {
+float sample_pcf_shadow(texture2D shadow, vec2 shadow_pixel_size, vec3 coord, vec2 taa_jitter) {
 	vec2 pos = coord.xy;
 	float depth = coord.z;
 
@@ -279,7 +279,7 @@ float sample_pcf_shadow(texture2D shadow, vec2 shadow_pixel_size, vec3 coord) {
 
 	mat2 disk_rotation;
 	{
-		float r = quick_hash(gl_FragCoord.xy) * 2.0 * M_PI;
+		float r = quick_hash(gl_FragCoord.xy + taa_jitter.x * 3) * 2.0 * M_PI;
 		float sr = sin(r);
 		float cr = cos(r);
 		disk_rotation = mat2(vec2(cr, -sr), vec2(sr, cr));
@@ -294,7 +294,7 @@ float sample_pcf_shadow(texture2D shadow, vec2 shadow_pixel_size, vec3 coord) {
 	return avg * (1.0 / float(sc_soft_shadow_samples));
 }
 
-float sample_omni_pcf_shadow(texture2D shadow, float blur_scale, vec2 coord, vec4 uv_rect, vec2 flip_offset, float depth) {
+float sample_omni_pcf_shadow(texture2D shadow, float blur_scale, vec2 coord, vec4 uv_rect, vec2 flip_offset, float depth, vec2 taa_jitter) {
 	//if only one sample is taken, take it from the center
 	if (sc_soft_shadow_samples == 0) {
 		vec2 pos = coord * 0.5 + 0.5;
@@ -304,7 +304,7 @@ float sample_omni_pcf_shadow(texture2D shadow, float blur_scale, vec2 coord, vec
 
 	mat2 disk_rotation;
 	{
-		float r = quick_hash(gl_FragCoord.xy) * 2.0 * M_PI;
+		float r = quick_hash(gl_FragCoord.xy + taa_jitter.x * 3) * 2.0 * M_PI;
 		float sr = sin(r);
 		float cr = cos(r);
 		disk_rotation = mat2(vec2(cr, -sr), vec2(sr, cr));
@@ -337,14 +337,14 @@ float sample_omni_pcf_shadow(texture2D shadow, float blur_scale, vec2 coord, vec
 	return avg * (1.0 / float(sc_soft_shadow_samples));
 }
 
-float sample_directional_soft_shadow(texture2D shadow, vec3 pssm_coord, vec2 tex_scale) {
+float sample_directional_soft_shadow(texture2D shadow, vec3 pssm_coord, vec2 tex_scale, vec2 taa_jitter) {
 	//find blocker
 	float blocker_count = 0.0;
 	float blocker_average = 0.0;
 
 	mat2 disk_rotation;
 	{
-		float r = quick_hash(gl_FragCoord.xy) * 2.0 * M_PI;
+		float r = quick_hash(gl_FragCoord.xy + taa_jitter.x * 3) * 2.0 * M_PI;
 		float sr = sin(r);
 		float cr = cos(r);
 		disk_rotation = mat2(vec2(cr, -sr), vec2(sr, cr));
@@ -390,7 +390,7 @@ float get_omni_attenuation(float distance, float inv_range, float decay) {
 	return nd * pow(max(distance, 0.0001), -decay);
 }
 
-float light_process_omni_shadow(uint idx, vec3 vertex, vec3 normal) {
+float light_process_omni_shadow(uint idx, vec3 vertex, vec3 normal, vec2 taa_jitter) {
 #ifndef SHADOWS_DISABLED
 	if (omni_lights.data[idx].shadow_enabled) {
 		// there is a shadowmap
@@ -422,7 +422,7 @@ float light_process_omni_shadow(uint idx, vec3 vertex, vec3 normal) {
 
 			mat2 disk_rotation;
 			{
-				float r = quick_hash(gl_FragCoord.xy) * 2.0 * M_PI;
+				float r = quick_hash(gl_FragCoord.xy + taa_jitter.x * 3) * 2.0 * M_PI;
 				float sr = sin(r);
 				float cr = cos(r);
 				disk_rotation = mat2(vec2(cr, -sr), vec2(sr, cr));
@@ -513,7 +513,7 @@ float light_process_omni_shadow(uint idx, vec3 vertex, vec3 normal) {
 			vec2 pos = shadow_sample.xy / shadow_sample.z;
 			float depth = shadow_len - omni_lights.data[idx].shadow_bias;
 			depth *= omni_lights.data[idx].inv_radius;
-			shadow = sample_omni_pcf_shadow(shadow_atlas, omni_lights.data[idx].soft_shadow_scale / shadow_sample.z, pos, uv_rect, flip_offset, depth);
+			shadow = sample_omni_pcf_shadow(shadow_atlas, omni_lights.data[idx].soft_shadow_scale / shadow_sample.z, pos, uv_rect, flip_offset, depth, scene_data_block.data.taa_jitter);
 		}
 
 		return shadow;
@@ -669,7 +669,7 @@ void light_process_omni(uint idx, vec3 vertex, vec3 eye_vec, vec3 normal, vec3 v
 			specular_light);
 }
 
-float light_process_spot_shadow(uint idx, vec3 vertex, vec3 normal) {
+float light_process_spot_shadow(uint idx, vec3 vertex, vec3 normal, vec2 taa_jitter) {
 #ifndef SHADOWS_DISABLED
 	if (spot_lights.data[idx].shadow_enabled) {
 		vec3 light_rel_vec = spot_lights.data[idx].position - vertex;
@@ -700,7 +700,7 @@ float light_process_spot_shadow(uint idx, vec3 vertex, vec3 normal) {
 
 			mat2 disk_rotation;
 			{
-				float r = quick_hash(gl_FragCoord.xy) * 2.0 * M_PI;
+				float r = quick_hash(gl_FragCoord.xy + taa_jitter.x * 3) * 2.0 * M_PI;
 				float sr = sin(r);
 				float cr = cos(r);
 				disk_rotation = mat2(vec2(cr, -sr), vec2(sr, cr));
@@ -740,7 +740,7 @@ float light_process_spot_shadow(uint idx, vec3 vertex, vec3 normal) {
 		} else {
 			//hard shadow
 			vec3 shadow_uv = vec3(splane.xy * spot_lights.data[idx].atlas_rect.zw + spot_lights.data[idx].atlas_rect.xy, splane.z);
-			shadow = sample_pcf_shadow(shadow_atlas, spot_lights.data[idx].soft_shadow_scale * scene_data_block.data.shadow_atlas_pixel_size, shadow_uv);
+			shadow = sample_pcf_shadow(shadow_atlas, spot_lights.data[idx].soft_shadow_scale * scene_data_block.data.shadow_atlas_pixel_size, shadow_uv, scene_data_block.data.taa_jitter);
 		}
 
 		return shadow;

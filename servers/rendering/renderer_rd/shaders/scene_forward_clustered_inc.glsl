@@ -244,10 +244,8 @@ struct SceneData {
 	float fog_sun_scatter;
 
 	float fog_aerial_perspective;
-
 	float time;
 	float reflection_multiplier; // one normally, zero when rendering reflections
-
 	bool pancake_shadows;
 	vec2 taa_jitter;
 	uvec2 pad;

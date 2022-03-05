@@ -1430,7 +1430,7 @@ void main() {
 						float range_begin = directional_lights.data[i].shadow_range_begin.x;
 						float test_radius = (range_pos - range_begin) * directional_lights.data[i].softshadow_angle;
 						vec2 tex_scale = directional_lights.data[i].uv_scale1 * test_radius;
-						shadow = sample_directional_soft_shadow(directional_shadow_atlas, pssm_coord.xyz, tex_scale * directional_lights.data[i].soft_shadow_scale);
+						shadow = sample_directional_soft_shadow(directional_shadow_atlas, pssm_coord.xyz, tex_scale * directional_lights.data[i].soft_shadow_scale, scene_data.taa_jitter);
 						blend_count++;
 					}
 
@@ -1446,7 +1446,7 @@ void main() {
 						float range_begin = directional_lights.data[i].shadow_range_begin.y;
 						float test_radius = (range_pos - range_begin) * directional_lights.data[i].softshadow_angle;
 						vec2 tex_scale = directional_lights.data[i].uv_scale2 * test_radius;
-						float s = sample_directional_soft_shadow(directional_shadow_atlas, pssm_coord.xyz, tex_scale * directional_lights.data[i].soft_shadow_scale);
+						float s = sample_directional_soft_shadow(directional_shadow_atlas, pssm_coord.xyz, tex_scale * directional_lights.data[i].soft_shadow_scale, scene_data.taa_jitter);
 
 						if (blend_count == 0) {
 							shadow = s;
@@ -1471,7 +1471,7 @@ void main() {
 						float range_begin = directional_lights.data[i].shadow_range_begin.z;
 						float test_radius = (range_pos - range_begin) * directional_lights.data[i].softshadow_angle;
 						vec2 tex_scale = directional_lights.data[i].uv_scale3 * test_radius;
-						float s = sample_directional_soft_shadow(directional_shadow_atlas, pssm_coord.xyz, tex_scale * directional_lights.data[i].soft_shadow_scale);
+						float s = sample_directional_soft_shadow(directional_shadow_atlas, pssm_coord.xyz, tex_scale * directional_lights.data[i].soft_shadow_scale, scene_data.taa_jitter);
 
 						if (blend_count == 0) {
 							shadow = s;
@@ -1496,7 +1496,7 @@ void main() {
 						float range_begin = directional_lights.data[i].shadow_range_begin.w;
 						float test_radius = (range_pos - range_begin) * directional_lights.data[i].softshadow_angle;
 						vec2 tex_scale = directional_lights.data[i].uv_scale4 * test_radius;
-						float s = sample_directional_soft_shadow(directional_shadow_atlas, pssm_coord.xyz, tex_scale * directional_lights.data[i].soft_shadow_scale);
+						float s = sample_directional_soft_shadow(directional_shadow_atlas, pssm_coord.xyz, tex_scale * directional_lights.data[i].soft_shadow_scale, scene_data.taa_jitter);
 
 						if (blend_count == 0) {
 							shadow = s;
@@ -1547,7 +1547,7 @@ void main() {
 
 					pssm_coord /= pssm_coord.w;
 
-					shadow = sample_directional_pcf_shadow(directional_shadow_atlas, scene_data.directional_shadow_pixel_size * directional_lights.data[i].soft_shadow_scale * blur_factor, pssm_coord);
+					shadow = sample_directional_pcf_shadow(directional_shadow_atlas, scene_data.directional_shadow_pixel_size * directional_lights.data[i].soft_shadow_scale * blur_factor, pssm_coord, scene_data.taa_jitter);
 
 					if (directional_lights.data[i].blend_splits) {
 						float pssm_blend;
@@ -1581,7 +1581,7 @@ void main() {
 
 						pssm_coord /= pssm_coord.w;
 
-						float shadow2 = sample_directional_pcf_shadow(directional_shadow_atlas, scene_data.directional_shadow_pixel_size * directional_lights.data[i].soft_shadow_scale * blur_factor2, pssm_coord);
+						float shadow2 = sample_directional_pcf_shadow(directional_shadow_atlas, scene_data.directional_shadow_pixel_size * directional_lights.data[i].soft_shadow_scale * blur_factor2, pssm_coord, scene_data.taa_jitter);
 						shadow = mix(shadow, shadow2, pssm_blend);
 					}
 				}
@@ -1740,7 +1740,7 @@ void main() {
 					continue; // Statically baked light and object uses lightmap, skip
 				}
 
-				float shadow = light_process_omni_shadow(light_index, vertex, normal);
+				float shadow = light_process_omni_shadow(light_index, vertex, normal, scene_data.taa_jitter);
 
 				shadow = blur_shadow(shadow);
 
@@ -1812,7 +1812,7 @@ void main() {
 					continue; // Statically baked light and object uses lightmap, skip
 				}
 
-				float shadow = light_process_spot_shadow(light_index, vertex, normal);
+				float shadow = light_process_spot_shadow(light_index, vertex, normal, scene_data.taa_jitter);
 
 				shadow = blur_shadow(shadow);
 

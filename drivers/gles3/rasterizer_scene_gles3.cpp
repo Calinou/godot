@@ -1316,6 +1316,9 @@ void RasterizerSceneGLES3::shadows_quality_set(RS::ShadowQuality p_quality) {
 void RasterizerSceneGLES3::directional_shadow_quality_set(RS::ShadowQuality p_quality) {
 }
 
+// void RasterizerSceneGLES3::shadows_use_jitter_set(bool p_jitter) {
+// }
+
 RID RasterizerSceneGLES3::light_instance_create(RID p_light) {
 	RID li = light_instance_owner.make_rid(LightInstance());
 

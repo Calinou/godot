@@ -186,7 +186,7 @@ struct SceneData {
 	mediump float reflection_multiplier; // one normally, zero when rendering reflections
 
 	bool pancake_shadows;
-	uint pad1;
+	uint frame;
 	uint pad2;
 	uint pad3;
 };

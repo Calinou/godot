@@ -301,10 +301,8 @@ class RenderForwardClustered : public RendererSceneRenderRD {
 			float fog_sun_scatter;
 
 			float fog_aerial_perspective;
-
 			float time;
 			float reflection_multiplier;
-
 			uint32_t pancake_shadows;
 
 			float taa_jitter[2];

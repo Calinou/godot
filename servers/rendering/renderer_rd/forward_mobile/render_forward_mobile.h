@@ -312,7 +312,7 @@ protected:
 			float reflection_multiplier;
 
 			uint32_t pancake_shadows;
-			uint32_t pad1;
+			uint32_t frame;
 			uint32_t pad2;
 			uint32_t pad3;
 		};

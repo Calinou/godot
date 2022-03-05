@@ -3278,6 +3278,10 @@ void RendererSceneRenderRD::directional_shadow_quality_set(RS::ShadowQuality p_q
 	_update_shader_quality_settings();
 }
 
+// void RendererSceneRenderRD::shadows_use_jitter_set(bool p_jitter) {
+// 	shadows_use_jitter = p_jitter;
+// }
+
 void RendererSceneRenderRD::decals_set_filter(RenderingServer::DecalFilter p_filter) {
 	if (decals_filter == p_filter) {
 		return;
@@ -5950,6 +5954,7 @@ void fog() {
 	soft_shadow_kernel = memnew_arr(float, 128);
 	shadows_quality_set(RS::ShadowQuality(int(GLOBAL_GET("rendering/shadows/shadows/soft_shadow_quality"))));
 	directional_shadow_quality_set(RS::ShadowQuality(int(GLOBAL_GET("rendering/shadows/directional_shadow/soft_shadow_quality"))));
+	//shadows_use_jitter_set(bool(GLOBAL_GET("rendering/shadows/soft_shadow_use_jitter")));
 
 	environment_set_volumetric_fog_volume_size(GLOBAL_GET("rendering/environment/volumetric_fog/volume_size"), GLOBAL_GET("rendering/environment/volumetric_fog/volume_depth"));
 	environment_set_volumetric_fog_filter_active(GLOBAL_GET("rendering/environment/volumetric_fog/use_filter"));

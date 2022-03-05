@@ -857,6 +857,7 @@ public:
 
 	void shadows_quality_set(RS::ShadowQuality p_quality) override;
 	void directional_shadow_quality_set(RS::ShadowQuality p_quality) override;
+	//void shadows_use_jitter_set(bool p_jitter) override;
 
 	RID light_instance_create(RID p_light) override;
 	void light_instance_set_transform(RID p_light_instance, const Transform3D &p_transform) override;

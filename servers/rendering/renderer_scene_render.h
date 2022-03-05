@@ -168,6 +168,7 @@ public:
 
 	virtual void shadows_quality_set(RS::ShadowQuality p_quality) = 0;
 	virtual void directional_shadow_quality_set(RS::ShadowQuality p_quality) = 0;
+	//virtual void shadows_use_jitter_set(bool p_jitter) = 0;
 
 	virtual RID light_instance_create(RID p_light) = 0;
 	virtual void light_instance_set_transform(RID p_light_instance, const Transform3D &p_transform) = 0;

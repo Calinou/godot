@@ -1548,6 +1548,15 @@ void RenderForwardMobile::_setup_environment(const RenderDataRD *p_render_data, 
 
 	scene_state.ubo.pancake_shadows = p_pancake_shadows;
 
+	// if (shadows_use_jitter_get()) {
+	// 	// Used for temporal jittering. Rollover at 100 frames to avoid losing precision over time
+	// 	// (since this integer may be used with floating-point math).
+	// 	scene_state.ubo.frame = RSG::rasterizer->get_frame_number() % 100;
+	// } else {
+	// 	// Reset dithering pattern.
+	// 	scene_state.ubo.frame = 0;
+	// }
+
 	RendererStorageRD::store_soft_shadow_kernel(directional_penumbra_shadow_kernel_get(), scene_state.ubo.directional_penumbra_shadow_kernel);
 	RendererStorageRD::store_soft_shadow_kernel(directional_soft_shadow_kernel_get(), scene_state.ubo.directional_soft_shadow_kernel);
 	RendererStorageRD::store_soft_shadow_kernel(penumbra_shadow_kernel_get(), scene_state.ubo.penumbra_shadow_kernel);

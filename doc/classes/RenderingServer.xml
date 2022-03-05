@@ -2759,6 +2759,13 @@
 			<description>
 			</description>
 		</method>
+		<method name="shadows_use_jitter_set">
+			<return type="void" />
+			<argument index="0" name="jitter" type="bool" />
+			<description>
+				If [code]jitter[/code] is [code]true[/code], enables shadow dithering pattern randomization for every frame rendered. See [member ProjectSettings.rendering/shadows/soft_shadow_use_jitter] for more information.
+			</description>
+		</method>
 		<method name="skeleton_allocate_data">
 			<return type="void" />
 			<argument index="0" name="skeleton" type="RID" />

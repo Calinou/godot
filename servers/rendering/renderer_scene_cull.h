@@ -1152,6 +1152,7 @@ public:
 
 	PASS1(shadows_quality_set, RS::ShadowQuality)
 	PASS1(directional_shadow_quality_set, RS::ShadowQuality)
+	//PASS1(shadows_use_jitter_set, bool)
 
 	PASS2(sdfgi_set_debug_probe_select, const Vector3 &, const Vector3 &)
 
