@@ -42,6 +42,7 @@ private:
 	String text;
 	String xl_text;
 	Ref<TextParagraph> text_buf;
+	bool focus_from_mouse = false;
 
 	Dictionary opentype_features;
 	String language;
@@ -58,6 +59,7 @@ private:
 
 protected:
 	void _set_internal_margin(Side p_side, float p_value);
+	void gui_input(const Ref<InputEvent> &p_event) override;
 	void _notification(int p_what);
 	static void _bind_methods();
 

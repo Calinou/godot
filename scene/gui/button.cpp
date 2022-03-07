@@ -73,6 +73,22 @@ void Button::_set_internal_margin(Side p_side, float p_value) {
 	_internal_margin[p_side] = p_value;
 }
 
+void Button::gui_input(const Ref<InputEvent> &p_event) {
+	const Ref<InputEventKey> key = p_event;
+	if (key.is_valid() && key->is_pressed()) {
+		focus_from_mouse = false;
+		print_line(get_name(), ": focus from mouse FALSE");
+	}
+
+	const Ref<InputEventMouseButton> mb = p_event;
+	if (mb.is_valid() && mb->is_pressed()) {
+		focus_from_mouse = true;
+		print_line(get_name(), ": focus from mouse TRUE");
+	}
+
+	BaseButton::gui_input(p_event);
+}
+
 void Button::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_LAYOUT_DIRECTION_CHANGED: {
@@ -207,7 +223,10 @@ void Button::_notification(int p_what) {
 				} break;
 			}
 
-			if (has_focus()) {
+			if (has_focus() && !focus_from_mouse) {
+				// Only draw focus stylebox when focus was made with the keyboard (similar to `:focus-visible` in CSS).
+				// This prevents focus styleboxes from being drawn over pressed or normal styleboxes
+				// after clicking with the mouse, which is often considered distracting in modern UIs.
 				Ref<StyleBox> style2 = get_theme_stylebox(SNAME("focus"));
 				style2->draw(ci, Rect2(Point2(), size));
 			}
