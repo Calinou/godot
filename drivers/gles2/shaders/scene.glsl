@@ -1600,6 +1600,18 @@ uniform mediump float fog_height_curve;
 #endif //vertex lit
 #endif //fog
 
+// From http://alex.vlachos.com/graphics/Alex_Vlachos_Advanced_VR_Rendering_GDC2015.pdf
+// and https://www.shadertoy.com/view/MslGR8 (5th one starting from the bottom)
+// NOTE: `frag_coord` is in pixels (i.e. not normalized UV).
+vec3 screen_space_dither(vec2 frag_coord) {
+	// Iestyn's RGB dither (7 asm instructions) from Portal 2 X360, slightly modified for VR.
+	vec3 dither = vec3(dot(vec2(171.0, 231.0), frag_coord));
+	dither.rgb = fract(dither.rgb / vec3(103.0, 71.0, 97.0));
+
+	// Subtract 0.5 to avoid slightly brightening the whole viewport.
+	return (dither.rgb - 0.5) / 255.0;
+}
+
 void main() {
 #ifdef RENDER_DEPTH_DUAL_PARABOLOID
 
@@ -2342,6 +2354,7 @@ FRAGMENT_SHADER_CODE
 
 #if defined(BASE_PASS)
 	gl_FragColor.rgb = mix(gl_FragColor.rgb, fog_color, fog_amount);
+	gl_FragColor.rgb += screen_space_dither(gl_FragCoord.xy);
 #else
 	gl_FragColor.rgb *= (1.0 - fog_amount);
 #endif // BASE_PASS
