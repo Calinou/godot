@@ -223,7 +223,8 @@ void AnimationPlayer::_notification(int p_what) {
 		} break;
 
 		case NOTIFICATION_INTERNAL_PHYSICS_PROCESS: {
-			if (process_callback == ANIMATION_PROCESS_IDLE) {
+			// The Manual process mode is treated as Idle within the editor.
+			if (process_callback == ANIMATION_PROCESS_IDLE || (Engine::get_singleton()->is_editor_hint() && process_callback == ANIMATION_PROCESS_MANUAL)) {
 				break;
 			}
 
@@ -1648,6 +1649,12 @@ void AnimationPlayer::_set_process(bool p_process, bool p_force) {
 			set_process_internal(p_process && active);
 			break;
 		case ANIMATION_PROCESS_MANUAL:
+			// Outside the editor, do nothing. The user must play the animation manually.
+			if (Engine::get_singleton()->is_editor_hint()) {
+				// Treat as ANIMATION_PROCESS_IDLE within the editor.
+				// This allows the AnimationPlayer editor's Play button to work as expected.
+				set_process_internal(p_process && active);
+			}
 			break;
 	}
 

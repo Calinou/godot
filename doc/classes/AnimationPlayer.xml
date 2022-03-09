@@ -255,6 +255,7 @@
 		</constant>
 		<constant name="ANIMATION_PROCESS_MANUAL" value="2" enum="AnimationProcessCallback">
 			Do not process animation. Use [method advance] to process the animation manually.
+			[b]Note:[/b] In the editor, this will be treated as [constant ANIMATION_PROCESS_IDLE] to allow the AnimationPlayer editor's Play button to work.
 		</constant>
 		<constant name="ANIMATION_METHOD_CALL_DEFERRED" value="0" enum="AnimationMethodCallMode">
 			Batch method calls during the animation process, then do the calls after events are processed. This avoids bugs involving deleting nodes or modifying the AnimationPlayer while playing.
