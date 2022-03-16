@@ -38,9 +38,9 @@ void LightmapGIEditorPlugin::_bake_select_file(const String &p_file) {
 		LightmapGI::BakeError err;
 		const uint64_t time_started = OS::get_singleton()->get_ticks_msec();
 		if (get_tree()->get_edited_scene_root() && get_tree()->get_edited_scene_root() == lightmap) {
-			err = lightmap->bake(lightmap, p_file, bake_func_step);
+			err = lightmap->_bake(lightmap, p_file, bake_func_step);
 		} else {
-			err = lightmap->bake(lightmap->get_parent(), p_file, bake_func_step);
+			err = lightmap->_bake(lightmap->get_parent(), p_file, bake_func_step);
 		}
 
 		bake_func_end(time_started);

@@ -10,6 +10,17 @@
 	</description>
 	<tutorials>
 	</tutorials>
+	<methods>
+		<method name="bake">
+			<return type="int" enum="Error" />
+			<argument index="0" name="from_node" type="Node" default="null" />
+			<argument index="1" name="image_data_path" type="String" default="&quot;&quot;" />
+			<description>
+				Bakes lightmaps (requires meshes to have UV2 unwrapped) for [code]from_node[/code] and its children to [code]image_data_path[/code] (must end with an [code].exr[/code] file extension). If [code]from_node[/code] is [code]null[/code], lightmaps are baked from the [LightmapGI] node's parent. Baking lightmaps can take from a few seconds to several dozen minutes depending on the GPU speed and quality settings chosen.
+				[b]Note:[/b] [method bake] only works within the editor, and when running a project from the editor. [method bake] will do nothing when called in a project exported in either debug or release mode. This limitation is in place to reduce the binary size of exported projects.
+			</description>
+		</method>
+	</methods>
 	<members>
 		<member name="bias" type="float" setter="set_bias" getter="get_bias" default="0.0005">
 		</member>
