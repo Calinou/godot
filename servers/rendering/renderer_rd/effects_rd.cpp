@@ -1010,7 +1010,7 @@ void EffectsRD::bokeh_dof(const BokehBuffers &p_buffers, bool p_dof_far, float p
 	bokeh.push_constant.second_pass = false;
 	bokeh.push_constant.half_size = false;
 
-	bokeh.push_constant.blur_scale = 1.0 / Math::pow(dof_resolution_influence, 1.0 / 4.0);
+	bokeh.push_constant.blur_scale = 1.0 / Math::pow(dof_resolution_influence, 1.0 / 8.0);
 
 	RD::ComputeListID compute_list = RD::get_singleton()->compute_list_begin();
 
@@ -1030,6 +1030,7 @@ void EffectsRD::bokeh_dof(const BokehBuffers &p_buffers, bool p_dof_far, float p
 
 	RD::get_singleton()->compute_list_dispatch_threads(compute_list, p_buffers.base_texture_size.x, p_buffers.base_texture_size.y, 1);
 	RD::get_singleton()->compute_list_add_barrier(compute_list);
+	/* END OF FIRST PASS */
 
 	if (p_bokeh_shape == RS::DOF_BOKEH_BOX || p_bokeh_shape == RS::DOF_BOKEH_HEXAGON) {
 		//second pass
@@ -1045,8 +1046,8 @@ void EffectsRD::bokeh_dof(const BokehBuffers &p_buffers, bool p_dof_far, float p
 			RD::get_singleton()->compute_list_bind_uniform_set(compute_list, _get_uniform_set_from_image(p_buffers.half_texture[0]), 0);
 			RD::get_singleton()->compute_list_bind_uniform_set(compute_list, _get_compute_uniform_set_from_texture(p_buffers.base_texture), 1);
 
-			bokeh.push_constant.size[0] = p_buffers.base_texture_size.x >> 1;
-			bokeh.push_constant.size[1] = p_buffers.base_texture_size.y >> 1;
+			bokeh.push_constant.size[0] = p_buffers.base_texture_size.x;
+			bokeh.push_constant.size[1] = p_buffers.base_texture_size.y;
 			bokeh.push_constant.half_size = true;
 			bokeh.push_constant.blur_size *= 0.5;
 
@@ -1103,15 +1104,15 @@ void EffectsRD::bokeh_dof(const BokehBuffers &p_buffers, bool p_dof_far, float p
 		static const float quality_scale[4] = { 6.4, 2.8, 1.1, 0.4 };
 
 		bokeh.push_constant.steps = 0;
-		bokeh.push_constant.blur_scale = quality_scale[p_quality] / Math::pow(dof_resolution_influence, 1.0 / 5.0);
+		bokeh.push_constant.blur_scale = quality_scale[p_quality] / Math::pow(dof_resolution_influence, 1.0 / 8.0);
 
 		//circle always runs in half size, otherwise too expensive
 
 		RD::get_singleton()->compute_list_bind_uniform_set(compute_list, _get_uniform_set_from_image(p_buffers.half_texture[0]), 0);
 		RD::get_singleton()->compute_list_bind_uniform_set(compute_list, _get_compute_uniform_set_from_texture(p_buffers.base_texture), 1);
 
-		bokeh.push_constant.size[0] = p_buffers.base_texture_size.x >> 1;
-		bokeh.push_constant.size[1] = p_buffers.base_texture_size.y >> 1;
+		bokeh.push_constant.size[0] = p_buffers.base_texture_size.x;
+		bokeh.push_constant.size[1] = p_buffers.base_texture_size.y;
 		bokeh.push_constant.half_size = true;
 
 		RD::get_singleton()->compute_list_set_push_constant(compute_list, &bokeh.push_constant, sizeof(BokehPushConstant));
@@ -1266,7 +1267,7 @@ void EffectsRD::bokeh_dof_raster(const BokehBuffers &p_buffers, bool p_dof_far, 
 			}
 
 			static const float quality_scale[4] = { 6.4, 2.8, 1.1, 0.4 };
-			bokeh.push_constant.blur_scale = quality_scale[p_quality] / Math::pow(dof_resolution_influence, 1.0 / 5.0);
+			bokeh.push_constant.blur_scale = quality_scale[p_quality] / Math::pow(dof_resolution_influence, 1.0 / 8.0);
 			bokeh.push_constant.steps = 0.0;
 
 			RID framebuffer = bokeh.push_constant.half_size ? p_buffers.half_fb[0] : p_buffers.secondary_fb;

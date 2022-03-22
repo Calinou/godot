@@ -41,28 +41,16 @@ float get_depth_at_pos(vec2 uv) {
 
 float get_blur_size(float depth) {
 	if (params.blur_near_active && depth < params.blur_near_begin) {
-		return -(1.0 - smoothstep(params.blur_near_end, params.blur_near_begin, depth)) * params.blur_size - DEPTH_GAP; //near blur is negative
+		return (linearstep(params.blur_near_end, params.blur_near_begin, depth) - 1.0) * params.blur_size - DEPTH_GAP; //near blur is negative
 	}
 
 	if (params.blur_far_active && depth > params.blur_far_begin) {
-		return smoothstep(params.blur_far_begin, params.blur_far_end, depth) * params.blur_size + DEPTH_GAP;
+		return linearstep(params.blur_far_begin, params.blur_far_end, depth) * params.blur_size + DEPTH_GAP;
 	}
 
 	return 0.0;
 }
 
-#endif
-
-#ifdef MODE_BOKEH_CIRCULAR
-
-float remap(float value, vec2 from, vec2 to) {
-	return to.x + (value - from.x) * (to.y - to.x) / (from.y - from.x);
-}
-
-float linearstep(float lo, float hi, float x) {
-	return (clamp(x, lo, hi) - lo) / (hi - lo);
-}
- 
 #endif
 
 #if defined(MODE_BOKEH_BOX) || defined(MODE_BOKEH_HEXAGONAL)
@@ -107,12 +95,20 @@ vec4 weighted_filter_dir(vec2 dir, vec2 uv, vec2 pixel_size) {
 void main() {
 	ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
 
-	if (any(greaterThan(pos, params.size))) { //too large, do nothing
+	ivec2 checkPos = params.half_size ? 2 * pos : pos;
+	if (any(greaterThan(checkPos, params.size))) { //too large, do nothing
 		return;
 	}
 
 	vec2 pixel_size = 1.0 / vec2(params.size);
+// 	if (params.half_size) {
+// 		pixel_size *= 0.5;
+// 	}
+
 	vec2 uv = vec2(pos) * pixel_size;
+	if (params.half_size) {
+		uv *= 2.0;
+	}
 
 #ifdef MODE_GEN_BLUR_SIZE
 	uv += pixel_size * 0.5;
@@ -170,10 +166,6 @@ void main() {
 
 #ifdef MODE_BOKEH_CIRCULAR
 
-	if (params.half_size) {
-		pixel_size *= 0.5; //resolution is doubled
-	}
-
 	uv += pixel_size * 0.5; //half pixel to read centers
 
 	vec4 color = texture(color_texture, uv);
@@ -181,22 +173,21 @@ void main() {
 	float accum = 1.0;
 	float radius = params.blur_scale;
 
-	//radius -= smoothstep(0.0, params.blur_size * -0.25, color.a) * smoothstep(-params.blur_size, params.blur_size * -0.75, color.a) * 0.5 * radius;
-	
 	// A smaller `blur_scaler` means linearly slower convergence of the circle's `radius` to `blur_size`
 	// A bigger `blur_size` maps to a faster convergence of the circle's `radius` to `blur_size`
-	float _blur_size_performance = max(0.4, remap(params.blur_size, vec2(12.5, 62.5), vec2(0.4, 1.6)));
-	
+	const float _blur_size_performance = max(0.4, remap(params.blur_size, vec2(12.5, 62.5), vec2(0.4, 1.6)));
+
 	// this is used to get a uniform blur although sampling is not done uniformly
-	float base_radius_growth_rate = radius * _blur_size_performance;
-	
+	const float base_radius_growth_rate = radius * _blur_size_performance;
+
 	// decide how detailed the sampling should be for optimization purposes, based on `initial_blur` and `params.blur_size`
-	float radius_growth_rate = base_radius_growth_rate * (1.0 + 1.1 * abs(initial_blur) / params.blur_size);
+	float radius_growth_rate = base_radius_growth_rate * (1.0 + 3.0 * abs(initial_blur) / params.blur_size);
+
 	// sample increasingly less towards the end, but for near DoF we don't want this that much, because it starts to look worse quicker than far DoF
-	float radius_growth_rate_acceleration = 1.0 + 0.01 * linearstep(params.blur_size * -2.0, params.blur_size * -0.01, initial_blur);
-	
+	const float radius_growth_rate_acceleration = 1.0 + 0.01 * linearstep(params.blur_size * -1.5, params.blur_size * -0.01, initial_blur);
+
 	// hash the initial angle to get rid of some moire patterns; multiplying by 0.5 seems to improve the fps a bit; also don't hash unfocused points
-	float ang = hash12n(uv) * 0.5 * step(0.0, abs(initial_blur));
+	float ang = hash12n(uv) * 0.5;// * step(0.0, abs(initial_blur));
 
 	for (; radius < params.blur_size; ) {
 		ang += GOLDEN_ANGLE;
@@ -207,49 +198,21 @@ void main() {
 
 		// limit how much of the far blur will affect the near blur
 		if (sample_color.a > initial_blur) {
-			// the remap scales the clamping to avoid a type of artifacting at higher `params.blur_size`, that manifests like aliasing at geometry edges (probably because of half-size rendering?)
-			sample_size = clamp(sample_size, 0.0, abs(initial_blur) * remap(params.blur_size, vec2(12.5, 62.5), vec2(3.0, 9.0)));
+			sample_size = clamp(sample_size, 0.0, abs(initial_blur) * remap(params.blur_size, vec2(12.5, 62.5), vec2(1.8, 2.1)));
 		}
-
+		
 		float contribution = linearstep(radius - 0.5, radius + 0.5, sample_size);
 
 		// since the radius_growth_rate is not constant, but we still want a uniform coverage, we'll account for that by increasing the sample's weight (in addition to it's contribution)
-		float weight = radius_growth_rate / base_radius_growth_rate;
+		float _radius_growth_rate = mix(radius_growth_rate, base_radius_growth_rate, linearstep(params.blur_size * 0.9, params.blur_size, radius));
+		float weight = _radius_growth_rate / base_radius_growth_rate;
 
 		color += mix(color / accum, sample_color, contribution) * weight;
 		accum += weight;
 
 		// add a growth rate to the growth rate for a performance/quality ratio increase
 		radius_growth_rate *= radius_growth_rate_acceleration;
-		radius += radius_growth_rate / radius;
-
-		//////
-// 		ang += GOLDEN_ANGLE;
-// 		
-// 		suv = uv + vec2(cos(ang), sin(ang)) * pixel_size * radius;
-// 		sample_color = texture(color_texture, suv);
-// 		sample_size = abs(sample_color.a);
-// 		
-// 		limit how much of the far blur will affect the near blur
-// 		if (sample_color.a > initial_blur) {
-// 			the remap scales the clamping to avoid a type of artifacting at higher `params.blur_size`, that manifests like aliasing at geometry edges
-// 			sample_size = clamp(sample_size, 0.0, abs(initial_blur) * remap(params.blur_size, vec2(12.5, 62.5), vec2(3.0, 6.0)));
-// 			                                   mix(abs(initial_blur), abs(color.a), smoothstep(0.2, 5.0, abs(initial_blur) / abs(sample_color.a))) * remap(params.blur_size, vec2(12.5, 62.5), vec2(2.0, 3.0)));
-// 		}
-// 
-// 		m = linearstep(radius - 0.5, radius + 0.5, sample_size);
-// 		
-// 		since the radius is growing increasingly faster, but we still want a uniform coverage, we'll account for that by increasing the sample's influence
-// 		influence = radius_growth_rate / base_radius_growth_rate;
-// 		color += mix(color / accum, sample_color, m) * influence;
-// 		accum += influence;
-// 		
-// 		add a growth rate to the growth rate for a performance/quality ratio increase
-// 		radius_growth_rate *= (
-// 			1.0 
-// 			+ 0.02 * abs(m - 0.5) * linearstep(-params.blur_size * 2.0, -params.blur_size * 0.05, sample_color.a)
-// 		);
-// 		radius += radius_growth_rate / radius;
+		radius += _radius_growth_rate / radius;
 	}
 
 	color /= accum;
@@ -261,7 +224,34 @@ void main() {
 
 	uv += pixel_size * 0.5;
 	vec4 color = imageLoad(color_image, pos);
+
 	vec4 bokeh = texture(source_bokeh, uv);
+
+#ifdef DENOISE
+
+	// since we're doing a third pass for upscaling, why not apply some quick blur for a bit of denoising
+// 	vec2 blur_distance = remap(params.blur_size, vec2(12.5, 62.5), vec2(0.5, 0.75)) * (hash12n(uv) + 1.0, hash12n(uv.yx) + 1.0) * pixel_size;
+// 	vec4 bokeh_blured = bokeh * 0.4
+// 		+ texture(source_bokeh, uv + blur_distance) * 0.15
+// 		+ texture(source_bokeh, uv - blur_distance) * 0.15
+// 		+ texture(source_bokeh, uv + vec2(blur_distance.x, -blur_distance.y)) * 0.15
+// 		+ texture(source_bokeh, uv + vec2(-blur_distance.x, blur_distance.y)) * 0.15
+// 	bokeh.rgb = bokeh_blured.rgb;
+
+	vec4 denoisedBokeh = sirBirdDenoise(source_bokeh, uv, pixel_size * (1.0 + abs(bokeh.a) / params.blur_size));
+	bokeh.rgb = mix(
+		bokeh.rgb, 
+		denoisedBokeh.rgb, 
+		1.0 * step(abs(bokeh.a) + 0.01, abs(denoisedBokeh.a))//2.0 * (clamp(abs(bokeh.a) + abs(denoisedBokeh.a), 0.0, 1.0))
+	);
+
+// 	radius = 1.0;
+// 	for (; radius < params.blur_size * 0.1; ) {
+// 		ang += GOLDEN_ANGLE;
+//		vec2 suv = uv + vec2(cos(ang), sin(ang)) * pixel_size * radius;
+// 	}
+
+#endif
 
 	float mix_amount;
 	if (bokeh.a < color.a) {
