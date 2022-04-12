@@ -144,6 +144,15 @@ float ProceduralSkyMaterial::get_sun_curve() const {
 	return sun_curve;
 }
 
+void ProceduralSkyMaterial::set_fog_scale(float p_scale) {
+	fog_scale = p_scale;
+	RS::get_singleton()->material_set_param(_get_material(), "fog_scale", fog_scale);
+}
+
+float ProceduralSkyMaterial::get_fog_scale() const {
+	return fog_scale;
+}
+
 Shader::Mode ProceduralSkyMaterial::get_shader_mode() const {
 	return Shader::MODE_SKY;
 }
@@ -199,6 +208,9 @@ void ProceduralSkyMaterial::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_sun_curve", "curve"), &ProceduralSkyMaterial::set_sun_curve);
 	ClassDB::bind_method(D_METHOD("get_sun_curve"), &ProceduralSkyMaterial::get_sun_curve);
 
+	ClassDB::bind_method(D_METHOD("set_fog_scale", "scale"), &ProceduralSkyMaterial::set_fog_scale);
+	ClassDB::bind_method(D_METHOD("get_fog_scale"), &ProceduralSkyMaterial::get_fog_scale);
+
 	ADD_GROUP("Sky", "sky_");
 	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "sky_top_color", PROPERTY_HINT_COLOR_NO_ALPHA), "set_sky_top_color", "get_sky_top_color");
 	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "sky_horizon_color", PROPERTY_HINT_COLOR_NO_ALPHA), "set_sky_horizon_color", "get_sky_horizon_color");
@@ -216,6 +228,9 @@ void ProceduralSkyMaterial::_bind_methods() {
 	ADD_GROUP("Sun", "sun_");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "sun_angle_max", PROPERTY_HINT_RANGE, "0,360,0.01"), "set_sun_angle_max", "get_sun_angle_max");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "sun_curve", PROPERTY_HINT_EXP_EASING), "set_sun_curve", "get_sun_curve");
+
+	ADD_GROUP("", "");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "fog_scale", PROPERTY_HINT_RANGE, "0,1,0.01"), "set_fog_scale", "get_fog_scale");
 }
 
 void ProceduralSkyMaterial::cleanup_shader() {
@@ -247,6 +262,7 @@ uniform float ground_curve : hint_range(0, 1) = 0.02;
 uniform float ground_energy = 1.0;
 uniform float sun_angle_max = 30.0;
 uniform float sun_curve : hint_range(0, 1) = 0.15;
+uniform float fog_scale : hint_range(0, 1) = 1.0;
 
 void sky() {
 	float v_angle = acos(clamp(EYEDIR.y, -1.0, 1.0));
@@ -302,6 +318,8 @@ void sky() {
 	ground *= ground_energy;
 
 	COLOR = mix(ground, sky, step(0.0, EYEDIR.y));
+
+	FOG.a *= fog_scale;
 }
 )");
 	}
@@ -322,6 +340,7 @@ ProceduralSkyMaterial::ProceduralSkyMaterial() {
 
 	set_sun_angle_max(30.0);
 	set_sun_curve(0.15);
+	set_fog_scale(1.0);
 }
 
 ProceduralSkyMaterial::~ProceduralSkyMaterial() {

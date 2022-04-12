@@ -53,6 +53,8 @@ private:
 	float sun_angle_max;
 	float sun_curve;
 
+	float fog_scale;
+
 	static Mutex shader_mutex;
 	static RID shader;
 	static void _update_shader();
@@ -97,6 +99,9 @@ public:
 
 	void set_sun_curve(float p_curve);
 	float get_sun_curve() const;
+
+	void set_fog_scale(float p_scale);
+	float get_fog_scale() const;
 
 	virtual Shader::Mode get_shader_mode() const override;
 	virtual RID get_shader_rid() const override;
