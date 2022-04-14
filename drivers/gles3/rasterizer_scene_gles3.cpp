@@ -1792,13 +1792,24 @@ void RasterizerSceneGLES3::_setup_light(RenderList::Element *e, const Transform 
 				continue; // This light is already included in the lightmap
 			}
 
-			if (li && li->light_ptr->type == VS::LIGHT_OMNI) {
+			if ((li->light_ptr->type == VS::LIGHT_OMNI || li->light_ptr->type == VS::LIGHT_SPOT) && storage->light_is_distance_fade_enabled(li->light)) {
+				// Use `distance_squared_to()` to speed up distance checks.
+				const real_t distance = p_view_transform.origin.distance_squared_to(li->transform.origin);
+				const float fade_begin = storage->light_get_distance_fade_begin(li->light);
+				const float fade_length = storage->light_get_distance_fade_length(li->light);
+				if (distance > Math::pow(fade_begin + fade_length, 2)) {
+					// Out of range, don't draw this light to improve performance.
+					continue;
+				}
+			}
+
+			if (li->light_ptr->type == VS::LIGHT_OMNI) {
 				if (omni_count < maxobj && e->instance->layer_mask & li->light_ptr->cull_mask) {
 					omni_indices[omni_count++] = li->light_index;
 				}
 			}
 
-			if (li && li->light_ptr->type == VS::LIGHT_SPOT) {
+			if (li->light_ptr->type == VS::LIGHT_SPOT) {
 				if (spot_count < maxobj && e->instance->layer_mask & li->light_ptr->cull_mask) {
 					spot_indices[spot_count++] = li->light_index;
 				}
@@ -2794,12 +2805,31 @@ void RasterizerSceneGLES3::_setup_lights(RID *p_light_cull_result, int p_light_c
 
 			} break;
 			case VS::LIGHT_OMNI: {
-				float sign = li->light_ptr->negative ? -1 : 1;
+				const float sign = li->light_ptr->negative ? -1 : 1;
 
-				Color linear_col = li->light_ptr->color.to_linear();
-				ubo_data.light_color_energy[0] = linear_col.r * sign * li->light_ptr->param[VS::LIGHT_PARAM_ENERGY] * Math_PI;
-				ubo_data.light_color_energy[1] = linear_col.g * sign * li->light_ptr->param[VS::LIGHT_PARAM_ENERGY] * Math_PI;
-				ubo_data.light_color_energy[2] = linear_col.b * sign * li->light_ptr->param[VS::LIGHT_PARAM_ENERGY] * Math_PI;
+				const Color linear_col = li->light_ptr->color.to_linear();
+
+				float fade = 1.0;
+				float shadow_fade = 1.0;
+				if (storage->light_is_distance_fade_enabled(li->light)) {
+					const float fade_begin = storage->light_get_distance_fade_begin(li->light);
+					const float fade_shadow = storage->light_get_distance_fade_shadow(li->light);
+					const float fade_length = storage->light_get_distance_fade_length(li->light);
+					const float distance = p_camera_inverse_transform.affine_inverse().origin.distance_to(li->transform.origin);
+
+					if (distance > fade_begin) {
+						// Use `smoothstep()` to make opacity changes more gradual and less noticeable to the player.
+						fade = Math::smoothstep(0.0f, 1.0f, 1.0f - float(distance - fade_begin) / fade_length);
+					}
+
+					if (distance > fade_shadow) {
+						shadow_fade = Math::smoothstep(0.0f, 1.0f, 1.0f - float(distance - fade_shadow) / fade_length);
+					}
+				}
+
+				ubo_data.light_color_energy[0] = linear_col.r * sign * li->light_ptr->param[VS::LIGHT_PARAM_ENERGY] * fade * Math_PI;
+				ubo_data.light_color_energy[1] = linear_col.g * sign * li->light_ptr->param[VS::LIGHT_PARAM_ENERGY] * fade * Math_PI;
+				ubo_data.light_color_energy[2] = linear_col.b * sign * li->light_ptr->param[VS::LIGHT_PARAM_ENERGY] * fade * Math_PI;
 				ubo_data.light_color_energy[3] = 0;
 
 				Vector3 pos = p_camera_inverse_transform.xform(li->transform.origin);
@@ -2821,12 +2851,12 @@ void RasterizerSceneGLES3::_setup_lights(RID *p_light_cull_result, int p_light_c
 				ubo_data.light_params[3] = 0;
 
 				Color shadow_color = li->light_ptr->shadow_color.to_linear();
-				ubo_data.light_shadow_color_contact[0] = shadow_color.r;
-				ubo_data.light_shadow_color_contact[1] = shadow_color.g;
-				ubo_data.light_shadow_color_contact[2] = shadow_color.b;
+				ubo_data.light_shadow_color_contact[0] = Math::lerp(1.0f, shadow_color.r, shadow_fade);
+				ubo_data.light_shadow_color_contact[1] = Math::lerp(1.0f, shadow_color.g, shadow_fade);
+				ubo_data.light_shadow_color_contact[2] = Math::lerp(1.0f, shadow_color.b, shadow_fade);
 				ubo_data.light_shadow_color_contact[3] = li->light_ptr->param[VS::LIGHT_PARAM_CONTACT_SHADOW_SIZE];
 
-				if (li->light_ptr->shadow && shadow_atlas && shadow_atlas->shadow_owners.has(li->self)) {
+				if (shadow_fade > CMP_EPSILON && li->light_ptr->shadow && shadow_atlas && shadow_atlas->shadow_owners.has(li->self)) {
 					// fill in the shadow information
 
 					uint32_t key = shadow_atlas->shadow_owners[li->self];
@@ -2872,12 +2902,31 @@ void RasterizerSceneGLES3::_setup_lights(RID *p_light_cull_result, int p_light_c
 
 			} break;
 			case VS::LIGHT_SPOT: {
-				float sign = li->light_ptr->negative ? -1 : 1;
+				const float sign = li->light_ptr->negative ? -1 : 1;
 
-				Color linear_col = li->light_ptr->color.to_linear();
-				ubo_data.light_color_energy[0] = linear_col.r * sign * li->light_ptr->param[VS::LIGHT_PARAM_ENERGY] * Math_PI;
-				ubo_data.light_color_energy[1] = linear_col.g * sign * li->light_ptr->param[VS::LIGHT_PARAM_ENERGY] * Math_PI;
-				ubo_data.light_color_energy[2] = linear_col.b * sign * li->light_ptr->param[VS::LIGHT_PARAM_ENERGY] * Math_PI;
+				const Color linear_col = li->light_ptr->color.to_linear();
+
+				float fade = 1.0;
+				float shadow_fade = 1.0;
+				if (storage->light_is_distance_fade_enabled(li->light)) {
+					const float fade_begin = storage->light_get_distance_fade_begin(li->light);
+					const float fade_shadow = storage->light_get_distance_fade_shadow(li->light);
+					const float fade_length = storage->light_get_distance_fade_length(li->light);
+					const float distance = p_camera_inverse_transform.affine_inverse().origin.distance_to(li->transform.origin);
+
+					if (distance > fade_begin) {
+						// Use `smoothstep()` to make opacity changes more gradual and less noticeable to the player.
+						fade = Math::smoothstep(0.0f, 1.0f, 1.0f - float(distance - fade_begin) / fade_length);
+					}
+
+					if (distance > fade_shadow) {
+						shadow_fade = Math::smoothstep(0.0f, 1.0f, 1.0f - float(distance - fade_shadow) / fade_length);
+					}
+				}
+
+				ubo_data.light_color_energy[0] = linear_col.r * sign * li->light_ptr->param[VS::LIGHT_PARAM_ENERGY] * fade * Math_PI;
+				ubo_data.light_color_energy[1] = linear_col.g * sign * li->light_ptr->param[VS::LIGHT_PARAM_ENERGY] * fade * Math_PI;
+				ubo_data.light_color_energy[2] = linear_col.b * sign * li->light_ptr->param[VS::LIGHT_PARAM_ENERGY] * fade * Math_PI;
 				ubo_data.light_color_energy[3] = 0;
 
 				Vector3 pos = p_camera_inverse_transform.xform(li->transform.origin);
@@ -2900,12 +2949,12 @@ void RasterizerSceneGLES3::_setup_lights(RID *p_light_cull_result, int p_light_c
 				ubo_data.light_params[3] = 0;
 
 				Color shadow_color = li->light_ptr->shadow_color.to_linear();
-				ubo_data.light_shadow_color_contact[0] = shadow_color.r;
-				ubo_data.light_shadow_color_contact[1] = shadow_color.g;
-				ubo_data.light_shadow_color_contact[2] = shadow_color.b;
+				ubo_data.light_shadow_color_contact[0] = Math::lerp(1.0f, shadow_color.r, shadow_fade);
+				ubo_data.light_shadow_color_contact[1] = Math::lerp(1.0f, shadow_color.g, shadow_fade);
+				ubo_data.light_shadow_color_contact[2] = Math::lerp(1.0f, shadow_color.b, shadow_fade);
 				ubo_data.light_shadow_color_contact[3] = li->light_ptr->param[VS::LIGHT_PARAM_CONTACT_SHADOW_SIZE];
 
-				if (li->light_ptr->shadow && shadow_atlas && shadow_atlas->shadow_owners.has(li->self)) {
+				if (shadow_fade > CMP_EPSILON && li->light_ptr->shadow && shadow_atlas && shadow_atlas->shadow_owners.has(li->self)) {
 					// fill in the shadow information
 
 					uint32_t key = shadow_atlas->shadow_owners[li->self];

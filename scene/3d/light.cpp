@@ -86,6 +86,43 @@ uint32_t Light::get_cull_mask() const {
 	return cull_mask;
 }
 
+void Light::set_distance_fade_enabled(bool p_enabled) {
+	distance_fade_enabled = p_enabled;
+	VS::get_singleton()->light_set_distance_fade(light, distance_fade_enabled, distance_fade_begin, distance_fade_shadow, distance_fade_length);
+	_change_notify();
+}
+
+bool Light::is_distance_fade_enabled() const {
+	return distance_fade_enabled;
+}
+
+void Light::set_distance_fade_begin(float p_begin) {
+	distance_fade_begin = p_begin;
+	VS::get_singleton()->light_set_distance_fade(light, distance_fade_enabled, distance_fade_begin, distance_fade_shadow, distance_fade_length);
+}
+
+float Light::get_distance_fade_begin() const {
+	return distance_fade_begin;
+}
+
+void Light::set_distance_fade_shadow(float p_shadow) {
+	distance_fade_shadow = p_shadow;
+	VS::get_singleton()->light_set_distance_fade(light, distance_fade_enabled, distance_fade_begin, distance_fade_shadow, distance_fade_length);
+}
+
+float Light::get_distance_fade_shadow() const {
+	return distance_fade_shadow;
+}
+
+void Light::set_distance_fade_length(float p_length) {
+	distance_fade_length = p_length;
+	VS::get_singleton()->light_set_distance_fade(light, distance_fade_enabled, distance_fade_begin, distance_fade_shadow, distance_fade_length);
+}
+
+float Light::get_distance_fade_length() const {
+	return distance_fade_length;
+}
+
 void Light::set_color(const Color &p_color) {
 	color = p_color;
 	VS::get_singleton()->light_set_color(light, p_color);
@@ -194,6 +231,10 @@ void Light::_validate_property(PropertyInfo &property) const {
 		property.usage = PROPERTY_USAGE_NOEDITOR | PROPERTY_USAGE_INTERNAL;
 	}
 
+	if (!distance_fade_enabled && (property.name == "distance_fade_begin" || property.name == "distance_fade_shadow" || property.name == "distance_fade_length")) {
+		property.usage = PROPERTY_USAGE_NOEDITOR | PROPERTY_USAGE_INTERNAL;
+	}
+
 	if (bake_mode != BAKE_ALL && property.name == "light_size") {
 		property.usage = PROPERTY_USAGE_NOEDITOR | PROPERTY_USAGE_INTERNAL;
 	}
@@ -214,6 +255,18 @@ void Light::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("set_cull_mask", "cull_mask"), &Light::set_cull_mask);
 	ClassDB::bind_method(D_METHOD("get_cull_mask"), &Light::get_cull_mask);
+
+	ClassDB::bind_method(D_METHOD("set_distance_fade_enabled", "distance_fade_enabled"), &Light::set_distance_fade_enabled);
+	ClassDB::bind_method(D_METHOD("is_distance_fade_enabled"), &Light::is_distance_fade_enabled);
+
+	ClassDB::bind_method(D_METHOD("set_distance_fade_begin", "distance_fade_begin"), &Light::set_distance_fade_begin);
+	ClassDB::bind_method(D_METHOD("get_distance_fade_begin"), &Light::get_distance_fade_begin);
+
+	ClassDB::bind_method(D_METHOD("set_distance_fade_shadow", "distance_fade_shadow"), &Light::set_distance_fade_shadow);
+	ClassDB::bind_method(D_METHOD("get_distance_fade_shadow"), &Light::get_distance_fade_shadow);
+
+	ClassDB::bind_method(D_METHOD("set_distance_fade_length", "distance_fade_length"), &Light::set_distance_fade_length);
+	ClassDB::bind_method(D_METHOD("get_distance_fade_length"), &Light::get_distance_fade_length);
 
 	ClassDB::bind_method(D_METHOD("set_color", "color"), &Light::set_color);
 	ClassDB::bind_method(D_METHOD("get_color"), &Light::get_color);
@@ -242,6 +295,13 @@ void Light::_bind_methods() {
 	ADD_PROPERTYI(PropertyInfo(Variant::REAL, "shadow_bias", PROPERTY_HINT_RANGE, "-10,10,0.001"), "set_param", "get_param", PARAM_SHADOW_BIAS);
 	ADD_PROPERTYI(PropertyInfo(Variant::REAL, "shadow_contact", PROPERTY_HINT_RANGE, "0,10,0.001"), "set_param", "get_param", PARAM_CONTACT_SHADOW_SIZE);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "shadow_reverse_cull_face"), "set_shadow_reverse_cull_face", "get_shadow_reverse_cull_face");
+
+	ADD_GROUP("Distance Fade", "distance_fade_");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "distance_fade_enabled"), "set_distance_fade_enabled", "is_distance_fade_enabled");
+	ADD_PROPERTY(PropertyInfo(Variant::REAL, "distance_fade_begin", PROPERTY_HINT_RANGE, "0.0,4096.0,0.01,or_greater"), "set_distance_fade_begin", "get_distance_fade_begin");
+	ADD_PROPERTY(PropertyInfo(Variant::REAL, "distance_fade_shadow", PROPERTY_HINT_RANGE, "0.0,4096.0,0.01,or_greater"), "set_distance_fade_shadow", "get_distance_fade_shadow");
+	ADD_PROPERTY(PropertyInfo(Variant::REAL, "distance_fade_length", PROPERTY_HINT_RANGE, "0.0,4096.0,0.01,or_greater"), "set_distance_fade_length", "get_distance_fade_length");
+
 	ADD_GROUP("Editor", "");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "editor_only"), "set_editor_only", "is_editor_only");
 	ADD_GROUP("", "");
@@ -353,6 +413,16 @@ void DirectionalLight::set_blend_splits(bool p_enable) {
 
 bool DirectionalLight::is_blend_splits_enabled() const {
 	return blend_splits;
+}
+
+void DirectionalLight::_validate_property(PropertyInfo &property) const {
+	if (property.name == "distance_fade_enabled" || property.name == "distance_fade_begin" || property.name == "distance_fade_shadow" || property.name == "distance_fade_length") {
+		// Not relevant for DirectionalLight3D, as the light LOD system only pertains to point lights.
+		// For DirectionalLight3D, `directional_shadow_max_distance` can be used instead.
+		property.usage = 0;
+	}
+
+	Light::_validate_property(property);
 }
 
 void DirectionalLight::_bind_methods() {

@@ -74,6 +74,10 @@ private:
 	bool negative;
 	bool reverse_cull;
 	uint32_t cull_mask;
+	bool distance_fade_enabled = false;
+	real_t distance_fade_begin = 40.0;
+	real_t distance_fade_shadow = 50.0;
+	real_t distance_fade_length = 10.0;
 	VS::LightType type;
 	bool editor_only;
 	void _update_visibility();
@@ -104,6 +108,18 @@ public:
 
 	void set_negative(bool p_enable);
 	bool is_negative() const;
+
+	void set_distance_fade_enabled(bool p_enable);
+	bool is_distance_fade_enabled() const;
+
+	void set_distance_fade_begin(float p_distance);
+	float get_distance_fade_begin() const;
+
+	void set_distance_fade_shadow(float p_distance);
+	float get_distance_fade_shadow() const;
+
+	void set_distance_fade_length(float p_length);
+	float get_distance_fade_length() const;
 
 	void set_cull_mask(uint32_t p_cull_mask);
 	uint32_t get_cull_mask() const;
@@ -152,6 +168,7 @@ private:
 
 protected:
 	static void _bind_methods();
+	virtual void _validate_property(PropertyInfo &property) const;
 
 public:
 	void set_shadow_mode(ShadowMode p_mode);

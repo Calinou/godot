@@ -331,6 +331,7 @@ public:
 	BIND2(light_set_projector, RID, RID)
 	BIND2(light_set_negative, RID, bool)
 	BIND2(light_set_cull_mask, RID, uint32_t)
+	BIND5(light_set_distance_fade, RID, bool, float, float, float)
 	BIND2(light_set_reverse_cull_face_mode, RID, bool)
 	BIND2(light_set_use_gi, RID, bool)
 	BIND2(light_set_bake_mode, RID, LightBakeMode)

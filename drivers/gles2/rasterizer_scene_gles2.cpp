@@ -1212,6 +1212,19 @@ void RasterizerSceneGLES2::_add_geometry_with_material(RasterizerStorageGLES2::G
 					continue; // too many or light_index did not correspond to the light instances to be rendered
 				}
 
+				// FIXME: Can't access `p_view_transform` here. How do I know the current camera position in global coordinates?
+				//
+				// if ((li->light_ptr->type == VS::LIGHT_OMNI || li->light_ptr->type == VS::LIGHT_SPOT) && storage->light_is_distance_fade_enabled(li->light)) {
+				// 	// Use `distance_squared_to()` to speed up distance checks.
+				// 	const real_t distance = p_view_transform.origin.distance_squared_to(li->transform.origin);
+				// 	const float fade_begin = storage->light_get_distance_fade_begin(li->light);
+				// 	const float fade_length = storage->light_get_distance_fade_length(li->light);
+				// 	if (distance > Math::pow(fade_begin + fade_length, 2)) {
+				// 		// Out of range, don't draw this light to improve performance.
+				// 		continue;
+				// 	}
+				// }
+
 				if (copy) {
 					RenderList::Element *e2 = has_alpha ? render_list.add_alpha_element() : render_list.add_element();
 					if (!e2) {
@@ -1988,10 +2001,30 @@ void RasterizerSceneGLES2::_setup_light(LightInstance *light, ShadowAtlas *shado
 	float sign = (light_ptr->negative && !accum_pass) ? -1 : 1; //inverse color for base pass lights only
 
 	state.scene_shader.set_uniform(SceneShaderGLES2::LIGHT_SPECULAR, specular);
-	Color color = light_ptr->color * sign * energy * Math_PI;
+
+	float fade = 1.0;
+	float shadow_fade = 1.0;
+	if (light_ptr->type == VS::LIGHT_OMNI || light_ptr->type == VS::LIGHT_SPOT) {
+		if (storage->light_is_distance_fade_enabled(light->light)) {
+			const float fade_begin = storage->light_get_distance_fade_begin(light->light);
+			const float fade_shadow = storage->light_get_distance_fade_shadow(light->light);
+			const float fade_length = storage->light_get_distance_fade_length(light->light);
+			const float distance = p_view_transform.origin.distance_to(light->transform.origin);
+
+			if (distance > fade_begin) {
+				// Use `smoothstep()` to make opacity changes more gradual and less noticeable to the player.
+				fade = Math::smoothstep(0.0f, 1.0f, 1.0f - float(distance - fade_begin) / fade_length);
+			}
+
+			if (distance > fade_shadow) {
+				shadow_fade = Math::smoothstep(0.0f, 1.0f, 1.0f - float(distance - fade_shadow) / fade_length);
+			}
+		}
+	}
+	Color color = light_ptr->color * sign * energy * fade * Math_PI;
 	state.scene_shader.set_uniform(SceneShaderGLES2::LIGHT_COLOR, color);
 
-	state.scene_shader.set_uniform(SceneShaderGLES2::SHADOW_COLOR, light_ptr->shadow_color);
+	state.scene_shader.set_uniform(SceneShaderGLES2::SHADOW_COLOR, Color(1, 1, 1).linear_interpolate(light_ptr->shadow_color, shadow_fade));
 
 	//specific parameters
 
@@ -2088,7 +2121,7 @@ void RasterizerSceneGLES2::_setup_light(LightInstance *light, ShadowAtlas *shado
 			float attenuation = light_ptr->param[VS::LIGHT_PARAM_ATTENUATION];
 			state.scene_shader.set_uniform(SceneShaderGLES2::LIGHT_ATTENUATION, attenuation);
 
-			if (!state.render_no_shadows && light_ptr->shadow && shadow_atlas && shadow_atlas->shadow_owners.has(light->self)) {
+			if (!state.render_no_shadows && shadow_fade > CMP_EPSILON && light_ptr->shadow && shadow_atlas && shadow_atlas->shadow_owners.has(light->self)) {
 				uint32_t key = shadow_atlas->shadow_owners[light->self];
 
 				uint32_t quadrant = (key >> ShadowAtlas::QUADRANT_SHIFT) & 0x03;
@@ -2147,7 +2180,7 @@ void RasterizerSceneGLES2::_setup_light(LightInstance *light, ShadowAtlas *shado
 			state.scene_shader.set_uniform(SceneShaderGLES2::LIGHT_SPOT_ANGLE, angle);
 			state.scene_shader.set_uniform(SceneShaderGLES2::LIGHT_RANGE, range);
 
-			if (!state.render_no_shadows && light->light_ptr->shadow && shadow_atlas && shadow_atlas->shadow_owners.has(light->self)) {
+			if (!state.render_no_shadows && shadow_fade > CMP_EPSILON && light->light_ptr->shadow && shadow_atlas && shadow_atlas->shadow_owners.has(light->self)) {
 				uint32_t key = shadow_atlas->shadow_owners[light->self];
 
 				uint32_t quadrant = (key >> ShadowAtlas::QUADRANT_SHIFT) & 0x03;
