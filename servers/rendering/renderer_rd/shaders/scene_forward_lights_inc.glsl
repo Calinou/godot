@@ -126,7 +126,8 @@ void light_compute(vec3 N, vec3 L, vec3 V, float A, vec3 light_color, float atte
 		diffuse_brdf_NL = cNdotL * (1.0 / M_PI);
 #endif
 
-		diffuse_light += light_color * diffuse_brdf_NL * attenuation;
+		diffuse_light -= (1.0 - attenuation) * 0.1;
+		//diffuse_light += light_color * diffuse_brdf_NL * attenuation;
 
 #if defined(LIGHT_BACKLIGHT_USED)
 		diffuse_light += light_color * (vec3(1.0 / M_PI) - diffuse_brdf_NL) * backlight * attenuation;
@@ -203,7 +204,7 @@ void light_compute(vec3 N, vec3 L, vec3 V, float A, vec3 light_color, float atte
 
 		vec3 specular_brdf_NL = cNdotL * D * F * G;
 
-		specular_light += specular_brdf_NL * light_color * attenuation * specular_amount;
+		//specular_light += specular_brdf_NL * light_color * attenuation * specular_amount;
 #endif
 
 #if defined(LIGHT_CLEARCOAT_USED)
@@ -220,7 +221,7 @@ void light_compute(vec3 N, vec3 L, vec3 V, float A, vec3 light_color, float atte
 		float Fr = mix(.04, 1.0, cLdotH5);
 		float clearcoat_specular_brdf_NL = clearcoat * Gr * Fr * Dr * cNdotL;
 
-		specular_light += clearcoat_specular_brdf_NL * light_color * attenuation * specular_amount;
+		//specular_light += clearcoat_specular_brdf_NL * light_color * attenuation * specular_amount;
 		// TODO: Clearcoat adds light to the scene right now (it is non-energy conserving), both diffuse and specular need to be scaled by (1.0 - FR)
 		// but to do so we need to rearrange this entire function
 #endif // LIGHT_CLEARCOAT_USED
