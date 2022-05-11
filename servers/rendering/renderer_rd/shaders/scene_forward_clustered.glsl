@@ -1382,6 +1382,124 @@ void main() {
 	normal_bias -= light_dir * dot(light_dir, normal_bias);                                     \
 	m_var.xyz += normal_bias;
 
+		// near -- far
+		float n = scene_data.z_near;
+		float split1 = directional_lights.data[i].shadow_split_offsets.x;
+		float split2 = directional_lights.data[i].shadow_split_offsets.y;
+		float split3 = directional_lights.data[i].shadow_split_offsets.z;
+		float split4 = directional_lights.data[i].shadow_split_offsets.w;
+
+		// vertex on shadow map
+		highp vec4 tmpSplane1 =  (directional_lights.data[i].shadow_matrix1 * vec4(vertex, 1.0));
+		highp vec4 tmpSplane2 =  (directional_lights.data[i].shadow_matrix2 * vec4(vertex, 1.0));
+		highp vec4 tmpSplane3 =  (directional_lights.data[i].shadow_matrix3 * vec4(vertex, 1.0));
+		vec3 tmpPssm_coord1 = tmpSplane1.xyz / tmpSplane1.w;
+		vec3 tmpPssm_coord2 = tmpSplane2.xyz / tmpSplane2.w;
+		vec3 tmpPssm_coord3 = tmpSplane3.xyz / tmpSplane3.w;
+
+		// camera
+		float aspect_ratio = scene_data.viewport_size.x / scene_data.viewport_size.y;
+		float fov_y = 2 * atan(1.0, projection_matrix[1][1]);
+		float y1 = n * tan(fov_y / 2.0);
+		float x1 = y1 * aspect_ratio;
+		float y2 = split1 * tan(fov_y / 2.0);
+		float x2 = y2 * aspect_ratio;
+		float y3 = split2 * tan(fov_y / 2.0);
+		float x3 = y3 * aspect_ratio;
+		float y4 = split3 * tan(fov_y / 2.0);
+		float x4 = y4 * aspect_ratio;
+
+		// frustum corners in view space
+		vec3 corner1[8];
+		corner1[0] = vec3(x1, y1, -n);
+		corner1[1] = vec3(x1, -y1, -n);
+		corner1[2] = vec3(-x1, y1, -n);
+		corner1[3] = vec3(-x1, -y1, -n);
+		corner1[4] = vec3(x2, y2, -split1);
+		corner1[5] = vec3(x2, -y2, -split1);
+		corner1[6] = vec3(-x2, y2, -split1);
+		corner1[7] = vec3(-x2, -y2, -split1);
+		vec3 corner2[8];
+		corner2[0] = vec3(x3, y3, -split2);
+		corner2[1] = vec3(x3, -y3, -split2);
+		corner2[2] = vec3(-x3, y3, -split2);
+		corner2[3] = vec3(-x3, -y3, -split2);
+		corner2[4] = vec3(x2, y2, -split1);
+		corner2[5] = vec3(x2, -y2, -split1);
+		corner2[6] = vec3(-x2, y2, -split1);
+		corner2[7] = vec3(-x2, -y2, -split1);
+		vec3 corner3[8];
+		corner3[0] = vec3(x3, y3, -split2);
+		corner3[1] = vec3(x3, -y3, -split2);
+		corner3[2] = vec3(-x3, y3, -split2);
+		corner3[3] = vec3(-x3, -y3, -split2);
+		corner3[4] = vec3(x4, y4, -split3);
+		corner3[5] = vec3(x4, -y4, -split3);
+		corner3[6] = vec3(-x4, y4, -split3);
+		corner3[7] = vec3(-x4, -y4, -split3);
+
+		// frustum corners in shadowmap space
+		vec3 corner_shadow1[8];	// corners on shadowmap
+		vec3 corner_shadow2[8];
+		vec3 corner_shadow3[8];
+		for(int index = 0; index < 8; index++) {
+			vec4 view_corner = vec4(corner1[index], 1.0);
+			view_corner = directional_lights.data[i].shadow_matrix1 * view_corner;
+			corner_shadow1[index] = view_corner.xyz / view_corner.w;
+
+			view_corner = vec4(corner2[index], 1.0);
+			view_corner = directional_lights.data[i].shadow_matrix2 * view_corner;
+			corner_shadow2[index] = view_corner.xyz / view_corner.w;
+
+			view_corner = vec4(corner3[index], 1.0);
+			view_corner = directional_lights.data[i].shadow_matrix3 * view_corner;
+			corner_shadow3[index] = view_corner.xyz / view_corner.w;
+		}
+
+		// get min & max of corner_shadow
+		float xmin1 = corner_shadow1[0].x;
+		float ymin1 = corner_shadow1[0].y;
+		float zmin1 = corner_shadow1[0].z;
+		float xmax1 = corner_shadow1[0].x;
+		float ymax1 = corner_shadow1[0].y;
+		float zmax1 = corner_shadow1[0].z;
+		for(int index = 0; index < 8; index++) {
+			xmin1 = min(xmin1, corner_shadow1[index].x);
+			ymin1 = min(ymin1, corner_shadow1[index].y);
+			zmin1 = min(zmin1, corner_shadow1[index].z);
+			xmax1 = max(xmax1, corner_shadow1[index].x);
+			ymax1 = max(ymax1, corner_shadow1[index].y);
+			zmax1 = max(zmax1, corner_shadow1[index].z);
+		}
+		float xmin2 = corner_shadow2[0].x;
+		float ymin2 = corner_shadow2[0].y;
+		float zmin2 = corner_shadow2[0].z;
+		float xmax2 = corner_shadow2[0].x;
+		float ymax2 = corner_shadow2[0].y;
+		float zmax2 = corner_shadow2[0].z;
+		for(int index = 0; index < 8; index++) {
+			xmin2 = min(xmin2, corner_shadow2[index].x);
+			ymin2 = min(ymin2, corner_shadow2[index].y);
+			zmin2 = min(zmin2, corner_shadow2[index].z);
+			xmax2 = max(xmax2, corner_shadow2[index].x);
+			ymax2 = max(ymax2, corner_shadow2[index].y);
+			zmax2 = max(zmax2, corner_shadow2[index].z);
+		}
+		float xmin3 = corner_shadow3[0].x;
+		float ymin3 = corner_shadow3[0].y;
+		float zmin3 = corner_shadow3[0].z;
+		float xmax3 = corner_shadow3[0].x;
+		float ymax3 = corner_shadow3[0].y;
+		float zmax3 = corner_shadow3[0].z;
+		for(int index = 0; index < 8; index++) {
+			xmin3 = min(xmin3, corner_shadow3[index].x);
+			ymin3 = min(ymin3, corner_shadow3[index].y);
+			zmin3 = min(zmin3, corner_shadow3[index].z);
+			xmax3 = max(xmax3, corner_shadow3[index].x);
+			ymax3 = max(ymax3, corner_shadow3[index].y);
+			zmax3 = max(zmax3, corner_shadow3[index].z);
+		}
+
 				//version with soft shadows, more expensive
 				if (sc_use_directional_soft_shadows && directional_lights.data[i].softshadow_angle > 0) {
 					uint blend_count = 0;
@@ -1481,14 +1599,26 @@ void main() {
 					vec4 pssm_coord;
 					float blur_factor;
 
-					if (depth_z < directional_lights.data[i].shadow_split_offsets.x) {
+					if (
+						(tmpPssm_coord1.x > xmin1) && (tmpPssm_coord1.x < xmax1)
+						&&
+						(tmpPssm_coord1.y > ymin1) && (tmpPssm_coord1.y < ymax1)
+						&&
+						(tmpPssm_coord1.z > zmin1) && (tmpPssm_coord1.z < zmax1)
+					) {
 						vec4 v = vec4(vertex, 1.0);
 
 						BIAS_FUNC(v, 0)
 
 						pssm_coord = (directional_lights.data[i].shadow_matrix1 * v);
 						blur_factor = 1.0;
-					} else if (depth_z < directional_lights.data[i].shadow_split_offsets.y) {
+					} else if (
+						(tmpPssm_coord2.x > xmin2) && (tmpPssm_coord2.x < xmax2)
+						&&
+						(tmpPssm_coord2.y > ymin2) && (tmpPssm_coord2.y < ymax2)
+						&&
+						(tmpPssm_coord2.z > zmin2) && (tmpPssm_coord2.z < zmax2)
+					) {
 						vec4 v = vec4(vertex, 1.0);
 
 						BIAS_FUNC(v, 1)
@@ -1496,7 +1626,13 @@ void main() {
 						pssm_coord = (directional_lights.data[i].shadow_matrix2 * v);
 						// Adjust shadow blur with reference to the first split to reduce discrepancy between shadow splits.
 						blur_factor = directional_lights.data[i].shadow_split_offsets.x / directional_lights.data[i].shadow_split_offsets.y;
-					} else if (depth_z < directional_lights.data[i].shadow_split_offsets.z) {
+					} else if (
+						(tmpPssm_coord3.x > xmin3) && (tmpPssm_coord3.x < xmax3)
+						&&
+						(tmpPssm_coord3.y > ymin3) && (tmpPssm_coord3.y < ymax3)
+						&&
+						(tmpPssm_coord3.z > zmin3) && (tmpPssm_coord3.z < zmax3)
+					) {
 						vec4 v = vec4(vertex, 1.0);
 
 						BIAS_FUNC(v, 2)
