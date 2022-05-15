@@ -137,15 +137,25 @@ float CSGShape3D::get_snap() const {
 }
 
 void CSGShape3D::_make_dirty(bool p_parent_removing) {
-	if ((p_parent_removing || is_root_shape()) && !dirty) {
-		call_deferred(SNAME("_update_shape")); // Must be deferred; otherwise, is_root_shape() will use the previous parent
+	// Throttle updates to improve editor responsiveness.
+	// TODO: Change this to debouncing instead.
+	// TODO: Apply throttling only within the editor (use editor hint).
+	constexpr int DELAY_MSEC = 500;
+	const bool throttled = OS::get_singleton()->get_ticks_msec() - last_modified < DELAY_MSEC;
+	if (!throttled) {
+		if ((p_parent_removing || is_root_shape()) && !dirty) {
+			call_deferred(SNAME("_update_shape")); // Must be deferred; otherwise, is_root_shape() will use the previous parent
+		}
+
+		if (!is_root_shape()) {
+			parent_shape->_make_dirty();
+		} else if (!dirty) {
+			call_deferred(SNAME("_update_shape"));
+		}
 	}
 
-	if (!is_root_shape()) {
-		parent_shape->_make_dirty();
-	} else if (!dirty) {
-		call_deferred(SNAME("_update_shape"));
-	}
+	last_modified = OS::get_singleton()->get_ticks_msec();
+	print_line(vformat("%s marked dirty at %d ms.", get_name(), OS::get_singleton()->get_ticks_msec()));
 
 	dirty = true;
 }

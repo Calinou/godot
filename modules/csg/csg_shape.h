@@ -68,6 +68,8 @@ private:
 	Ref<ConcavePolygonShape3D> root_collision_shape;
 	RID root_collision_instance;
 
+	uint64_t last_modified = 0;
+
 	bool calculate_tangents = true;
 
 	Ref<ArrayMesh> root_mesh;
