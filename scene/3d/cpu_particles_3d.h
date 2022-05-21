@@ -58,6 +58,11 @@ public:
 		PARAM_HUE_VARIATION,
 		PARAM_ANIM_SPEED,
 		PARAM_ANIM_OFFSET,
+		PARAM_COLLISION_MODE,
+		PARAM_COLLISION_SIZE,
+		PARAM_COLLISION_USE_SCALE,
+		PARAM_COLLISION_FRICTION,
+		PARAM_COLLISION_BOUNCE,
 		PARAM_MAX
 	};
 
@@ -79,9 +84,18 @@ public:
 		EMISSION_SHAPE_MAX
 	};
 
+	enum CollisionMode {
+		COLLISION_DISABLED,
+		COLLISION_RIGID,
+		COLLISION_HIDE_ON_CONTACT,
+		COLLISION_MAX
+	};
+
 private:
 	bool emitting = false;
 	bool active = false;
+
+	RID collision_shape;
 
 	struct Particle {
 		Transform3D transform;
@@ -97,6 +111,8 @@ private:
 		double time = 0.0;
 		double lifetime = 0.0;
 		Color base_color;
+
+		RID physics_body;
 
 		uint32_t seed = 0;
 	};
@@ -182,6 +198,12 @@ private:
 	Ref<Curve> scale_curve_y;
 	Ref<Curve> scale_curve_z;
 	bool split_scale = false;
+
+	CollisionMode collision_mode = COLLISION_DISABLED;
+	real_t collision_size = 0.0;
+	bool collision_use_scale = false;
+	real_t collision_friction = 0.0;
+	real_t collision_bounce = 0.0;
 
 	Vector3 gravity = Vector3(0, -9.8, 0);
 
@@ -283,6 +305,11 @@ public:
 	void set_scale_curve_y(Ref<Curve> p_scale_curve);
 	void set_scale_curve_z(Ref<Curve> p_scale_curve);
 	void set_split_scale(bool p_split_scale);
+	void set_collision_mode(CollisionMode p_mode);
+	void set_collision_size(real_t p_size);
+	void set_collision_use_scale(bool p_enabled);
+	void set_collision_friction(real_t p_friction);
+	void set_collision_bounce(real_t p_bounce);
 
 	EmissionShape get_emission_shape() const;
 	real_t get_emission_sphere_radius() const;
@@ -298,6 +325,11 @@ public:
 	Ref<Curve> get_scale_curve_y() const;
 	Ref<Curve> get_scale_curve_z() const;
 	bool get_split_scale();
+	CPUParticles3D::CollisionMode get_collision_mode() const;
+	real_t get_collision_size() const;
+	bool is_collision_using_scale() const;
+	real_t get_collision_friction() const;
+	real_t get_collision_bounce() const;
 
 	void set_gravity(const Vector3 &p_gravity);
 	Vector3 get_gravity() const;
@@ -316,5 +348,6 @@ VARIANT_ENUM_CAST(CPUParticles3D::DrawOrder)
 VARIANT_ENUM_CAST(CPUParticles3D::Parameter)
 VARIANT_ENUM_CAST(CPUParticles3D::ParticleFlags)
 VARIANT_ENUM_CAST(CPUParticles3D::EmissionShape)
+VARIANT_ENUM_CAST(CPUParticles3D::CollisionMode)
 
 #endif // CPU_PARTICLES_3D_H

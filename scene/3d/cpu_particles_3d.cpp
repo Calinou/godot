@@ -439,6 +439,32 @@ void CPUParticles3D::set_emission_ring_inner_radius(real_t p_radius) {
 	emission_ring_inner_radius = p_radius;
 }
 
+void CPUParticles3D::set_collision_mode(CollisionMode p_mode) {
+	collision_mode = p_mode;
+}
+
+void CPUParticles3D::set_collision_size(real_t p_size) {
+	if (p_size == collision_size) {
+		return;
+	}
+
+	collision_size = p_size;
+	PhysicsServer3D::get_singleton()->shape_set_data(collision_shape, p_size);
+}
+
+void CPUParticles3D::set_collision_use_scale(bool p_enabled) {
+	// TODO: Make use of this property. Will require giving each particle its own collision shape when enabled.
+	collision_use_scale = p_enabled;
+}
+
+void CPUParticles3D::set_collision_friction(real_t p_friction) {
+	collision_friction = p_friction;
+}
+
+void CPUParticles3D::set_collision_bounce(real_t p_bounce) {
+	collision_bounce = p_bounce;
+}
+
 void CPUParticles3D::set_scale_curve_x(Ref<Curve> p_scale_curve) {
 	scale_curve_x = p_scale_curve;
 }
@@ -494,6 +520,26 @@ real_t CPUParticles3D::get_emission_ring_inner_radius() const {
 
 CPUParticles3D::EmissionShape CPUParticles3D::get_emission_shape() const {
 	return emission_shape;
+}
+
+CPUParticles3D::CollisionMode CPUParticles3D::get_collision_mode() const {
+	return collision_mode;
+}
+
+real_t CPUParticles3D::get_collision_size() const {
+	return collision_size;
+}
+
+bool CPUParticles3D::is_collision_using_scale() const {
+	return collision_use_scale;
+}
+
+real_t CPUParticles3D::get_collision_friction() const {
+	return collision_friction;
+}
+
+real_t CPUParticles3D::get_collision_bounce() const {
+	return collision_bounce;
 }
 
 void CPUParticles3D::set_gravity(const Vector3 &p_gravity) {
@@ -669,6 +715,9 @@ void CPUParticles3D::_particles_process(double p_delta) {
 	double system_phase = time / lifetime;
 
 	bool should_be_active = false;
+
+	PhysicsDirectSpaceState3D *physics_direct_space_state = get_world_3d()->get_direct_space_state();
+
 	for (int i = 0; i < pcount; i++) {
 		Particle &p = parray[i];
 
@@ -898,6 +947,73 @@ void CPUParticles3D::_particles_process(double p_delta) {
 			p.active = false;
 			tv = 1.0;
 		} else {
+			bool collided = false;
+
+			if (collision_mode != COLLISION_DISABLED) {
+				PhysicsDirectSpaceState3D::ShapeParameters shape_params;
+				shape_params.shape_rid = collision_shape;
+				shape_params.transform = p.transform;
+
+				Vector3 results[1];
+				int result_count = 0;
+				if (physics_direct_space_state->collide_shape(shape_params, results, 1, result_count)) {
+					if (collision_mode == COLLISION_RIGID) {
+						// Subtract gravity to prevent particles from sinking in the ground when colliding with low friction/bounce.
+						// FIXME: This doesn't work as expected. Do we have to move this entire collision code above simulation so we can apply gravity only if we haven't collided?
+						//p.velocity -= gravity * local_delta;
+
+						for (int j = 0; j < 1; j++) {
+							// Use raycasting to provide collision normal information, which is required for sliding and bouncing.
+							PhysicsDirectSpaceState3D::RayParameters ray_params;
+							// Prevent collisions from occurring just after the particle spawns with initial velocity.
+							ray_params.from = p.transform.origin - p.velocity * 0.1;
+							if (!gravity.is_zero_approx()) {
+								// Perform one raycast with gravity vector taken into account to prevent particles from sinking into the ground due to gravity.
+								ray_params.to = p.transform.origin + gravity.normalized() * collision_size;
+							} else {
+								ray_params.to = p.transform.origin;
+							}
+
+							// Perform one raycast on each tip of the sphere to prevent particles from sinking into the ground due to gravity.
+							// Change `j < 1` to `j < 6` above if testing this codepath.
+							// switch (j) {
+							// 	case 0:
+							// 		ray_params.to = p.transform.origin + Vector3(collision_size, 0, 0);
+							// 		break;
+							// 	case 1:
+							// 		ray_params.to = p.transform.origin + Vector3(-collision_size, 0, 0);
+							// 		break;
+							// 	case 2:
+							// 		ray_params.to = p.transform.origin + Vector3(0, collision_size, 0);
+							// 		break;
+							// 	case 3:
+							// 		ray_params.to = p.transform.origin + Vector3(0, -collision_size, 0);
+							// 		break;
+							// 	case 4:
+							// 		ray_params.to = p.transform.origin + Vector3(0, 0, collision_size);
+							// 		break;
+							// 	case 5:
+							// 		ray_params.to = p.transform.origin + Vector3(0, 0, -collision_size);
+							// 		break;
+							// }
+							ray_params.hit_from_inside = true;
+
+							PhysicsDirectSpaceState3D::RayResult ray_result;
+							if (physics_direct_space_state->intersect_ray(ray_params, ray_result) && !ray_result.normal.is_zero_approx()) {
+								p.velocity = p.velocity.lerp(Vector3(), collision_friction);
+								p.velocity = p.velocity.slide(ray_result.normal).lerp(p.velocity.bounce(ray_result.normal), collision_bounce);
+								collided = true;
+								break;
+							}
+						}
+					} else if (collision_mode == COLLISION_HIDE_ON_CONTACT) {
+						// Hide particle on collision.
+						// Not using `-INFINITY` here, as it occasionally breaks rendering.
+						p.transform.origin = Vector3(-1'000'000, -1'000'000, -1'000'000);
+					}
+				}
+			}
+
 			uint32_t alt_seed = p.seed;
 
 			p.time += local_delta;
@@ -955,7 +1071,7 @@ void CPUParticles3D::_particles_process(double p_delta) {
 				tex_anim_offset = curve_parameters[PARAM_ANIM_OFFSET]->sample(tv);
 			}
 
-			Vector3 force = gravity;
+			Vector3 force = collided ? Vector3() : gravity;
 			Vector3 position = p.transform.origin;
 			if (particle_flags[PARTICLE_FLAG_DISABLE_Z]) {
 				position.z = 0.0;
@@ -1136,8 +1252,41 @@ void CPUParticles3D::_particles_process(double p_delta) {
 
 		p.transform.origin += p.velocity * local_delta;
 
+		// Check for collision after the transform was moved.
+		// if (p.physics_body.is_null()) {
+		// 	p.physics_body = PhysicsServer3D::get_singleton()->body_create();
+		// 	PhysicsServer3D::get_singleton()->body_set_space(p.physics_body, space);
+		// 	PhysicsServer3D::get_singleton()->body_add_shape(p.physics_body, collision_shape);
+		// 	// Don't make particles check collision with other particles to improve performance.
+		// 	// FIXME: Check if this is correct.
+		// 	PhysicsServer3D::get_singleton()->body_set_collision_mask(p.physics_body, 0);
+		// }
+		// PhysicsServer3D::get_singleton()->body_set_state(p.physics_body, PhysicsServer3D::BODY_STATE_TRANSFORM, p.transform.origin);
+
+		// PhysicsShapeQueryParameters3D psqp;
+		// psqp.set_shape_rid(collision_shape);
+		// psqp.set_transform(p.transform);
+
+		// Shapecasting approach (doesn't support collision normal).
+		//
+		// PhysicsDirectSpaceState3D::ShapeParameters pss;
+		// pss.shape_rid = collision_shape;
+		// // Collision must use global transform to take the CPUParticles3D node's transform into account.
+		// pss.transform = p.transform;
+		// PhysicsDirectSpaceState3D::ShapeResult results[1];
+		// //int result_count = 0;
+		// //physics_direct_space_state->collide_shape(pss, results.ptrw(), 1, result_count);
+		// // FIXME: This never collides, even with the contact count increased.
+		// if (physics_direct_space_state->intersect_shape(pss, results, 1)) {
+		// 	// Hide particle on collision.
+		// 	p.transform.origin = Vector3(-1'000'000, -1'000'000, -1'000'000);
+
+		// 	// TODO: Implement option for bounce + friction on collision (with CPUParticles3D properties to adjust collision mode, friction and bounce).
+		// }
+
 		should_be_active = true;
 	}
+
 	if (!Math::is_equal_approx(time, 0.0) && active && !should_be_active) {
 		active = false;
 		emit_signal(SceneStringNames::get_singleton()->finished);
@@ -1546,6 +1695,21 @@ void CPUParticles3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_scale_curve_z"), &CPUParticles3D::get_scale_curve_z);
 	ClassDB::bind_method(D_METHOD("set_scale_curve_z", "scale_curve"), &CPUParticles3D::set_scale_curve_z);
 
+	ClassDB::bind_method(D_METHOD("set_collision_mode", "mode"), &CPUParticles3D::set_collision_mode);
+	ClassDB::bind_method(D_METHOD("get_collision_mode"), &CPUParticles3D::get_collision_mode);
+
+	ClassDB::bind_method(D_METHOD("set_collision_size", "size"), &CPUParticles3D::set_collision_size);
+	ClassDB::bind_method(D_METHOD("get_collision_size"), &CPUParticles3D::get_collision_size);
+
+	ClassDB::bind_method(D_METHOD("set_collision_use_scale", "enabled"), &CPUParticles3D::set_collision_use_scale);
+	ClassDB::bind_method(D_METHOD("is_collision_using_scale"), &CPUParticles3D::is_collision_using_scale);
+
+	ClassDB::bind_method(D_METHOD("set_collision_friction", "friction"), &CPUParticles3D::set_collision_friction);
+	ClassDB::bind_method(D_METHOD("get_collision_friction"), &CPUParticles3D::get_collision_friction);
+
+	ClassDB::bind_method(D_METHOD("set_collision_bounce", "bounce"), &CPUParticles3D::set_collision_bounce);
+	ClassDB::bind_method(D_METHOD("get_collision_bounce"), &CPUParticles3D::get_collision_bounce);
+
 	ClassDB::bind_method(D_METHOD("convert_from_particles", "particles"), &CPUParticles3D::convert_from_particles);
 
 	ADD_SIGNAL(MethodInfo("finished"));
@@ -1627,6 +1791,13 @@ void CPUParticles3D::_bind_methods() {
 	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "anim_offset_max", PROPERTY_HINT_RANGE, "0,1,0.0001"), "set_param_max", "get_param_max", PARAM_ANIM_OFFSET);
 	ADD_PROPERTYI(PropertyInfo(Variant::OBJECT, "anim_offset_curve", PROPERTY_HINT_RESOURCE_TYPE, "Curve"), "set_param_curve", "get_param_curve", PARAM_ANIM_OFFSET);
 
+	ADD_GROUP("Collision", "collision_");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "collision_mode", PROPERTY_HINT_ENUM, "Disabled,Rigid,Hide on Contact"), "set_collision_mode", "get_collision_mode");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "collision_base_size", PROPERTY_HINT_RANGE, "0.01,128,0.01,or_greater,suffix:m"), "set_collision_size", "get_collision_size");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "collision_friction", PROPERTY_HINT_RANGE, "0,1,0.01"), "set_collision_friction", "get_collision_friction");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "collision_bounce", PROPERTY_HINT_RANGE, "0,1,0.01"), "set_collision_bounce", "get_collision_bounce");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "collision_use_scale"), "set_collision_use_scale", "is_collision_using_scale");
+
 	BIND_ENUM_CONSTANT(PARAM_INITIAL_LINEAR_VELOCITY);
 	BIND_ENUM_CONSTANT(PARAM_ANGULAR_VELOCITY);
 	BIND_ENUM_CONSTANT(PARAM_ORBIT_VELOCITY);
@@ -1654,10 +1825,17 @@ void CPUParticles3D::_bind_methods() {
 	BIND_ENUM_CONSTANT(EMISSION_SHAPE_DIRECTED_POINTS);
 	BIND_ENUM_CONSTANT(EMISSION_SHAPE_RING);
 	BIND_ENUM_CONSTANT(EMISSION_SHAPE_MAX);
+
+	BIND_ENUM_CONSTANT(COLLISION_DISABLED);
+	BIND_ENUM_CONSTANT(COLLISION_RIGID);
+	BIND_ENUM_CONSTANT(COLLISION_HIDE_ON_CONTACT);
+	BIND_ENUM_CONSTANT(COLLISION_MAX);
 }
 
 CPUParticles3D::CPUParticles3D() {
 	set_notify_transform(true);
+
+	collision_shape = PhysicsServer3D::get_singleton()->sphere_shape_create();
 
 	multimesh = RenderingServer::get_singleton()->multimesh_create();
 	RenderingServer::get_singleton()->multimesh_set_visible_instances(multimesh, 0);
@@ -1697,6 +1875,11 @@ CPUParticles3D::CPUParticles3D() {
 	set_emission_ring_height(1);
 	set_emission_ring_radius(1);
 	set_emission_ring_inner_radius(0);
+	set_collision_mode(COLLISION_DISABLED);
+	set_collision_size(0.1);
+	set_collision_use_scale(false);
+	set_collision_bounce(0.0);
+	set_collision_friction(0.0);
 
 	set_gravity(Vector3(0, -9.8, 0));
 
@@ -1709,5 +1892,15 @@ CPUParticles3D::CPUParticles3D() {
 
 CPUParticles3D::~CPUParticles3D() {
 	ERR_FAIL_NULL(RenderingServer::get_singleton());
+
+	// const int particle_count = particles.size();
+	// Particle *w = particles.ptrw();
+	// Particle *particle_array = w;
+	// for (int i = 0; i < particle_count; i++) {
+	// 	PhysicsServer3D::get_singleton()->free(particle_array[i].physics_body);
+	// }
+
+	PhysicsServer3D::get_singleton()->free(collision_shape);
+
 	RS::get_singleton()->free(multimesh);
 }
