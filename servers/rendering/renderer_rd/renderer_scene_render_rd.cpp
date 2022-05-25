@@ -3304,6 +3304,7 @@ void RendererSceneRenderRD::_setup_reflections(const PagedArray<RID> &p_reflecti
 		reflection_ubo.mask = light_storage->reflection_probe_get_cull_mask(base_probe);
 
 		reflection_ubo.intensity = light_storage->reflection_probe_get_intensity(base_probe);
+		reflection_ubo.fade_start = light_storage->reflection_probe_get_fade_start(base_probe);
 		reflection_ubo.ambient_mode = light_storage->reflection_probe_get_ambient_mode(base_probe);
 
 		reflection_ubo.exterior = !light_storage->reflection_probe_is_interior(base_probe);

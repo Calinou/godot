@@ -397,6 +397,13 @@ void LightStorage::reflection_probe_set_intensity(RID p_probe, float p_intensity
 	reflection_probe->intensity = p_intensity;
 }
 
+void LightStorage::reflection_probe_set_fade_start(RID p_probe, float p_fade_start) {
+	ReflectionProbe *reflection_probe = reflection_probe_owner.get_or_null(p_probe);
+	ERR_FAIL_COND(!reflection_probe);
+
+	reflection_probe->fade_start = p_fade_start;
+}
+
 void LightStorage::reflection_probe_set_ambient_mode(RID p_probe, RS::ReflectionProbeAmbientMode p_mode) {
 	ReflectionProbe *reflection_probe = reflection_probe_owner.get_or_null(p_probe);
 	ERR_FAIL_COND(!reflection_probe);
@@ -566,6 +573,13 @@ float LightStorage::reflection_probe_get_intensity(RID p_probe) const {
 	ERR_FAIL_COND_V(!reflection_probe, 0);
 
 	return reflection_probe->intensity;
+}
+
+float LightStorage::reflection_probe_get_fade_start(RID p_probe) const {
+	const ReflectionProbe *reflection_probe = reflection_probe_owner.get_or_null(p_probe);
+	ERR_FAIL_COND_V(!reflection_probe, 0);
+
+	return reflection_probe->fade_start;
 }
 
 bool LightStorage::reflection_probe_is_interior(RID p_probe) const {

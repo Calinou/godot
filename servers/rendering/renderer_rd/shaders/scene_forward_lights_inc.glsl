@@ -884,7 +884,9 @@ void reflection_process(uint ref_index, vec3 vertex, vec3 normal, float roughnes
 	//make blend more rounded
 	blend = mix(length(inner_pos), blend, blend);
 	blend *= blend;
-	blend = max(0.0, 1.0 - blend);
+	float inv_fade_start = 1.0 / max(0.0001, 1.0 - reflections.data[ref_index].fade_start);
+	// Use smoothstep to further smooth the transition between probes.
+	blend = smoothstep(1.0, 0.0, 1.0 - inv_fade_start + blend * inv_fade_start);
 
 	if (reflections.data[ref_index].intensity > 0.0) { // compute reflection
 

@@ -2588,6 +2588,13 @@
 				Sets the size of the area that the reflection probe will capture. Equivalent to [member ReflectionProbe.extents].
 			</description>
 		</method>
+		<method name="reflection_probe_set_fade_start">
+			<return type="void" />
+			<argument index="0" name="probe" type="RID" />
+			<argument index="1" name="fade_start" type="float" />
+			<description>
+			</description>
+		</method>
 		<method name="reflection_probe_set_intensity">
 			<return type="void" />
 			<argument index="0" name="probe" type="RID" />

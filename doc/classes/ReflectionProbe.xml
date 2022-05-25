@@ -35,6 +35,8 @@
 			The size of the reflection probe. The larger the extents, the more space covered by the probe, which will lower the perceived resolution. It is best to keep the extents only as large as you need them.
 			[b]Note:[/b] To better fit areas that are not aligned to the grid, you can rotate the [ReflectionProbe] node.
 		</member>
+		<member name="fade_start" type="float" setter="set_fade_start" getter="get_fade_start" default="0.5">
+		</member>
 		<member name="intensity" type="float" setter="set_intensity" getter="get_intensity" default="1.0">
 			Defines the reflection intensity. Intensity modulates the strength of the reflection.
 		</member>
