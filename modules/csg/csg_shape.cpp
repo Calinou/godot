@@ -1256,10 +1256,11 @@ CSGBrush *CSGCylinder3D::_build_brush() {
 
 	CSGBrush *brush = memnew(CSGBrush);
 
-	int face_count = sides * (cone ? 1 : 2) + sides + (cone ? 0 : sides);
+	const bool is_cone = Math::is_zero_approx(top_radius) || Math::is_zero_approx(bottom_radius);
+	const int face_count = sides * (is_cone ? 1 : 2) + sides + (is_cone ? 0 : sides);
 
-	bool invert_val = get_flip_faces();
-	Ref<Material> material = get_material();
+	const bool invert_val = get_flip_faces();
+	const Ref<Material> material = get_material();
 
 	Vector<Vector3> faces;
 	Vector<Vector2> uvs;
@@ -1283,7 +1284,8 @@ CSGBrush *CSGCylinder3D::_build_brush() {
 
 		int face = 0;
 
-		Vector3 vertex_mul(radius, height * 0.5, radius);
+		Vector3 top_vertex_mul(top_radius, height * 0.5, top_radius);
+		Vector3 bottom_vertex_mul(bottom_radius, height * 0.5, bottom_radius);
 
 		{
 			for (int i = 0; i < sides; i++) {
@@ -1300,10 +1302,10 @@ CSGBrush *CSGCylinder3D::_build_brush() {
 				Vector3 base_n(Math::cos(ang_n), 0, Math::sin(ang_n));
 
 				Vector3 face_points[4] = {
-					base + Vector3(0, -1, 0),
-					base_n + Vector3(0, -1, 0),
-					base_n * (cone ? 0.0 : 1.0) + Vector3(0, 1, 0),
-					base * (cone ? 0.0 : 1.0) + Vector3(0, 1, 0),
+					base * (Math::is_zero_approx(bottom_radius) ? 0.0 : 1.0) + Vector3(0, -1, 0),
+					base_n * (Math::is_zero_approx(bottom_radius) ? 0.0 : 1.0) + Vector3(0, -1, 0),
+					base_n * (Math::is_zero_approx(top_radius) ? 0.0 : 1.0) + Vector3(0, 1, 0),
+					base * (Math::is_zero_approx(top_radius) ? 0.0 : 1.0) + Vector3(0, 1, 0),
 				};
 
 				Vector2 u[4] = {
@@ -1314,9 +1316,9 @@ CSGBrush *CSGCylinder3D::_build_brush() {
 				};
 
 				//side face 1
-				facesw[face * 3 + 0] = face_points[0] * vertex_mul;
-				facesw[face * 3 + 1] = face_points[1] * vertex_mul;
-				facesw[face * 3 + 2] = face_points[2] * vertex_mul;
+				facesw[face * 3 + 0] = face_points[0] * bottom_vertex_mul;
+				facesw[face * 3 + 1] = face_points[1] * bottom_vertex_mul;
+				facesw[face * 3 + 2] = face_points[2] * top_vertex_mul;
 
 				uvsw[face * 3 + 0] = u[0];
 				uvsw[face * 3 + 1] = u[1];
@@ -1328,11 +1330,11 @@ CSGBrush *CSGCylinder3D::_build_brush() {
 
 				face++;
 
-				if (!cone) {
+				if (!is_cone) {
 					//side face 2
-					facesw[face * 3 + 0] = face_points[2] * vertex_mul;
-					facesw[face * 3 + 1] = face_points[3] * vertex_mul;
-					facesw[face * 3 + 2] = face_points[0] * vertex_mul;
+					facesw[face * 3 + 0] = face_points[2] * top_vertex_mul;
+					facesw[face * 3 + 1] = face_points[3] * top_vertex_mul;
+					facesw[face * 3 + 2] = face_points[0] * bottom_vertex_mul;
 
 					uvsw[face * 3 + 0] = u[2];
 					uvsw[face * 3 + 1] = u[3];
@@ -1345,9 +1347,9 @@ CSGBrush *CSGCylinder3D::_build_brush() {
 				}
 
 				//bottom face 1
-				facesw[face * 3 + 0] = face_points[1] * vertex_mul;
-				facesw[face * 3 + 1] = face_points[0] * vertex_mul;
-				facesw[face * 3 + 2] = Vector3(0, -1, 0) * vertex_mul;
+				facesw[face * 3 + 0] = face_points[1] * bottom_vertex_mul;
+				facesw[face * 3 + 1] = face_points[0] * bottom_vertex_mul;
+				facesw[face * 3 + 2] = Vector3(0, -1, 0) * bottom_vertex_mul;
 
 				uvsw[face * 3 + 0] = Vector2(face_points[1].x, face_points[1].y) * 0.5 + Vector2(0.5, 0.5);
 				uvsw[face * 3 + 1] = Vector2(face_points[0].x, face_points[0].y) * 0.5 + Vector2(0.5, 0.5);
@@ -1358,11 +1360,11 @@ CSGBrush *CSGCylinder3D::_build_brush() {
 				materialsw[face] = material;
 				face++;
 
-				if (!cone) {
+				if (!is_cone) {
 					//top face 1
-					facesw[face * 3 + 0] = face_points[3] * vertex_mul;
-					facesw[face * 3 + 1] = face_points[2] * vertex_mul;
-					facesw[face * 3 + 2] = Vector3(0, 1, 0) * vertex_mul;
+					facesw[face * 3 + 0] = face_points[3] * top_vertex_mul;
+					facesw[face * 3 + 1] = face_points[2] * top_vertex_mul;
+					facesw[face * 3 + 2] = Vector3(0, 1, 0) * top_vertex_mul;
 
 					uvsw[face * 3 + 0] = Vector2(face_points[1].x, face_points[1].y) * 0.5 + Vector2(0.5, 0.5);
 					uvsw[face * 3 + 1] = Vector2(face_points[0].x, face_points[0].y) * 0.5 + Vector2(0.5, 0.5);
@@ -1387,8 +1389,11 @@ CSGBrush *CSGCylinder3D::_build_brush() {
 }
 
 void CSGCylinder3D::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("set_radius", "radius"), &CSGCylinder3D::set_radius);
-	ClassDB::bind_method(D_METHOD("get_radius"), &CSGCylinder3D::get_radius);
+	ClassDB::bind_method(D_METHOD("set_top_radius", "radius"), &CSGCylinder3D::set_top_radius);
+	ClassDB::bind_method(D_METHOD("get_top_radius"), &CSGCylinder3D::get_top_radius);
+
+	ClassDB::bind_method(D_METHOD("set_bottom_radius", "radius"), &CSGCylinder3D::set_bottom_radius);
+	ClassDB::bind_method(D_METHOD("get_bottom_radius"), &CSGCylinder3D::get_bottom_radius);
 
 	ClassDB::bind_method(D_METHOD("set_height", "height"), &CSGCylinder3D::set_height);
 	ClassDB::bind_method(D_METHOD("get_height"), &CSGCylinder3D::get_height);
@@ -1396,31 +1401,38 @@ void CSGCylinder3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_sides", "sides"), &CSGCylinder3D::set_sides);
 	ClassDB::bind_method(D_METHOD("get_sides"), &CSGCylinder3D::get_sides);
 
-	ClassDB::bind_method(D_METHOD("set_cone", "cone"), &CSGCylinder3D::set_cone);
-	ClassDB::bind_method(D_METHOD("is_cone"), &CSGCylinder3D::is_cone);
-
 	ClassDB::bind_method(D_METHOD("set_material", "material"), &CSGCylinder3D::set_material);
 	ClassDB::bind_method(D_METHOD("get_material"), &CSGCylinder3D::get_material);
 
 	ClassDB::bind_method(D_METHOD("set_smooth_faces", "smooth_faces"), &CSGCylinder3D::set_smooth_faces);
 	ClassDB::bind_method(D_METHOD("get_smooth_faces"), &CSGCylinder3D::get_smooth_faces);
 
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "radius", PROPERTY_HINT_RANGE, "0.001,1000.0,0.001,or_greater,exp,suffix:m"), "set_radius", "get_radius");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "top_radius", PROPERTY_HINT_RANGE, "0.0,1000.0,0.001,or_greater,exp,suffix:m"), "set_top_radius", "get_top_radius");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "bottom_radius", PROPERTY_HINT_RANGE, "0.0,1000.0,0.001,or_greater,exp,suffix:m"), "set_bottom_radius", "get_bottom_radius");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "height", PROPERTY_HINT_RANGE, "0.001,1000.0,0.001,or_greater,exp,suffix:m"), "set_height", "get_height");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "sides", PROPERTY_HINT_RANGE, "3,64,1"), "set_sides", "get_sides");
-	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "cone"), "set_cone", "is_cone");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "smooth_faces"), "set_smooth_faces", "get_smooth_faces");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "material", PROPERTY_HINT_RESOURCE_TYPE, "BaseMaterial3D,ShaderMaterial"), "set_material", "get_material");
 }
 
-void CSGCylinder3D::set_radius(const float p_radius) {
-	radius = p_radius;
+void CSGCylinder3D::set_top_radius(const float p_radius) {
+	top_radius = p_radius;
 	_make_dirty();
 	update_gizmos();
 }
 
-float CSGCylinder3D::get_radius() const {
-	return radius;
+float CSGCylinder3D::get_top_radius() const {
+	return top_radius;
+}
+
+void CSGCylinder3D::set_bottom_radius(const float p_radius) {
+	bottom_radius = p_radius;
+	_make_dirty();
+	update_gizmos();
+}
+
+float CSGCylinder3D::get_bottom_radius() const {
+	return bottom_radius;
 }
 
 void CSGCylinder3D::set_height(const float p_height) {
@@ -1444,16 +1456,6 @@ int CSGCylinder3D::get_sides() const {
 	return sides;
 }
 
-void CSGCylinder3D::set_cone(const bool p_cone) {
-	cone = p_cone;
-	_make_dirty();
-	update_gizmos();
-}
-
-bool CSGCylinder3D::is_cone() const {
-	return cone;
-}
-
 void CSGCylinder3D::set_smooth_faces(const bool p_smooth_faces) {
 	smooth_faces = p_smooth_faces;
 	_make_dirty();
@@ -1474,10 +1476,10 @@ Ref<Material> CSGCylinder3D::get_material() const {
 
 CSGCylinder3D::CSGCylinder3D() {
 	// defaults
-	radius = 0.5;
+	top_radius = 0.5;
+	bottom_radius = 0.5;
 	height = 2.0;
 	sides = 8;
-	cone = false;
 	smooth_faces = true;
 }
 
