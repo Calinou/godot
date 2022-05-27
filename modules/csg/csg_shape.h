@@ -307,18 +307,21 @@ class CSGCylinder3D : public CSGPrimitive3D {
 	virtual CSGBrush *_build_brush() override;
 
 	Ref<Material> material;
-	float radius;
+	float top_radius;
+	float bottom_radius;
 	float height;
 	int sides;
-	bool cone;
 	bool smooth_faces;
 
 protected:
 	static void _bind_methods();
 
 public:
-	void set_radius(const float p_radius);
-	float get_radius() const;
+	void set_top_radius(const float p_radius);
+	float get_top_radius() const;
+
+	void set_bottom_radius(const float p_radius);
+	float get_bottom_radius() const;
 
 	void set_height(const float p_height);
 	float get_height() const;
@@ -326,14 +329,19 @@ public:
 	void set_sides(const int p_sides);
 	int get_sides() const;
 
-	void set_cone(const bool p_cone);
-	bool is_cone() const;
-
 	void set_smooth_faces(bool p_smooth_faces);
 	bool get_smooth_faces() const;
 
 	void set_material(const Ref<Material> &p_material);
 	Ref<Material> get_material() const;
+
+#ifndef DISABLE_DEPRECATED
+	void set_radius(const float p_radius);
+	float get_radius() const;
+
+	void set_cone(const bool p_cone);
+	bool is_cone() const;
+#endif // DISABLE_DEPRECATED
 
 	CSGCylinder3D();
 };

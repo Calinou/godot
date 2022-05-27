@@ -199,7 +199,7 @@ String CSGShape3DGizmoPlugin::get_handle_name(const EditorNode3DGizmo *p_gizmo, 
 	}
 
 	if (Object::cast_to<CSGCylinder3D>(cs)) {
-		return p_id == 0 ? "Radius" : "Height";
+		return p_id == 0 ? "Top Radius" : "Height";
 	}
 
 	if (Object::cast_to<CSGTorus3D>(cs)) {
@@ -224,7 +224,7 @@ Variant CSGShape3DGizmoPlugin::get_handle_value(const EditorNode3DGizmo *p_gizmo
 
 	if (Object::cast_to<CSGCylinder3D>(cs)) {
 		CSGCylinder3D *s = Object::cast_to<CSGCylinder3D>(cs);
-		return Vector2(s->get_radius(), s->get_height());
+		return Vector2(s->get_top_radius(), s->get_height());
 	}
 
 	if (Object::cast_to<CSGTorus3D>(cs)) {
@@ -275,11 +275,11 @@ void CSGShape3DGizmoPlugin::set_handle(const EditorNode3DGizmo *p_gizmo, int p_i
 		CSGCylinder3D *s = Object::cast_to<CSGCylinder3D>(cs);
 
 		real_t height = s->get_height();
-		real_t radius = s->get_radius();
+		real_t radius = s->get_top_radius();
 		Vector3 position;
 		helper->cylinder_set_handle(sg, p_id, height, radius, position);
 		s->set_height(height);
-		s->set_radius(radius);
+		s->set_top_radius(radius);
 		s->set_global_position(position);
 	}
 
@@ -470,7 +470,7 @@ void CSGShape3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 	if (Object::cast_to<CSGCylinder3D>(cs)) {
 		CSGCylinder3D *s = Object::cast_to<CSGCylinder3D>(cs);
 
-		Vector<Vector3> handles = helper->cylinder_get_handles(s->get_height(), s->get_radius());
+		Vector<Vector3> handles = helper->cylinder_get_handles(s->get_height(), s->get_top_radius());
 		p_gizmo->add_handles(handles, handles_material);
 	}
 
