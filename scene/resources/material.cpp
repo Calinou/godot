@@ -1333,9 +1333,13 @@ void BaseMaterial3D::_update_shader() {
 				break; // Internal value, skip.
 		}
 
-		code += "	vec3 detail_norm = mix(NORMAL_MAP,detail_norm_tex.rgb,detail_tex.a);\n";
-		code += "	NORMAL_MAP = mix(NORMAL_MAP,detail_norm,detail_mask_tex.r);\n";
-		code += "	ALBEDO.rgb = mix(ALBEDO.rgb,detail,detail_mask_tex.r);\n";
+		// Perform UDN normal map blending on top of the base normal map for more correct results.
+		// <https://google.github.io/filament/Filament.html#listing_udnblending>
+		code += "	vec3 t = NORMAL_MAP * 2.0 - 1.0;\n";
+		code += "	vec3 u = detail_norm_tex.rgb * 2.0 - 1.0;\n";
+		code += "	vec3 detail_norm_udn = normalize(vec3(t.x + u.x, t.y + u.y, t.z));\n";
+		code += "	NORMAL_MAP = mix(NORMAL_MAP, detail_norm_udn, detail_tex.a * detail_mask_tex.r);\n";
+		code += "	ALBEDO.rgb = mix(ALBEDO.rgb, detail, detail_mask_tex.r);\n";
 	}
 
 	code += "}\n";
