@@ -342,7 +342,7 @@ public:
 		return custom_rd_samplers[p_filter][p_repeat];
 	}
 
-	void sampler_rd_configure_custom(float mipmap_bias);
+	void sampler_rd_configure_custom(float mipmap_bias, RS::AnisotropicFilteringLevel p_anisotropic_filtering_level);
 
 	Vector<RD::Uniform> get_default_sampler_uniforms(int first_index);
 

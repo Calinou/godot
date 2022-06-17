@@ -90,7 +90,7 @@ void RenderSceneBuffersRD::cleanup() {
 	named_textures.clear();
 }
 
-void RenderSceneBuffersRD::configure(RID p_render_target, const Size2i p_internal_size, const Size2i p_target_size, RS::ViewportScaling3DMode p_scaling_3d_mode, float p_fsr_sharpness, float p_texture_mipmap_bias, RS::ViewportMSAA p_msaa_3d, RenderingServer::ViewportScreenSpaceAA p_screen_space_aa, bool p_use_taa, bool p_use_debanding, uint32_t p_view_count) {
+void RenderSceneBuffersRD::configure(RID p_render_target, const Size2i p_internal_size, const Size2i p_target_size, RS::ViewportScaling3DMode p_scaling_3d_mode, float p_fsr_sharpness, float p_texture_mipmap_bias, RS::ViewportMSAA p_msaa_3d, RenderingServer::ViewportScreenSpaceAA p_screen_space_aa, bool p_use_taa, bool p_use_debanding, uint32_t p_view_count, RS::AnisotropicFilteringLevel p_anisotropic_filtering_level) {
 	RendererRD::TextureStorage *texture_storage = RendererRD::TextureStorage::get_singleton();
 	RendererRD::MaterialStorage *material_storage = RendererRD::MaterialStorage::get_singleton();
 
@@ -113,7 +113,7 @@ void RenderSceneBuffersRD::configure(RID p_render_target, const Size2i p_interna
 		p_texture_mipmap_bias -= 0.25;
 	}
 
-	material_storage->sampler_rd_configure_custom(p_texture_mipmap_bias);
+	material_storage->sampler_rd_configure_custom(p_texture_mipmap_bias, p_anisotropic_filtering_level);
 
 	// need to check if we really need to do this here..
 	RendererSceneRenderRD::get_singleton()->update_uniform_sets();
@@ -205,7 +205,14 @@ void RenderSceneBuffersRD::set_fsr_sharpness(float p_fsr_sharpness) {
 
 void RenderSceneBuffersRD::set_texture_mipmap_bias(float p_texture_mipmap_bias) {
 	RendererRD::MaterialStorage *material_storage = RendererRD::MaterialStorage::get_singleton();
-	material_storage->sampler_rd_configure_custom(p_texture_mipmap_bias);
+	print_line("set_texture_mipmap_bias");
+	material_storage->sampler_rd_configure_custom(p_texture_mipmap_bias, anisotropic_filter_level);
+}
+
+void RenderSceneBuffersRD::set_texture_anisotropic_filtering_level(RS::AnisotropicFilteringLevel p_anisotropic_filtering_level) {
+	RendererRD::MaterialStorage *material_storage = RendererRD::MaterialStorage::get_singleton();
+	print_line("set_texture_anisotropic_filtering_level");
+	material_storage->sampler_rd_configure_custom(texture_mipmap_bias, p_anisotropic_filtering_level);
 }
 
 void RenderSceneBuffersRD::set_use_debanding(bool p_use_debanding) {

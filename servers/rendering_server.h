@@ -103,6 +103,15 @@ public:
 		CUBEMAP_LAYER_BACK
 	};
 
+	enum AnisotropicFilteringLevel {
+		ANISOTROPIC_FILTER_LEVEL_DISABLED,
+		ANISOTROPIC_FILTER_LEVEL_2X,
+		ANISOTROPIC_FILTER_LEVEL_4X,
+		ANISOTROPIC_FILTER_LEVEL_8X,
+		ANISOTROPIC_FILTER_LEVEL_16X,
+		ANISOTROPIC_FILTER_LEVEL_MAX,
+	};
+
 	virtual RID texture_2d_create(const Ref<Image> &p_image) = 0;
 	virtual RID texture_2d_layered_create(const Vector<Ref<Image>> &p_layers, TextureLayeredType p_layered_type) = 0;
 	virtual RID texture_3d_create(Image::Format, int p_width, int p_height, int p_depth, bool p_mipmaps, const Vector<Ref<Image>> &p_data) = 0; //all slices, then all the mipmaps, must be coherent
@@ -1620,6 +1629,7 @@ private:
 // Make variant understand the enums.
 VARIANT_ENUM_CAST(RenderingServer::TextureLayeredType);
 VARIANT_ENUM_CAST(RenderingServer::CubeMapLayer);
+VARIANT_ENUM_CAST(RenderingServer::AnisotropicFilteringLevel);
 VARIANT_ENUM_CAST(RenderingServer::ShaderMode);
 VARIANT_ENUM_CAST(RenderingServer::ArrayType);
 VARIANT_BITFIELD_CAST(RenderingServer::ArrayFormat);

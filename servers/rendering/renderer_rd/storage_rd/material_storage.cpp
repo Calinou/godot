@@ -1186,7 +1186,7 @@ MaterialStorage::MaterialStorage() {
 	}
 
 	//custom sampler
-	sampler_rd_configure_custom(0.0f);
+	sampler_rd_configure_custom(0.0f, RS::AnisotropicFilteringLevel(int(GLOBAL_GET("rendering/textures/default_filters/anisotropic_filtering_level"))));
 
 	// buffers
 	{ //create index array for copy shaders
@@ -1265,7 +1265,7 @@ bool MaterialStorage::free(RID p_rid) {
 
 /* Samplers */
 
-void MaterialStorage::sampler_rd_configure_custom(float p_mipmap_bias) {
+void MaterialStorage::sampler_rd_configure_custom(float p_mipmap_bias, RS::AnisotropicFilteringLevel p_anisotropic_filtering_level) {
 	for (int i = 1; i < RS::CANVAS_ITEM_TEXTURE_FILTER_MAX; i++) {
 		for (int j = 1; j < RS::CANVAS_ITEM_TEXTURE_REPEAT_MAX; j++) {
 			RD::SamplerState sampler_state;
@@ -1311,7 +1311,7 @@ void MaterialStorage::sampler_rd_configure_custom(float p_mipmap_bias) {
 					}
 					sampler_state.lod_bias = p_mipmap_bias;
 					sampler_state.use_anisotropy = true;
-					sampler_state.anisotropy_max = 1 << int(GLOBAL_GET("rendering/textures/default_filters/anisotropic_filtering_level"));
+					sampler_state.anisotropy_max = 1 << int(p_anisotropic_filtering_level);
 				} break;
 				case RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC: {
 					sampler_state.mag_filter = RD::SAMPLER_FILTER_LINEAR;
@@ -1323,7 +1323,7 @@ void MaterialStorage::sampler_rd_configure_custom(float p_mipmap_bias) {
 					}
 					sampler_state.lod_bias = p_mipmap_bias;
 					sampler_state.use_anisotropy = true;
-					sampler_state.anisotropy_max = 1 << int(GLOBAL_GET("rendering/textures/default_filters/anisotropic_filtering_level"));
+					sampler_state.anisotropy_max = 1 << int(p_anisotropic_filtering_level);
 
 				} break;
 				default: {
