@@ -180,6 +180,12 @@ void editor_register_and_generate_icons(Ref<Theme> p_theme, bool p_dark_theme = 
 		ADD_CONVERT_COLOR(dark_icon_color_dictionary, "#4b70ea", "#1a3eac"); // 2D Dark
 		ADD_CONVERT_COLOR(dark_icon_color_dictionary, "#8eef97", "#2fa139"); // Control
 
+		ADD_CONVERT_COLOR(dark_icon_color_dictionary, "#b3efb8", "#TODO"); // Scene dock icon: Script
+		ADD_CONVERT_COLOR(dark_icon_color_dictionary, "#b3efb8", "#TODO"); // Scene dock icon: Signal
+		ADD_CONVERT_COLOR(dark_icon_color_dictionary, "#b3efb8", "#TODO"); // Scene dock icon: Group
+		ADD_CONVERT_COLOR(dark_icon_color_dictionary, "#b3efb8", "#TODO"); // Scene dock icon: Instanced Scene
+		ADD_CONVERT_COLOR(dark_icon_color_dictionary, "#b3efb8", "#TODO"); // Scene dock icon: Scene-Unique Node
+
 		ADD_CONVERT_COLOR(dark_icon_color_dictionary, "#5fb2ff", "#0079f0"); // Selection (blue)
 		ADD_CONVERT_COLOR(dark_icon_color_dictionary, "#003e7a", "#2b74bb"); // Selection (darker blue)
 		ADD_CONVERT_COLOR(dark_icon_color_dictionary, "#f7f5cf", "#615f3a"); // Gizmo (yellow)
