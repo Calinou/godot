@@ -1117,7 +1117,7 @@ public:
 
 	PASS9(environment_set_tonemap, RID, RS::EnvironmentToneMapper, float, float, bool, float, float, float, float)
 
-	PASS7(environment_set_adjustment, RID, bool, float, float, float, bool, RID)
+	PASS9(environment_set_adjustment, RID, bool, float, float, float, bool, RID, float, RID)
 
 	PASS9(environment_set_fog, RID, bool, const Color &, float, float, float, float, float, float)
 	PASS13(environment_set_volumetric_fog, RID, bool, float, const Color &, const Color &, float, float, float, float, float, bool, float, float)

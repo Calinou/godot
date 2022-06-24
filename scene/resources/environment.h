@@ -207,6 +207,8 @@ private:
 	float adjustment_saturation = 1.0;
 	bool use_1d_color_correction = true;
 	Ref<Texture> adjustment_color_correction;
+	float adjustment_color_correction_mix = 1.0;
+	Ref<Texture> adjustment_color_correction2;
 	void _update_adjustment();
 
 protected:
@@ -423,6 +425,10 @@ public:
 	float get_adjustment_saturation() const;
 	void set_adjustment_color_correction(Ref<Texture> p_color_correction);
 	Ref<Texture> get_adjustment_color_correction() const;
+	void set_adjustment_color_correction_mix(float p_color_correction_mix);
+	float get_adjustment_color_correction_mix() const;
+	void set_adjustment_color_correction2(Ref<Texture> p_color_correction2);
+	Ref<Texture> get_adjustment_color_correction2() const;
 
 	Environment();
 	~Environment();

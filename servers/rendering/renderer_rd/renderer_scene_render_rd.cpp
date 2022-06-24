@@ -2615,6 +2615,8 @@ void RendererSceneRenderRD::_render_buffers_post_process_and_tonemap(const Rende
 		tonemap.use_color_correction = false;
 		tonemap.use_1d_color_correction = false;
 		tonemap.color_correction_texture = texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_3D_WHITE);
+		tonemap.color_correction_mix = 1.0;
+		tonemap.color_correction2_texture = texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_3D_WHITE);
 
 		if (can_use_effects && env) {
 			tonemap.use_bcs = env->adjustments_enabled;
@@ -2625,6 +2627,9 @@ void RendererSceneRenderRD::_render_buffers_post_process_and_tonemap(const Rende
 				tonemap.use_color_correction = true;
 				tonemap.use_1d_color_correction = env->use_1d_color_correction;
 				tonemap.color_correction_texture = texture_storage->texture_get_rd_texture(env->color_correction);
+				tonemap.color_correction_mix = env->color_correction_mix;
+				tonemap.color_correction2_texture = texture_storage->texture_get_rd_texture(env->color_correction2);
+
 			}
 		}
 
@@ -2693,6 +2698,8 @@ void RendererSceneRenderRD::_post_process_subpass(RID p_source_texture, RID p_fr
 	tonemap.use_color_correction = false;
 	tonemap.use_1d_color_correction = false;
 	tonemap.color_correction_texture = texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_3D_WHITE);
+	tonemap.color_correction_mix = 1.0;
+	tonemap.color_correction2_texture = texture_storage->texture_rd_get_default(RendererRD::DEFAULT_RD_TEXTURE_3D_WHITE);
 
 	if (can_use_effects && env) {
 		tonemap.use_bcs = env->adjustments_enabled;
@@ -2703,6 +2710,8 @@ void RendererSceneRenderRD::_post_process_subpass(RID p_source_texture, RID p_fr
 			tonemap.use_color_correction = true;
 			tonemap.use_1d_color_correction = env->use_1d_color_correction;
 			tonemap.color_correction_texture = texture_storage->texture_get_rd_texture(env->color_correction);
+			tonemap.color_correction_mix = env->color_correction_mix;
+			tonemap.color_correction2_texture = texture_storage->texture_get_rd_texture(env->color_correction2);
 		}
 	}
 
@@ -2806,7 +2815,7 @@ void RendererSceneRenderRD::_render_buffers_debug_draw(RID p_render_buffers, RID
 	}
 }
 
-void RendererSceneRenderRD::environment_set_adjustment(RID p_env, bool p_enable, float p_brightness, float p_contrast, float p_saturation, bool p_use_1d_color_correction, RID p_color_correction) {
+void RendererSceneRenderRD::environment_set_adjustment(RID p_env, bool p_enable, float p_brightness, float p_contrast, float p_saturation, bool p_use_1d_color_correction, RID p_color_correction, float p_color_correction_mix, RID p_color_correction2) {
 	RendererSceneEnvironmentRD *env = environment_owner.get_or_null(p_env);
 	ERR_FAIL_COND(!env);
 
@@ -2816,6 +2825,8 @@ void RendererSceneRenderRD::environment_set_adjustment(RID p_env, bool p_enable,
 	env->adjustments_saturation = p_saturation;
 	env->use_1d_color_correction = p_use_1d_color_correction;
 	env->color_correction = p_color_correction;
+	env->color_correction_mix = p_color_correction_mix;
+	env->color_correction2 = p_color_correction2;
 }
 
 RID RendererSceneRenderRD::render_buffers_get_back_buffer_texture(RID p_render_buffers) {

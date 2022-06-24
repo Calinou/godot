@@ -1022,8 +1022,35 @@ Ref<Texture> Environment::get_adjustment_color_correction() const {
 	return adjustment_color_correction;
 }
 
+void Environment::set_adjustment_color_correction_mix(float p_color_correction_mix) {
+	adjustment_color_correction_mix = p_color_correction_mix;
+	_update_adjustment();
+}
+
+float Environment::get_adjustment_color_correction_mix() const {
+	return adjustment_color_correction_mix;
+}
+
+void Environment::set_adjustment_color_correction2(Ref<Texture> p_color_correction2) {
+	adjustment_color_correction2 = p_color_correction2;
+	Ref<GradientTexture1D> grad_tex = p_color_correction2;
+	if (grad_tex.is_valid()) {
+		if (!grad_tex->is_connected(CoreStringNames::get_singleton()->changed, callable_mp(this, &Environment::_update_adjustment))) {
+			grad_tex->connect(CoreStringNames::get_singleton()->changed, callable_mp(this, &Environment::_update_adjustment));
+		}
+	}
+	// Second color correction texture must be 1D if the first color correction texture is 1D.
+	// Second color correction texture must be 3D if the first color correction texture is 3D.
+	_update_adjustment();
+}
+
+Ref<Texture> Environment::get_adjustment_color_correction2() const {
+	return adjustment_color_correction;
+}
+
 void Environment::_update_adjustment() {
 	RID color_correction = adjustment_color_correction.is_valid() ? adjustment_color_correction->get_rid() : RID();
+	RID color_correction2 = adjustment_color_correction2.is_valid() ? adjustment_color_correction2->get_rid() : RID();
 
 	RS::get_singleton()->environment_set_adjustment(
 			environment,
@@ -1032,7 +1059,9 @@ void Environment::_update_adjustment() {
 			adjustment_contrast,
 			adjustment_saturation,
 			use_1d_color_correction,
-			color_correction);
+			color_correction,
+			adjustment_color_correction_mix,
+			color_correction2);
 }
 
 // Private methods, constructor and destructor
@@ -1480,6 +1509,10 @@ void Environment::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_adjustment_saturation"), &Environment::get_adjustment_saturation);
 	ClassDB::bind_method(D_METHOD("set_adjustment_color_correction", "color_correction"), &Environment::set_adjustment_color_correction);
 	ClassDB::bind_method(D_METHOD("get_adjustment_color_correction"), &Environment::get_adjustment_color_correction);
+	ClassDB::bind_method(D_METHOD("set_adjustment_color_correction_mix", "color_correction_mix"), &Environment::set_adjustment_color_correction_mix);
+	ClassDB::bind_method(D_METHOD("get_adjustment_color_correction_mix"), &Environment::get_adjustment_color_correction_mix);
+	ClassDB::bind_method(D_METHOD("set_adjustment_color_correction2", "color_correction2"), &Environment::set_adjustment_color_correction2);
+	ClassDB::bind_method(D_METHOD("get_adjustment_color_correction2"), &Environment::get_adjustment_color_correction2);
 
 	ADD_GROUP("Adjustments", "adjustment_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "adjustment_enabled"), "set_adjustment_enabled", "is_adjustment_enabled");
@@ -1487,6 +1520,8 @@ void Environment::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "adjustment_contrast", PROPERTY_HINT_RANGE, "0.01,8,0.01"), "set_adjustment_contrast", "get_adjustment_contrast");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "adjustment_saturation", PROPERTY_HINT_RANGE, "0.01,8,0.01"), "set_adjustment_saturation", "get_adjustment_saturation");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "adjustment_color_correction", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D,Texture3D"), "set_adjustment_color_correction", "get_adjustment_color_correction");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "adjustment_color_correction_mix", PROPERTY_HINT_RANGE, "0.0,1.0,0.001"), "set_adjustment_color_correction_mix", "get_adjustment_color_correction_mix");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "adjustment_color_correction2", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D,Texture3D"), "set_adjustment_color_correction2", "get_adjustment_color_correction2");
 
 	// Constants
 

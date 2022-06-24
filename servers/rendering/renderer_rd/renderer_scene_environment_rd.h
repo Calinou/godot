@@ -153,6 +153,8 @@ public:
 	float adjustments_saturation = 1.0f;
 	bool use_1d_color_correction = false;
 	RID color_correction = RID();
+	float color_correction_mix = 1.0f;
+	RID color_correction2 = RID();
 
 	void set_ambient_light(const Color &p_color, RS::EnvironmentAmbientSource p_ambient, float p_energy, float p_sky_contribution, RS::EnvironmentReflectionSource p_reflection_source);
 	void set_tonemap(RS::EnvironmentToneMapper p_tone_mapper, float p_exposure, float p_white, bool p_auto_exposure, float p_min_luminance, float p_max_luminance, float p_auto_exp_speed, float p_auto_exp_scale);

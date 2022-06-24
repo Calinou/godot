@@ -1236,7 +1236,7 @@ void RasterizerSceneGLES3::environment_set_tonemap(RID p_env, RS::EnvironmentTon
 	env->auto_exp_scale = p_auto_exp_scale;
 }
 
-void RasterizerSceneGLES3::environment_set_adjustment(RID p_env, bool p_enable, float p_brightness, float p_contrast, float p_saturation, bool p_use_1d_color_correction, RID p_color_correction) {
+void RasterizerSceneGLES3::environment_set_adjustment(RID p_env, bool p_enable, float p_brightness, float p_contrast, float p_saturation, bool p_use_1d_color_correction, RID p_color_correction, float p_color_correction_mix, RID p_color_correction2) {
 	Environment *env = environment_owner.get_or_null(p_env);
 	ERR_FAIL_COND(!env);
 	env->adjustments_enabled = p_enable;

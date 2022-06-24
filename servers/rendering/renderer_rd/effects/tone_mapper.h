@@ -136,6 +136,8 @@ public:
 		bool use_color_correction = false;
 		bool use_1d_color_correction = false;
 		RID color_correction_texture;
+		float color_correction_mix = 1.0;
+		RID color_correction2_texture;
 
 		bool use_fxaa = false;
 		bool use_debanding = false;

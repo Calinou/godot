@@ -5,9 +5,13 @@ uniform vec3 bcs;
 #ifdef USE_COLOR_CORRECTION
 #ifdef USE_1D_LUT
 uniform sampler2D source_color_correction; //texunit:-1
+uniform sampler2D source_color_correction2;
 #else
 uniform sampler3D source_color_correction; //texunit:-1
+uniform sampler3D source_color_correction2;
 #endif
+
+uniform float color_correction_mix;
 #endif
 
 layout(std140) uniform TonemapData { //ubo:0
@@ -27,14 +31,14 @@ vec3 apply_bcs(vec3 color, vec3 bcs) {
 #ifdef USE_COLOR_CORRECTION
 #ifdef USE_1D_LUT
 vec3 apply_color_correction(vec3 color) {
-	color.r = texture(source_color_correction, vec2(color.r, 0.0f)).r;
-	color.g = texture(source_color_correction, vec2(color.g, 0.0f)).g;
-	color.b = texture(source_color_correction, vec2(color.b, 0.0f)).b;
+	color.r = mix(texture(source_color_correction, vec2(color.r, 0.0f)).r, texture(source_color_correction2, vec2(color.r, 0.0f)).r, color_correction_mix);
+	color.g = mix(texture(source_color_correction, vec2(color.g, 0.0f)).g, texture(source_color_correction2, vec2(color.g, 0.0f)).g, color_correction_mix);
+	color.b = mix(texture(source_color_correction, vec2(color.b, 0.0f)).b, texture(source_color_correction2, vec2(color.b, 0.0f)).b, color_correction_mix);
 	return color;
 }
 #else
 vec3 apply_color_correction(vec3 color) {
-	return textureLod(source_color_correction, color, 0.0).rgb;
+	return mix(textureLod(source_color_correction, color, 0.0).rgb, textureLod(source_color_correction2, color, 0.0).rgb, color_correction_mix);
 }
 #endif
 #endif
