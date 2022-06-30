@@ -1421,6 +1421,7 @@ SceneTree::SceneTree() {
 
 	const int msaa_mode = GLOBAL_DEF_BASIC("rendering/anti_aliasing/quality/msaa", 0);
 	ProjectSettings::get_singleton()->set_custom_property_info("rendering/anti_aliasing/quality/msaa", PropertyInfo(Variant::INT, "rendering/anti_aliasing/quality/msaa", PROPERTY_HINT_ENUM, String::utf8("Disabled (Fastest),2× (Average),4× (Slow),8× (Slowest)")));
+	GLOBAL_DEF_BASIC("rendering/anti_aliasing/quality/msaa.movie", 3);
 	root->set_msaa(Viewport::MSAA(msaa_mode));
 
 	const int ssaa_mode = GLOBAL_DEF_BASIC("rendering/anti_aliasing/quality/screen_space_aa", 0);
@@ -1428,6 +1429,7 @@ SceneTree::SceneTree() {
 	root->set_screen_space_aa(Viewport::ScreenSpaceAA(ssaa_mode));
 
 	const bool use_taa = GLOBAL_DEF_BASIC("rendering/anti_aliasing/quality/use_taa", false);
+	GLOBAL_DEF_BASIC("rendering/anti_aliasing/quality/use_taa.movie", true);
 	root->set_use_taa(use_taa);
 
 	const bool use_debanding = GLOBAL_DEF("rendering/anti_aliasing/quality/use_debanding", false);
@@ -1449,6 +1451,7 @@ SceneTree::SceneTree() {
 	int shadowmap_size = GLOBAL_DEF("rendering/shadows/shadow_atlas/size", 4096);
 	ProjectSettings::get_singleton()->set_custom_property_info("rendering/shadows/shadow_atlas/size", PropertyInfo(Variant::INT, "rendering/shadows/shadow_atlas/size", PROPERTY_HINT_RANGE, "256,16384"));
 	GLOBAL_DEF("rendering/shadows/shadow_atlas/size.mobile", 2048);
+	GLOBAL_DEF("rendering/shadows/shadow_atlas/size.movie", 8192);
 	bool shadowmap_16_bits = GLOBAL_DEF("rendering/shadows/shadow_atlas/16_bits", true);
 	int atlas_q0 = GLOBAL_DEF("rendering/shadows/shadow_atlas/quadrant_0_subdiv", 2);
 	int atlas_q1 = GLOBAL_DEF("rendering/shadows/shadow_atlas/quadrant_1_subdiv", 2);

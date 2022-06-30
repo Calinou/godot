@@ -540,6 +540,8 @@
 			Allows the window to be resizable by default.
 			[b]Note:[/b] This setting is ignored on iOS.
 		</member>
+		<member name="display/window/size/resizable.movie" type="bool" setter="" getter="" default="false">
+		</member>
 		<member name="display/window/size/viewport_height" type="int" setter="" getter="" default="600">
 			Sets the game's main viewport height. On desktop platforms, this is also the initial window height.
 		</member>
@@ -1628,6 +1630,8 @@
 		<member name="rendering/anti_aliasing/quality/msaa" type="int" setter="" getter="" default="0">
 			Sets the number of MSAA samples to use (as a power of two). MSAA is used to reduce aliasing around the edges of polygons. A higher MSAA value results in smoother edges but can be significantly slower on some hardware. See also bilinear scaling 3d [member rendering/scaling_3d/mode] for supersampling, which provides higher quality but is much more expensive.
 		</member>
+		<member name="rendering/anti_aliasing/quality/msaa.movie" type="int" setter="" getter="" default="3">
+		</member>
 		<member name="rendering/anti_aliasing/quality/screen_space_aa" type="int" setter="" getter="" default="0">
 			Sets the screen-space antialiasing mode for the default screen [Viewport]. Screen-space antialiasing works by selectively blurring edges in a post-process shader. It differs from MSAA which takes multiple coverage samples while rendering objects. Screen-space AA methods are typically faster than MSAA and will smooth out specular aliasing, but tend to make scenes appear blurry.
 			Another way to combat specular aliasing is to enable [member rendering/anti_aliasing/screen_space_roughness_limiter/enabled].
@@ -1638,6 +1642,8 @@
 			Enables Temporal Anti-Aliasing for the default screen [Viewport]. TAA works by jittering the camera and accumulating the images of the last rendered frames, motion vector rendering is used to account for camera and object motion.
 			[b]Note:[/b] The implementation is not complete yet, some visual instances such as particles and skinned meshes may show artifacts.
 		</member>
+		<member name="rendering/anti_aliasing/quality/use_taa.movie" type="bool" setter="" getter="" default="true">
+		</member>
 		<member name="rendering/anti_aliasing/screen_space_roughness_limiter/amount" type="float" setter="" getter="" default="0.25">
 		</member>
 		<member name="rendering/anti_aliasing/screen_space_roughness_limiter/enabled" type="bool" setter="" getter="" default="true">
@@ -1647,11 +1653,15 @@
 		<member name="rendering/camera/depth_of_field/depth_of_field_bokeh_quality" type="int" setter="" getter="" default="1">
 			Sets the quality of the depth of field effect. Higher quality takes more samples, which is slower but looks smoother.
 		</member>
+		<member name="rendering/camera/depth_of_field/depth_of_field_bokeh_quality.movie" type="int" setter="" getter="" default="3">
+		</member>
 		<member name="rendering/camera/depth_of_field/depth_of_field_bokeh_shape" type="int" setter="" getter="" default="1">
 			Sets the depth of field shape. Can be Box, Hexagon, or Circle. Box is the fastest. Circle is the most realistic, but also the most expensive to compute.
 		</member>
 		<member name="rendering/camera/depth_of_field/depth_of_field_use_jitter" type="bool" setter="" getter="" default="false">
 			If [code]true[/code], jitters DOF samples to make effect slightly blurrier and hide lines created from low sample rates. This can result in a slightly grainy appearance when used with a low number of samples.
+		</member>
+		<member name="rendering/camera/depth_of_field/depth_of_field_use_jitter.movie" type="bool" setter="" getter="" default="true">
 		</member>
 		<member name="rendering/driver/depth_prepass/disable_for_vendors" type="String" setter="" getter="" default="&quot;PowerVR,Mali,Adreno,Apple&quot;">
 			Disables [member rendering/driver/depth_prepass/enable] conditionally for certain vendors. By default, disables the depth prepass for mobile devices as mobile devices do not benefit from the depth prepass due to their unique architecture.
@@ -1685,14 +1695,22 @@
 		<member name="rendering/environment/glow/use_high_quality" type="bool" setter="" getter="" default="false">
 			Takes more samples during downsample pass of glow. This ensures that single pixels are captured by glow which makes the glow look smoother and more stable during movement. However, it is very expensive and makes the glow post process take twice as long.
 		</member>
+		<member name="rendering/environment/glow/use_high_quality.movie" type="bool" setter="" getter="" default="true">
+		</member>
 		<member name="rendering/environment/screen_space_reflection/roughness_quality" type="int" setter="" getter="" default="1">
 			Sets the quality for rough screen-space reflections. Turning off will make all screen space reflections sharp, while higher values make rough reflections look better.
+		</member>
+		<member name="rendering/environment/screen_space_reflection/roughness_quality.movie" type="int" setter="" getter="" default="3">
 		</member>
 		<member name="rendering/environment/ssao/adaptive_target" type="float" setter="" getter="" default="0.5">
 			Quality target to use when [member rendering/environment/ssao/quality] is set to [code]ULTRA[/code]. A value of [code]0.0[/code] provides a quality and speed similar to [code]MEDIUM[/code] while a value of [code]1.0[/code] provides much higher quality than any of the other settings at the cost of performance.
 		</member>
+		<member name="rendering/environment/ssao/adaptive_target.movie" type="float" setter="" getter="" default="1.0">
+		</member>
 		<member name="rendering/environment/ssao/blur_passes" type="int" setter="" getter="" default="2">
 			Number of blur passes to use when computing screen-space ambient occlusion. A higher number will result in a smoother look, but will be slower to compute and will have less high-frequency detail.
+		</member>
+		<member name="rendering/environment/ssao/blur_passes.movie" type="int" setter="" getter="" default="4">
 		</member>
 		<member name="rendering/environment/ssao/fadeout_from" type="float" setter="" getter="" default="50.0">
 			Distance at which the screen-space ambient occlusion effect starts to fade out. Use this hide ambient occlusion at great distances.
@@ -1703,14 +1721,22 @@
 		<member name="rendering/environment/ssao/half_size" type="bool" setter="" getter="" default="true">
 			If [code]true[/code], screen-space ambient occlusion will be rendered at half size and then upscaled before being added to the scene. This is significantly faster but may miss small details. If [code]false[/code], screen-space ambient occlusion will be rendered at full size.
 		</member>
+		<member name="rendering/environment/ssao/half_size.movie" type="bool" setter="" getter="" default="false">
+		</member>
 		<member name="rendering/environment/ssao/quality" type="int" setter="" getter="" default="2">
 			Sets the quality of the screen-space ambient occlusion effect. Higher values take more samples and so will result in better quality, at the cost of performance. Setting to [code]ULTRA[/code] will use the [member rendering/environment/ssao/adaptive_target] setting.
+		</member>
+		<member name="rendering/environment/ssao/quality.movie" type="int" setter="" getter="" default="4">
 		</member>
 		<member name="rendering/environment/ssil/adaptive_target" type="float" setter="" getter="" default="0.5">
 			Quality target to use when [member rendering/environment/ssil/quality] is set to [code]ULTRA[/code]. A value of [code]0.0[/code] provides a quality and speed similar to [code]MEDIUM[/code] while a value of [code]1.0[/code] provides much higher quality than any of the other settings at the cost of performance. When using the adaptive target, the performance cost scales with the complexity of the scene.
 		</member>
+		<member name="rendering/environment/ssil/adaptive_target.movie" type="float" setter="" getter="" default="1.0">
+		</member>
 		<member name="rendering/environment/ssil/blur_passes" type="int" setter="" getter="" default="4">
 			Number of blur passes to use when computing screen-space indirect lighting. A higher number will result in a smoother look, but will be slower to compute and will have less high-frequency detail.
+		</member>
+		<member name="rendering/environment/ssil/blur_passes.movie" type="int" setter="" getter="" default="6">
 		</member>
 		<member name="rendering/environment/ssil/fadeout_from" type="float" setter="" getter="" default="50.0">
 			Distance at which the screen-space indirect lighting effect starts to fade out. Use this hide screen-space indirect lighting at great distances.
@@ -1721,14 +1747,20 @@
 		<member name="rendering/environment/ssil/half_size" type="bool" setter="" getter="" default="true">
 			If [code]true[/code], screen-space indirect lighting will be rendered at half size and then upscaled before being added to the scene. This is significantly faster but may miss small details and may result in some objects appearing to glow at their edges.
 		</member>
+		<member name="rendering/environment/ssil/half_size.movie" type="bool" setter="" getter="" default="false">
+		</member>
 		<member name="rendering/environment/ssil/quality" type="int" setter="" getter="" default="2">
 			Sets the quality of the screen-space indirect lighting effect. Higher values take more samples and so will result in better quality, at the cost of performance. Setting to [code]ULTRA[/code] will use the [member rendering/environment/ssil/adaptive_target] setting.
+		</member>
+		<member name="rendering/environment/ssil/quality.movie" type="int" setter="" getter="" default="4">
 		</member>
 		<member name="rendering/environment/subsurface_scattering/subsurface_scattering_depth_scale" type="float" setter="" getter="" default="0.01">
 			Scales the depth over which the subsurface scattering effect is applied. A high value may allow light to scatter into a part of the mesh or another mesh that is close in screen space but far in depth.
 		</member>
 		<member name="rendering/environment/subsurface_scattering/subsurface_scattering_quality" type="int" setter="" getter="" default="1">
 			Sets the quality of the subsurface scattering effect. Higher values are slower but look nicer.
+		</member>
+		<member name="rendering/environment/subsurface_scattering/subsurface_scattering_quality.movie" type="int" setter="" getter="" default="3">
 		</member>
 		<member name="rendering/environment/subsurface_scattering/subsurface_scattering_scale" type="float" setter="" getter="" default="0.05">
 			Scales the distance over which samples are taken for subsurface scattering effect. Changing this does not impact performance, but higher values will result in significant artifacts as the samples will become obviously spread out. A lower value results in a smaller spread of scattered light.
@@ -1750,9 +1782,15 @@
 		</member>
 		<member name="rendering/global_illumination/sdfgi/frames_to_update_lights" type="int" setter="" getter="" default="2">
 		</member>
+		<member name="rendering/global_illumination/sdfgi/frames_to_update_lights.movie" type="int" setter="" getter="" default="0">
+		</member>
 		<member name="rendering/global_illumination/sdfgi/probe_ray_count" type="int" setter="" getter="" default="1">
 		</member>
+		<member name="rendering/global_illumination/sdfgi/probe_ray_count.movie" type="int" setter="" getter="" default="3">
+		</member>
 		<member name="rendering/global_illumination/voxel_gi/quality" type="int" setter="" getter="" default="0">
+		</member>
+		<member name="rendering/global_illumination/voxel_gi/quality.movie" type="int" setter="" getter="" default="1">
 		</member>
 		<member name="rendering/lightmapping/bake_performance/max_rays_per_pass" type="int" setter="" getter="" default="32">
 			The maximum number of rays that can be thrown per pass when baking lightmaps with [LightmapGI]. Depending on the scene, adjusting this value may result in higher GPU utilization when baking lightmaps, leading to faster bake times.
@@ -1835,14 +1873,20 @@
 		<member name="rendering/reflections/reflection_atlas/reflection_size.mobile" type="int" setter="" getter="" default="128">
 			Lower-end override for [member rendering/reflections/reflection_atlas/reflection_size] on mobile devices, due to performance concerns or driver support.
 		</member>
+		<member name="rendering/reflections/reflection_atlas/reflection_size.movie" type="int" setter="" getter="" default="512">
+		</member>
 		<member name="rendering/reflections/sky_reflections/fast_filter_high_quality" type="bool" setter="" getter="" default="false">
 			Use a higher quality variant of the fast filtering algorithm. Significantly slower than using default quality, but results in smoother reflections. Should only be used when the scene is especially detailed.
+		</member>
+		<member name="rendering/reflections/sky_reflections/fast_filter_high_quality.movie" type="bool" setter="" getter="" default="true">
 		</member>
 		<member name="rendering/reflections/sky_reflections/ggx_samples" type="int" setter="" getter="" default="32">
 			Sets the number of samples to take when using importance sampling for [Sky]s and [ReflectionProbe]s. A higher value will result in smoother, higher quality reflections, but increases time to calculate radiance maps. In general, fewer samples are needed for simpler, low dynamic range environments while more samples are needed for HDR environments and environments with a high level of detail.
 		</member>
 		<member name="rendering/reflections/sky_reflections/ggx_samples.mobile" type="int" setter="" getter="" default="16">
 			Lower-end override for [member rendering/reflections/sky_reflections/ggx_samples] on mobile devices, due to performance concerns or driver support.
+		</member>
+		<member name="rendering/reflections/sky_reflections/ggx_samples.movie" type="int" setter="" getter="" default="64">
 		</member>
 		<member name="rendering/reflections/sky_reflections/roughness_layers" type="int" setter="" getter="" default="8">
 			Limits the number of layers to use in radiance maps when using importance sampling. A lower number will be slightly faster and take up less VRAM.
@@ -1895,6 +1939,8 @@
 		<member name="rendering/shadows/directional_shadow/size.mobile" type="int" setter="" getter="" default="2048">
 			Lower-end override for [member rendering/shadows/directional_shadow/size] on mobile devices, due to performance concerns or driver support.
 		</member>
+		<member name="rendering/shadows/directional_shadow/size.movie" type="int" setter="" getter="" default="8192">
+		</member>
 		<member name="rendering/shadows/directional_shadow/soft_shadow_quality" type="int" setter="" getter="" default="2">
 			Quality setting for shadows cast by [DirectionalLight3D]s. Higher quality settings use more samples when reading from shadow maps and are thus slower. Low quality settings may result in shadows looking grainy.
 			[b]Note:[/b] The Soft Very Low setting will automatically multiply [i]constant[/i] shadow blur by 0.75x to reduce the amount of noise visible. This automatic blur change only affects the constant blur factor defined in [member Light3D.shadow_blur], not the variable blur performed by [DirectionalLight3D]s' [member Light3D.light_angular_distance].
@@ -1902,6 +1948,8 @@
 		</member>
 		<member name="rendering/shadows/directional_shadow/soft_shadow_quality.mobile" type="int" setter="" getter="" default="0">
 			Lower-end override for [member rendering/shadows/directional_shadow/soft_shadow_quality] on mobile devices, due to performance concerns or driver support.
+		</member>
+		<member name="rendering/shadows/directional_shadow/soft_shadow_quality.movie" type="int" setter="" getter="" default="5">
 		</member>
 		<member name="rendering/shadows/shadow_atlas/16_bits" type="bool" setter="" getter="" default="true">
 		</member>
@@ -1923,6 +1971,8 @@
 		<member name="rendering/shadows/shadow_atlas/size.mobile" type="int" setter="" getter="" default="2048">
 			Lower-end override for [member rendering/shadows/shadow_atlas/size] on mobile devices, due to performance concerns or driver support.
 		</member>
+		<member name="rendering/shadows/shadow_atlas/size.movie" type="int" setter="" getter="" default="8192">
+		</member>
 		<member name="rendering/shadows/shadows/soft_shadow_quality" type="int" setter="" getter="" default="2">
 			Quality setting for shadows cast by [OmniLight3D]s and [SpotLight3D]s. Higher quality settings use more samples when reading from shadow maps and are thus slower. Low quality settings may result in shadows looking grainy.
 			[b]Note:[/b] The Soft Very Low setting will automatically multiply [i]constant[/i] shadow blur by 0.75x to reduce the amount of noise visible. This automatic blur change only affects the constant blur factor defined in [member Light3D.shadow_blur], not the variable blur performed by [DirectionalLight3D]s' [member Light3D.light_angular_distance].
@@ -1931,17 +1981,25 @@
 		<member name="rendering/shadows/shadows/soft_shadow_quality.mobile" type="int" setter="" getter="" default="0">
 			Lower-end override for [member rendering/shadows/shadows/soft_shadow_quality] on mobile devices, due to performance concerns or driver support.
 		</member>
+		<member name="rendering/shadows/shadows/soft_shadow_quality.movie" type="int" setter="" getter="" default="5">
+		</member>
 		<member name="rendering/textures/decals/filter" type="int" setter="" getter="" default="3">
+		</member>
+		<member name="rendering/textures/decals/filter.movie" type="int" setter="" getter="" default="4">
 		</member>
 		<member name="rendering/textures/default_filters/anisotropic_filtering_level" type="int" setter="" getter="" default="2">
 			Sets the maximum number of samples to take when using anisotropic filtering on textures (as a power of two). A higher sample count will result in sharper textures at oblique angles, but is more expensive to compute. A value of [code]0[/code] forcibly disables anisotropic filtering, even on materials where it is enabled.
 			[b]Note:[/b] This property is only read when the project starts. There is currently no way to change this setting at run-time.
+		</member>
+		<member name="rendering/textures/default_filters/anisotropic_filtering_level.movie" type="int" setter="" getter="" default="4">
 		</member>
 		<member name="rendering/textures/default_filters/use_nearest_mipmap_filter" type="bool" setter="" getter="" default="false">
 			If [code]true[/code], uses nearest-neighbor mipmap filtering when using mipmaps (also called "bilinear filtering"), which will result in visible seams appearing between mipmap stages. This may increase performance in mobile as less memory bandwidth is used. If [code]false[/code], linear mipmap filtering (also called "trilinear filtering") is used.
 			[b]Note:[/b] This property is only read when the project starts. There is currently no way to change this setting at run-time.
 		</member>
 		<member name="rendering/textures/light_projectors/filter" type="int" setter="" getter="" default="3">
+		</member>
+		<member name="rendering/textures/light_projectors/filter.movie" type="int" setter="" getter="" default="4">
 		</member>
 		<member name="rendering/textures/lossless_compression/force_png" type="bool" setter="" getter="" default="false">
 			If [code]true[/code], the texture importer will import lossless textures using the PNG format. Otherwise, it will default to using WebP.

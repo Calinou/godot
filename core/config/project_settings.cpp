@@ -1189,6 +1189,7 @@ ProjectSettings::ProjectSettings() {
 	custom_prop_info["display/window/size/viewport_height"] = PropertyInfo(Variant::INT, "display/window/size/viewport_height", PROPERTY_HINT_RANGE, "0,4320,1,or_greater"); // 8K resolution
 
 	GLOBAL_DEF_BASIC("display/window/size/resizable", true);
+	GLOBAL_DEF_BASIC("display/window/size/resizable.movie", false);
 	GLOBAL_DEF_BASIC("display/window/size/borderless", false);
 	GLOBAL_DEF_BASIC("display/window/size/fullscreen", false);
 	GLOBAL_DEF("display/window/size/always_on_top", false);
