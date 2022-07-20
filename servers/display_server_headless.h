@@ -111,6 +111,8 @@ public:
 	VSyncMode window_get_vsync_mode(WindowID p_window) const override { return VSyncMode::VSYNC_ENABLED; }
 
 	bool window_is_maximize_allowed(WindowID p_window = MAIN_WINDOW_ID) const override { return false; }
+	// Return `true` to prevent out-of-focus checks from kicking in in headless mode.
+	bool window_is_focused(WindowID p_window = MAIN_WINDOW_ID) const override { return true; }
 
 	void window_set_flag(WindowFlags p_flag, bool p_enabled, WindowID p_window = MAIN_WINDOW_ID) override {}
 	bool window_get_flag(WindowFlags p_flag, WindowID p_window = MAIN_WINDOW_ID) const override { return false; }

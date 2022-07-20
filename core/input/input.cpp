@@ -832,6 +832,14 @@ bool Input::is_emulating_mouse_from_touch() const {
 	return emulate_mouse_from_touch;
 }
 
+void Input::set_receive_unfocused_joypad_inputs(bool p_receive_unfocused) {
+	receive_unfocused_joypad_inputs = p_receive_unfocused;
+}
+
+bool Input::is_receiving_unfocused_joypad_inputs() const {
+	return receive_unfocused_joypad_inputs;
+}
+
 Input::CursorShape Input::get_default_cursor_shape() const {
 	return default_shape;
 }

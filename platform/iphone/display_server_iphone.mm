@@ -545,6 +545,10 @@ bool DisplayServerIPhone::window_is_maximize_allowed(WindowID p_window) const {
 	return false;
 }
 
+bool DisplayServerIPhone::window_is_focused(WindowID p_window) const {
+	return true;
+}
+
 void DisplayServerIPhone::window_set_flag(WindowFlags p_flag, bool p_enabled, WindowID p_window) {
 	// Probably not supported for iOS
 }

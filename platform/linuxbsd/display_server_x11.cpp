@@ -1870,6 +1870,10 @@ bool DisplayServerX11::window_is_maximize_allowed(WindowID p_window) const {
 	return _window_maximize_check(p_window, "_NET_WM_ALLOWED_ACTIONS");
 }
 
+bool DisplayServerX11::window_is_focused(WindowID p_window) const {
+	return p_window == last_focused_window;
+}
+
 void DisplayServerX11::_set_wm_maximized(WindowID p_window, bool p_enabled) {
 	ERR_FAIL_COND(!windows.has(p_window));
 	WindowData &wd = windows[p_window];

@@ -1012,6 +1012,10 @@ bool DisplayServerJavaScript::window_is_maximize_allowed(WindowID p_window) cons
 	return false;
 }
 
+bool DisplayServerJavaScript::window_is_focused(WindowID p_window) const {
+	return true;
+}
+
 void DisplayServerJavaScript::window_set_flag(WindowFlags p_flag, bool p_enabled, WindowID p_window) {
 	// Not supported.
 }

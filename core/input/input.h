@@ -109,6 +109,7 @@ private:
 
 	bool emulate_touch_from_mouse = false;
 	bool emulate_mouse_from_touch = false;
+	bool receive_unfocused_joypad_inputs = true;
 	bool use_input_buffering = false;
 	bool use_accumulated_input = true;
 
@@ -303,6 +304,9 @@ public:
 
 	void set_emulate_mouse_from_touch(bool p_emulate);
 	bool is_emulating_mouse_from_touch() const;
+
+	void set_receive_unfocused_joypad_inputs(bool p_receive_unfocused);
+	bool is_receiving_unfocused_joypad_inputs() const;
 
 	CursorShape get_default_cursor_shape() const;
 	void set_default_cursor_shape(CursorShape p_shape);

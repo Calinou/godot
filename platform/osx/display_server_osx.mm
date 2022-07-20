@@ -2329,6 +2329,10 @@ bool DisplayServerOSX::window_is_maximize_allowed(WindowID p_window) const {
 	return true;
 }
 
+bool DisplayServerOSX::window_is_focused(WindowID p_window) const {
+	return p_window == last_focused_window;
+}
+
 void DisplayServerOSX::window_set_flag(WindowFlags p_flag, bool p_enabled, WindowID p_window) {
 	_THREAD_SAFE_METHOD_
 

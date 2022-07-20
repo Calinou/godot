@@ -390,6 +390,7 @@ public:
 	virtual WindowMode window_get_mode(WindowID p_window = MAIN_WINDOW_ID) const override;
 
 	virtual bool window_is_maximize_allowed(WindowID p_window = MAIN_WINDOW_ID) const override;
+	virtual bool window_is_focused(WindowID p_window = MAIN_WINDOW_ID) const override;
 
 	virtual void window_set_flag(WindowFlags p_flag, bool p_enabled, WindowID p_window = MAIN_WINDOW_ID) override;
 	virtual bool window_get_flag(WindowFlags p_flag, WindowID p_window = MAIN_WINDOW_ID) const override;

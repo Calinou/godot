@@ -399,6 +399,10 @@ bool DisplayServerAndroid::window_is_maximize_allowed(DisplayServer::WindowID p_
 	return false;
 }
 
+bool DisplayServerAndroid::window_is_focused(DisplayServer::WindowID p_window) const {
+	return true;
+}
+
 void DisplayServerAndroid::window_set_flag(DisplayServer::WindowFlags p_flag, bool p_enabled, DisplayServer::WindowID p_window) {
 	// Not supported on Android.
 }

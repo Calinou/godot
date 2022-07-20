@@ -30,9 +30,11 @@
 
 #include "input_event.h"
 
+#include "core/input/input.h"
 #include "core/input/input_map.h"
 #include "core/input/shortcut.h"
 #include "core/os/keyboard.h"
+#include "servers/display_server.h"
 
 const int InputEvent::DEVICE_ID_TOUCH_MOUSE = -1;
 const int InputEvent::DEVICE_ID_INTERNAL = -2;
@@ -911,6 +913,10 @@ bool InputEventJoypadMotion::is_pressed() const {
 }
 
 bool InputEventJoypadMotion::action_match(const Ref<InputEvent> &p_event, bool p_exact_match, float p_deadzone, bool *r_pressed, float *r_strength, float *r_raw_strength) const {
+	if (!Input::get_singleton()->is_receiving_unfocused_joypad_inputs() && !DisplayServer::get_singleton()->window_is_focused()) {
+		return false;
+	}
+
 	Ref<InputEventJoypadMotion> jm = p_event;
 	if (jm.is_null()) {
 		return false;
@@ -1022,6 +1028,10 @@ float InputEventJoypadButton::get_pressure() const {
 }
 
 bool InputEventJoypadButton::action_match(const Ref<InputEvent> &p_event, bool p_exact_match, float p_deadzone, bool *r_pressed, float *r_strength, float *r_raw_strength) const {
+	if (!Input::get_singleton()->is_receiving_unfocused_joypad_inputs() && !DisplayServer::get_singleton()->window_is_focused()) {
+		return false;
+	}
+
 	Ref<InputEventJoypadButton> jb = p_event;
 	if (jb.is_null()) {
 		return false;
