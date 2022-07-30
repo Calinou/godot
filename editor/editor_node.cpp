@@ -534,6 +534,7 @@ void EditorNode::_update_from_settings() {
 
 	RS::get_singleton()->decals_set_filter(RS::DecalFilter(int(GLOBAL_GET("rendering/textures/decals/filter"))));
 	RS::get_singleton()->light_projectors_set_filter(RS::LightProjectorFilter(int(GLOBAL_GET("rendering/textures/light_projectors/filter"))));
+	RS::get_singleton()->base_material_3d_set_default_filter(RS::MaterialFilter(int(GLOBAL_GET("rendering/textures/default_filters/base_material_3d_filter"))));
 
 	SceneTree *tree = get_tree();
 	tree->set_debug_collisions_color(GLOBAL_GET("debug/shapes/collision/shape_color"));

@@ -179,6 +179,7 @@ private:
 	int soft_shadow_samples = 0;
 	RS::DecalFilter decals_filter = RS::DECAL_FILTER_LINEAR_MIPMAPS;
 	RS::LightProjectorFilter light_projectors_filter = RS::LIGHT_PROJECTOR_FILTER_LINEAR_MIPMAPS;
+	RS::MaterialFilter base_material_3d_default_filter = RS::MATERIAL_FILTER_LINEAR_MIPMAPS;
 
 	/* RENDER BUFFERS */
 
@@ -303,6 +304,7 @@ public:
 
 	virtual void decals_set_filter(RS::DecalFilter p_filter) override;
 	virtual void light_projectors_set_filter(RS::LightProjectorFilter p_filter) override;
+	virtual void base_material_3d_set_default_filter(RS::MaterialFilter p_filter) override;
 
 	_FORCE_INLINE_ RS::ShadowQuality shadows_quality_get() const {
 		return shadows_quality;

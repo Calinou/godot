@@ -854,6 +854,13 @@ void RendererSceneRenderRD::light_projectors_set_filter(RenderingServer::LightPr
 	_update_shader_quality_settings();
 }
 
+void RendererSceneRenderRD::base_material_3d_set_default_filter(RenderingServer::MaterialFilter p_filter) {
+	if (base_material_3d_default_filter == p_filter) {
+		return;
+	}
+	base_material_3d_default_filter = p_filter;
+}
+
 int RendererSceneRenderRD::get_roughness_layers() const {
 	return sky.roughness_layers;
 }
@@ -1281,6 +1288,8 @@ void RendererSceneRenderRD::init() {
 
 	decals_set_filter(RS::DecalFilter(int(GLOBAL_GET("rendering/textures/decals/filter"))));
 	light_projectors_set_filter(RS::LightProjectorFilter(int(GLOBAL_GET("rendering/textures/light_projectors/filter"))));
+	print_line("renderer_scene_render_rd.cpp: Setting default filter");
+	base_material_3d_set_default_filter(RS::MaterialFilter(int(GLOBAL_GET("rendering/textures/default_filters/base_material_3d_filter"))));
 
 	cull_argument.set_page_pool(&cull_argument_pool);
 
