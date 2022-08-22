@@ -1416,6 +1416,15 @@ void ResourceImporterScene::get_internal_import_options(InternalImportCategory p
 			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "physics/body_type", PROPERTY_HINT_ENUM, "Static,Dynamic,Area"), 0));
 			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "physics/shape_type", PROPERTY_HINT_ENUM, "Decompose Convex,Simple Convex,Trimesh,Box,Sphere,Cylinder,Capsule", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), 0));
 
+			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "geometry/cast_shadow", PROPERTY_HINT_ENUM, "Off,On,Double-Sided,Shadows Only"), GeometryInstance3D::SHADOW_CASTING_SETTING_ON));
+			r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "lods/lod_bias", PROPERTY_HINT_RANGE, "0.001,128,0.001"), 1.0f));
+
+			r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "visibility_range/begin", PROPERTY_HINT_RANGE, "0.0,4096.0,0.01,or_greater;suffix:m"), 0.0f));
+			r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "visibility_range/begin_margin", PROPERTY_HINT_RANGE, "0.0,4096.0,0.01,or_greater;suffix:m"), 0.0f));
+			r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "visibility_range/end", PROPERTY_HINT_RANGE, "0.0,4096.0,0.01,or_greater;suffix:m"), 0.0f));
+			r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "visibility_range/end_margin", PROPERTY_HINT_RANGE, "0.0,4096.0,0.01,or_greater;suffix:m"), 0.0f));
+			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "visibility_range/fade_mode", PROPERTY_HINT_ENUM, "Disabled,Self,Dependencies"), GeometryInstance3D::VISIBILITY_RANGE_FADE_DISABLED));
+
 			// Decomposition
 			Mesh::ConvexDecompositionSettings decomposition_default;
 			r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "decomposition/advanced", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
@@ -1720,6 +1729,7 @@ void ResourceImporterScene::_generate_meshes(Node *p_node, const Dictionary &p_m
 		mesh_node->set_transform(src_mesh_node->get_transform());
 		mesh_node->set_skin(src_mesh_node->get_skin());
 		mesh_node->set_skeleton_path(src_mesh_node->get_skeleton_path());
+
 		if (src_mesh_node->get_mesh().is_valid()) {
 			Ref<ArrayMesh> mesh;
 			if (!src_mesh_node->get_mesh()->has_mesh()) {
@@ -1728,6 +1738,15 @@ void ResourceImporterScene::_generate_meshes(Node *p_node, const Dictionary &p_m
 				bool generate_lods = p_generate_lods;
 				float split_angle = 25.0f;
 				float merge_angle = 60.0f;
+
+				GeometryInstance3D::ShadowCastingSetting cast_shadow = GeometryInstance3D::SHADOW_CASTING_SETTING_ON;
+				float lod_bias = 1.0f;
+				float visibility_range_begin = 0.0f;
+				float visibility_range_end = 0.0f;
+				float visibility_range_begin_margin = 0.0f;
+				float visibility_range_end_margin = 0.0f;
+				GeometryInstance3D::VisibilityRangeFadeMode visibility_range_fade_mode = GeometryInstance3D::VISIBILITY_RANGE_FADE_DISABLED;
+
 				bool create_shadow_meshes = p_create_shadow_meshes;
 				bool bake_lightmaps = p_light_bake_mode == LIGHT_BAKE_STATIC_LIGHTMAPS;
 				String save_to_file;
@@ -1782,6 +1801,35 @@ void ResourceImporterScene::_generate_meshes(Node *p_node, const Dictionary &p_m
 						merge_angle = mesh_settings["lods/normal_merge_angle"];
 					}
 
+					if (mesh_settings.has("lods/lod_bias")) {
+						lod_bias = mesh_settings["lods/lod_bias"];
+					}
+
+					if (mesh_settings.has("geometry/cast_shadow")) {
+						cast_shadow = GeometryInstance3D::ShadowCastingSetting(int(mesh_settings["geometry/cast_shadow"]));
+						print_line("has custom cast shadow: " + itos(cast_shadow));
+					}
+
+					if (mesh_settings.has("visibility_range/begin")) {
+						visibility_range_begin = mesh_settings["visibility_range/begin"];
+					}
+
+					if (mesh_settings.has("visibility_range/begin_margin")) {
+						visibility_range_begin_margin = mesh_settings["visibility_range/begin_margin"];
+					}
+
+					if (mesh_settings.has("visibility_range/end")) {
+						visibility_range_end = mesh_settings["visibility_range/end"];
+					}
+
+					if (mesh_settings.has("visibility_range/end_margin")) {
+						visibility_range_end_margin = mesh_settings["visibility_range/end_margin"];
+					}
+
+					if (mesh_settings.has("visibility_range/fade_mode")) {
+						visibility_range_fade_mode = GeometryInstance3D::VisibilityRangeFadeMode(int(mesh_settings["visibility_range/fade_mode"]));
+					}
+
 					if (mesh_settings.has("save_to_file/enabled") && bool(mesh_settings["save_to_file/enabled"]) && mesh_settings.has("save_to_file/path")) {
 						save_to_file = mesh_settings["save_to_file/path"];
 						if (!save_to_file.is_resource_file()) {
@@ -1833,6 +1881,15 @@ void ResourceImporterScene::_generate_meshes(Node *p_node, const Dictionary &p_m
 				if (create_shadow_meshes) {
 					src_mesh_node->get_mesh()->create_shadow_mesh();
 				}
+
+				mesh_node->set_cast_shadows_setting(cast_shadow);
+				mesh_node->set_lod_bias(lod_bias);
+				mesh_node->set_visibility_range_begin(visibility_range_begin);
+				mesh_node->set_visibility_range_begin_margin(visibility_range_begin_margin);
+				mesh_node->set_visibility_range_end(visibility_range_end);
+				mesh_node->set_visibility_range_end_margin(visibility_range_end_margin);
+				mesh_node->set_visibility_range_fade_mode(visibility_range_fade_mode);
+				print_line("cast shadow: " + itos(cast_shadow));
 
 				if (!save_to_file.is_empty()) {
 					Ref<Mesh> existing = ResourceCache::get_ref(save_to_file);
