@@ -1030,12 +1030,13 @@ public:
 		Vector3 camera_position;
 		uint32_t cull_offset;
 		uint32_t cull_count;
+		float range_factor = 1.0;
 	};
 
 	void _visibility_cull_threaded(uint32_t p_thread, VisibilityCullData *cull_data);
 	void _visibility_cull(const VisibilityCullData &cull_data, uint64_t p_from, uint64_t p_to);
 	template <bool p_fade_check>
-	_FORCE_INLINE_ int _visibility_range_check(InstanceVisibilityData &r_vis_data, const Vector3 &p_camera_pos, uint64_t p_viewport_mask);
+	_FORCE_INLINE_ int _visibility_range_check(InstanceVisibilityData &r_vis_data, const Vector3 &p_camera_pos, uint64_t p_viewport_mask, float p_range_factor);
 
 	struct CullData {
 		Cull *cull = nullptr;

@@ -2549,7 +2549,7 @@ void RendererSceneCull::_visibility_cull(const VisibilityCullData &cull_data, ui
 			}
 		}
 
-		int range_check = _visibility_range_check<true>(vd, cull_data.camera_position, cull_data.viewport_mask);
+		int range_check = _visibility_range_check<true>(vd, cull_data.camera_position, cull_data.viewport_mask, cull_data.range_factor);
 
 		if (range_check == -1) {
 			idata.flags |= InstanceData::FLAG_VISIBILITY_DEPENDENCY_HIDDEN;
@@ -2572,8 +2572,8 @@ void RendererSceneCull::_visibility_cull(const VisibilityCullData &cull_data, ui
 }
 
 template <bool p_fade_check>
-int RendererSceneCull::_visibility_range_check(InstanceVisibilityData &r_vis_data, const Vector3 &p_camera_pos, uint64_t p_viewport_mask) {
-	float dist = p_camera_pos.distance_to(r_vis_data.position);
+int RendererSceneCull::_visibility_range_check(InstanceVisibilityData &r_vis_data, const Vector3 &p_camera_pos, uint64_t p_viewport_mask, float p_range_factor) {
+	const float dist = p_camera_pos.distance_to(r_vis_data.position) * p_range_factor;
 	const RS::VisibilityRangeFadeMode &fade_mode = r_vis_data.fade_mode;
 
 	float begin_offset = -r_vis_data.range_begin_margin;
@@ -2629,6 +2629,9 @@ void RendererSceneCull::_scene_cull_threaded(uint32_t p_thread, CullData *cull_d
 	_scene_cull(*cull_data, scene_cull_result_threads[p_thread], cull_from, cull_to);
 }
 
+// TODO: Move this to a project setting.
+static constexpr float CAMERA_BASE_FOV = 75.0;
+
 void RendererSceneCull::_scene_cull(CullData &cull_data, InstanceCullResult &cull_result, uint64_t p_from, uint64_t p_to) {
 	uint64_t frame_number = RSG::rasterizer->get_frame_number();
 	float lightmap_probe_update_speed = RSG::light_storage->lightmap_get_probe_capture_update_speed() * RSG::rasterizer->get_frame_delta_time();
@@ -2651,7 +2654,7 @@ void RendererSceneCull::_scene_cull(CullData &cull_data, InstanceCullResult &cul
 #define HIDDEN_BY_VISIBILITY_CHECKS (visibility_flags == InstanceData::FLAG_VISIBILITY_DEPENDENCY_HIDDEN_CLOSE_RANGE || visibility_flags == InstanceData::FLAG_VISIBILITY_DEPENDENCY_HIDDEN)
 #define LAYER_CHECK (cull_data.visible_layers & idata.layer_mask)
 #define IN_FRUSTUM(f) (cull_data.scenario->instance_aabbs[i].in_frustum(f))
-#define VIS_RANGE_CHECK ((idata.visibility_index == -1) || _visibility_range_check<false>(cull_data.scenario->instance_visibility[idata.visibility_index], cull_data.cam_transform.origin, cull_data.visibility_viewport_mask) == 0)
+#define VIS_RANGE_CHECK ((idata.visibility_index == -1) || _visibility_range_check<false>(cull_data.scenario->instance_visibility[idata.visibility_index], cull_data.cam_transform.origin, cull_data.visibility_viewport_mask, cull_data.camera_matrix->get_fov() / CAMERA_BASE_FOV) == 0)
 #define VIS_PARENT_CHECK (_visibility_parent_check(cull_data, idata))
 #define VIS_CHECK (visibility_check < 0 ? (visibility_check = (visibility_flags != InstanceData::FLAG_VISIBILITY_DEPENDENCY_NEEDS_CHECK || (VIS_RANGE_CHECK && VIS_PARENT_CHECK))) : visibility_check)
 #define OCCLUSION_CULLED (cull_data.occlusion_buffer != nullptr && (cull_data.scenario->instance_data[i].flags & InstanceData::FLAG_IGNORE_OCCLUSION_CULLING) == 0 && cull_data.occlusion_buffer->is_occluded(cull_data.scenario->instance_aabbs[i].bounds, cull_data.cam_transform.origin, inv_cam_transform, *cull_data.camera_matrix, z_near))
@@ -2909,6 +2912,8 @@ void RendererSceneCull::_render_scene(const RendererSceneRender::CameraData *p_c
 		visibility_cull_data.scenario = scenario;
 		visibility_cull_data.viewport_mask = scenario->viewport_visibility_masks[p_viewport];
 		visibility_cull_data.camera_position = p_camera_data->main_transform.origin;
+
+		visibility_cull_data.range_factor = p_camera_data->main_projection.get_fov() / CAMERA_BASE_FOV;
 
 		for (int i = scenario->instance_visibility.get_bin_count() - 1; i > 0; i--) { // We skip bin 0
 			visibility_cull_data.cull_offset = scenario->instance_visibility.get_bin_start(i);
