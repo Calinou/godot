@@ -885,6 +885,10 @@ void BaseMaterial3D::_update_shader() {
 		code += "varying vec3 uv2_power_normal;\n";
 	}
 
+	if (distance_fade == DISTANCE_FADE_OBJECT_DITHER || distance_fade == DISTANCE_FADE_PIXEL_DITHER) {
+		code += "varying float instance_id;\n";
+	}
+
 	code += "uniform vec3 uv1_scale;\n";
 	code += "uniform vec3 uv1_offset;\n";
 	code += "uniform vec3 uv2_scale;\n";
@@ -893,6 +897,13 @@ void BaseMaterial3D::_update_shader() {
 	code += "\n\n";
 
 	code += "void vertex() {\n";
+
+	if (distance_fade == DISTANCE_FADE_OBJECT_DITHER || distance_fade == DISTANCE_FADE_PIXEL_DITHER) {
+		// Pass instance ID to the `fragment()` function for per-object dither pattern offset.
+		// TODO: Use `fmod()` to prevent the value from being too large and causing floating-point precision issues,
+		// especially on mobile.
+		code += "	instance_id = float(INSTANCE_ID);\n";
+	}
 
 	if (flags[FLAG_SRGB_VERTEX_COLOR]) {
 		code += "	if (!OUTPUT_IS_SRGB) {\n";
@@ -1287,7 +1298,7 @@ void BaseMaterial3D::_update_shader() {
 				code += "		const vec3 magic = vec3(0.06711056f, 0.00583715f, 52.9829189f);";
 				code += "		float fade = clamp(smoothstep(distance_fade_min, distance_fade_max, fade_distance), 0.0, 1.0);\n";
 				// Use a hard cap to prevent a few stray pixels from remaining when past the fade-out distance.
-				code += "		if (fade < 0.001 || fade < fract(magic.z * fract(dot(FRAGCOORD.xy, magic.xy)))) {\n";
+				code += "		if (fade < 0.001 || fade < fract(magic.z * fract(dot(FRAGCOORD.xy + instance_id, magic.xy)))) {\n";
 				code += "			discard;\n";
 				code += "		}\n";
 
