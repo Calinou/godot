@@ -138,6 +138,9 @@ public:
 	void environment_set_volumetric_fog_volume_size(int p_size, int p_depth) override {}
 	void environment_set_volumetric_fog_filter_active(bool p_enable) override {}
 
+	void environment_set_allow_glow(bool p_enable) override {};
+	bool environment_is_glow_allowed() const override { return true; };
+
 	Ref<Image> environment_bake_panorama(RID p_env, bool p_bake_irradiance, const Size2i &p_size) override { return Ref<Image>(); }
 
 	void positional_soft_shadow_filter_set_quality(RS::ShadowQuality p_quality) override {}

@@ -1242,6 +1242,9 @@ public:
 	PASS1RC(bool, environment_get_use_1d_color_correction, RID)
 	PASS1RC(RID, environment_get_color_correction, RID)
 
+	PASS1(environment_set_allow_glow, bool)
+	PASS0R(bool, environment_is_glow_allowed)
+
 	PASS3R(Ref<Image>, environment_bake_panorama, RID, bool, const Size2i &)
 
 	PASS3(screen_space_roughness_limiter_set_active, bool, float, float)

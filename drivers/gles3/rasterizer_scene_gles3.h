@@ -520,6 +520,8 @@ protected:
 	bool glow_high_quality = false;
 	RS::EnvironmentSSRRoughnessQuality ssr_roughness_quality = RS::ENV_SSR_ROUGHNESS_QUALITY_LOW;
 
+	bool glow_allowed = true;
+
 	/* Sky */
 
 	struct SkyGlobals {
@@ -655,6 +657,9 @@ public:
 
 	void environment_set_volumetric_fog_volume_size(int p_size, int p_depth) override;
 	void environment_set_volumetric_fog_filter_active(bool p_enable) override;
+
+	void environment_set_allow_glow(bool p_enable) override;
+	bool environment_is_glow_allowed() const override;
 
 	Ref<Image> environment_bake_panorama(RID p_env, bool p_bake_irradiance, const Size2i &p_size) override;
 

@@ -401,6 +401,8 @@ private:
 
 	bool use_physical_light_units = false;
 
+	bool glow_allowed = true;
+
 	/* Cluster builder */
 
 	ClusterBuilderSharedDataRD cluster_builder_shared;

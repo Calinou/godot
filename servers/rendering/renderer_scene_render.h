@@ -43,6 +43,8 @@ class RendererSceneRender {
 private:
 	RendererEnvironmentStorage environment_storage;
 
+	bool glow_allowed = true;
+
 public:
 	enum {
 		MAX_DIRECTIONAL_LIGHTS = 8,
@@ -234,6 +236,9 @@ public:
 	float environment_get_adjustments_saturation(RID p_env) const;
 	bool environment_get_use_1d_color_correction(RID p_env) const;
 	RID environment_get_color_correction(RID p_env) const;
+
+	virtual void environment_set_allow_glow(bool p_enable);
+	virtual bool environment_is_glow_allowed() const;
 
 	virtual Ref<Image> environment_bake_panorama(RID p_env, bool p_bake_irradiance, const Size2i &p_size) = 0;
 

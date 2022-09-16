@@ -413,7 +413,7 @@ void RendererSceneRender::environment_set_glow(RID p_env, bool p_enable, Vector<
 }
 
 bool RendererSceneRender::environment_get_glow_enabled(RID p_env) const {
-	return environment_storage.environment_get_glow_enabled(p_env);
+	return glow_allowed && environment_storage.environment_get_glow_enabled(p_env);
 }
 
 Vector<float> RendererSceneRender::environment_get_glow_levels(RID p_env) const {
@@ -628,4 +628,14 @@ bool RendererSceneRender::environment_get_use_1d_color_correction(RID p_env) con
 
 RID RendererSceneRender::environment_get_color_correction(RID p_env) const {
 	return environment_storage.environment_get_color_correction(p_env);
+}
+
+void RendererSceneRender::environment_set_allow_glow(bool p_enable) {
+	if (glow_allowed != p_enable) {
+		glow_allowed = p_enable;
+	}
+}
+
+bool RendererSceneRender::environment_is_glow_allowed() const {
+	return glow_allowed;
 }
