@@ -1105,6 +1105,25 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	default_style = make_flat_stylebox(Color(1, 0.365, 0.365), 4, 4, 4, 4, 0, false, 2);
 }
 
+Ref<SystemFont> load_system_font(const PackedStringArray &p_names, TextServer::Hinting p_hinting, TextServer::FontAntialiasing p_aa, bool p_autohint, TextServer::SubpixelPositioning p_subpixel_positioning, bool p_msdf, bool p_generate_mipmaps, TypedArray<Font> *r_fallbacks) {
+	Ref<SystemFont> font;
+	font.instantiate();
+
+	font->set_font_names(p_names);
+	font->set_multichannel_signed_distance_field(p_msdf);
+	font->set_antialiasing(p_aa);
+	font->set_hinting(p_hinting);
+	font->set_force_autohinter(p_autohint);
+	font->set_subpixel_positioning(p_subpixel_positioning);
+	font->set_generate_mipmaps(p_generate_mipmaps);
+
+	if (r_fallbacks != nullptr) {
+		r_fallbacks->push_back(font);
+	}
+
+	return font;
+}
+
 void make_default_theme(float p_scale, Ref<Font> p_font, TextServer::SubpixelPositioning p_font_subpixel, TextServer::Hinting p_font_hinting, TextServer::FontAntialiasing p_font_antialiasing, bool p_font_msdf, bool p_font_generate_mipmaps) {
 	Ref<Theme> t;
 	t.instantiate();
@@ -1132,6 +1151,29 @@ void make_default_theme(float p_scale, Ref<Font> p_font, TextServer::SubpixelPos
 		dynamic_font->set_antialiasing(p_font_antialiasing);
 		dynamic_font->set_multichannel_signed_distance_field(p_font_msdf);
 		dynamic_font->set_generate_mipmaps(p_font_generate_mipmaps);
+
+		TypedArray<Font> fallbacks;
+		if (OS::get_singleton()->has_feature("system_fonts")) {
+			// Load system sans serif font, for characters not present in the default project font. This usually covers more languages compared to the default project font.
+			PackedStringArray sans_serif_font_names;
+			sans_serif_font_names.push_back("sans-serif");
+			Ref<SystemFont> sans_serif_font = load_system_font(sans_serif_font_names, p_font_hinting, p_font_antialiasing, true, p_font_subpixel, p_font_msdf, p_font_generate_mipmaps);
+			fallbacks.push_back(sans_serif_font);
+
+			// Load system emoji font to be used after the system sans serif font.
+			PackedStringArray emoji_font_names;
+			emoji_font_names.push_back("Apple Color Emoji");
+			emoji_font_names.push_back("Segoe UI Emoji");
+			emoji_font_names.push_back("Noto Color Emoji");
+			emoji_font_names.push_back("Twitter Color Emoji");
+			emoji_font_names.push_back("OpenMoji");
+			emoji_font_names.push_back("EmojiOne Color");
+			// Don't use MSDF for emoji fonts, as these contain colors which can't be rendered by MSDF.
+			<SystemFont> emoji_font = load_system_font(emoji_font_names, p_font_hinting, p_font_antialiasing, true, p_font_subpixel, false, p_font_generate_mipmaps);
+			fallbacks.push_back(emoji_font);
+		}
+
+		dynamic_font->set_fallbacks(fallbacks);
 
 		default_font = dynamic_font;
 	}

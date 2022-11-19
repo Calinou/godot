@@ -57,24 +57,6 @@ Ref<FontFile> load_external_font(const String &p_path, TextServer::Hinting p_hin
 	return font;
 }
 
-Ref<SystemFont> load_system_font(const PackedStringArray &p_names, TextServer::Hinting p_hinting, TextServer::FontAntialiasing p_aa, bool p_autohint, TextServer::SubpixelPositioning p_font_subpixel_positioning, bool p_msdf = false, TypedArray<Font> *r_fallbacks = nullptr) {
-	Ref<SystemFont> font;
-	font.instantiate();
-
-	font->set_font_names(p_names);
-	font->set_multichannel_signed_distance_field(p_msdf);
-	font->set_antialiasing(p_aa);
-	font->set_hinting(p_hinting);
-	font->set_force_autohinter(p_autohint);
-	font->set_subpixel_positioning(p_font_subpixel_positioning);
-
-	if (r_fallbacks != nullptr) {
-		r_fallbacks->push_back(font);
-	}
-
-	return font;
-}
-
 Ref<FontFile> load_internal_font(const uint8_t *p_data, size_t p_size, TextServer::Hinting p_hinting, TextServer::FontAntialiasing p_aa, bool p_autohint, TextServer::SubpixelPositioning p_font_subpixel_positioning, bool p_msdf = false, TypedArray<Font> *r_fallbacks = nullptr) {
 	Ref<FontFile> font;
 	font.instantiate();
@@ -193,7 +175,7 @@ void editor_register_fonts(Ref<Theme> p_theme) {
 		emoji_font_names.push_back("Twitter Color Emoji");
 		emoji_font_names.push_back("OpenMoji");
 		emoji_font_names.push_back("EmojiOne Color");
-		Ref<SystemFont> emoji_font = load_system_font(emoji_font_names, font_hinting, font_antialiasing, true, font_subpixel_positioning, false);
+		Ref<SystemFont> emoji_font = load_system_font(emoji_font_names, font_hinting, font_antialiasing, true, font_subpixel_positioning, false, false);
 		fallbacks.push_back(emoji_font);
 		fallbacks_bold.push_back(emoji_font);
 	}
