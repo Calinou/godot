@@ -184,7 +184,7 @@ def get_opts():
             "MSVC version to use. Ignored if VCINSTALLDIR is set in shell env.",
             None,
         ),
-        ("DXC_PATH", "Path to the DirectX Shader Compiler distribution (required for D3D12)", ""),
+        ("DXC_PATH", "Path to the DirectX Shader Compiler distribution (required for D3D12)", "../../platform/windows/dxc"),
         ("PIX_PATH", "Path to the PIX runtime distribution (optional for D3D12)", ""),
         BoolVariable("use_mingw", "Use the Mingw compiler, even if MSVC is installed.", False),
         BoolVariable("use_llvm", "Use the LLVM compiler", False),
