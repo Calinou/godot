@@ -606,6 +606,8 @@ private:
 	real_t depth = 0.05;
 	real_t pixel_size = 0.01;
 	real_t curve_step = 0.5;
+	real_t bevel_width = 0.0;
+	real_t bevel_depth = 0.0;
 
 	mutable bool dirty_lines = true;
 	mutable bool dirty_text = true;
@@ -669,6 +671,12 @@ public:
 
 	void set_depth(real_t p_depth);
 	real_t get_depth() const;
+
+	void set_bevel_width(real_t p_bevel_width);
+	real_t get_bevel_width() const;
+
+	void set_bevel_depth(real_t p_bevel_depth);
+	real_t get_bevel_depth() const;
 
 	void set_curve_step(real_t p_step);
 	real_t get_curve_step() const;

@@ -3091,7 +3091,8 @@ void TextMesh::_create_mesh_array(Array &p_arr) const {
 		offset.x += lbl_offset.x * pixel_size;
 		offset.y -= TS->shaped_text_get_ascent(lines_rid[i]) * pixel_size;
 
-		bool has_depth = !Math::is_zero_approx(depth);
+		const bool has_depth = !Math::is_zero_approx(depth);
+		const bool has_bevel = !Math::is_zero_approx(bevel_width);
 
 		// Generate glyph data, precalculate size of the arrays and mesh bounds for UV.
 		for (int j = 0; j < gl_size; j++) {
@@ -3144,6 +3145,63 @@ void TextMesh::_create_mesh_array(Array &p_arr) const {
 					}
 					// Add sides.
 					if (has_depth) {
+#if 0
+						if (has_bevel) {
+							for (int k = 0; k < gl_data.contours.size(); k++) {
+								int64_t ps = gl_data.contours[k].size();
+								const ContourPoint *ps_ptr = gl_data.contours[k].ptr();
+								const ContourInfo &ps_info = gl_data.contours_info[k];
+								real_t length = 0.0;
+								for (int l = 0; l < ps; l++) {
+									int prev = (l == 0) ? (ps - 1) : (l - 1);
+									int next = (l + 1 == ps) ? 0 : (l + 1);
+									Vector2 d1;
+									Vector2 d2 = (ps_ptr[next].point - ps_ptr[l].point).normalized();
+									if (ps_ptr[l].sharp) {
+										d1 = d2;
+									} else {
+										d1 = (ps_ptr[l].point - ps_ptr[prev].point).normalized();
+									}
+									real_t seg_len = (ps_ptr[next].point - ps_ptr[l].point).length();
+
+									Vector3 quad_faces[4] = {
+										Vector3(ps_ptr[l].point.x + offset.x, -ps_ptr[l].point.y + offset.y, depth / 2.0 - bevel_depth) + Vector3(d1.y, d1.x, 0.0) * bevel_width,
+										Vector3(ps_ptr[next].point.x + offset.x, -ps_ptr[next].point.y + offset.y, depth / 2.0 - bevel_depth) + Vector3(d2.y, d2.x, 0.0) * bevel_width,
+										Vector3(ps_ptr[l].point.x + offset.x, -ps_ptr[l].point.y + offset.y, depth / 2.0),
+										Vector3(ps_ptr[next].point.x + offset.x, -ps_ptr[next].point.y + offset.y, depth / 2.0),
+									};
+
+									for (int m = 0; m < 4; m++) {
+										const Vector2 &d = ((m % 2) == 0) ? d1 : d2;
+										real_t u_pos = ((m % 2) == 0) ? length : length + seg_len;
+										vertices_ptr[p_idx + m] = quad_faces[m];
+										normals_ptr[p_idx + m] = Vector3(d.y, d.x, 0.0);
+										if (m < 2) {
+											uvs_ptr[p_idx + m] = Vector2(Math::remap(u_pos, 0, ps_info.length, real_t(0.0), real_t(1.0)), (ps_info.ccw) ? 0.8 : 0.9);
+										} else {
+											uvs_ptr[p_idx + m] = Vector2(Math::remap(u_pos, 0, ps_info.length, real_t(0.0), real_t(1.0)), (ps_info.ccw) ? 0.9 : 1.0);
+										}
+										tangents_ptr[(p_idx + m) * 4 + 0] = d.x;
+										tangents_ptr[(p_idx + m) * 4 + 1] = -d.y;
+										tangents_ptr[(p_idx + m) * 4 + 2] = 0.0;
+										tangents_ptr[(p_idx + m) * 4 + 3] = 1.0;
+									}
+
+									indices_ptr[i_idx++] = p_idx;
+									indices_ptr[i_idx++] = p_idx + 1;
+									indices_ptr[i_idx++] = p_idx + 2;
+
+									indices_ptr[i_idx++] = p_idx + 1;
+									indices_ptr[i_idx++] = p_idx + 3;
+									indices_ptr[i_idx++] = p_idx + 2;
+
+									length += seg_len;
+									p_idx += 4;
+								}
+							}
+						}
+#endif
+
 						for (int k = 0; k < gl_data.contours.size(); k++) {
 							int64_t ps = gl_data.contours[k].size();
 							const ContourPoint *ps_ptr = gl_data.contours[k].ptr();
@@ -3164,13 +3222,17 @@ void TextMesh::_create_mesh_array(Array &p_arr) const {
 								Vector3 quad_faces[4] = {
 									Vector3(ps_ptr[l].point.x + offset.x, -ps_ptr[l].point.y + offset.y, -depth / 2.0),
 									Vector3(ps_ptr[next].point.x + offset.x, -ps_ptr[next].point.y + offset.y, -depth / 2.0),
-									Vector3(ps_ptr[l].point.x + offset.x, -ps_ptr[l].point.y + offset.y, depth / 2.0),
-									Vector3(ps_ptr[next].point.x + offset.x, -ps_ptr[next].point.y + offset.y, depth / 2.0),
+									Vector3(ps_ptr[l].point.x + offset.x, -ps_ptr[l].point.y + offset.y, depth / 2.0 - bevel_depth),
+									Vector3(ps_ptr[next].point.x + offset.x, -ps_ptr[next].point.y + offset.y, depth / 2.0 - bevel_depth),
 								};
+
 								for (int m = 0; m < 4; m++) {
 									const Vector2 &d = ((m % 2) == 0) ? d1 : d2;
 									real_t u_pos = ((m % 2) == 0) ? length : length + seg_len;
 									vertices_ptr[p_idx + m] = quad_faces[m];
+									if (has_bevel) {
+										vertices_ptr[p_idx + m] = quad_faces[m];
+									}
 									normals_ptr[p_idx + m] = Vector3(d.y, d.x, 0.0);
 									if (m < 2) {
 										uvs_ptr[p_idx + m] = Vector2(Math::remap(u_pos, 0, ps_info.length, real_t(0.0), real_t(1.0)), (ps_info.ccw) ? 0.8 : 0.9);
@@ -3193,6 +3255,58 @@ void TextMesh::_create_mesh_array(Array &p_arr) const {
 
 								length += seg_len;
 								p_idx += 4;
+							}
+
+							if (has_bevel) {
+								for (int l = 0; l < ps; l++) {
+									int prev = (l == 0) ? (ps - 1) : (l - 1);
+									int next = (l + 1 == ps) ? 0 : (l + 1);
+									Vector2 d1;
+									Vector2 d2 = (ps_ptr[next].point - ps_ptr[l].point).normalized();
+									if (ps_ptr[l].sharp) {
+										d1 = d2;
+									} else {
+										d1 = (ps_ptr[l].point - ps_ptr[prev].point).normalized();
+									}
+									real_t seg_len = (ps_ptr[next].point - ps_ptr[l].point).length();
+
+									Vector3 quad_faces[4] = {
+										Vector3(ps_ptr[l].point.x + offset.x, -ps_ptr[l].point.y + offset.y, depth / 2.0 - bevel_depth) + Vector3(d1.y, d1.x, 0.0) * bevel_width,
+										Vector3(ps_ptr[next].point.x + offset.x, -ps_ptr[next].point.y + offset.y, depth / 2.0 - bevel_depth) + Vector3(d2.y, d2.x, 0.0) * bevel_width,
+										Vector3(ps_ptr[l].point.x + offset.x, -ps_ptr[l].point.y + offset.y, depth / 2.0),
+										Vector3(ps_ptr[next].point.x + offset.x, -ps_ptr[next].point.y + offset.y, depth / 2.0),
+									};
+
+									for (int m = 0; m < 4; m++) {
+										const Vector2 &d = ((m % 2) == 0) ? d1 : d2;
+										real_t u_pos = ((m % 2) == 0) ? length : length + seg_len;
+										vertices_ptr[p_idx + m] = quad_faces[m];
+										if (has_bevel) {
+											vertices_ptr[p_idx + m] = quad_faces[m];
+										}
+										normals_ptr[p_idx + m] = Vector3(d.y, d.x, 0.0);
+										if (m < 2) {
+											uvs_ptr[p_idx + m] = Vector2(Math::remap(u_pos, 0, ps_info.length, real_t(0.0), real_t(1.0)), (ps_info.ccw) ? 0.8 : 0.9);
+										} else {
+											uvs_ptr[p_idx + m] = Vector2(Math::remap(u_pos, 0, ps_info.length, real_t(0.0), real_t(1.0)), (ps_info.ccw) ? 0.9 : 1.0);
+										}
+										tangents_ptr[(p_idx + m) * 4 + 0] = d.x;
+										tangents_ptr[(p_idx + m) * 4 + 1] = -d.y;
+										tangents_ptr[(p_idx + m) * 4 + 2] = 0.0;
+										tangents_ptr[(p_idx + m) * 4 + 3] = 1.0;
+									}
+
+									indices_ptr[i_idx++] = p_idx;
+									indices_ptr[i_idx++] = p_idx + 1;
+									indices_ptr[i_idx++] = p_idx + 2;
+
+									indices_ptr[i_idx++] = p_idx + 1;
+									indices_ptr[i_idx++] = p_idx + 3;
+									indices_ptr[i_idx++] = p_idx + 2;
+
+									length += seg_len;
+									p_idx += 4;
+								}
 							}
 						}
 					}
@@ -3287,6 +3401,12 @@ void TextMesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_width", "width"), &TextMesh::set_width);
 	ClassDB::bind_method(D_METHOD("get_width"), &TextMesh::get_width);
 
+	ClassDB::bind_method(D_METHOD("set_bevel_width", "bevel_width"), &TextMesh::set_bevel_width);
+	ClassDB::bind_method(D_METHOD("get_bevel_width"), &TextMesh::get_bevel_width);
+
+	ClassDB::bind_method(D_METHOD("set_bevel_depth", "bevel_depth"), &TextMesh::set_bevel_depth);
+	ClassDB::bind_method(D_METHOD("get_bevel_depth"), &TextMesh::get_bevel_depth);
+
 	ClassDB::bind_method(D_METHOD("set_pixel_size", "pixel_size"), &TextMesh::set_pixel_size);
 	ClassDB::bind_method(D_METHOD("get_pixel_size"), &TextMesh::get_pixel_size);
 
@@ -3329,6 +3449,8 @@ void TextMesh::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "curve_step", PROPERTY_HINT_RANGE, "0.1,10,0.1,suffix:px"), "set_curve_step", "get_curve_step");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "depth", PROPERTY_HINT_RANGE, "0.0,100.0,0.001,or_greater,suffix:m"), "set_depth", "get_depth");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "width", PROPERTY_HINT_NONE, "suffix:m"), "set_width", "get_width");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "bevel_width", PROPERTY_HINT_NONE, "0,1,0.0001,or_greater"), "set_bevel_width", "get_bevel_width");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "bevel_depth", PROPERTY_HINT_NONE, "0,1,0.0001,or_greater"), "set_bevel_depth", "get_bevel_depth");
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "offset", PROPERTY_HINT_NONE, "suffix:px"), "set_offset", "get_offset");
 
 	ADD_GROUP("BiDi", "");
@@ -3521,6 +3643,30 @@ void TextMesh::set_width(real_t p_width) {
 
 real_t TextMesh::get_width() const {
 	return width;
+}
+
+void TextMesh::set_bevel_width(real_t p_bevel_width) {
+	if (bevel_width != p_bevel_width) {
+		bevel_width = p_bevel_width;
+		dirty_lines = true;
+		_request_update();
+	}
+}
+
+real_t TextMesh::get_bevel_width() const {
+	return bevel_width;
+}
+
+void TextMesh::set_bevel_depth(real_t p_bevel_depth) {
+	if (bevel_depth != p_bevel_depth) {
+		bevel_depth = p_bevel_depth;
+		dirty_lines = true;
+		_request_update();
+	}
+}
+
+real_t TextMesh::get_bevel_depth() const {
+	return bevel_depth;
 }
 
 void TextMesh::set_pixel_size(real_t p_amount) {
