@@ -73,6 +73,27 @@ void PrimitiveMesh::_update() const {
 
 	Vector<int> indices = arr[RS::ARRAY_INDEX];
 
+	if (shading_mode == SHADING_MODE_FORCE_FLAT) {
+		Vector<Vector3> normals = arr[RS::ARRAY_NORMAL];
+
+		if (normals.size()) {
+			// Normally, we would use MeshDataTool's `get_face_count()` and `get_face_normal()` here.
+			// However, the final mesh isn't constructed yet at this stage, and we should avoid
+			// constructing it twice for performance reasons.
+			for (int f = 0; f < mdt.get_face_count(); f++) {
+				for (int v = 0; v < 3; v++) {
+					Vector3 v0 = vertices[faces[p_face].v[0]].vertex;
+					Vector3 v1 = vertices[faces[p_face].v[1]].vertex;
+					Vector3 v2 = vertices[faces[p_face].v[2]].vertex;
+
+					w[i] = Plane(v0, v1, v2).normal;
+					st.add_vertex(mdt.get_vertex(mdt.get_face_vertex(f, v)))
+				}
+			}
+			arr[RS::ARRAY_NORMAL] = normals;
+		}
+	}
+
 	if (flip_faces) {
 		Vector<Vector3> normals = arr[RS::ARRAY_NORMAL];
 
@@ -247,6 +268,9 @@ void PrimitiveMesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_flip_faces", "flip_faces"), &PrimitiveMesh::set_flip_faces);
 	ClassDB::bind_method(D_METHOD("get_flip_faces"), &PrimitiveMesh::get_flip_faces);
 
+	ClassDB::bind_method(D_METHOD("set_shading_mode", "shading_mode"), &PrimitiveMesh::set_shading_mode);
+	ClassDB::bind_method(D_METHOD("get_shading_mode"), &PrimitiveMesh::get_shading_mode);
+
 	ClassDB::bind_method(D_METHOD("set_add_uv2", "add_uv2"), &PrimitiveMesh::set_add_uv2);
 	ClassDB::bind_method(D_METHOD("get_add_uv2"), &PrimitiveMesh::get_add_uv2);
 
@@ -256,8 +280,13 @@ void PrimitiveMesh::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "material", PROPERTY_HINT_RESOURCE_TYPE, "BaseMaterial3D,ShaderMaterial"), "set_material", "get_material");
 	ADD_PROPERTY(PropertyInfo(Variant::AABB, "custom_aabb", PROPERTY_HINT_NONE, "suffix:m"), "set_custom_aabb", "get_custom_aabb");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "flip_faces"), "set_flip_faces", "get_flip_faces");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "shading_mode"), "set_shading_mode", "get_shading_mode");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "add_uv2"), "set_add_uv2", "get_add_uv2");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "uv2_padding", PROPERTY_HINT_RANGE, "0,10,0.01,or_greater"), "set_uv2_padding", "get_uv2_padding");
+
+	BIND_ENUM_CONSTANT(SHADING_MODE_DEFAULT);
+	BIND_ENUM_CONSTANT(SHADING_MODE_FORCE_FLAT);
+	BIND_ENUM_CONSTANT(SHADING_MODE_MAX);
 
 	GDVIRTUAL_BIND(_create_mesh_array);
 }

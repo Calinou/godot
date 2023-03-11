@@ -55,6 +55,7 @@ private:
 
 	Ref<Material> material;
 	bool flip_faces = false;
+	ShadingMode shading_mode = SHADING_MODE_DEFAULT;
 
 	bool add_uv2 = false;
 	float uv2_padding = 2.0;
@@ -78,6 +79,13 @@ protected:
 	virtual void _update_lightmap_size(){};
 
 public:
+	enum ShadingMode {
+		SHADING_MODE_DEFAULT,
+		SHADING_MODE_FORCE_FLAT,
+		// SHADING_MODE_FORCE_SMOOTH, // TODO
+		SHADING_MODE_MAX,
+	};
+
 	virtual int get_surface_count() const override;
 	virtual int surface_get_array_len(int p_idx) const override;
 	virtual int surface_get_array_index_len(int p_idx) const override;
@@ -105,6 +113,9 @@ public:
 	void set_flip_faces(bool p_enable);
 	bool get_flip_faces() const;
 
+	void set_shading_mode(ShadingMode p_shading_mode);
+	ShadingMode get_shading_mode() const;
+
 	void set_add_uv2(bool p_enable);
 	bool get_add_uv2() const { return add_uv2; }
 
@@ -114,6 +125,8 @@ public:
 	PrimitiveMesh();
 	~PrimitiveMesh();
 };
+
+VARIANT_ENUM_CAST(PrimitiveMesh::ShadingMode)
 
 /**
 	Mesh for a simple capsule
