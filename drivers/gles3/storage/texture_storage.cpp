@@ -2137,7 +2137,7 @@ void TextureStorage::render_target_set_msaa(RID p_render_target, RS::ViewportMSA
 		return;
 	}
 
-	WARN_PRINT("2D MSAA is not yet supported for GLES3.");
+	WARN_PRINT("2D MSAA is not yet supported in the Compatibility rendering method.");
 
 	_clear_render_target(rt);
 	rt->msaa = p_msaa;
@@ -2149,6 +2149,14 @@ RS::ViewportMSAA TextureStorage::render_target_get_msaa(RID p_render_target) con
 	ERR_FAIL_COND_V(!rt, RS::VIEWPORT_MSAA_DISABLED);
 
 	return rt->msaa;
+}
+
+void TextureStorage::render_target_set_msaa_per_sample_shading(RID p_render_target, float p_per_sample_shading) {
+	WARN_PRINT("Per-sample shading is not supported in the Compatibility rendering method.");
+}
+
+float TextureStorage::render_target_get_msaa_per_sample_shading(RID p_render_target) const {
+	return 0.0;
 }
 
 void TextureStorage::render_target_request_clear(RID p_render_target, const Color &p_clear_color) {

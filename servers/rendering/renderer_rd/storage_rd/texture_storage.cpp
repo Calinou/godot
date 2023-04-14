@@ -2881,6 +2881,24 @@ RS::ViewportMSAA TextureStorage::render_target_get_msaa(RID p_render_target) con
 	return rt->msaa;
 }
 
+void TextureStorage::render_target_set_msaa_per_sample_shading(RID p_render_target, float p_per_sample_shading) {
+	RenderTarget *rt = render_target_owner.get_or_null(p_render_target);
+	ERR_FAIL_COND(!rt);
+	if (p_per_sample_shading == rt->msaa_per_sample_shading) {
+		return;
+	}
+
+	rt->msaa_per_sample_shading = p_per_sample_shading;
+	_update_render_target(rt);
+}
+
+float TextureStorage::render_target_get_msaa_per_sample_shading(RID p_render_target) const {
+	RenderTarget *rt = render_target_owner.get_or_null(p_render_target);
+	ERR_FAIL_COND_V(!rt, 0.0);
+
+	return rt->msaa_per_sample_shading;
+}
+
 RID TextureStorage::render_target_get_rd_framebuffer(RID p_render_target) {
 	RenderTarget *rt = render_target_owner.get_or_null(p_render_target);
 	ERR_FAIL_COND_V(!rt, RID());

@@ -173,6 +173,8 @@ public:
 	virtual void render_target_set_as_unused(RID p_render_target) override {}
 	virtual void render_target_set_msaa(RID p_render_target, RS::ViewportMSAA p_msaa) override {}
 	virtual RS::ViewportMSAA render_target_get_msaa(RID p_render_target) const override { return RS::VIEWPORT_MSAA_DISABLED; }
+	virtual void render_target_set_msaa_per_sample_shading(RID p_render_target, float p_per_sample_shading) override {}
+	virtual float render_target_get_msaa_per_sample_shading(RID p_render_target) const override { return 0.0; }
 
 	virtual void render_target_request_clear(RID p_render_target, const Color &p_clear_color) override {}
 	virtual bool render_target_is_clear_requested(RID p_render_target) override { return false; }

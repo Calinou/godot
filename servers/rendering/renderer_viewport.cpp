@@ -180,7 +180,7 @@ void RendererViewport::_configure_3d_render_buffers(Viewport *p_viewport) {
 			// to compensate for the loss of sharpness.
 			const float texture_mipmap_bias = log2f(MIN(scaling_3d_scale, 1.0)) + p_viewport->texture_mipmap_bias;
 
-			p_viewport->render_buffers->configure(p_viewport->render_target, Size2i(render_width, render_height), Size2(width, height), scaling_3d_mode, p_viewport->fsr_sharpness, texture_mipmap_bias, p_viewport->msaa_3d, p_viewport->screen_space_aa, p_viewport->use_taa, p_viewport->use_debanding, p_viewport->view_count);
+			p_viewport->render_buffers->configure(p_viewport->render_target, Size2i(render_width, render_height), Size2(width, height), scaling_3d_mode, p_viewport->fsr_sharpness, texture_mipmap_bias, p_viewport->msaa_3d, p_viewport->screen_space_aa, p_viewport->use_taa, p_viewport->use_debanding, p_viewport->view_count); // TODO: Per-sample shading and min pixel ratio
 		}
 	}
 }
@@ -1133,6 +1133,18 @@ void RendererViewport::viewport_set_msaa_2d(RID p_viewport, RS::ViewportMSAA p_m
 	RSG::texture_storage->render_target_set_msaa(viewport->render_target, p_msaa);
 }
 
+void RendererViewport::viewport_set_msaa_2d_per_sample_shading(RID p_viewport, float p_per_sample_shading) {
+	ERR_FAIL_COND_MSG(p_per_sample_shading < 0.0 || p_per_sample_shading > 1.0, "Valid range for 2D MSAA per-sample shading ratio is [0.0, 1.0].");
+	Viewport *viewport = viewport_owner.get_or_null(p_viewport);
+	ERR_FAIL_COND(!viewport);
+
+	if (viewport->msaa_2d_per_sample_shading == p_per_sample_shading) {
+		return;
+	}
+	viewport->msaa_2d_per_sample_shading = p_per_sample_shading;
+	RSG::texture_storage->render_target_set_msaa_per_sample_shading(viewport->render_target, p_per_sample_shading);
+}
+
 void RendererViewport::viewport_set_msaa_3d(RID p_viewport, RS::ViewportMSAA p_msaa) {
 	Viewport *viewport = viewport_owner.get_or_null(p_viewport);
 	ERR_FAIL_COND(!viewport);
@@ -1141,6 +1153,18 @@ void RendererViewport::viewport_set_msaa_3d(RID p_viewport, RS::ViewportMSAA p_m
 		return;
 	}
 	viewport->msaa_3d = p_msaa;
+	_configure_3d_render_buffers(viewport);
+}
+
+void RendererViewport::viewport_set_msaa_3d_per_sample_shading(RID p_viewport, float p_per_sample_shading) {
+	ERR_FAIL_COND_MSG(p_per_sample_shading < 0.0 || p_per_sample_shading > 1.0, "Valid range for 2D MSAA per-sample shading ratio is [0.0, 1.0].");
+	Viewport *viewport = viewport_owner.get_or_null(p_viewport);
+	ERR_FAIL_COND(!viewport);
+
+	if (viewport->msaa_3d_per_sample_shading == p_per_sample_shading) {
+		return;
+	}
+	viewport->msaa_3d_per_sample_shading = p_per_sample_shading;
 	_configure_3d_render_buffers(viewport);
 }
 

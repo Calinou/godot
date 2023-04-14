@@ -305,6 +305,8 @@ RID RenderingDevice::_render_pipeline_create(RID p_shader, FramebufferFormatID p
 	PipelineMultisampleState multisample_state;
 	if (p_multisample_state.is_valid()) {
 		multisample_state = p_multisample_state->base;
+		print_line("\n_render_pipeline_create - Sample shading enabled: ", multisample_state.enable_sample_shading);
+		print_line("_render_pipeline_create - Min sample shading: ", multisample_state.min_sample_shading);
 		for (int i = 0; i < p_multisample_state->sample_masks.size(); i++) {
 			int64_t mask = p_multisample_state->sample_masks[i];
 			multisample_state.sample_mask.push_back(mask);

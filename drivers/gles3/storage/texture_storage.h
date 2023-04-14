@@ -622,6 +622,8 @@ public:
 	void render_target_clear_used(RID p_render_target);
 	virtual void render_target_set_msaa(RID p_render_target, RS::ViewportMSAA p_msaa) override;
 	virtual RS::ViewportMSAA render_target_get_msaa(RID p_render_target) const override;
+	virtual void render_target_set_msaa_per_sample_shading(RID p_render_target, float p_per_sample_shading) override;
+	virtual float render_target_get_msaa_per_sample_shading(RID p_render_target) const override;
 
 	// new
 	void render_target_set_as_unused(RID p_render_target) override {

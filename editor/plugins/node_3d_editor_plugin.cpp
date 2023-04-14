@@ -2601,6 +2601,8 @@ void Node3DEditorViewport::_project_settings_changed() {
 
 	const int msaa_mode = GLOBAL_GET("rendering/anti_aliasing/quality/msaa_3d");
 	viewport->set_msaa_3d(Viewport::MSAA(msaa_mode));
+	const float msaa_per_sample_shading = GLOBAL_GET("rendering/anti_aliasing/quality/msaa_3d_per_sample_shading");
+	viewport->set_msaa_3d_per_sample_shading(msaa_per_sample_shading);
 	const int ssaa_mode = GLOBAL_GET("rendering/anti_aliasing/quality/screen_space_aa");
 	viewport->set_screen_space_aa(Viewport::ScreenSpaceAA(ssaa_mode));
 	const bool use_taa = GLOBAL_GET("rendering/anti_aliasing/quality/use_taa");

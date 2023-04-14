@@ -2545,6 +2545,7 @@ RendererCanvasRenderRD::RendererCanvasRenderRD() {
 			ds.enable_depth_write = true;
 			ds.enable_depth_test = true;
 			ds.depth_compare_operator = RD::COMPARE_OP_LESS;
+			print_line("Creating canvas render pipeline");
 			shadow_render.render_pipelines[i] = RD::get_singleton()->render_pipeline_create(shadow_render.shader.version_get_shader(shadow_render.shader_version, SHADOW_RENDER_MODE_SHADOW), shadow_render.framebuffer_format, shadow_render.vertex_format, RD::RENDER_PRIMITIVE_TRIANGLES, rs, RD::PipelineMultisampleState(), ds, RD::PipelineColorBlendState::create_disabled(), 0);
 		}
 
