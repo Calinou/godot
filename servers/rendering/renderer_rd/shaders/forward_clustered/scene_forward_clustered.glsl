@@ -18,7 +18,7 @@ layout(location = 0) in vec3 vertex_attrib;
 layout(location = 1) in vec2 normal_attrib;
 #endif
 
-#if defined(TANGENT_USED) || defined(NORMAL_MAP_USED) || defined(LIGHT_ANISOTROPY_USED)
+#if defined(TANGENT_USED) || defined(NORMAL_MAP_USED) || defined(CLEARCOAT_NORMAL_MAP_USED) || defined(LIGHT_ANISOTROPY_USED)
 layout(location = 2) in vec2 tangent_attrib;
 #endif
 
@@ -85,7 +85,7 @@ layout(location = 3) out vec2 uv_interp;
 layout(location = 4) out vec2 uv2_interp;
 #endif
 
-#if defined(TANGENT_USED) || defined(NORMAL_MAP_USED) || defined(LIGHT_ANISOTROPY_USED)
+#if defined(TANGENT_USED) || defined(NORMAL_MAP_USED) || defined(CLEARCOAT_NORMAL_MAP_USED) || defined(LIGHT_ANISOTROPY_USED)
 layout(location = 5) out vec3 tangent_interp;
 layout(location = 6) out vec3 binormal_interp;
 #endif
@@ -293,7 +293,7 @@ void vertex_shader(in uint instance_index, in bool is_multimesh, in uint multime
 	vec3 normal = oct_to_vec3(normal_attrib * 2.0 - 1.0);
 #endif
 
-#if defined(TANGENT_USED) || defined(NORMAL_MAP_USED) || defined(LIGHT_ANISOTROPY_USED)
+#if defined(TANGENT_USED) || defined(NORMAL_MAP_USED) || defined(CLEARCOAT_NORMAL_MAP_USED) || defined(LIGHT_ANISOTROPY_USED)
 	vec2 signed_tangent_attrib = tangent_attrib * 2.0 - 1.0;
 	vec3 tangent = oct_to_vec3(vec2(signed_tangent_attrib.x, abs(signed_tangent_attrib.y) * 2.0 - 1.0));
 	float binormalf = sign(signed_tangent_attrib.y);
@@ -331,7 +331,7 @@ void vertex_shader(in uint instance_index, in bool is_multimesh, in uint multime
 	normal = model_normal_matrix * normal;
 #endif
 
-#if defined(TANGENT_USED) || defined(NORMAL_MAP_USED) || defined(LIGHT_ANISOTROPY_USED)
+#if defined(TANGENT_USED) || defined(NORMAL_MAP_USED) || defined(CLEARCOAT_NORMAL_MAP_USED) || defined(LIGHT_ANISOTROPY_USED)
 
 	tangent = model_normal_matrix * tangent;
 	binormal = model_normal_matrix * binormal;
@@ -373,7 +373,7 @@ void vertex_shader(in uint instance_index, in bool is_multimesh, in uint multime
 
 #endif
 
-#if defined(TANGENT_USED) || defined(NORMAL_MAP_USED) || defined(LIGHT_ANISOTROPY_USED)
+#if defined(TANGENT_USED) || defined(NORMAL_MAP_USED) || defined(CLEARCOAT_NORMAL_MAP_USED) || defined(LIGHT_ANISOTROPY_USED)
 
 	binormal = modelview_normal * binormal;
 	tangent = modelview_normal * tangent;
@@ -387,7 +387,7 @@ void vertex_shader(in uint instance_index, in bool is_multimesh, in uint multime
 	normal = (scene_data.view_matrix * vec4(normal, 0.0)).xyz;
 #endif
 
-#if defined(TANGENT_USED) || defined(NORMAL_MAP_USED) || defined(LIGHT_ANISOTROPY_USED)
+#if defined(TANGENT_USED) || defined(NORMAL_MAP_USED) || defined(CLEARCOAT_NORMAL_MAP_USED) || defined(LIGHT_ANISOTROPY_USED)
 	binormal = (scene_data.view_matrix * vec4(binormal, 0.0)).xyz;
 	tangent = (scene_data.view_matrix * vec4(tangent, 0.0)).xyz;
 #endif
@@ -399,7 +399,7 @@ void vertex_shader(in uint instance_index, in bool is_multimesh, in uint multime
 	normal_interp = normal;
 #endif
 
-#if defined(TANGENT_USED) || defined(NORMAL_MAP_USED) || defined(LIGHT_ANISOTROPY_USED)
+#if defined(TANGENT_USED) || defined(NORMAL_MAP_USED) || defined(CLEARCOAT_NORMAL_MAP_USED) || defined(LIGHT_ANISOTROPY_USED)
 	tangent_interp = tangent;
 	binormal_interp = binormal;
 #endif
@@ -527,7 +527,7 @@ layout(location = 3) in vec2 uv_interp;
 layout(location = 4) in vec2 uv2_interp;
 #endif
 
-#if defined(TANGENT_USED) || defined(NORMAL_MAP_USED) || defined(LIGHT_ANISOTROPY_USED)
+#if defined(TANGENT_USED) || defined(NORMAL_MAP_USED) || defined(CLEARCOAT_NORMAL_MAP_USED) || defined(LIGHT_ANISOTROPY_USED)
 layout(location = 5) in vec3 tangent_interp;
 layout(location = 6) in vec3 binormal_interp;
 #endif
@@ -743,6 +743,7 @@ void fragment_shader(in SceneData scene_data) {
 	float rim_tint = 0.0;
 	float clearcoat = 0.0;
 	float clearcoat_roughness = 0.0;
+	vec3 clearcoat_normal = vec3(0.5);
 	float anisotropy = 0.0;
 	vec2 anisotropy_flow = vec2(1.0, 0.0);
 	vec4 fog = vec4(0.0);
@@ -1142,7 +1143,13 @@ void fragment_shader(in SceneData scene_data) {
 #ifdef LIGHT_CLEARCOAT_USED
 
 	if (scene_data.use_reflection_cubemap) {
+#ifdef CLEARCOAT_NORMAL_MAP_USED
+		clearcoat_normal.xy = clearcoat_normal.xy * 2.0 - 1.0;
+		clearcoat_normal.z = sqrt(max(0.0, 1.0 - dot(clearcoat_normal.xy, clearcoat_normal.xy))); //always ignore Z, as it can be RG packed, Z may be pos/neg, etc.
+		vec3 n = normalize(tangent_interp * clearcoat_normal.x + binormal_interp * clearcoat_normal.y + normal_interp * clearcoat_normal.z);
+#else
 		vec3 n = normalize(normal_interp); // We want to use geometric normal, not normal_map
+#endif
 		float NoV = max(dot(n, view), 0.0001);
 		vec3 ref_vec = reflect(-view, n);
 		// The clear coat layer assumes an IOR of 1.5 (4% reflectance)

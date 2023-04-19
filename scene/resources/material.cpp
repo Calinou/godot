@@ -528,6 +528,7 @@ void BaseMaterial3D::init_shaders() {
 	shader_names->texture_names[TEXTURE_NORMAL] = "texture_normal";
 	shader_names->texture_names[TEXTURE_RIM] = "texture_rim";
 	shader_names->texture_names[TEXTURE_CLEARCOAT] = "texture_clearcoat";
+	shader_names->texture_names[TEXTURE_CLEARCOAT_NORMAL] = "texture_clearcoat_normal";
 	shader_names->texture_names[TEXTURE_FLOWMAP] = "texture_flowmap";
 	shader_names->texture_names[TEXTURE_AMBIENT_OCCLUSION] = "texture_ambient_occlusion";
 	shader_names->texture_names[TEXTURE_HEIGHTMAP] = "texture_heightmap";
@@ -859,6 +860,7 @@ void BaseMaterial3D::_update_shader() {
 		code += "uniform float clearcoat : hint_range(0,1);\n";
 		code += "uniform float clearcoat_roughness : hint_range(0,1);\n";
 		code += "uniform sampler2D texture_clearcoat : hint_default_white," + texfilter_str + ";\n";
+		code += "uniform sampler2D texture_clearcoat_normal : hint_roughness_normal," + texfilter_str + ";\n";
 	}
 	if (features[FEATURE_ANISOTROPY]) {
 		code += "uniform float anisotropy_ratio : hint_range(0,256);\n";
@@ -1351,11 +1353,14 @@ void BaseMaterial3D::_update_shader() {
 	if (features[FEATURE_CLEARCOAT]) {
 		if (flags[FLAG_UV1_USE_TRIPLANAR]) {
 			code += "	vec2 clearcoat_tex = triplanar_texture(texture_clearcoat,uv1_power_normal,uv1_triplanar_pos).xy;\n";
+			code += "	vec3 clearcoat_normal_tex = triplanar_texture(texture_clearcoat,uv1_power_normal,uv1_triplanar_pos).rgb;\n";
 		} else {
 			code += "	vec2 clearcoat_tex = texture(texture_clearcoat,base_uv).xy;\n";
+			code += "	vec3 clearcoat_normal_tex = texture(texture_clearcoat,base_uv).rgb;\n";
 		}
-		code += "	CLEARCOAT = clearcoat*clearcoat_tex.x;";
+		code += "	CLEARCOAT = clearcoat*clearcoat_tex.x;\n";
 		code += "	CLEARCOAT_ROUGHNESS = clearcoat_roughness*clearcoat_tex.y;\n";
+		code += "	CLEARCOAT_NORMAL = clearcoat_normal_tex;\n";
 	}
 
 	if (features[FEATURE_ANISOTROPY]) {
@@ -2734,6 +2739,7 @@ void BaseMaterial3D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "clearcoat", PROPERTY_HINT_RANGE, "0,1,0.01"), "set_clearcoat", "get_clearcoat");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "clearcoat_roughness", PROPERTY_HINT_RANGE, "0,1,0.01"), "set_clearcoat_roughness", "get_clearcoat_roughness");
 	ADD_PROPERTYI(PropertyInfo(Variant::OBJECT, "clearcoat_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D"), "set_texture", "get_texture", TEXTURE_CLEARCOAT);
+	ADD_PROPERTYI(PropertyInfo(Variant::OBJECT, "clearcoat_normal_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D"), "set_texture", "get_texture", TEXTURE_CLEARCOAT_NORMAL);
 
 	ADD_GROUP("Anisotropy", "anisotropy_");
 	ADD_PROPERTYI(PropertyInfo(Variant::BOOL, "anisotropy_enabled"), "set_feature", "get_feature", FEATURE_ANISOTROPY);
@@ -2847,6 +2853,7 @@ void BaseMaterial3D::_bind_methods() {
 	BIND_ENUM_CONSTANT(TEXTURE_NORMAL);
 	BIND_ENUM_CONSTANT(TEXTURE_RIM);
 	BIND_ENUM_CONSTANT(TEXTURE_CLEARCOAT);
+	BIND_ENUM_CONSTANT(TEXTURE_CLEARCOAT_NORMAL);
 	BIND_ENUM_CONSTANT(TEXTURE_FLOWMAP);
 	BIND_ENUM_CONSTANT(TEXTURE_AMBIENT_OCCLUSION);
 	BIND_ENUM_CONSTANT(TEXTURE_HEIGHTMAP);

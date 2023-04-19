@@ -138,6 +138,10 @@
 			If [code]true[/code], clearcoat rendering is enabled. Adds a secondary transparent pass to the lighting calculation resulting in an added specular blob. This makes materials appear as if they have a clear layer on them that can be either glossy or rough.
 			[b]Note:[/b] Clearcoat rendering is not visible if the material's [member shading_mode] is [constant SHADING_MODE_UNSHADED].
 		</member>
+		<member name="clearcoat_normal_texture" type="Texture2D" setter="set_texture" getter="get_texture">
+			Texture that specifies the per-pixel normal of the clearcoat effect. Regardless of whether a [member clearcoat_normal_texture] texture is set, the clearcoat effect disregards the existing [member normal_texture]. The [member clearcoat_normal_texture] texture only uses the red and green channels; the blue and alpha channels are ignored. The normal read from [member clearcoat_normal_texture] is oriented around the surface normal provided by the [Mesh].
+			[b]Note:[/b] Godot expects the normal map to use X+, Y+, and Z+ coordinates. See [url=http://wiki.polycount.com/wiki/Normal_Map_Technical_Details#Common_Swizzle_Coordinates]this page[/url] for a comparison of normal map coordinates expected by popular engines.
+		</member>
 		<member name="clearcoat_roughness" type="float" setter="set_clearcoat_roughness" getter="get_clearcoat_roughness" default="0.5">
 			Sets the roughness of the clearcoat pass. A higher value results in a rougher clearcoat while a lower value results in a smoother clearcoat.
 		</member>
@@ -461,40 +465,42 @@
 		<constant name="TEXTURE_CLEARCOAT" value="6" enum="TextureParam">
 			Texture specifying per-pixel clearcoat value.
 		</constant>
-		<constant name="TEXTURE_FLOWMAP" value="7" enum="TextureParam">
+		<constant name="TEXTURE_CLEARCOAT_NORMAL" value="7" enum="TextureParam">
+		</constant>
+		<constant name="TEXTURE_FLOWMAP" value="8" enum="TextureParam">
 			Texture specifying per-pixel flowmap direction for use with [member anisotropy].
 		</constant>
-		<constant name="TEXTURE_AMBIENT_OCCLUSION" value="8" enum="TextureParam">
+		<constant name="TEXTURE_AMBIENT_OCCLUSION" value="9" enum="TextureParam">
 			Texture specifying per-pixel ambient occlusion value.
 		</constant>
-		<constant name="TEXTURE_HEIGHTMAP" value="9" enum="TextureParam">
+		<constant name="TEXTURE_HEIGHTMAP" value="10" enum="TextureParam">
 			Texture specifying per-pixel height.
 		</constant>
-		<constant name="TEXTURE_SUBSURFACE_SCATTERING" value="10" enum="TextureParam">
+		<constant name="TEXTURE_SUBSURFACE_SCATTERING" value="11" enum="TextureParam">
 			Texture specifying per-pixel subsurface scattering.
 		</constant>
-		<constant name="TEXTURE_SUBSURFACE_TRANSMITTANCE" value="11" enum="TextureParam">
+		<constant name="TEXTURE_SUBSURFACE_TRANSMITTANCE" value="12" enum="TextureParam">
 			Texture specifying per-pixel transmittance for subsurface scattering.
 		</constant>
-		<constant name="TEXTURE_BACKLIGHT" value="12" enum="TextureParam">
+		<constant name="TEXTURE_BACKLIGHT" value="13" enum="TextureParam">
 			Texture specifying per-pixel backlight color.
 		</constant>
-		<constant name="TEXTURE_REFRACTION" value="13" enum="TextureParam">
+		<constant name="TEXTURE_REFRACTION" value="14" enum="TextureParam">
 			Texture specifying per-pixel refraction strength.
 		</constant>
-		<constant name="TEXTURE_DETAIL_MASK" value="14" enum="TextureParam">
+		<constant name="TEXTURE_DETAIL_MASK" value="15" enum="TextureParam">
 			Texture specifying per-pixel detail mask blending value.
 		</constant>
-		<constant name="TEXTURE_DETAIL_ALBEDO" value="15" enum="TextureParam">
+		<constant name="TEXTURE_DETAIL_ALBEDO" value="16" enum="TextureParam">
 			Texture specifying per-pixel detail color.
 		</constant>
-		<constant name="TEXTURE_DETAIL_NORMAL" value="16" enum="TextureParam">
+		<constant name="TEXTURE_DETAIL_NORMAL" value="17" enum="TextureParam">
 			Texture specifying per-pixel detail normal.
 		</constant>
-		<constant name="TEXTURE_ORM" value="17" enum="TextureParam">
+		<constant name="TEXTURE_ORM" value="18" enum="TextureParam">
 			Texture holding ambient occlusion, roughness, and metallic.
 		</constant>
-		<constant name="TEXTURE_MAX" value="18" enum="TextureParam">
+		<constant name="TEXTURE_MAX" value="19" enum="TextureParam">
 			Represents the size of the [enum TextureParam] enum.
 		</constant>
 		<constant name="TEXTURE_FILTER_NEAREST" value="0" enum="TextureFilter">
