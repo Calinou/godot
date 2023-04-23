@@ -30,6 +30,7 @@
 
 #include "project_manager.h"
 
+#include "core/benchmark_macros.h"
 #include "core/config/project_settings.h"
 #include "core/io/config_file.h"
 #include "core/io/dir_access.h"
@@ -1206,6 +1207,7 @@ const char *ProjectList::SIGNAL_PROJECT_ASK_OPEN = "project_ask_open";
 void ProjectList::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_PROCESS: {
+			BENCHMARK_BEGIN(project_manager_process);
 			// Load icons as a coroutine to speed up launch when you have hundreds of projects
 			if (_icon_load_index < _projects.size()) {
 				Item &item = _projects.write[_icon_load_index];
@@ -1217,6 +1219,7 @@ void ProjectList::_notification(int p_what) {
 			} else {
 				set_process(false);
 			}
+			BENCHMARK_END(project_manager_process);
 		} break;
 	}
 }

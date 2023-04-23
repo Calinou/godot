@@ -30,6 +30,7 @@
 
 #include "editor_node.h"
 
+#include "core/benchmark_macros.h"
 #include "core/config/project_settings.h"
 #include "core/input/input.h"
 #include "core/io/config_file.h"
@@ -579,6 +580,7 @@ void EditorNode::_select_default_main_screen_plugin() {
 void EditorNode::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_PROCESS: {
+			BENCHMARK_BEGIN(editor_process);
 			if (opening_prev && !confirmation->is_visible()) {
 				opening_prev = false;
 			}
@@ -630,6 +632,7 @@ void EditorNode::_notification(int p_what) {
 			ResourceImporterTexture::get_singleton()->update_imports();
 
 			bottom_panel_updating = false;
+			BENCHMARK_END(editor_process);
 		} break;
 
 		case NOTIFICATION_ENTER_TREE: {

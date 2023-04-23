@@ -30,6 +30,7 @@
 
 #include "main.h"
 
+#include "core/benchmark_macros.h"
 #include "core/config/project_settings.h"
 #include "core/core_globals.h"
 #include "core/core_string_names.h"
@@ -2346,8 +2347,10 @@ Error Main::setup2(Thread::ID p_main_tid_override) {
 
 	engine->startup_benchmark_begin_measure("scene");
 
+	BENCHMARK_BEGIN(main_register_scene_driver_types);
 	register_scene_types();
 	register_driver_types();
+	BENCHMARK_END(main_register_scene_driver_types);
 
 	initialize_modules(MODULE_INITIALIZATION_LEVEL_SCENE);
 	GDExtensionManager::get_singleton()->initialize_extensions(GDExtension::INITIALIZATION_LEVEL_SCENE);
