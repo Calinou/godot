@@ -2552,7 +2552,7 @@ void ProjectManager::_version_button_pressed() {
 ProjectManager::ProjectManager() {
 	singleton = this;
 
-	print_line("Hello from CI build!");
+	print_line("Hello from CI build! 2");
 
 	// load settings
 	if (!EditorSettings::get_singleton()) {
