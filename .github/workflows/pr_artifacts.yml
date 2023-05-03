@@ -1,6 +1,10 @@
 name: Link PR artifacts pr_artifacts.yml
 on:
-  workflow_call:
+  workflow_run:
+    workflows:
+      - runner
+    types:
+      - completed
 
 jobs:
   pr-artifacts:
