@@ -39,3 +39,14 @@ jobs:
     name: 🌐 Web
     needs: static-checks
     uses: ./.github/workflows/web_builds.yml
+
+  pr-artifacts:
+    name: Link PR artifacts runner.yml
+    needs:
+      - android-build
+      - ios-build
+      - linux-build
+      - macos-build
+      - windows-build
+      - web-build
+    uses: ./.github/workflows/pr_artifacts.yml
