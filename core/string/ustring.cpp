@@ -3589,6 +3589,41 @@ String String::replacen(const String &p_key, const String &p_with) const {
 	return new_string;
 }
 
+String String::replace_multiple(const Vector<String> &p_keys, const Vector<String> &p_with) const {
+	String new_string;
+	int search_from = 0;
+	int result = 0;
+	int index = 0;
+
+	for (const String &key : p_keys) {
+		const String &with = p_with[index];
+
+		while ((result = find(key, search_from)) >= 0) {
+			new_string += substr(search_from, result - search_from);
+			new_string += with;
+			int k = 0;
+			while (key[k] != '\0') {
+				k++;
+			}
+			search_from = result + k;
+		}
+
+		if (search_from == 0) {
+			continue;
+		}
+
+		new_string += substr(search_from, length() - search_from);
+
+		index += 1;
+	}
+
+	return new_string;
+}
+
+String String::replace_multiplen(const Vector<String> &p_keys, const Vector<String> &p_with) const {
+	return ""; // TODO
+}
+
 String String::repeat(int p_count) const {
 	ERR_FAIL_COND_V_MSG(p_count < 0, "", "Parameter count should be a positive number.");
 

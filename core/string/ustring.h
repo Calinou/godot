@@ -303,6 +303,8 @@ public:
 	String replace(const String &p_key, const String &p_with) const;
 	String replace(const char *p_key, const char *p_with) const;
 	String replacen(const String &p_key, const String &p_with) const;
+	String replace_multiple(const Vector<String> &p_keys, const Vector<String> &p_with) const;
+	String replace_multiplen(const Vector<String> &p_keys, const Vector<String> &p_with) const;
 	String repeat(int p_count) const;
 	String insert(int p_at_pos, const String &p_string) const;
 	String erase(int p_pos, int p_chars = 1) const;
