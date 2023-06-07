@@ -32,6 +32,7 @@
 
 #include "core/config/project_settings.h"
 #include "core/input/input.h"
+#include "core/io/config_file.h"
 #include "core/io/file_access.h"
 #include "core/io/json.h"
 #include "core/io/resource_loader.h"
@@ -234,6 +235,43 @@ void EditorJSONSyntaxHighlighter::_update_cache() {
 
 Ref<EditorSyntaxHighlighter> EditorJSONSyntaxHighlighter::_create() const {
 	Ref<EditorJSONSyntaxHighlighter> syntax_highlighter;
+	syntax_highlighter.instantiate();
+	return syntax_highlighter;
+}
+
+////
+
+void EditorXMLSyntaxHighlighter::_update_cache() {
+	highlighter->set_text_edit(text_edit);
+	highlighter->clear_keyword_colors();
+	highlighter->clear_member_keyword_colors();
+	highlighter->clear_color_regions();
+
+	highlighter->set_symbol_color(EDITOR_GET("text_editor/theme/highlighting/symbol_color"));
+	highlighter->set_number_color(EDITOR_GET("text_editor/theme/highlighting/number_color"));
+
+	// Disable member variable highlighting as it's not relevant for XML.
+	highlighter->set_member_variable_color(EDITOR_GET("text_editor/theme/highlighting/text_color"));
+
+	const Color string_color = EDITOR_GET("text_editor/theme/highlighting/string_color");
+	highlighter->add_color_region("\"", "\"", string_color);
+
+	const Color keyword_color = EDITOR_GET("text_editor/theme/highlighting/keyword_color");
+	highlighter->add_color_region("<", " ", keyword_color);
+	highlighter->add_color_region("/", ">", keyword_color);
+
+	const Color function_color = EDITOR_GET("text_editor/theme/highlighting/function_color");
+	//highlighter->add_color_region(" ", "=", function_color, true);
+
+	const Color symbol_color = EDITOR_GET("text_editor/theme/highlighting/symbol_color");
+	highlighter->add_color_region("&", ";", symbol_color);
+
+	const Color comment_color = EDITOR_GET("text_editor/theme/highlighting/comment_color");
+	highlighter->add_color_region("<!--", "-->", comment_color);
+}
+
+Ref<EditorSyntaxHighlighter> EditorXMLSyntaxHighlighter::_create() const {
+	Ref<EditorXMLSyntaxHighlighter> syntax_highlighter;
 	syntax_highlighter.instantiate();
 	return syntax_highlighter;
 }
@@ -4147,6 +4185,10 @@ ScriptEditor::ScriptEditor(WindowWrapper *p_wrapper) {
 	Ref<EditorJSONSyntaxHighlighter> json_syntax_highlighter;
 	json_syntax_highlighter.instantiate();
 	register_syntax_highlighter(json_syntax_highlighter);
+
+	Ref<EditorXMLSyntaxHighlighter> config_file_syntax_highlighter;
+	config_file_syntax_highlighter.instantiate();
+	register_syntax_highlighter(config_file_syntax_highlighter);
 }
 
 ScriptEditor::~ScriptEditor() {

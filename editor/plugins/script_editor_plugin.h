@@ -116,6 +116,24 @@ public:
 	EditorJSONSyntaxHighlighter() { highlighter.instantiate(); }
 };
 
+class EditorXMLSyntaxHighlighter : public EditorSyntaxHighlighter {
+	GDCLASS(EditorXMLSyntaxHighlighter, EditorSyntaxHighlighter)
+
+private:
+	Ref<CodeHighlighter> highlighter;
+
+public:
+	virtual void _update_cache() override;
+	virtual Dictionary _get_line_syntax_highlighting_impl(int p_line) override { return highlighter->get_line_syntax_highlighting(p_line); }
+
+	virtual PackedStringArray _get_supported_languages() const override { return PackedStringArray{ "xml", "html", "svg" }; }
+	virtual String _get_name() const override { return TTR("XML"); }
+
+	virtual Ref<EditorSyntaxHighlighter> _create() const override;
+
+	EditorXMLSyntaxHighlighter() { highlighter.instantiate(); }
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 
 class ScriptEditorQuickOpen : public ConfirmationDialog {
