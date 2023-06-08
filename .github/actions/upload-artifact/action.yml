@@ -11,6 +11,28 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Compare binary size with latest successful master build
+      run: |
+        curl -L "https://nightly.link/godotengine/godot/workflows/runner/master/${{ inputs.name }}.zip" -o "/tmp/${{ inputs.name }}.zip"
+        mkdir -p /tmp/master
+        unzip "/tmp/${{ inputs.name }}.zip" -d /tmp/master
+
+        shopt -s nullglob globstar
+        # Sum file sizes of all files in bytes, recursively.
+        old_size=$(stat --printf="%s\n" /tmp/master/**/* | paste -sd+ | bc)
+        ls -l
+        echo ""
+        ls -l bin
+        echo ""
+        new_size=$(stat --printf="%s\n" bin/**/* | paste -sd+ | bc)
+        size_difference=$((new_size - old_size))
+
+        if [[ $size_difference -ge 1 ]]; then
+          echo -e "\e[1mBinary size:\e[0m This workflow run generates a ${{ inputs.name }} binary that is \e[1;91m$size_difference bytes larger\e[0m than the latest successful master build."
+        else
+          echo -e "\e[1mBinary size:\e[0m This workflow run generates a ${{ inputs.name }} binary that is \e[1;92m$size_difference bytes smaller\e[0m than the latest successful master build."
+        fi
+
     - name: Upload Godot Artifact
       uses: actions/upload-artifact@v3
       with:
