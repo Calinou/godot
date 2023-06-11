@@ -4211,17 +4211,6 @@ void CanvasItemEditor::_insert_animation_keys(bool p_location, bool p_rotation, 
 	te->commit_insert_queue();
 }
 
-void CanvasItemEditor::_update_override_camera_button(bool p_game_running) {
-	if (p_game_running) {
-		override_camera_button->set_disabled(false);
-		override_camera_button->set_tooltip_text(TTR("Project Camera Override\nOverrides the running project's camera with the editor viewport camera."));
-	} else {
-		override_camera_button->set_disabled(true);
-		override_camera_button->set_pressed(false);
-		override_camera_button->set_tooltip_text(TTR("Project Camera Override\nNo project instance running. Run the project from the editor to use this feature."));
-	}
-}
-
 void CanvasItemEditor::_popup_callback(int p_op) {
 	EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 	last_option = MenuOption(p_op);
@@ -4955,9 +4944,6 @@ CanvasItemEditor::CanvasItemEditor() {
 	SceneTreeDock::get_singleton()->connect("node_created", callable_mp(this, &CanvasItemEditor::_node_created));
 	SceneTreeDock::get_singleton()->connect("add_node_used", callable_mp(this, &CanvasItemEditor::_reset_create_position));
 
-	EditorRunBar::get_singleton()->call_deferred(SNAME("connect"), "play_pressed", callable_mp(this, &CanvasItemEditor::_update_override_camera_button).bind(true));
-	EditorRunBar::get_singleton()->call_deferred(SNAME("connect"), "stop_pressed", callable_mp(this, &CanvasItemEditor::_update_override_camera_button).bind(false));
-
 	// A fluid container for all toolbars.
 	HFlowContainer *main_flow = memnew(HFlowContainer);
 	add_child(main_flow);
@@ -5256,8 +5242,7 @@ CanvasItemEditor::CanvasItemEditor() {
 	main_menu_hbox->add_child(override_camera_button);
 	override_camera_button->connect("toggled", callable_mp(this, &CanvasItemEditor::_button_override_camera));
 	override_camera_button->set_toggle_mode(true);
-	override_camera_button->set_disabled(true);
-	_update_override_camera_button(false);
+	override_camera_button->set_tooltip_text(TTR("Project Camera Override\nOverrides the running project's camera with the editor viewport camera."));
 
 	main_menu_hbox->add_child(memnew(VSeparator));
 

@@ -6147,19 +6147,6 @@ void Node3DEditor::_menu_gizmo_toggled(int p_option) {
 	update_all_gizmos();
 }
 
-void Node3DEditor::_update_camera_override_button(bool p_game_running) {
-	Button *const button = tool_option_button[TOOL_OPT_OVERRIDE_CAMERA];
-
-	if (p_game_running) {
-		button->set_disabled(false);
-		button->set_tooltip_text(TTR("Project Camera Override\nOverrides the running project's camera with the editor viewport camera."));
-	} else {
-		button->set_disabled(true);
-		button->set_pressed(false);
-		button->set_tooltip_text(TTR("Project Camera Override\nNo project instance running. Run the project from the editor to use this feature."));
-	}
-}
-
 void Node3DEditor::_update_camera_override_viewport(Object *p_viewport) {
 	Node3DEditorViewport *current_viewport = Object::cast_to<Node3DEditorViewport>(p_viewport);
 
@@ -7528,9 +7515,6 @@ void Node3DEditor::_notification(int p_what) {
 			SceneTreeDock::get_singleton()->get_tree_editor()->connect("node_changed", callable_mp(this, &Node3DEditor::_refresh_menu_icons));
 			editor_selection->connect("selection_changed", callable_mp(this, &Node3DEditor::_selection_changed));
 
-			EditorRunBar::get_singleton()->connect("stop_pressed", callable_mp(this, &Node3DEditor::_update_camera_override_button).bind(false));
-			EditorRunBar::get_singleton()->connect("play_pressed", callable_mp(this, &Node3DEditor::_update_camera_override_button).bind(true));
-
 			_update_preview_environment();
 
 			sun_state->set_custom_minimum_size(sun_vb->get_combined_minimum_size());
@@ -8209,9 +8193,8 @@ Node3DEditor::Node3DEditor() {
 	main_menu_hbox->add_child(tool_option_button[TOOL_OPT_OVERRIDE_CAMERA]);
 	tool_option_button[TOOL_OPT_OVERRIDE_CAMERA]->set_toggle_mode(true);
 	tool_option_button[TOOL_OPT_OVERRIDE_CAMERA]->set_flat(true);
-	tool_option_button[TOOL_OPT_OVERRIDE_CAMERA]->set_disabled(true);
+	tool_option_button[TOOL_OPT_OVERRIDE_CAMERA]->set_tooltip_text(TTR("Project Camera Override\nOverrides the running project's camera with the editor viewport camera."));
 	tool_option_button[TOOL_OPT_OVERRIDE_CAMERA]->connect("toggled", callable_mp(this, &Node3DEditor::_menu_item_toggled).bind(MENU_TOOL_OVERRIDE_CAMERA));
-	_update_camera_override_button(false);
 
 	main_menu_hbox->add_child(memnew(VSeparator));
 	sun_button = memnew(Button);

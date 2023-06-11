@@ -489,8 +489,6 @@ private:
 	void _button_override_camera(bool p_pressed);
 	void _button_tool_select(int p_index);
 
-	void _update_override_camera_button(bool p_game_running);
-
 	HSplitContainer *left_panel_split = nullptr;
 	HSplitContainer *right_panel_split = nullptr;
 	VSplitContainer *bottom_split = nullptr;
