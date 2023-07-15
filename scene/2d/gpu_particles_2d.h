@@ -62,6 +62,8 @@ private:
 	int fixed_fps = 0;
 	bool fractional_delta = false;
 	bool interpolate = true;
+	double interp_to_end_factor = 0;
+	Vector2 previous_position;
 #ifdef TOOLS_ENABLED
 	bool show_visibility_rect = false;
 #endif
@@ -114,6 +116,7 @@ public:
 	void set_trail_lifetime(double p_seconds);
 	void set_trail_sections(int p_sections);
 	void set_trail_section_subdivisions(int p_subdivisions);
+	void set_interp_to_end(double p_interp);
 
 #ifdef TOOLS_ENABLED
 	void set_show_visibility_rect(bool p_show_visibility_rect);
@@ -136,6 +139,7 @@ public:
 	double get_trail_lifetime() const;
 	int get_trail_sections() const;
 	int get_trail_section_subdivisions() const;
+	double get_interp_to_end() const;
 
 	void set_fixed_fps(int p_count);
 	int get_fixed_fps() const;

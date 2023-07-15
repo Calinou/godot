@@ -156,7 +156,10 @@ void main() {
 			} break; //nothing
 			case TRANSFORM_ALIGN_Z_BILLBOARD: {
 				mat3 local = mat3(normalize(cross(params.align_up, params.sort_direction)), params.align_up, params.sort_direction);
-				local = local * mat3(txform);
+				mat3 angle = mat3(vec3(cos(particles.data[particle].custom.x), -sin(particles.data[particle].custom.x), 0.0),
+						vec3(sin(particles.data[particle].custom.x), cos(particles.data[particle].custom.x), 0.0),
+						vec3(0.0, 0.0, 1.0));
+				local = local * angle * mat3(txform);
 				txform[0].xyz = local[0];
 				txform[1].xyz = local[1];
 				txform[2].xyz = local[2];

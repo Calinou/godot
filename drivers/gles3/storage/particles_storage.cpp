@@ -431,6 +431,19 @@ void ParticlesStorage::particles_set_emission_transform(RID p_particles, const T
 	particles->emission_transform = p_transform;
 }
 
+void ParticlesStorage::particles_set_emitter_velocity(RID p_particles, const Vector3 &p_velocity) {
+	Particles *particles = particles_owner.get_or_null(p_particles);
+	ERR_FAIL_COND(!particles);
+
+	particles->emitter_velocity = p_velocity;
+}
+void ParticlesStorage::particles_set_interp_to_end(RID p_particles, const float p_interp) {
+	Particles *particles = particles_owner.get_or_null(p_particles);
+	ERR_FAIL_COND(!particles);
+
+	particles->interp_to_end = p_interp;
+}
+
 int ParticlesStorage::particles_get_draw_passes(RID p_particles) const {
 	const Particles *particles = particles_owner.get_or_null(p_particles);
 	ERR_FAIL_COND_V(!particles, 0);

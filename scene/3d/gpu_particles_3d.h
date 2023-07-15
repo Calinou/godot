@@ -93,6 +93,8 @@ private:
 	double time = 0.0;
 	double emission_time = 0.0;
 	double active_time = 0.0;
+	double interp_to_end_factor = 0;
+	Vector3 previous_position;
 
 	void _attach_sub_emitter();
 
@@ -120,6 +122,7 @@ public:
 	void set_collision_base_size(real_t p_ratio);
 	void set_trail_enabled(bool p_enabled);
 	void set_trail_lifetime(double p_seconds);
+	void set_interp_to_end(double p_interp);
 
 	bool is_emitting() const;
 	int get_amount() const;
@@ -135,6 +138,7 @@ public:
 	real_t get_collision_base_size() const;
 	bool is_trail_enabled() const;
 	double get_trail_lifetime() const;
+	double get_interp_to_end() const;
 
 	void set_fixed_fps(int p_count);
 	int get_fixed_fps() const;

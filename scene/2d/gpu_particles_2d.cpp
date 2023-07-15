@@ -189,6 +189,11 @@ void GPUParticles2D::set_trail_section_subdivisions(int p_subdivisions) {
 	queue_redraw();
 }
 
+void GPUParticles2D::set_interp_to_end(double p_interp) {
+	interp_to_end_factor = CLAMP(p_interp, 0.0, 1.0);
+	RS::get_singleton()->particles_set_interp_to_end(particles, interp_to_end_factor);
+}
+
 #ifdef TOOLS_ENABLED
 void GPUParticles2D::set_show_visibility_rect(bool p_show_visibility_rect) {
 	show_visibility_rect = p_show_visibility_rect;
@@ -313,6 +318,10 @@ void GPUParticles2D::set_interpolate(bool p_enable) {
 
 bool GPUParticles2D::get_interpolate() const {
 	return interpolate;
+}
+
+double GPUParticles2D::get_interp_to_end() const {
+	return interp_to_end_factor;
 }
 
 PackedStringArray GPUParticles2D::get_configuration_warnings() const {
@@ -576,6 +585,8 @@ void GPUParticles2D::_notification(int p_what) {
 			} else {
 				RS::get_singleton()->particles_set_speed_scale(particles, 0);
 			}
+			set_process_internal(true);
+			previous_position = get_global_position();
 		} break;
 
 		case NOTIFICATION_EXIT_TREE: {
@@ -598,6 +609,12 @@ void GPUParticles2D::_notification(int p_what) {
 		} break;
 
 		case NOTIFICATION_INTERNAL_PROCESS: {
+			RS::get_singleton()->particles_set_emitter_velocity(particles,
+					Vector3((get_global_position() - previous_position).x,
+							(get_global_position() - previous_position).y,
+							0.0) /
+							get_process_delta_time());
+			previous_position = get_global_position();
 			if (one_shot) {
 				time += get_process_delta_time();
 				if (time > emission_time) {
@@ -636,6 +653,7 @@ void GPUParticles2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_process_material", "material"), &GPUParticles2D::set_process_material);
 	ClassDB::bind_method(D_METHOD("set_speed_scale", "scale"), &GPUParticles2D::set_speed_scale);
 	ClassDB::bind_method(D_METHOD("set_collision_base_size", "size"), &GPUParticles2D::set_collision_base_size);
+	ClassDB::bind_method(D_METHOD("set_interp_to_end", "interp"), &GPUParticles2D::set_interp_to_end);
 
 	ClassDB::bind_method(D_METHOD("is_emitting"), &GPUParticles2D::is_emitting);
 	ClassDB::bind_method(D_METHOD("get_amount"), &GPUParticles2D::get_amount);
@@ -652,6 +670,7 @@ void GPUParticles2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_process_material"), &GPUParticles2D::get_process_material);
 	ClassDB::bind_method(D_METHOD("get_speed_scale"), &GPUParticles2D::get_speed_scale);
 	ClassDB::bind_method(D_METHOD("get_collision_base_size"), &GPUParticles2D::get_collision_base_size);
+	ClassDB::bind_method(D_METHOD("get_interp_to_end"), &GPUParticles2D::get_interp_to_end);
 
 	ClassDB::bind_method(D_METHOD("set_draw_order", "order"), &GPUParticles2D::set_draw_order);
 	ClassDB::bind_method(D_METHOD("get_draw_order"), &GPUParticles2D::get_draw_order);
@@ -698,6 +717,7 @@ void GPUParticles2D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "fixed_fps", PROPERTY_HINT_RANGE, "0,1000,1,suffix:FPS"), "set_fixed_fps", "get_fixed_fps");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "interpolate"), "set_interpolate", "get_interpolate");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "fract_delta"), "set_fractional_delta", "get_fractional_delta");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "interp_to_end", PROPERTY_HINT_RANGE, "0.00,1.0,0.001"), "set_interp_to_end", "get_interp_to_end");
 	ADD_GROUP("Collision", "collision_");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "collision_base_size", PROPERTY_HINT_RANGE, "0,128,0.01,or_greater"), "set_collision_base_size", "get_collision_base_size");
 	ADD_GROUP("Drawing", "");

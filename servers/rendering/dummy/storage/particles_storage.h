@@ -81,6 +81,8 @@ public:
 	virtual AABB particles_get_aabb(RID p_particles) const override { return AABB(); }
 
 	virtual void particles_set_emission_transform(RID p_particles, const Transform3D &p_transform) override {}
+	virtual void particles_set_emitter_velocity(RID p_particles, const Vector3 &p_velocity) override {}
+	virtual void particles_set_interp_to_end(RID p_particles, const float p_interp) override {}
 
 	virtual bool particles_get_emitting(RID p_particles) override { return false; }
 	virtual int particles_get_draw_passes(RID p_particles) const override { return 0; }

@@ -73,6 +73,8 @@
 		</method>
 	</methods>
 	<members>
+		<member name="alpha_curve" type="Texture2D" setter="set_alpha_curve" getter="get_alpha_curve">
+		</member>
 		<member name="angle_curve" type="Texture2D" setter="set_param_texture" getter="get_param_texture">
 			Each particle's rotation will be animated along this [CurveTexture].
 		</member>
@@ -153,12 +155,20 @@
 		<member name="direction" type="Vector3" setter="set_direction" getter="get_direction" default="Vector3(1, 0, 0)">
 			Unit vector specifying the particles' emission direction.
 		</member>
+		<member name="directional_velocity_curve" type="Texture2D" setter="set_param_texture" getter="get_param_texture">
+		</member>
+		<member name="directional_velocity_max" type="float" setter="set_param_max" getter="get_param_max">
+		</member>
+		<member name="directional_velocity_min" type="float" setter="set_param_min" getter="get_param_min">
+		</member>
 		<member name="emission_box_extents" type="Vector3" setter="set_emission_box_extents" getter="get_emission_box_extents">
 			The box's extents if [code]emission_shape[/code] is set to [constant EMISSION_SHAPE_BOX].
 		</member>
 		<member name="emission_color_texture" type="Texture2D" setter="set_emission_color_texture" getter="get_emission_color_texture">
 			Particle color will be modulated by color determined by sampling this texture at the same point as the [member emission_point_texture].
 			[b]Note:[/b] [member emission_color_texture] multiplies the particle mesh's vertex colors. To have a visible effect on a [BaseMaterial3D], [member BaseMaterial3D.vertex_color_use_as_albedo] [i]must[/i] be [code]true[/code]. For a [ShaderMaterial], [code]ALBEDO *= COLOR.rgb;[/code] must be inserted in the shader's [code]fragment()[/code] function. Otherwise, [member emission_color_texture] will have no visible effect.
+		</member>
+		<member name="emission_curve" type="Texture2D" setter="set_emission_curve" getter="get_emission_curve">
 		</member>
 		<member name="emission_normal_texture" type="Texture2D" setter="set_emission_normal_texture" getter="get_emission_normal_texture">
 			Particle velocity and rotation will be set by sampling this texture at the same point as the [member emission_point_texture]. Used only in [constant EMISSION_SHAPE_DIRECTED_POINTS]. Can be created automatically from mesh or node by selecting "Create Emission Points from Mesh/Node" under the "Particles" tool in the toolbar.
@@ -202,6 +212,8 @@
 		<member name="hue_variation_min" type="float" setter="set_param_min" getter="get_param_min" default="0.0">
 			Minimum equivalent of [member hue_variation_max].
 		</member>
+		<member name="inherit_velocity_ratio" type="float" setter="set_inherit_velocity_ratio" getter="get_inherit_velocity_ratio" default="0.0">
+		</member>
 		<member name="initial_velocity_max" type="float" setter="set_param_max" getter="get_param_max" default="0.0">
 			Maximum initial velocity magnitude for each particle. Direction comes from [member direction] and [member spread].
 		</member>
@@ -223,15 +235,17 @@
 		<member name="orbit_velocity_curve" type="Texture2D" setter="set_param_texture" getter="get_param_texture">
 			Each particle's orbital velocity will vary along this [CurveTexture].
 		</member>
-		<member name="orbit_velocity_max" type="float" setter="set_param_max" getter="get_param_max">
+		<member name="orbit_velocity_max" type="float" setter="set_param_max" getter="get_param_max" default="0.0">
 			Maximum orbital velocity applied to each particle. Makes the particles circle around origin. Specified in number of full rotations around origin per second.
 			Only available when [member particle_flag_disable_z] is [code]true[/code].
 		</member>
-		<member name="orbit_velocity_min" type="float" setter="set_param_min" getter="get_param_min">
+		<member name="orbit_velocity_min" type="float" setter="set_param_min" getter="get_param_min" default="0.0">
 			Minimum equivalent of [member orbit_velocity_max].
 		</member>
 		<member name="particle_flag_align_y" type="bool" setter="set_particle_flag" getter="get_particle_flag" default="false">
 			Align Y axis of particle with the direction of its velocity.
+		</member>
+		<member name="particle_flag_damping_as_friction" type="bool" setter="set_particle_flag" getter="get_particle_flag" default="false">
 		</member>
 		<member name="particle_flag_disable_z" type="bool" setter="set_particle_flag" getter="get_particle_flag" default="false">
 			If [code]true[/code], particles will not move on the z axis.
@@ -248,6 +262,12 @@
 		<member name="radial_accel_min" type="float" setter="set_param_min" getter="get_param_min" default="0.0">
 			Minimum equivalent of [member radial_accel_max].
 		</member>
+		<member name="radial_velocity_curve" type="Texture2D" setter="set_param_texture" getter="get_param_texture">
+		</member>
+		<member name="radial_velocity_max" type="float" setter="set_param_max" getter="get_param_max" default="0.0">
+		</member>
+		<member name="radial_velocity_min" type="float" setter="set_param_min" getter="get_param_min" default="0.0">
+		</member>
 		<member name="scale_curve" type="Texture2D" setter="set_param_texture" getter="get_param_texture">
 			Each particle's scale will vary along this [CurveTexture]. If a [CurveXYZTexture] is supplied instead, the scale will be separated per-axis.
 		</member>
@@ -256,6 +276,12 @@
 		</member>
 		<member name="scale_min" type="float" setter="set_param_min" getter="get_param_min" default="1.0">
 			Minimum equivalent of [member scale_max].
+		</member>
+		<member name="scale_over_velocity_curve" type="Texture2D" setter="set_param_texture" getter="get_param_texture">
+		</member>
+		<member name="scale_over_velocity_max" type="float" setter="set_param_max" getter="get_param_max">
+		</member>
+		<member name="scale_over_velocity_min" type="float" setter="set_param_min" getter="get_param_min">
 		</member>
 		<member name="spread" type="float" setter="set_spread" getter="get_spread" default="45.0">
 			Each particle's initial direction range from [code]+spread[/code] to [code]-spread[/code] degrees.
@@ -319,6 +345,10 @@
 		<member name="turbulence_noise_strength" type="float" setter="set_turbulence_noise_strength" getter="get_turbulence_noise_strength" default="1.0">
 			The turbulence noise strength. Increasing this will result in a stronger, more contrasting, flow pattern.
 		</member>
+		<member name="velocity_limit_curve" type="Texture2D" setter="set_velocity_limit_curve" getter="get_velocity_limit_curve">
+		</member>
+		<member name="velocity_pivot" type="Vector3" setter="set_velocity_pivot" getter="get_velocity_pivot" default="Vector3(0, 0, 0)">
+		</member>
 	</members>
 	<constants>
 		<constant name="PARAM_INITIAL_LINEAR_VELOCITY" value="0" enum="Parameter">
@@ -357,7 +387,13 @@
 		<constant name="PARAM_ANIM_OFFSET" value="11" enum="Parameter">
 			Use with [method set_param_min], [method set_param_max], and [method set_param_texture] to set animation offset properties.
 		</constant>
-		<constant name="PARAM_MAX" value="15" enum="Parameter">
+		<constant name="PARAM_RADIAL_VELOCITY" value="15" enum="Parameter">
+		</constant>
+		<constant name="PARAM_DIRECTIONAL_VELOCITY" value="16" enum="Parameter">
+		</constant>
+		<constant name="PARAM_SCALE_OVER_VELOCITY" value="17" enum="Parameter">
+		</constant>
+		<constant name="PARAM_MAX" value="18" enum="Parameter">
 			Represents the size of the [enum Parameter] enum.
 		</constant>
 		<constant name="PARTICLE_FLAG_ALIGN_Y_TO_VELOCITY" value="0" enum="ParticleFlags">
@@ -369,7 +405,9 @@
 		<constant name="PARTICLE_FLAG_DISABLE_Z" value="2" enum="ParticleFlags">
 			Use with [method set_particle_flag] to set [member particle_flag_disable_z].
 		</constant>
-		<constant name="PARTICLE_FLAG_MAX" value="3" enum="ParticleFlags">
+		<constant name="PARTICLE_FLAG_DAMPING_AS_FRICTION" value="3" enum="ParticleFlags">
+		</constant>
+		<constant name="PARTICLE_FLAG_MAX" value="4" enum="ParticleFlags">
 			Represents the size of the [enum ParticleFlags] enum.
 		</constant>
 		<constant name="EMISSION_SHAPE_POINT" value="0" enum="EmissionShape">

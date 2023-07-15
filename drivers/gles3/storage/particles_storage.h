@@ -143,6 +143,8 @@ private:
 		uint32_t frame;
 
 		float emission_transform[16];
+		float emitter_velocity[3];
+		float interp_to_end;
 
 		Attractor attractors[MAX_ATTRACTORS];
 		Collider colliders[MAX_COLLIDERS];
@@ -234,6 +236,8 @@ private:
 		bool clear = true;
 
 		Transform3D emission_transform;
+		Vector3 emitter_velocity;
+		double interp_to_end;
 
 		HashSet<RID> collisions;
 
@@ -352,6 +356,8 @@ public:
 	virtual AABB particles_get_aabb(RID p_particles) const override;
 
 	virtual void particles_set_emission_transform(RID p_particles, const Transform3D &p_transform) override;
+	virtual void particles_set_emitter_velocity(RID p_particles, const Vector3 &p_velocity) override;
+	virtual void particles_set_interp_to_end(RID p_particles, const float p_interp) override;
 
 	virtual bool particles_get_emitting(RID p_particles) override;
 	virtual int particles_get_draw_passes(RID p_particles) const override;

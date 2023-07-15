@@ -88,6 +88,8 @@ ParticlesStorage::ParticlesStorage() {
 		actions.renames["INDEX"] = "index";
 		//actions.renames["GRAVITY"] = "current_gravity";
 		actions.renames["EMISSION_TRANSFORM"] = "FRAME.emission_transform";
+		actions.renames["EMITTER_VELOCITY"] = "FRAME.emitter_velocity";
+		actions.renames["INTERPOLATE_TO_END"] = "FRAME.interp_to_end";
 		actions.renames["RANDOM_SEED"] = "FRAME.random_seed";
 		actions.renames["FLAG_EMIT_POSITION"] = "EMISSION_FLAG_HAS_POSITION";
 		actions.renames["FLAG_EMIT_ROT_SCALE"] = "EMISSION_FLAG_HAS_ROTATION_SCALE";
@@ -651,6 +653,19 @@ void ParticlesStorage::particles_set_emission_transform(RID p_particles, const T
 	particles->emission_transform = p_transform;
 }
 
+void ParticlesStorage::particles_set_emitter_velocity(RID p_particles, const Vector3 &p_velocity) {
+	Particles *particles = particles_owner.get_or_null(p_particles);
+	ERR_FAIL_COND(!particles);
+
+	particles->emitter_velocity = p_velocity;
+}
+void ParticlesStorage::particles_set_interp_to_end(RID p_particles, const float p_interp) {
+	Particles *particles = particles_owner.get_or_null(p_particles);
+	ERR_FAIL_COND(!particles);
+
+	particles->interp_to_end = p_interp;
+}
+
 int ParticlesStorage::particles_get_draw_passes(RID p_particles) const {
 	const Particles *particles = particles_owner.get_or_null(p_particles);
 	ERR_FAIL_COND_V(!particles, 0);
@@ -781,6 +796,10 @@ void ParticlesStorage::_particles_process(Particles *p_particles, double p_delta
 	frame_params.pad0 = 0;
 	frame_params.pad1 = 0;
 	frame_params.pad2 = 0;
+	frame_params.emitter_velocity[0] = p_particles->emitter_velocity.x;
+	frame_params.emitter_velocity[1] = p_particles->emitter_velocity.y;
+	frame_params.emitter_velocity[2] = p_particles->emitter_velocity.z;
+	frame_params.interp_to_end = p_particles->interp_to_end;
 
 	{ //collision and attractors
 
