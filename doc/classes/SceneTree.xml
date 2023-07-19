@@ -243,6 +243,9 @@
 			If [code]true[/code], collision shapes will be visible when running the game from the editor for debugging purposes.
 			[b]Note:[/b] This property is not designed to be changed at run-time. Changing the value of [member debug_collisions_hint] while the project is running will not have the desired effect.
 		</member>
+		<member name="debug_menu_display_mode" type="int" setter="set_debug_menu_display_mode" getter="get_debug_menu_display_mode" enum="SceneTree.DebugMenuDisplayMode" default="0">
+			The current display mode of the built-in debug menu. See also [member ProjectSettings.input/ui_cycle_debug_menu_display_mode].
+		</member>
 		<member name="debug_navigation_hint" type="bool" setter="set_debug_navigation_hint" getter="is_debugging_navigation_hint" default="false">
 			If [code]true[/code], navigation polygons will be visible when running the game from the editor for debugging purposes.
 			[b]Note:[/b] This property is not designed to be changed at run-time. Changing the value of [member debug_navigation_hint] while the project is running will not have the desired effect.
@@ -330,6 +333,18 @@
 		<constant name="GROUP_CALL_UNIQUE" value="4" enum="GroupCallFlags">
 			Call a group only once even if the call is executed many times.
 			[b]Note:[/b] Arguments are not taken into account when deciding whether the call is unique or not. Therefore when the same method is called with different arguments, only the first call will be performed.
+		</constant>
+		<constant name="DEBUG_MENU_DISPLAY_MODE_HIDDEN" value="0" enum="DebugMenuDisplayMode">
+			Built-in debug menu is hidden.
+		</constant>
+		<constant name="DEBUG_MENU_DISPLAY_MODE_COMPACT" value="1" enum="DebugMenuDisplayMode">
+			Built-in debug menu is visible in compact mode (only FPS, frametime, V-Sync mode and framerate cap displayed).
+		</constant>
+		<constant name="DEBUG_MENU_DISPLAY_MODE_DETAILED" value="2" enum="DebugMenuDisplayMode">
+			Built-in debug menu is visible in detailed mode, with all information visible.
+		</constant>
+		<constant name="DEBUG_MENU_DISPLAY_MODE_MAX" value="3" enum="DebugMenuDisplayMode">
+			Represents the size of the [enum DebugMenuDisplayMode] enum.
 		</constant>
 	</constants>
 </class>
