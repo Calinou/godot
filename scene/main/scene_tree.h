@@ -44,6 +44,7 @@ class ArrayMesh;
 class InputEvent;
 class Material;
 class MultiplayerAPI;
+class DebugConsole;
 class Node;
 class PackedScene;
 class Tween;
@@ -204,6 +205,9 @@ private:
 	ObjectID prev_scene_id;
 	ObjectID pending_new_scene_id;
 
+	// Initialized lazily and destroyed eagerly to decrease RAM usage, since it contains a lot of text.
+	DebugConsole *debug_console = nullptr;
+
 	Color debug_collisions_color;
 	Color debug_collision_contact_color;
 	Color debug_paths_color;
@@ -301,6 +305,13 @@ public:
 	};
 
 	RequiredResult<Window> get_root() const;
+
+	enum DebugConsoleDisplayMode {
+		DEBUG_CONSOLE_DISPLAY_MODE_HIDDEN,
+		DEBUG_CONSOLE_DISPLAY_MODE_REDUCED,
+		DEBUG_CONSOLE_DISPLAY_MODE_FULL,
+		DEBUG_CONSOLE_DISPLAY_MODE_MAX,
+	};
 
 	void call_group_flagsp(uint32_t p_call_flags, const StringName &p_group, const StringName &p_function, const Variant **p_args, int p_argcount);
 	void notify_group_flags(uint32_t p_call_flags, const StringName &p_group, int p_notification);
@@ -451,6 +462,9 @@ public:
 	void set_multiplayer_poll_enabled(bool p_enabled);
 	bool is_multiplayer_poll_enabled() const;
 
+	void set_debug_console_display_mode(DebugConsoleDisplayMode p_mode);
+	DebugConsoleDisplayMode get_debug_console_display_mode() const;
+
 	static void add_idle_callback(IdleCallback p_callback);
 
 	void set_disable_node_threading(bool p_disable);
@@ -475,3 +489,4 @@ public:
 };
 
 VARIANT_ENUM_CAST(SceneTree::GroupCallFlags);
+VARIANT_ENUM_CAST(SceneTree::DebugConsoleDisplayMode);

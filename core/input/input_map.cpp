@@ -433,6 +433,7 @@ static const _BuiltinActionDisplayName _builtin_action_display_names[] = {
 	{ "ui_unicode_start",                              TTRC("Start Unicode Character Input") },
 	{ "ui_colorpicker_delete_preset",                  TTRC("ColorPicker: Delete Preset") },
 	{ "ui_accessibility_drag_and_drop",                TTRC("Accessibility: Keyboard Drag and Drop") },
+	{ "ui_debug_console_cycle_display_mode",           TTRC("Debug Console: Cycle Display Mode") },
 	{ "",                                              ""}
 	/* clang-format on */
 };
@@ -879,6 +880,14 @@ const HashMap<String, List<Ref<InputEvent>>> &InputMap::get_builtins() {
 	inputs.push_back(InputEventJoypadButton::create_reference(JoyButton::X));
 	inputs.push_back(InputEventKey::create_reference(Key::KEY_DELETE));
 	default_builtin_cache.insert("ui_colorpicker_delete_preset", inputs);
+
+	// ///// UI Debug Console Shortcuts /////
+	inputs = List<Ref<InputEvent>>();
+	// Physical location of the Tilde key.
+	inputs.push_back(InputEventKey::create_reference(Key::QUOTELEFT, true));
+	// Alternative to the Tilde key.
+	inputs.push_back(InputEventKey::create_reference(Key::ESCAPE | KeyModifierMask::SHIFT));
+	default_builtin_cache.insert("ui_debug_console_cycle_display_mode", inputs);
 
 	return default_builtin_cache;
 }
