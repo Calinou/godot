@@ -46,6 +46,7 @@
 #include "scene/animation/tween.h"
 #include "scene/debugger/scene_debugger.h"
 #include "scene/gui/control.h"
+#include "scene/gui/debug_console.h"
 #include "scene/main/multiplayer_api.h"
 #include "scene/main/viewport.h"
 #include "scene/resources/environment.h"
@@ -1536,6 +1537,37 @@ bool SceneTree::is_multiplayer_poll_enabled() const {
 	return multiplayer_poll;
 }
 
+void SceneTree::set_debug_console_display_mode(DebugConsoleDisplayMode p_mode) {
+	if (p_mode != DEBUG_CONSOLE_DISPLAY_MODE_HIDDEN) {
+		if (debug_console == nullptr) {
+			debug_console = memnew(DebugConsole);
+			// Begin name with an underscore to avoid conflict with project nodes.
+			debug_console->set_name("_DebugConsole");
+			debug_console->set_display_mode(p_mode);
+			get_root()->add_child(debug_console, false, Node::INTERNAL_MODE_BACK);
+		} else {
+			debug_console->set_display_mode(p_mode);
+		}
+	} else {
+		if (debug_console != nullptr) {
+			// Free when closing to avoid reserving memory during the project's run duration.
+			debug_console->queue_free();
+			debug_console = nullptr;
+		} else {
+			ERR_PRINT("Couldn't find debug menu to hide.");
+		}
+	}
+}
+
+SceneTree::DebugConsoleDisplayMode SceneTree::get_debug_console_display_mode() const {
+	if (debug_console) {
+		return debug_console->get_display_mode();
+	}
+
+	// Debug menu isn't created yet. Therefore, it's hidden.
+	return DEBUG_CONSOLE_DISPLAY_MODE_HIDDEN;
+}
+
 void SceneTree::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_root"), &SceneTree::get_root);
 	ClassDB::bind_method(D_METHOD("has_group", "name"), &SceneTree::has_group);
@@ -1606,6 +1638,9 @@ void SceneTree::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_multiplayer_poll_enabled", "enabled"), &SceneTree::set_multiplayer_poll_enabled);
 	ClassDB::bind_method(D_METHOD("is_multiplayer_poll_enabled"), &SceneTree::is_multiplayer_poll_enabled);
 
+	ClassDB::bind_method(D_METHOD("set_debug_console_display_mode", "mode"), &SceneTree::set_debug_console_display_mode);
+	ClassDB::bind_method(D_METHOD("get_debug_console_display_mode"), &SceneTree::get_debug_console_display_mode);
+
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "auto_accept_quit"), "set_auto_accept_quit", "is_auto_accept_quit");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "quit_on_go_back"), "set_quit_on_go_back", "is_quit_on_go_back");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "debug_collisions_hint"), "set_debug_collisions_hint", "is_debugging_collisions_hint");
@@ -1616,6 +1651,7 @@ void SceneTree::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "current_scene", PROPERTY_HINT_RESOURCE_TYPE, "Node", PROPERTY_USAGE_NONE), "set_current_scene", "get_current_scene");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "root", PROPERTY_HINT_RESOURCE_TYPE, "Node", PROPERTY_USAGE_NONE), "", "get_root");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "multiplayer_poll"), "set_multiplayer_poll_enabled", "is_multiplayer_poll_enabled");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "debug_console_display_mode", PROPERTY_HINT_ENUM, "Hidden,Compact,Detailed"), "set_debug_console_display_mode", "get_debug_console_display_mode");
 
 	ADD_SIGNAL(MethodInfo("tree_changed"));
 	ADD_SIGNAL(MethodInfo("tree_process_mode_changed")); //editor only signal, but due to API hash it can't be removed in run-time
@@ -1631,6 +1667,11 @@ void SceneTree::_bind_methods() {
 	BIND_ENUM_CONSTANT(GROUP_CALL_REVERSE);
 	BIND_ENUM_CONSTANT(GROUP_CALL_DEFERRED);
 	BIND_ENUM_CONSTANT(GROUP_CALL_UNIQUE);
+
+	BIND_ENUM_CONSTANT(DEBUG_CONSOLE_DISPLAY_MODE_HIDDEN);
+	BIND_ENUM_CONSTANT(DEBUG_CONSOLE_DISPLAY_MODE_COMPACT);
+	BIND_ENUM_CONSTANT(DEBUG_CONSOLE_DISPLAY_MODE_DETAILED);
+	BIND_ENUM_CONSTANT(DEBUG_CONSOLE_DISPLAY_MODE_MAX);
 }
 
 SceneTree *SceneTree::singleton = nullptr;

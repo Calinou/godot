@@ -351,6 +351,7 @@ static const _BuiltinActionDisplayName _builtin_action_display_names[] = {
     { "ui_filedialog_refresh",                         TTRC("Refresh") },
     { "ui_filedialog_show_hidden",                     TTRC("Show Hidden") },
     { "ui_swap_input_direction ",                      TTRC("Swap Input Direction") },
+    { "ui_cycle_debug_console_display_mode",           TTRC("Cycle Debug Console Display Mode") },
     { "",                                              ""}
 	/* clang-format on */
 };
@@ -723,6 +724,12 @@ const HashMap<String, List<Ref<InputEvent>>> &InputMap::get_builtins() {
 	inputs = List<Ref<InputEvent>>();
 	inputs.push_back(InputEventKey::create_reference(Key::QUOTELEFT | KeyModifierMask::CMD_OR_CTRL));
 	default_builtin_cache.insert("ui_swap_input_direction", inputs);
+
+	// ///// UI Misc Shortcuts /////
+
+	inputs = List<Ref<InputEvent>>();
+	inputs.push_back(InputEventKey::create_reference(Key::F3));
+	default_builtin_cache.insert("ui_cycle_debug_console_display_mode", inputs);
 
 	return default_builtin_cache;
 }
