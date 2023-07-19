@@ -2924,6 +2924,7 @@ void RenderingServer::init() {
 	GLOBAL_DEF("rendering/shading/overrides/force_vertex_shading.mobile", true);
 	GLOBAL_DEF("rendering/shading/overrides/force_lambert_over_burley", false);
 	GLOBAL_DEF("rendering/shading/overrides/force_lambert_over_burley.mobile", true);
+	GLOBAL_DEF_RST(PropertyInfo(Variant::STRING, "rendering/shading/default_spatial_shader", PROPERTY_HINT_FILE, "*.gdshader"), "");
 
 	GLOBAL_DEF("rendering/driver/depth_prepass/enable", true);
 	GLOBAL_DEF("rendering/driver/depth_prepass/disable_for_vendors", "PowerVR,Mali,Adreno,Apple");

@@ -743,7 +743,13 @@ void SceneShaderForwardClustered::init(const String p_defines) {
 		//default material and shader
 		default_shader = material_storage->shader_allocate();
 		material_storage->shader_initialize(default_shader);
-		material_storage->shader_set_code(default_shader, R"(
+
+		String shader_code;
+		const String default_shader_path = GLOBAL_GET("rendering/shading/default_spatial_shader");
+		if (!default_shader_path.is_empty()) {
+			shader_code = FileAccess::get_file_as_string(default_shader_path);
+		} else {
+			shader_code = R"(
 // Default 3D material shader (clustered).
 
 shader_type spatial;
@@ -757,7 +763,10 @@ void fragment() {
 	ROUGHNESS = 0.8;
 	METALLIC = 0.2;
 }
-)");
+)";
+		}
+
+		material_storage->shader_set_code(default_shader, shader_code);
 		default_material = material_storage->material_allocate();
 		material_storage->material_initialize(default_material);
 		material_storage->material_set_shader(default_material, default_shader);

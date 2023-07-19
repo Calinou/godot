@@ -2669,8 +2669,14 @@ RasterizerSceneGLES3::RasterizerSceneGLES3() {
 		//default material and shader
 		scene_globals.default_shader = material_storage->shader_allocate();
 		material_storage->shader_initialize(scene_globals.default_shader);
-		material_storage->shader_set_code(scene_globals.default_shader, R"(
-// Default 3D material shader.
+
+		String shader_code;
+		const String default_shader_path = GLOBAL_GET("rendering/shading/default_spatial_shader");
+		if (!default_shader_path.is_empty()) {
+			shader_code = FileAccess::get_file_as_string(default_shader_path);
+		} else {
+			shader_code = R"(
+// Default 3D material shader (compatibility).
 
 shader_type spatial;
 
@@ -2683,7 +2689,10 @@ void fragment() {
 	ROUGHNESS = 0.8;
 	METALLIC = 0.2;
 }
-)");
+)";
+		}
+
+		material_storage->shader_set_code(scene_globals.default_shader, shader_code);
 		scene_globals.default_material = material_storage->material_allocate();
 		material_storage->material_initialize(scene_globals.default_material);
 		material_storage->material_set_shader(scene_globals.default_material, scene_globals.default_shader);
