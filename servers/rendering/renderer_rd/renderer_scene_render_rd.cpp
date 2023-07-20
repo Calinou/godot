@@ -667,6 +667,10 @@ void RendererSceneRenderRD::_render_buffers_post_process_and_tonemap(const Rende
 		}
 	}
 
+	// Make the hardware perform nearest-neighbor filtering when scaling the viewport 3D buffer.
+	RS::CanvasItemTextureFilter filter_mode = rb->get_scaling_3d_mode() == RS::VIEWPORT_SCALING_3D_MODE_NEAREST ? RS::CANVAS_ITEM_TEXTURE_FILTER_NEAREST : RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR;
+	bool using_upscaling_step = spatial_upscaler || filter_mode == RS::CANVAS_ITEM_TEXTURE_FILTER_NEAREST;
+
 	{
 		RENDER_TIMESTAMP("Tonemap");
 		RD::get_singleton()->draw_command_begin_label("Tonemap");
@@ -749,7 +753,7 @@ void RendererSceneRenderRD::_render_buffers_post_process_and_tonemap(const Rende
 
 		RID dest_fb;
 		RD::DataFormat dest_fb_format;
-		if (spatial_upscaler != nullptr || use_smaa) {
+		if (using_upscaling_step || use_smaa) {
 			// If we use a spatial upscaler to upscale or SMAA to antialias we need to write our result into an intermediate buffer.
 			// Note that this is cached so we only create the texture the first time.
 			dest_fb_format = rb->get_base_data_format();
@@ -795,7 +799,7 @@ void RendererSceneRenderRD::_render_buffers_post_process_and_tonemap(const Rende
 		bool using_hdr = texture_storage->render_target_is_using_hdr(render_target);
 
 		RID dest_fb;
-		if (spatial_upscaler) {
+		if (using_upscaling_step) {
 			rb->create_texture(SNAME("SMAA"), SNAME("destination"), rb->get_base_data_format(), RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_STORAGE_BIT | RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT, RD::TEXTURE_SAMPLES_1, Size2i(), 0, 1, true, true);
 		}
 		if (rb->get_view_count() > 1) {
@@ -803,7 +807,7 @@ void RendererSceneRenderRD::_render_buffers_post_process_and_tonemap(const Rende
 				RID source_texture = rb->get_texture_slice(SNAME("Tonemapper"), SNAME("destination"), v, 0);
 
 				RID dest_texture;
-				if (spatial_upscaler) {
+				if (using_upscaling_step) {
 					dest_texture = rb->get_texture_slice(SNAME("SMAA"), SNAME("destination"), v, 0);
 				} else {
 					dest_texture = texture_storage->render_target_get_rd_texture_slice(render_target, v);
@@ -815,7 +819,7 @@ void RendererSceneRenderRD::_render_buffers_post_process_and_tonemap(const Rende
 		} else {
 			RID source_texture = rb->get_texture(SNAME("Tonemapper"), SNAME("destination"));
 
-			if (spatial_upscaler) {
+			if (using_upscaling_step) {
 				RID dest_texture = rb->create_texture(SNAME("SMAA"), SNAME("destination"), rb->get_base_data_format(), RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_STORAGE_BIT | RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT, RD::TEXTURE_SAMPLES_1, Size2i(), 0, 1, true, true);
 				dest_fb = FramebufferCacheRD::get_singleton()->get_cache(dest_texture);
 			} else {
@@ -833,33 +837,41 @@ void RendererSceneRenderRD::_render_buffers_post_process_and_tonemap(const Rende
 		RD::get_singleton()->draw_command_end_label();
 	}
 
-	if (rb.is_valid() && spatial_upscaler) {
-		spatial_upscaler->ensure_context(rb);
+	if (rb.is_valid()) {
+		if (spatial_upscaler) {
+			spatial_upscaler->ensure_context(rb);
 
-		RD::get_singleton()->draw_command_begin_label(spatial_upscaler->get_label());
+			RD::get_singleton()->draw_command_begin_label(spatial_upscaler->get_label());
 
-		for (uint32_t v = 0; v < rb->get_view_count(); v++) {
-			RID source_texture;
-			if (use_smaa) {
-				source_texture = rb->get_texture_slice(SNAME("SMAA"), SNAME("destination"), v, 0);
-			} else {
-				source_texture = rb->get_texture_slice(SNAME("Tonemapper"), SNAME("destination"), v, 0);
+			for (uint32_t v = 0; v < rb->get_view_count(); v++) {
+				RID source_texture = rb->get_texture_slice(use_smaa ? SNAME("SMAA") : SNAME("Tonemapper"), SNAME("destination"), v, 0);
+				RID dest_texture = texture_storage->render_target_get_rd_texture_slice(render_target, v);
+
+				spatial_upscaler->process(rb, source_texture, dest_texture);
 			}
-			RID dest_texture = texture_storage->render_target_get_rd_texture_slice(render_target, v);
 
-			spatial_upscaler->process(rb, source_texture, dest_texture);
+			if (dest_is_msaa_2d) {
+				// We can't upscale directly into our MSAA buffer so we need to do a copy
+				RID source_texture = texture_storage->render_target_get_rd_texture(render_target);
+				RID dest_fb = FramebufferCacheRD::get_singleton()->get_cache(texture_storage->render_target_get_rd_texture_msaa(render_target));
+				copy_effects->copy_to_fb_rect(source_texture, dest_fb, Rect2i(Point2i(), rb->get_target_size()));
+
+				texture_storage->render_target_set_msaa_needs_resolve(render_target, true); // Make sure this gets resolved.
+			}
+
+			RD::get_singleton()->draw_command_end_label();
+		} else if (filter_mode == RS::CANVAS_ITEM_TEXTURE_FILTER_NEAREST) {
+			RID source_texture = rb->get_texture(use_smaa ? SNAME("SMAA") : SNAME("Tonemapper"), SNAME("destination"));
+			RID dest_fb;
+			if (dest_is_msaa_2d) {
+				dest_fb = FramebufferCacheRD::get_singleton()->get_cache(texture_storage->render_target_get_rd_texture_msaa(render_target));
+				texture_storage->render_target_set_msaa_needs_resolve(render_target, true); // Make sure this gets resolved.
+			} else {
+				dest_fb = texture_storage->render_target_get_rd_framebuffer(render_target);
+			}
+
+			copy_effects->copy_to_fb_rect(source_texture, dest_fb, Rect2i(Point2i(), rb->get_target_size()), false, false, false, false, RID(), false, false, false, false, Rect2(), false);
 		}
-
-		if (dest_is_msaa_2d) {
-			// We can't upscale directly into our MSAA buffer so we need to do a copy
-			RID source_texture = texture_storage->render_target_get_rd_texture(render_target);
-			RID dest_fb = FramebufferCacheRD::get_singleton()->get_cache(texture_storage->render_target_get_rd_texture_msaa(render_target));
-			copy_effects->copy_to_fb_rect(source_texture, dest_fb, Rect2i(Point2i(), rb->get_target_size()));
-
-			texture_storage->render_target_set_msaa_needs_resolve(render_target, true); // Make sure this gets resolved.
-		}
-
-		RD::get_singleton()->draw_command_end_label();
 	}
 
 	texture_storage->render_target_disable_clear_request(render_target);
