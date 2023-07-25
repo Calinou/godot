@@ -8203,6 +8203,10 @@ void TextEdit::_text_changed() {
 }
 
 void TextEdit::_emit_text_changed() {
+	if (get_tree()) {
+		get_tree()->play_theme_audio(get_theme_audio(SceneStringName(text_changed)));
+	}
+
 	emit_signal(SceneStringName(text_changed));
 	text_changed_dirty = false;
 }

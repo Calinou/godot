@@ -519,6 +519,7 @@ void LineEdit::gui_input(const Ref<InputEvent> &p_event) {
 
 		// Default is ENTER and KP_ENTER. Cannot use ui_accept as default includes SPACE.
 		if (k->is_action("ui_text_submit", false)) {
+			get_tree()->play_theme_audio(get_theme_audio(SNAME("text_submitted")));
 			emit_signal(SNAME("text_submitted"), text);
 			if (DisplayServer::get_singleton()->has_feature(DisplayServer::FEATURE_VIRTUAL_KEYBOARD) && virtual_keyboard_enabled) {
 				DisplayServer::get_singleton()->virtual_keyboard_hide();
@@ -1797,6 +1798,7 @@ void LineEdit::insert_text_at_caret(String p_text) {
 		// Truncate text to append to fit in max_length, if needed.
 		int available_chars = max_length - text.length();
 		if (p_text.length() > available_chars) {
+			get_tree()->play_theme_audio(get_theme_audio(SNAME("text_change_rejected")));
 			emit_signal(SNAME("text_change_rejected"), p_text.substr(available_chars));
 			p_text = p_text.substr(0, available_chars);
 		}
@@ -2326,6 +2328,10 @@ void LineEdit::_text_changed() {
 
 void LineEdit::_emit_text_change() {
 	emit_signal(SceneStringName(text_changed), text);
+	if (get_tree()) {
+		get_tree()->play_theme_audio(get_theme_audio(SceneStringName(text_changed)));
+	}
+
 	text_changed_dirty = false;
 }
 PackedStringArray LineEdit::get_configuration_warnings() const {

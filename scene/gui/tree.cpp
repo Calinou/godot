@@ -2695,6 +2695,9 @@ void Tree::select_single_item(TreeItem *p_selected, TreeItem *p_current, int p_c
 				c.selected = true;
 				selected_item = p_selected;
 				if (!emitted_row) {
+					if (get_tree()) {
+						get_tree()->play_theme_audio(get_theme_audio(SceneStringName(item_selected)));
+					}
 					emit_signal(SceneStringName(item_selected));
 					emitted_row = true;
 				}
@@ -2714,6 +2717,10 @@ void Tree::select_single_item(TreeItem *p_selected, TreeItem *p_current, int p_c
 
 					selected_item = p_selected;
 					selected_col = i;
+
+					if (get_tree()) {
+						get_tree()->play_theme_audio(get_theme_audio(SNAME("item_selected")));
+					}
 
 					emit_signal(SNAME("cell_selected"));
 					if (select_mode == SELECT_MULTI) {

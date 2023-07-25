@@ -115,6 +115,8 @@ void SpinBox::_range_click_timeout() {
 	if (!drag.enabled && Input::get_singleton()->is_mouse_button_pressed(MouseButton::LEFT)) {
 		bool up = get_local_mouse_position().y < (get_size().height / 2);
 		double step = get_custom_arrow_step() != 0.0 ? get_custom_arrow_step() : get_step();
+		const bool disabled = up ? state_cache.up_button_disabled : state_cache.down_button_disabled;
+		get_tree()->play_theme_audio(get_theme_audio(disabled ? SNAME("pressed_disabled") : SNAME("pressed_sound")));
 		set_value(get_value() + (up ? step : -step));
 
 		if (range_click_timer->is_one_shot()) {
@@ -177,6 +179,10 @@ void SpinBox::gui_input(const Ref<InputEvent> &p_event) {
 				line_edit->grab_focus();
 
 				if (mouse_on_up_button || mouse_on_down_button) {
+					if (get_tree()) {
+						const bool disabled = mouse_on_up_button ? state_cache.up_button_disabled : state_cache.down_button_disabled;
+						get_tree()->play_theme_audio(get_theme_audio(disabled ? SNAME("pressed_disabled") : SNAME("pressed_sound")));
+					}
 					set_value(get_value() + (mouse_on_up_button ? step : -step));
 				}
 				state_cache.up_button_pressed = mouse_on_up_button;
@@ -193,17 +199,27 @@ void SpinBox::gui_input(const Ref<InputEvent> &p_event) {
 			case MouseButton::RIGHT: {
 				line_edit->grab_focus();
 				if (mouse_on_up_button || mouse_on_down_button) {
+					if (get_tree()) {
+						const bool disabled = mouse_on_up_button ? state_cache.up_button_disabled : state_cache.down_button_disabled;
+						get_tree()->play_theme_audio(get_theme_audio(disabled ? SNAME("pressed_disabled") : SNAME("pressed_sound")));
+					}
 					set_value(mouse_on_up_button ? get_max() : get_min());
 				}
 			} break;
 			case MouseButton::WHEEL_UP: {
 				if (line_edit->has_focus()) {
+					if (get_tree()) {
+						get_tree()->play_theme_audio(get_theme_audio(state_cache.up_button_disabled ? SNAME("pressed_disabled") : SNAME("pressed_sound")));
+					}
 					set_value(get_value() + step * mb->get_factor());
 					accept_event();
 				}
 			} break;
 			case MouseButton::WHEEL_DOWN: {
 				if (line_edit->has_focus()) {
+					if (get_tree()) {
+						get_tree()->play_theme_audio(get_theme_audio(state_cache.down_button_disabled ? SNAME("pressed_disabled") : SNAME("pressed_sound")));
+					}
 					set_value(get_value() - step * mb->get_factor());
 					accept_event();
 				}

@@ -188,6 +188,9 @@ void TabBar::gui_input(const Ref<InputEvent> &p_event) {
 
 		if (rb_pressing && !mb->is_pressed() && mb->get_button_index() == MouseButton::LEFT) {
 			if (rb_hover != -1) {
+				if (get_tree()) {
+					get_tree()->play_theme_audio(get_theme_audio(SNAME("pressed")));
+				}
 				emit_signal(SNAME("tab_button_pressed"), rb_hover);
 			}
 
@@ -197,6 +200,9 @@ void TabBar::gui_input(const Ref<InputEvent> &p_event) {
 
 		if (cb_pressing && !mb->is_pressed() && mb->get_button_index() == MouseButton::LEFT) {
 			if (cb_hover != -1) {
+				if (get_tree()) {
+					get_tree()->play_theme_audio(get_theme_audio(SNAME("pressed")));
+				}
 				emit_signal(SNAME("tab_close_pressed"), cb_hover);
 			}
 
@@ -212,15 +218,29 @@ void TabBar::gui_input(const Ref<InputEvent> &p_event) {
 					if (pos.x < theme_cache.decrement_icon->get_width()) {
 						if (missing_right) {
 							offset++;
+							if (get_tree()) {
+								get_tree()->play_theme_audio(get_theme_audio(SNAME("pressed")));
+							}
 							_update_cache();
 							queue_redraw();
+						} else {
+							if (get_tree()) {
+								get_tree()->play_theme_audio(get_theme_audio(SNAME("pressed_disabled")));
+							}
 						}
 						return;
 					} else if (pos.x < theme_cache.increment_icon->get_width() + theme_cache.decrement_icon->get_width()) {
 						if (offset > 0) {
 							offset--;
+							if (get_tree()) {
+								get_tree()->play_theme_audio(get_theme_audio(SNAME("pressed")));
+							}
 							_update_cache();
 							queue_redraw();
+						} else {
+							if (get_tree()) {
+								get_tree()->play_theme_audio(get_theme_audio(SNAME("pressed_disabled")));
+							}
 						}
 						return;
 					}
@@ -229,15 +249,29 @@ void TabBar::gui_input(const Ref<InputEvent> &p_event) {
 					if (pos.x > limit + theme_cache.decrement_icon->get_width()) {
 						if (missing_right) {
 							offset++;
+							if (get_tree()) {
+								get_tree()->play_theme_audio(get_theme_audio(SNAME("pressed")));
+							}
 							_update_cache();
 							queue_redraw();
+						} else {
+							if (get_tree()) {
+								get_tree()->play_theme_audio(get_theme_audio(SNAME("pressed_disabled")));
+							}
 						}
 						return;
 					} else if (pos.x > limit) {
 						if (offset > 0) {
 							offset--;
+							if (get_tree()) {
+								get_tree()->play_theme_audio(get_theme_audio(SNAME("pressed")));
+							}
 							_update_cache();
 							queue_redraw();
+						} else {
+							if (get_tree()) {
+								get_tree()->play_theme_audio(get_theme_audio(SNAME("pressed_disabled")));
+							}
 						}
 						return;
 					}
@@ -278,6 +312,10 @@ void TabBar::gui_input(const Ref<InputEvent> &p_event) {
 			}
 
 			if (found != -1) {
+				if (get_tree() && current != found) {
+					get_tree()->play_theme_audio(get_theme_audio(SNAME("pressed")));
+				}
+
 				if (deselect_enabled && get_current_tab() == found) {
 					set_current_tab(-1);
 				} else {
@@ -985,6 +1023,9 @@ void TabBar::_update_hover() {
 		hover = hover_now;
 
 		if (hover != -1) {
+			if (get_tree() && !is_tab_disabled(hover)) {
+				get_tree()->play_theme_audio(get_theme_audio(SNAME("hover")));
+			}
 			emit_signal(SNAME("tab_hovered"), hover);
 		}
 

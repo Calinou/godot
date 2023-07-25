@@ -33,6 +33,7 @@
 #include "core/config/project_settings.h"
 #include "core/os/keyboard.h"
 #include "scene/main/window.h"
+#include "scene/theme/theme_db.h"
 
 void BaseButton::_unpress_group() {
 	if (!button_group.is_valid()) {
@@ -87,6 +88,9 @@ void BaseButton::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_MOUSE_ENTER: {
 			status.hovering = true;
+			if (!status.disabled) {
+				get_tree()->play_theme_audio(get_theme_audio(SNAME("hover_sound")));
+			}
 			queue_redraw();
 		} break;
 
@@ -133,6 +137,8 @@ void BaseButton::_notification(int p_what) {
 
 void BaseButton::_pressed() {
 	GDVIRTUAL_CALL(_pressed);
+	// TODO: `pressed_disabled` never occurs as this isn't called on disabled buttons.
+	get_tree()->play_theme_audio(get_theme_audio(is_disabled() ? SNAME("pressed_disabled") : SNAME("pressed_sound")));
 	pressed();
 	emit_signal(SceneStringName(pressed));
 }
@@ -495,6 +501,10 @@ void BaseButton::_bind_methods() {
 
 	BIND_ENUM_CONSTANT(ACTION_MODE_BUTTON_PRESS);
 	BIND_ENUM_CONSTANT(ACTION_MODE_BUTTON_RELEASE);
+
+	BIND_THEME_ITEM(Theme::DATA_TYPE_AUDIOSTREAM, BaseButton, hover_sound);
+	BIND_THEME_ITEM(Theme::DATA_TYPE_AUDIOSTREAM, BaseButton, pressed_sound);
+	BIND_THEME_ITEM(Theme::DATA_TYPE_AUDIOSTREAM, BaseButton, pressed_disabled);
 
 	GLOBAL_DEF(PropertyInfo(Variant::FLOAT, "gui/timers/button_shortcut_feedback_highlight_time", PROPERTY_HINT_RANGE, "0.01,10,0.01,suffix:s"), 0.2);
 }

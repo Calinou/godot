@@ -685,41 +685,48 @@ void ItemList::gui_input(const Ref<InputEvent> &p_event) {
 
 		int closest = get_item_at_position(mb->get_position(), true);
 
-		if (closest != -1 && (mb->get_button_index() == MouseButton::LEFT || (allow_rmb_select && mb->get_button_index() == MouseButton::RIGHT))) {
+		const bool input_can_select = mb->get_button_index() == MouseButton::LEFT || (allow_rmb_select && mb->get_button_index() == MouseButton::RIGHT);
+
+		if (closest != -1 && input_can_select) {
 			int i = closest;
 
-			if (items[i].disabled) {
-				// Don't emit any signal or do any action with clicked item when disabled.
-				return;
-			}
+			// Don't emit any signal or do any action with clicked item when disabled (other than playing the "disabled" audio feedback).
+			const bool audio_only = items[i].disabled;
 
-			if (select_mode == SELECT_MULTI && items[i].selected && mb->is_command_or_control_pressed()) {
+			if (!audio_only && select_mode == SELECT_MULTI && items[i].selected && mb->is_command_or_control_pressed()) {
 				deselect(i);
 				emit_signal(SNAME("multi_selected"), i, false);
 
 			} else if (select_mode == SELECT_MULTI && mb->is_shift_pressed() && current >= 0 && current < items.size() && current != i) {
-				// Range selection.
+				if (!audio_only) {
+					// Range selection.
 
-				int from = current;
-				int to = i;
-				if (i < current) {
-					SWAP(from, to);
-				}
-				for (int j = from; j <= to; j++) {
-					if (!CAN_SELECT(j)) {
-						// Item is not selectable during a range selection, so skip it.
-						continue;
+					int from = current;
+					int to = i;
+					if (i < current) {
+						SWAP(from, to);
 					}
-					bool selected = !items[j].selected;
-					select(j, false);
-					if (selected) {
-						emit_signal(SNAME("multi_selected"), j, true);
+					for (int j = from; j <= to; j++) {
+						if (!CAN_SELECT(j)) {
+							// Item is not selectable during a range selection, so skip it.
+							continue;
+						}
+						bool selected = !items[j].selected;
+						select(j, false);
+						if (selected) {
+							emit_signal(SNAME("multi_selected"), j, true);
+						}
 					}
 				}
-				emit_signal(SNAME("item_clicked"), i, get_local_mouse_position(), mb->get_button_index());
+				if (get_tree() && input_can_select) {
+					get_tree()->play_theme_audio(get_theme_audio(items[i].disabled ? SNAME("item_disabled_selected") : SNAME("item_selected")));
+				}
+				if (!audio_only) {
+					emit_signal(SNAME("item_clicked"), i, get_local_mouse_position(), mb->get_button_index());
+				}
 
 			} else {
-				if (!mb->is_double_click() &&
+				if (!audio_only && !mb->is_double_click() &&
 						!mb->is_command_or_control_pressed() &&
 						select_mode == SELECT_MULTI &&
 						items[i].selectable &&
@@ -730,24 +737,38 @@ void ItemList::gui_input(const Ref<InputEvent> &p_event) {
 				}
 
 				if (items[i].selectable && (!items[i].selected || allow_reselect)) {
-					select(i, select_mode == SELECT_SINGLE || !mb->is_command_or_control_pressed());
+					if (!audio_only) {
+						select(i, select_mode == SELECT_SINGLE || !mb->is_command_or_control_pressed());
+					}
 
-					if (select_mode == SELECT_SINGLE) {
-						emit_signal(SceneStringName(item_selected), i);
-					} else {
-						emit_signal(SNAME("multi_selected"), i, true);
+					if (get_tree() && input_can_select) {
+						get_tree()->play_theme_audio(get_theme_audio(items[i].disabled ? SNAME("item_disabled_selected") : SNAME("item_selected")));
+					}
+
+					if (!audio_only) {
+						if (select_mode == SELECT_SINGLE) {
+							emit_signal(SceneStringName(item_selected), i);
+						} else {
+							emit_signal(SNAME("multi_selected"), i, true);
+						}
 					}
 				}
 
-				emit_signal(SNAME("item_clicked"), i, get_local_mouse_position(), mb->get_button_index());
+				if (!audio_only) {
+					emit_signal(SNAME("item_clicked"), i, get_local_mouse_position(), mb->get_button_index());
 
-				if (mb->get_button_index() == MouseButton::LEFT && mb->is_double_click()) {
-					emit_signal(SNAME("item_activated"), i);
+					if (mb->get_button_index() == MouseButton::LEFT && mb->is_double_click()) {
+						emit_signal(SNAME("item_activated"), i);
+					}
 				}
 			}
 
 			return;
 		} else if (closest != -1) {
+			if (get_tree() && input_can_select) {
+				get_tree()->play_theme_audio(get_theme_audio(items[closest].disabled ? SNAME("item_disabled_selected") : SNAME("item_selected")));
+			}
+
 			if (!items[closest].disabled) {
 				emit_signal(SNAME("item_clicked"), closest, get_local_mouse_position(), mb->get_button_index());
 			}

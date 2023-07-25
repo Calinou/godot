@@ -621,7 +621,13 @@ void PopupMenu::_input_from_window_internal(const Ref<InputEvent> &p_event) {
 					return;
 				}
 
-				if (items[over].separator || items[over].disabled) {
+				if (items[over].separator) {
+					return;
+				}
+
+				get_tree()->play_theme_audio(get_theme_audio(items[over].disabled ? SNAME("item_disabled_activated") : SNAME("item_activated")));
+
+				if (items[over].disabled) {
 					return;
 				}
 
