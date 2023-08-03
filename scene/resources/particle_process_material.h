@@ -268,6 +268,7 @@ private:
 		StringName gravity;
 		StringName inherit_emitter_velocity_ratio;
 
+		StringName amount_ratio;
 		StringName lifetime_randomness;
 
 		StringName sub_emitter_frequency;
@@ -331,6 +332,7 @@ private:
 
 	Vector3 gravity;
 
+	double amount_ratio = 1.0;
 	double lifetime_randomness = 0.0;
 	double inherit_emitter_velocity_ratio = 0.0;
 
@@ -431,6 +433,9 @@ public:
 
 	void set_gravity(const Vector3 &p_gravity);
 	Vector3 get_gravity() const;
+
+	void set_amount_ratio(double p_ratio);
+	double get_amount_ratio() const;
 
 	void set_lifetime_randomness(double p_lifetime);
 	double get_lifetime_randomness() const;

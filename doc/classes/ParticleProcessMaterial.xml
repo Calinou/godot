@@ -75,6 +75,10 @@
 	<members>
 		<member name="alpha_curve" type="Texture2D" setter="set_alpha_curve" getter="get_alpha_curve">
 		</member>
+		<member name="amount_ratio" type="float" setter="set_amount_ratio" getter="get_amount_ratio" default="1.0">
+			The ratio of particles that should actually be emitted. If set to a value lower than [code]1.0[/code], this will set the amount of emitted particles throughout the lifetime to [code]amount * amount_ratio[/code]. Unlike changing [member GPUParticles2D.amount] or [member GPUParticles3D.amount], changing [member amount_ratio] while emitting does not affect already-emitted particles and doesn't cause the particle system to restart. [member amount_ratio] can be used to create effects that make the number of emitted particles vary over time.
+			[b]Note:[/b] If you don't need to change the number of particles emitted while particles are emitting, keep [member amount_ratio] at [code]1.0[/code] and change [member GPUParticles2D.amount] or [member GPUParticles3D.amount] instead. This will result in better performance, as inactive particles still need to be partially evaluated in the shader otherwise.
+		</member>
 		<member name="angle_curve" type="Texture2D" setter="set_param_texture" getter="get_param_texture">
 			Each particle's rotation will be animated along this [CurveTexture].
 		</member>
@@ -279,9 +283,9 @@
 		</member>
 		<member name="scale_over_velocity_curve" type="Texture2D" setter="set_param_texture" getter="get_param_texture">
 		</member>
-		<member name="scale_over_velocity_max" type="float" setter="set_param_max" getter="get_param_max">
+		<member name="scale_over_velocity_max" type="float" setter="set_param_max" getter="get_param_max" default="0.0">
 		</member>
-		<member name="scale_over_velocity_min" type="float" setter="set_param_min" getter="get_param_min">
+		<member name="scale_over_velocity_min" type="float" setter="set_param_min" getter="get_param_min" default="0.0">
 		</member>
 		<member name="spread" type="float" setter="set_spread" getter="get_spread" default="45.0">
 			Each particle's initial direction range from [code]+spread[/code] to [code]-spread[/code] degrees.

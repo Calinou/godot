@@ -126,6 +126,7 @@ void ParticleProcessMaterial::init_shaders() {
 
 	shader_names->gravity = "gravity";
 
+	shader_names->amount_ratio = "amount_ratio";
 	shader_names->lifetime_randomness = "lifetime_randomness";
 
 	shader_names->sub_emitter_frequency = "sub_emitter_frequency";
@@ -228,6 +229,7 @@ void ParticleProcessMaterial::_update_shader() {
 	code += "uniform float anim_offset_min;\n";
 	code += "uniform float anim_offset_max;\n";
 
+	code += "uniform float amount_ratio;\n";
 	code += "uniform float lifetime_randomness;\n";
 	code += "uniform vec3 emission_shape_offset = vec3(0.);\n";
 	code += "uniform vec3 emission_shape_scale = vec3(1.);\n";
@@ -809,6 +811,9 @@ void ParticleProcessMaterial::_update_shader() {
 	code += "void start() {\n";
 	code += "	uint base_number = NUMBER;\n";
 	code += "	uint alt_seed = hash(base_number + uint(1) + RANDOM_SEED);\n";
+	code += "	if (rand_from_seed(alt_seed) > amount_ratio) {\n";
+	code += "		ACTIVE = false;\n";
+	code += "	}\n";
 	code += "	DisplayParameters params;\n";
 	code += "	calculate_initial_display_params(params, alt_seed);\n";
 	code += "	// reset alt seed?\n";
@@ -1688,6 +1693,15 @@ Vector3 ParticleProcessMaterial::get_gravity() const {
 	return gravity;
 }
 
+void ParticleProcessMaterial::set_amount_ratio(double p_ratio) {
+	amount_ratio = p_ratio;
+	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->amount_ratio, amount_ratio);
+}
+
+double ParticleProcessMaterial::get_amount_ratio() const {
+	return amount_ratio;
+}
+
 void ParticleProcessMaterial::set_lifetime_randomness(double p_lifetime) {
 	lifetime_randomness = p_lifetime;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->lifetime_randomness, lifetime_randomness);
@@ -1962,6 +1976,9 @@ void ParticleProcessMaterial::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_gravity"), &ParticleProcessMaterial::get_gravity);
 	ClassDB::bind_method(D_METHOD("set_gravity", "accel_vec"), &ParticleProcessMaterial::set_gravity);
 
+	ClassDB::bind_method(D_METHOD("set_amount_ratio", "ratio"), &ParticleProcessMaterial::set_amount_ratio);
+	ClassDB::bind_method(D_METHOD("get_amount_ratio"), &ParticleProcessMaterial::get_amount_ratio);
+
 	ClassDB::bind_method(D_METHOD("set_lifetime_randomness", "randomness"), &ParticleProcessMaterial::set_lifetime_randomness);
 	ClassDB::bind_method(D_METHOD("get_lifetime_randomness"), &ParticleProcessMaterial::get_lifetime_randomness);
 
@@ -1996,6 +2013,7 @@ void ParticleProcessMaterial::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_collision_bounce"), &ParticleProcessMaterial::get_collision_bounce);
 
 	ADD_GROUP("Time", "");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "amount_ratio", PROPERTY_HINT_RANGE, "0,1,0.0001"), "set_amount_ratio", "get_amount_ratio");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "lifetime_randomness", PROPERTY_HINT_RANGE, "0,1,0.01"), "set_lifetime_randomness", "get_lifetime_randomness");
 	ADD_GROUP("Particle Flags", "particle_flag_");
 	ADD_PROPERTYI(PropertyInfo(Variant::BOOL, "particle_flag_align_y"), "set_particle_flag", "get_particle_flag", PARTICLE_FLAG_ALIGN_Y_TO_VELOCITY);
@@ -2219,6 +2237,7 @@ ParticleProcessMaterial::ParticleProcessMaterial() :
 	set_param_max(PARAM_TURB_INIT_DISPLACEMENT, 0.0);
 
 	set_gravity(Vector3(0, -9.8, 0));
+	set_amount_ratio(1.0);
 	set_lifetime_randomness(0);
 
 	set_sub_emitter_mode(SUB_EMITTER_DISABLED);
