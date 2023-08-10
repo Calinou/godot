@@ -30,6 +30,8 @@
 
 #include "gpu_particles_3d.h"
 
+#include "scene/3d/cpu_particles_3d.h"
+#include "scene/resources/curve_texture.h"
 #include "scene/resources/particle_process_material.h"
 #include "scene/scene_string_names.h"
 
@@ -550,6 +552,87 @@ GPUParticles3D::TransformAlign GPUParticles3D::get_transform_align() const {
 	return transform_align;
 }
 
+void GPUParticles3D::convert_from_cpu_particles(Node *p_particles) {
+	CPUParticles3D *cpu_particles = Object::cast_to<CPUParticles3D>(p_particles);
+	ERR_FAIL_NULL_MSG(cpu_particles, "Only CPUParticles nodes can be converted to GPUParticles3D.");
+
+	set_emitting(cpu_particles->is_emitting());
+	set_amount(cpu_particles->get_amount());
+	set_lifetime(cpu_particles->get_lifetime());
+	set_one_shot(cpu_particles->get_one_shot());
+	set_pre_process_time(cpu_particles->get_pre_process_time());
+	set_explosiveness_ratio(cpu_particles->get_explosiveness_ratio());
+	set_randomness_ratio(cpu_particles->get_randomness_ratio());
+	set_use_local_coordinates(cpu_particles->get_use_local_coordinates());
+	set_fixed_fps(cpu_particles->get_fixed_fps());
+	set_fractional_delta(cpu_particles->get_fractional_delta());
+	set_speed_scale(cpu_particles->get_speed_scale());
+	set_draw_order(DrawOrder(cpu_particles->get_draw_order()));
+	set_draw_pass_mesh(0, cpu_particles->get_mesh());
+
+	Ref<ParticleProcessMaterial> material = memnew(ParticleProcessMaterial);
+
+	// set_direction(material->get_direction());
+	// set_spread(material->get_spread());
+	// set_flatness(material->get_flatness());
+
+	// set_color(material->get_color());
+
+	// Ref<GradientTexture1D> gt = material->get_color_ramp();
+	// if (gt.is_valid()) {
+	// 	set_color_ramp(gt->get_gradient());
+	// }
+
+	// Ref<GradientTexture1D> gti = material->get_color_initial_ramp();
+	// if (gti.is_valid()) {
+	// 	set_color_initial_ramp(gti->get_gradient());
+	// }
+
+	// set_particle_flag(PARTICLE_FLAG_ALIGN_Y_TO_VELOCITY, material->get_particle_flag(ParticleProcessMaterial::PARTICLE_FLAG_ALIGN_Y_TO_VELOCITY));
+	// set_particle_flag(PARTICLE_FLAG_ROTATE_Y, material->get_particle_flag(ParticleProcessMaterial::PARTICLE_FLAG_ROTATE_Y));
+	// set_particle_flag(PARTICLE_FLAG_DISABLE_Z, material->get_particle_flag(ParticleProcessMaterial::PARTICLE_FLAG_DISABLE_Z));
+
+	// set_emission_shape(EmissionShape(material->get_emission_shape()));
+	// set_emission_sphere_radius(material->get_emission_sphere_radius());
+	// set_emission_box_extents(material->get_emission_box_extents());
+	// Ref<CurveXYZTexture> scale3D = material->get_param_texture(ParticleProcessMaterial::PARAM_SCALE);
+	// if (scale3D.is_valid()) {
+	// 	split_scale = true;
+	// 	scale_curve_x = scale3D->get_curve_x();
+	// 	scale_curve_y = scale3D->get_curve_y();
+	// 	scale_curve_z = scale3D->get_curve_z();
+	// }
+
+	// set_gravity(material->get_gravity());
+	// set_lifetime_randomness(material->get_lifetime_randomness());
+
+#define CONVERT_PARAM(m_param)                                                                   \
+	cpu_particles->get_param_curve(m_param, ctex->get_curve());                                  \
+	material->set_param_min(m_param, material->get_param_min(ParticleProcessMaterial::m_param)); \
+	{                                                                                            \
+		Ref<CurveTexture> ctex = material->get_param_texture(ParticleProcessMaterial::m_param);  \
+		if (ctex.is_valid())                                                                     \
+	}                                                                                            \
+	material->set_param_max(m_param, material->get_param_max(ParticleProcessMaterial::m_param));
+
+	CONVERT_PARAM(ParticleProcessMaterial::PARAM_INITIAL_LINEAR_VELOCITY);
+	CONVERT_PARAM(ParticleProcessMaterial::PARAM_ANGULAR_VELOCITY);
+	CONVERT_PARAM(ParticleProcessMaterial::PARAM_ORBIT_VELOCITY);
+	CONVERT_PARAM(ParticleProcessMaterial::PARAM_LINEAR_ACCEL);
+	CONVERT_PARAM(ParticleProcessMaterial::PARAM_RADIAL_ACCEL);
+	CONVERT_PARAM(ParticleProcessMaterial::PARAM_TANGENTIAL_ACCEL);
+	CONVERT_PARAM(ParticleProcessMaterial::PARAM_DAMPING);
+	CONVERT_PARAM(ParticleProcessMaterial::PARAM_ANGLE);
+	CONVERT_PARAM(ParticleProcessMaterial::PARAM_SCALE);
+	CONVERT_PARAM(ParticleProcessMaterial::PARAM_HUE_VARIATION);
+	CONVERT_PARAM(ParticleProcessMaterial::PARAM_ANIM_SPEED);
+	CONVERT_PARAM(ParticleProcessMaterial::PARAM_ANIM_OFFSET);
+
+#undef CONVERT_PARAM
+
+	set_process_material(material);
+}
+
 void GPUParticles3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_emitting", "emitting"), &GPUParticles3D::set_emitting);
 	ClassDB::bind_method(D_METHOD("set_amount", "amount"), &GPUParticles3D::set_amount);
@@ -612,6 +695,8 @@ void GPUParticles3D::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("set_transform_align", "align"), &GPUParticles3D::set_transform_align);
 	ClassDB::bind_method(D_METHOD("get_transform_align"), &GPUParticles3D::get_transform_align);
+
+	ClassDB::bind_method(D_METHOD("convert_from_cpu_particles", "cpu_particles"), &CPUParticles3D::convert_from_cpu_particles);
 
 	ADD_SIGNAL(MethodInfo("finished"));
 

@@ -167,6 +167,8 @@ public:
 
 	void restart();
 
+	void convert_from_cpu_particles(Node *p_particles);
+
 	enum EmitFlags {
 		EMIT_FLAG_POSITION = RS::PARTICLES_EMIT_FLAG_POSITION,
 		EMIT_FLAG_ROTATION_SCALE = RS::PARTICLES_EMIT_FLAG_ROTATION_SCALE,
