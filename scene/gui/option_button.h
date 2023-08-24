@@ -44,6 +44,8 @@ class OptionButton : public Button {
 	Vector2 _cached_size;
 	bool cache_refresh_pending = false;
 	bool allow_reselect = false;
+	bool carousel = false;
+	bool carousel_wraparound = false;
 
 	struct ThemeCache {
 		Ref<StyleBox> normal;
@@ -60,6 +62,11 @@ class OptionButton : public Button {
 		Ref<Texture2D> arrow_icon;
 		int arrow_margin = 0;
 		int modulate_arrow = 0;
+		Ref<Texture2D> carousel_previous;
+		Ref<Texture2D> carousel_next;
+		Ref<StyleBox> carousel_blip;
+		Ref<StyleBox> carousel_blip_selected;
+		int carousel_blip_separation = 0;
 	} theme_cache;
 
 	void _focused(int p_which);
@@ -116,6 +123,12 @@ public:
 
 	void set_allow_reselect(bool p_allow);
 	bool get_allow_reselect() const;
+
+	void set_carousel(bool p_enable);
+	bool is_carousel() const;
+
+	void set_carousel_wraparound(bool p_enable);
+	bool is_carousel_wraparound() const;
 
 	void add_separator(const String &p_text = "");
 

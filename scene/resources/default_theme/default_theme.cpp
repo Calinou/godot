@@ -245,8 +245,12 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	theme->set_stylebox("hover_mirrored", "OptionButton", sb_optbutton_hover_mirrored);
 	theme->set_stylebox("pressed_mirrored", "OptionButton", sb_optbutton_pressed_mirrored);
 	theme->set_stylebox("disabled_mirrored", "OptionButton", sb_optbutton_disabled_mirrored);
+	theme->set_stylebox("carousel_blip", "OptionButton", sb_optbutton_disabled);
+	theme->set_stylebox("carousel_blip_selected", "OptionButton", sb_optbutton_hover);
 
 	theme->set_icon("arrow", "OptionButton", icons["option_button_arrow"]);
+	theme->set_icon("carousel_previous", "OptionButton", icons["option_button_carousel_previous"]);
+	theme->set_icon("carousel_next", "OptionButton", icons["option_button_carousel_next"]);
 
 	theme->set_font("font", "OptionButton", Ref<Font>());
 	theme->set_font_size("font_size", "OptionButton", -1);
@@ -263,6 +267,7 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	theme->set_constant("arrow_margin", "OptionButton", Math::round(4 * scale));
 	theme->set_constant("outline_size", "OptionButton", 0);
 	theme->set_constant("modulate_arrow", "OptionButton", false);
+	theme->set_constant("carousel_blip_separation", "OptionButton", Math::round(4 * scale));
 
 	// MenuButton
 

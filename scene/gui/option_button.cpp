@@ -89,6 +89,12 @@ void OptionButton::_update_theme_item_cache() {
 	theme_cache.arrow_icon = get_theme_icon(SNAME("arrow"));
 	theme_cache.arrow_margin = get_theme_constant(SNAME("arrow_margin"));
 	theme_cache.modulate_arrow = get_theme_constant(SNAME("modulate_arrow"));
+
+	theme_cache.carousel_previous = get_theme_icon(SNAME("carousel_previous"));
+	theme_cache.carousel_next = get_theme_icon(SNAME("carousel_next"));
+	theme_cache.carousel_blip = get_theme_stylebox(SNAME("carousel_blip"));
+	theme_cache.carousel_blip_selected = get_theme_stylebox(SNAME("carousel_blip_selected"));
+	theme_cache.carousel_blip_separation = get_theme_constant(SNAME("carousel_blip_separation"));
 }
 
 void OptionButton::_notification(int p_what) {
@@ -134,15 +140,25 @@ void OptionButton::_notification(int p_what) {
 				}
 			}
 
-			Size2 size = get_size();
+			const Size2 size = get_size();
 
-			Point2 ofs;
-			if (is_layout_rtl()) {
-				ofs = Point2(theme_cache.arrow_margin, int(Math::abs((size.height - theme_cache.arrow_icon->get_height()) / 2)));
+			if (carousel) {
+				Point2 ofs_previous;
+				ofs_previous = Point2(theme_cache.arrow_margin, int(Math::abs((size.height - theme_cache.arrow_icon->get_height()) / 2)));
+				theme_cache.carousel_previous->draw(ci, ofs_previous, clr);
+
+				Point2 ofs_next;
+				ofs_next = Point2(size.width - theme_cache.arrow_icon->get_width() - theme_cache.arrow_margin, int(Math::abs((size.height - theme_cache.arrow_icon->get_height()) / 2)));
+				theme_cache.carousel_next->draw(ci, ofs_next, clr);
 			} else {
-				ofs = Point2(size.width - theme_cache.arrow_icon->get_width() - theme_cache.arrow_margin, int(Math::abs((size.height - theme_cache.arrow_icon->get_height()) / 2)));
+				Point2 ofs;
+				if (is_layout_rtl()) {
+					ofs = Point2(theme_cache.arrow_margin, int(Math::abs((size.height - theme_cache.arrow_icon->get_height()) / 2)));
+				} else {
+					ofs = Point2(size.width - theme_cache.arrow_icon->get_width() - theme_cache.arrow_margin, int(Math::abs((size.height - theme_cache.arrow_icon->get_height()) / 2)));
+				}
+				theme_cache.arrow_icon->draw(ci, ofs, clr);
 			}
-			theme_cache.arrow_icon->draw(ci, ofs, clr);
 		} break;
 
 		case NOTIFICATION_TRANSLATION_CHANGED: {
@@ -411,6 +427,28 @@ bool OptionButton::get_allow_reselect() const {
 	return allow_reselect;
 }
 
+void OptionButton::set_carousel(bool p_enable) {
+	if (p_enable == carousel) {
+		return;
+	}
+
+	carousel = p_enable;
+	queue_redraw();
+	notify_property_list_changed();
+}
+
+bool OptionButton::is_carousel() const {
+	return carousel;
+}
+
+void OptionButton::set_carousel_wraparound(bool p_enable) {
+	carousel_wraparound = p_enable;
+}
+
+bool OptionButton::is_carousel_wraparound() const {
+	return carousel;
+}
+
 void OptionButton::add_separator(const String &p_text) {
 	popup->add_separator(p_text);
 }
@@ -551,6 +589,10 @@ void OptionButton::_validate_property(PropertyInfo &p_property) const {
 	if (p_property.name == "text" || p_property.name == "icon") {
 		p_property.usage = PROPERTY_USAGE_NONE;
 	}
+
+	if (p_property.name == "carousel_wraparound" && !carousel) {
+		p_property.usage = PROPERTY_USAGE_NONE;
+	}
 }
 
 void OptionButton::_bind_methods() {
@@ -590,6 +632,10 @@ void OptionButton::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("is_fit_to_longest_item"), &OptionButton::is_fit_to_longest_item);
 	ClassDB::bind_method(D_METHOD("set_allow_reselect", "allow"), &OptionButton::set_allow_reselect);
 	ClassDB::bind_method(D_METHOD("get_allow_reselect"), &OptionButton::get_allow_reselect);
+	ClassDB::bind_method(D_METHOD("set_carousel", "enable"), &OptionButton::set_carousel);
+	ClassDB::bind_method(D_METHOD("is_carousel"), &OptionButton::is_carousel);
+	ClassDB::bind_method(D_METHOD("set_carousel_wraparound", "enable"), &OptionButton::set_carousel_wraparound);
+	ClassDB::bind_method(D_METHOD("is_carousel_wraparound"), &OptionButton::is_carousel_wraparound);
 	ClassDB::bind_method(D_METHOD("set_disable_shortcuts", "disabled"), &OptionButton::set_disable_shortcuts);
 
 	// "selected" property must come after "item_count", otherwise GH-10213 occurs.
@@ -597,6 +643,8 @@ void OptionButton::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "selected"), "_select_int", "get_selected");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "fit_to_longest_item"), "set_fit_to_longest_item", "is_fit_to_longest_item");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "allow_reselect"), "set_allow_reselect", "get_allow_reselect");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "carousel"), "set_carousel", "is_carousel");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "carousel_wraparound"), "set_carousel_wraparound", "is_carousel_wraparound");
 	ADD_SIGNAL(MethodInfo("item_selected", PropertyInfo(Variant::INT, "index")));
 	ADD_SIGNAL(MethodInfo("item_focused", PropertyInfo(Variant::INT, "index")));
 }
