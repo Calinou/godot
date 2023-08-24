@@ -1180,6 +1180,9 @@ void CanvasItem::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("make_canvas_position_local", "screen_point"), &CanvasItem::make_canvas_position_local);
 	ClassDB::bind_method(D_METHOD("make_input_local", "event"), &CanvasItem::make_input_local);
 
+	ClassDB::bind_method(D_METHOD("set_custom_rect", "rect"), &CanvasItem::set_custom_rect);
+	ClassDB::bind_method(D_METHOD("get_custom_rect"), &CanvasItem::get_custom_rect);
+
 	ClassDB::bind_method(D_METHOD("set_visibility_layer", "layer"), &CanvasItem::set_visibility_layer);
 	ClassDB::bind_method(D_METHOD("get_visibility_layer"), &CanvasItem::get_visibility_layer);
 	ClassDB::bind_method(D_METHOD("set_visibility_layer_bit", "layer", "enabled"), &CanvasItem::set_visibility_layer_bit);
@@ -1205,6 +1208,7 @@ void CanvasItem::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "clip_children", PROPERTY_HINT_ENUM, "Disabled,Clip Only,Clip + Draw"), "set_clip_children_mode", "get_clip_children_mode");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "light_mask", PROPERTY_HINT_LAYERS_2D_RENDER), "set_light_mask", "get_light_mask");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "visibility_layer", PROPERTY_HINT_LAYERS_2D_RENDER), "set_visibility_layer", "get_visibility_layer");
+	ADD_PROPERTY(PropertyInfo(Variant::RECT2, "custom_rect"), "set_custom_rect", "get_custom_rect");
 
 	ADD_GROUP("Ordering", "");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "z_index", PROPERTY_HINT_RANGE, itos(RS::CANVAS_ITEM_Z_MIN) + "," + itos(RS::CANVAS_ITEM_Z_MAX) + ",1"), "set_z_index", "get_z_index");
@@ -1597,6 +1601,19 @@ Ref<Image> CanvasTexture::get_image() const {
 
 RID CanvasTexture::get_rid() const {
 	return canvas_texture;
+}
+
+void CanvasItem::set_custom_rect(const Rect2 &p_rect) {
+	if (p_rect == custom_rect) {
+		return;
+	}
+
+	custom_rect = p_rect;
+	RenderingServer::get_singleton()->canvas_item_set_custom_rect(get_canvas_item(), false, p_rect);
+}
+
+Rect2 CanvasItem::get_custom_rect() const {
+	return custom_rect;
 }
 
 void CanvasTexture::_bind_methods() {

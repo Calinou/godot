@@ -3211,7 +3211,10 @@ void Control::_notification(int p_notification) {
 
 		case NOTIFICATION_DRAW: {
 			_update_canvas_item_transform();
-			RenderingServer::get_singleton()->canvas_item_set_custom_rect(get_canvas_item(), !data.disable_visibility_clip, Rect2(Point2(), get_size()));
+
+			// If custom rect is smaller than default rect, ignore it to avoid rendering issues.
+			const Rect2 cull_rect = get_custom_rect().merge(Rect2(Point2(), get_size()));
+			RenderingServer::get_singleton()->canvas_item_set_custom_rect(get_canvas_item(), !data.disable_visibility_clip, cull_rect);
 			RenderingServer::get_singleton()->canvas_item_set_clip(get_canvas_item(), data.clip_contents);
 		} break;
 

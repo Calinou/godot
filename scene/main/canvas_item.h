@@ -90,6 +90,7 @@ private:
 
 	int light_mask = 1;
 	uint32_t visibility_layer = 1;
+	Rect2 custom_rect;
 
 	int z_index = 0;
 	bool z_relative = true;
@@ -353,6 +354,9 @@ public:
 	bool is_transform_notification_enabled() const;
 
 	void force_update_transform();
+
+	void set_custom_rect(const Rect2 &p_rect);
+	Rect2 get_custom_rect() const;
 
 	virtual void set_texture_filter(TextureFilter p_texture_filter);
 	TextureFilter get_texture_filter() const;
