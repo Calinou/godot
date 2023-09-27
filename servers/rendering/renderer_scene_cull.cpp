@@ -3438,7 +3438,9 @@ bool RendererSceneCull::_render_reflection_probe_step(Instance *p_instance, int 
 
 		//render cubemap side
 		Projection cm;
-		cm.set_perspective(90, 1, 0.01, max_distance);
+		// Adjust near plane distance based on far plane distance, so that very high Max Distance values don't break the reflection rendering entirely.
+		constexpr float NEAR_PLANE_FACTOR = 0.1 / 262'144;
+		cm.set_perspective(90, 1, MAX(0.01, max_distance * NEAR_PLANE_FACTOR), max_distance);
 
 		Transform3D local_view;
 		local_view.set_look_at(origin_offset, origin_offset + view_normals[p_step], view_up[p_step]);
