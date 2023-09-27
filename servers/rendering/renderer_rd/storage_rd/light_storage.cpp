@@ -1032,6 +1032,24 @@ void LightStorage::reflection_probe_set_update_mode(RID p_probe, RS::ReflectionP
 	reflection_probe->dependency.changed_notify(Dependency::DEPENDENCY_CHANGED_REFLECTION_PROBE);
 }
 
+void LightStorage::reflection_probe_set_update_slicing(RID p_probe, RS::ReflectionProbeUpdateSlicing p_slicing) {
+	ReflectionProbe *reflection_probe = reflection_probe_owner.get_or_null(p_probe);
+	ERR_FAIL_NULL(reflection_probe);
+
+	reflection_probe->update_slicing = p_slicing;
+	// FIXME: Check if this is actually required. Changing timeslicing should not affect visuals unless we add an Automatic property for time slicing
+	// (1 face per frame in Once, 6 faces per frame in Always to match `master` behavior).
+	reflection_probe->dependency.changed_notify(Dependency::DEPENDENCY_CHANGED_REFLECTION_PROBE);
+}
+
+void LightStorage::reflection_probe_set_filter_mode(RID p_probe, RS::ReflectionProbeFilterMode p_mode) {
+	ReflectionProbe *reflection_probe = reflection_probe_owner.get_or_null(p_probe);
+	ERR_FAIL_NULL(reflection_probe);
+
+	reflection_probe->filter_mode = p_mode;
+	reflection_probe->dependency.changed_notify(Dependency::DEPENDENCY_CHANGED_REFLECTION_PROBE);
+}
+
 void LightStorage::reflection_probe_set_intensity(RID p_probe, float p_intensity) {
 	ReflectionProbe *reflection_probe = reflection_probe_owner.get_or_null(p_probe);
 	ERR_FAIL_NULL(reflection_probe);
@@ -1136,6 +1154,13 @@ void LightStorage::reflection_probe_set_mesh_lod_threshold(RID p_probe, float p_
 	reflection_probe->dependency.changed_notify(Dependency::DEPENDENCY_CHANGED_REFLECTION_PROBE);
 }
 
+void LightStorage::reflection_probe_queue_update(RID p_probe) {
+	ReflectionProbe *reflection_probe = reflection_probe_owner.get_or_null(p_probe);
+	ERR_FAIL_COND(!reflection_probe);
+
+	reflection_probe->dependency.changed_notify(Dependency::DEPENDENCY_CHANGED_REFLECTION_PROBE);
+}
+
 void LightStorage::reflection_probe_set_baked_exposure(RID p_probe, float p_exposure) {
 	ReflectionProbe *reflection_probe = reflection_probe_owner.get_or_null(p_probe);
 	ERR_FAIL_NULL(reflection_probe);
@@ -1159,6 +1184,20 @@ RS::ReflectionProbeUpdateMode LightStorage::reflection_probe_get_update_mode(RID
 	ERR_FAIL_NULL_V(reflection_probe, RS::REFLECTION_PROBE_UPDATE_ALWAYS);
 
 	return reflection_probe->update_mode;
+}
+
+RS::ReflectionProbeUpdateSlicing LightStorage::reflection_probe_get_update_slicing(RID p_probe) const {
+	const ReflectionProbe *reflection_probe = reflection_probe_owner.get_or_null(p_probe);
+	ERR_FAIL_NULL_V(reflection_probe, RS::REFLECTION_PROBE_UPDATE_SLICING_1_FACE_PER_FRAME);
+
+	return reflection_probe->update_slicing;
+}
+
+RS::ReflectionProbeFilterMode LightStorage::reflection_probe_get_filter_mode(RID p_probe) const {
+	const ReflectionProbe *reflection_probe = reflection_probe_owner.get_or_null(p_probe);
+	ERR_FAIL_NULL_V(reflection_probe, RS::REFLECTION_PROBE_FILTER_MODE_AUTOMATIC);
+
+	return reflection_probe->filter_mode;
 }
 
 uint32_t LightStorage::reflection_probe_get_cull_mask(RID p_probe) const {

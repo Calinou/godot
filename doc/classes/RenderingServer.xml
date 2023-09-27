@@ -2869,6 +2869,13 @@
 				If [code]true[/code], computes shadows in the reflection probe. This makes the reflection much slower to compute. Equivalent to [member ReflectionProbe.enable_shadows].
 			</description>
 		</method>
+		<method name="reflection_probe_set_filter_mode">
+			<return type="void" />
+			<param index="0" name="probe" type="RID" />
+			<param index="1" name="mode" type="int" enum="RenderingServer.ReflectionProbeFilterMode" />
+			<description>
+			</description>
+		</method>
 		<method name="reflection_probe_set_intensity">
 			<return type="void" />
 			<param index="0" name="probe" type="RID" />
@@ -2923,6 +2930,13 @@
 			<param index="1" name="mode" type="int" enum="RenderingServer.ReflectionProbeUpdateMode" />
 			<description>
 				Sets how often the reflection probe updates. Can either be once or every frame. See [enum ReflectionProbeUpdateMode] for options.
+			</description>
+		</method>
+		<method name="reflection_probe_set_update_slicing">
+			<return type="void" />
+			<param index="0" name="probe" type="RID" />
+			<param index="1" name="slicing" type="int" enum="RenderingServer.ReflectionProbeUpdateSlicing" />
+			<description>
 			</description>
 		</method>
 		<method name="request_frame_drawn_callback">
@@ -4370,6 +4384,24 @@
 		</constant>
 		<constant name="REFLECTION_PROBE_UPDATE_ALWAYS" value="1" enum="ReflectionProbeUpdateMode">
 			Reflection probe will update each frame. This mode is necessary to capture moving objects.
+		</constant>
+		<constant name="REFLECTION_PROBE_UPDATE_SLICING_1_FACE_PER_FRAME" value="0" enum="ReflectionProbeUpdateSlicing">
+		</constant>
+		<constant name="REFLECTION_PROBE_UPDATE_SLICING_2_FACES_PER_FRAME" value="1" enum="ReflectionProbeUpdateSlicing">
+		</constant>
+		<constant name="REFLECTION_PROBE_UPDATE_SLICING_3_FACES_PER_FRAME" value="2" enum="ReflectionProbeUpdateSlicing">
+		</constant>
+		<constant name="REFLECTION_PROBE_UPDATE_SLICING_6_FACES_PER_FRAME" value="3" enum="ReflectionProbeUpdateSlicing">
+		</constant>
+		<constant name="REFLECTION_PROBE_UPDATE_SLICING_MAX" value="4" enum="ReflectionProbeUpdateSlicing">
+		</constant>
+		<constant name="REFLECTION_PROBE_FILTER_MODE_AUTOMATIC" value="0" enum="ReflectionProbeFilterMode">
+		</constant>
+		<constant name="REFLECTION_PROBE_FILTER_MODE_HIGH_QUALITY_INCREMENTAL" value="1" enum="ReflectionProbeFilterMode">
+		</constant>
+		<constant name="REFLECTION_PROBE_FILTER_MODE_REAL_TIME" value="2" enum="ReflectionProbeFilterMode">
+		</constant>
+		<constant name="REFLECTION_PROBE_FILTER_MODE_MAX" value="3" enum="ReflectionProbeFilterMode">
 		</constant>
 		<constant name="REFLECTION_PROBE_AMBIENT_DISABLED" value="0" enum="ReflectionProbeAmbientMode">
 			Do not apply any ambient lighting inside the reflection probe's box defined by its size.

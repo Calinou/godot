@@ -173,6 +173,33 @@ ReflectionProbe::UpdateMode ReflectionProbe::get_update_mode() const {
 	return update_mode;
 }
 
+void ReflectionProbe::set_update_slicing(UpdateSlicing p_mode) {
+	update_slicing = p_mode;
+	RS::get_singleton()->reflection_probe_set_update_slicing(probe, RS::ReflectionProbeUpdateSlicing(p_mode));
+}
+
+ReflectionProbe::UpdateSlicing ReflectionProbe::get_update_slicing() const {
+	return update_slicing;
+}
+
+void ReflectionProbe::set_filter_mode(FilterMode p_mode) {
+	filter_mode = p_mode;
+	RS::get_singleton()->reflection_probe_set_filter_mode(probe, RS::ReflectionProbeFilterMode(p_mode));
+}
+
+ReflectionProbe::FilterMode ReflectionProbe::get_filter_mode() const {
+	return filter_mode;
+}
+
+void ReflectionProbe::queue_update() {
+	// Queuing an update only makes sense when the update mode is set to Once or Manual.
+	if (update_mode == UPDATE_ALWAYS) {
+		return;
+	}
+
+	RS::get_singleton()->reflection_probe_queue_update(probe);
+}
+
 AABB ReflectionProbe::get_aabb() const {
 	AABB aabb;
 	aabb.position = -origin_offset;
@@ -239,7 +266,15 @@ void ReflectionProbe::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_update_mode", "mode"), &ReflectionProbe::set_update_mode);
 	ClassDB::bind_method(D_METHOD("get_update_mode"), &ReflectionProbe::get_update_mode);
 
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "update_mode", PROPERTY_HINT_ENUM, "Once (Fast),Always (Slow)"), "set_update_mode", "get_update_mode");
+	ClassDB::bind_method(D_METHOD("set_update_slicing", "slicing"), &ReflectionProbe::set_update_slicing);
+	ClassDB::bind_method(D_METHOD("get_update_slicing"), &ReflectionProbe::get_update_slicing);
+
+	ClassDB::bind_method(D_METHOD("set_filter_mode", "mode"), &ReflectionProbe::set_filter_mode);
+	ClassDB::bind_method(D_METHOD("get_filter_mode"), &ReflectionProbe::get_filter_mode);
+
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "update_mode", PROPERTY_HINT_ENUM, "Once when Changed (Fast),Always (Slow),Manual (Fastest)"), "set_update_mode", "get_update_mode");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "update_slicing", PROPERTY_HINT_ENUM, "1 Face per Frame (Fast),2 Faces per Frame (Average),3 Faces per Frame (Slow),6 Faces per Frame (Slowest)"), "set_update_slicing", "get_update_slicing");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "filter_mode", PROPERTY_HINT_ENUM, "Automatic,High-Quality Incremental,Real-Time"), "set_filter_mode", "get_filter_mode");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "intensity", PROPERTY_HINT_RANGE, "0,1,0.01"), "set_intensity", "get_intensity");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "max_distance", PROPERTY_HINT_RANGE, "0,16384,0.1,or_greater,exp,suffix:m"), "set_max_distance", "get_max_distance");
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "size", PROPERTY_HINT_NONE, "suffix:m"), "set_size", "get_size");
@@ -257,6 +292,19 @@ void ReflectionProbe::_bind_methods() {
 
 	BIND_ENUM_CONSTANT(UPDATE_ONCE);
 	BIND_ENUM_CONSTANT(UPDATE_ALWAYS);
+	BIND_ENUM_CONSTANT(UPDATE_MANUAL);
+	BIND_ENUM_CONSTANT(UPDATE_MAX);
+
+	BIND_ENUM_CONSTANT(UPDATE_SLICING_1_FACE_PER_FRAME);
+	BIND_ENUM_CONSTANT(UPDATE_SLICING_2_FACES_PER_FRAME);
+	BIND_ENUM_CONSTANT(UPDATE_SLICING_3_FACES_PER_FRAME);
+	BIND_ENUM_CONSTANT(UPDATE_SLICING_6_FACES_PER_FRAME);
+	BIND_ENUM_CONSTANT(UPDATE_SLICING_MAX);
+
+	BIND_ENUM_CONSTANT(FILTER_MODE_AUTOMATIC);
+	BIND_ENUM_CONSTANT(FILTER_MODE_HIGH_QUALITY_INCREMENTAL);
+	BIND_ENUM_CONSTANT(FILTER_MODE_REAL_TIME);
+	BIND_ENUM_CONSTANT(FILTER_MODE_MAX);
 
 	BIND_ENUM_CONSTANT(AMBIENT_DISABLED);
 	BIND_ENUM_CONSTANT(AMBIENT_ENVIRONMENT);

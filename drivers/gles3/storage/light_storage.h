@@ -323,6 +323,8 @@ public:
 	virtual void reflection_probe_free(RID p_rid) override;
 
 	virtual void reflection_probe_set_update_mode(RID p_probe, RS::ReflectionProbeUpdateMode p_mode) override;
+	virtual void reflection_probe_set_update_slicing(RID p_probe, RS::ReflectionProbeUpdateSlicing p_slicing) override;
+	virtual void reflection_probe_set_filter_mode(RID p_probe, RS::ReflectionProbeFilterMode p_mode) override;
 	virtual void reflection_probe_set_intensity(RID p_probe, float p_intensity) override;
 	virtual void reflection_probe_set_ambient_mode(RID p_probe, RS::ReflectionProbeAmbientMode p_mode) override;
 	virtual void reflection_probe_set_ambient_color(RID p_probe, const Color &p_color) override;
@@ -340,11 +342,15 @@ public:
 
 	virtual AABB reflection_probe_get_aabb(RID p_probe) const override;
 	virtual RS::ReflectionProbeUpdateMode reflection_probe_get_update_mode(RID p_probe) const override;
+	virtual RS::ReflectionProbeUpdateSlicing reflection_probe_get_update_slicing(RID p_probe) const override;
+	virtual RS::ReflectionProbeFilterMode reflection_probe_get_filter_mode(RID p_probe) const override;
 	virtual uint32_t reflection_probe_get_cull_mask(RID p_probe) const override;
 	virtual Vector3 reflection_probe_get_size(RID p_probe) const override;
 	virtual Vector3 reflection_probe_get_origin_offset(RID p_probe) const override;
 	virtual float reflection_probe_get_origin_max_distance(RID p_probe) const override;
 	virtual bool reflection_probe_renders_shadows(RID p_probe) const override;
+
+	virtual void reflection_probe_queue_update(RID p_probe) override;
 
 	/* REFLECTION ATLAS */
 

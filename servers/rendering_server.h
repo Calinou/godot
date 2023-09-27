@@ -531,9 +531,28 @@ public:
 	enum ReflectionProbeUpdateMode {
 		REFLECTION_PROBE_UPDATE_ONCE,
 		REFLECTION_PROBE_UPDATE_ALWAYS,
+		REFLECTION_PROBE_UPDATE_MANUAL,
+		REFLECTION_PROBE_UPDATE_MAX,
+	};
+
+	enum ReflectionProbeUpdateSlicing {
+		REFLECTION_PROBE_UPDATE_SLICING_1_FACE_PER_FRAME,
+		REFLECTION_PROBE_UPDATE_SLICING_2_FACES_PER_FRAME,
+		REFLECTION_PROBE_UPDATE_SLICING_3_FACES_PER_FRAME,
+		REFLECTION_PROBE_UPDATE_SLICING_6_FACES_PER_FRAME,
+		REFLECTION_PROBE_UPDATE_SLICING_MAX,
+	};
+
+	enum ReflectionProbeFilterMode {
+		REFLECTION_PROBE_FILTER_MODE_AUTOMATIC,
+		REFLECTION_PROBE_FILTER_MODE_HIGH_QUALITY_INCREMENTAL,
+		REFLECTION_PROBE_FILTER_MODE_REAL_TIME,
+		REFLECTION_PROBE_FILTER_MODE_MAX,
 	};
 
 	virtual void reflection_probe_set_update_mode(RID p_probe, ReflectionProbeUpdateMode p_mode) = 0;
+	virtual void reflection_probe_set_update_slicing(RID p_probe, ReflectionProbeUpdateSlicing p_slicing) = 0;
+	virtual void reflection_probe_set_filter_mode(RID p_probe, ReflectionProbeFilterMode p_mode) = 0;
 	virtual void reflection_probe_set_intensity(RID p_probe, float p_intensity) = 0;
 
 	enum ReflectionProbeAmbientMode {
@@ -554,6 +573,7 @@ public:
 	virtual void reflection_probe_set_cull_mask(RID p_probe, uint32_t p_layers) = 0;
 	virtual void reflection_probe_set_resolution(RID p_probe, int p_resolution) = 0;
 	virtual void reflection_probe_set_mesh_lod_threshold(RID p_probe, float p_pixels) = 0;
+	virtual void reflection_probe_queue_update(RID p_probe) = 0;
 
 	/* DECAL API */
 
@@ -1643,6 +1663,8 @@ VARIANT_ENUM_CAST(RenderingServer::LightDirectionalShadowMode);
 VARIANT_ENUM_CAST(RenderingServer::LightDirectionalSkyMode);
 VARIANT_ENUM_CAST(RenderingServer::LightProjectorFilter);
 VARIANT_ENUM_CAST(RenderingServer::ReflectionProbeUpdateMode);
+VARIANT_ENUM_CAST(RenderingServer::ReflectionProbeUpdateSlicing);
+VARIANT_ENUM_CAST(RenderingServer::ReflectionProbeFilterMode);
 VARIANT_ENUM_CAST(RenderingServer::ReflectionProbeAmbientMode);
 VARIANT_ENUM_CAST(RenderingServer::VoxelGIQuality);
 VARIANT_ENUM_CAST(RenderingServer::DecalTexture);
