@@ -1,6 +1,8 @@
 #define LIGHT_BAKE_DISABLED 0
 #define LIGHT_BAKE_STATIC 1
 #define LIGHT_BAKE_DYNAMIC 2
+// `LIGHT_BAKE_STATIC_BAKED` is not handled in the shader, as the light isn't
+// even sent to the shader in this situation (only the lightmapper handles it).
 
 struct LightData { //this structure needs to be as packed as possible
 	highp vec3 position;
