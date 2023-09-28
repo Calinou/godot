@@ -800,22 +800,20 @@ void RendererSceneCull::instance_set_scenario(RID p_instance, RID p_scenario) {
 		switch (instance->base_type) {
 			case RS::INSTANCE_LIGHT: {
 				InstanceLightData *light = static_cast<InstanceLightData *>(instance->base_data);
-				if (light->bake_mode == RS::LIGHT_BAKE_STATIC_BAKED) {
-					return;
-				}
-
-				if (instance->visible && RSG::light_storage->light_get_type(instance->base) != RS::LIGHT_DIRECTIONAL && light->bake_mode == RS::LIGHT_BAKE_DYNAMIC) {
-					instance->scenario->dynamic_lights.erase(light->instance);
-				}
+				if (light->bake_mode != RS::LIGHT_BAKE_STATIC_BAKED) {
+					if (instance->visible && RSG::light_storage->light_get_type(instance->base) != RS::LIGHT_DIRECTIONAL && light->bake_mode == RS::LIGHT_BAKE_DYNAMIC) {
+						instance->scenario->dynamic_lights.erase(light->instance);
+					}
 
 #ifdef DEBUG_ENABLED
-				if (light->geometries.size()) {
-					ERR_PRINT("BUG, indexing did not unpair geometries from light.");
-				}
+					if (light->geometries.size()) {
+						ERR_PRINT("BUG, indexing did not unpair geometries from light.");
+					}
 #endif
-				if (light->D) {
-					instance->scenario->directional_lights.erase(light->D);
-					light->D = nullptr;
+					if (light->D) {
+						instance->scenario->directional_lights.erase(light->D);
+						light->D = nullptr;
+					}
 				}
 			} break;
 			case RS::INSTANCE_REFLECTION_PROBE: {
@@ -867,12 +865,10 @@ void RendererSceneCull::instance_set_scenario(RID p_instance, RID p_scenario) {
 		switch (instance->base_type) {
 			case RS::INSTANCE_LIGHT: {
 				InstanceLightData *light = static_cast<InstanceLightData *>(instance->base_data);
-				if (light->bake_mode == RS::LIGHT_BAKE_STATIC_BAKED) {
-					return;
-				}
-
-				if (RSG::light_storage->light_get_type(instance->base) == RS::LIGHT_DIRECTIONAL) {
-					light->D = scenario->directional_lights.push_back(instance);
+				if (light->bake_mode != RS::LIGHT_BAKE_STATIC_BAKED) {
+					if (RSG::light_storage->light_get_type(instance->base) == RS::LIGHT_DIRECTIONAL) {
+						light->D = scenario->directional_lights.push_back(instance);
+					}
 				}
 			} break;
 			case RS::INSTANCE_VOXEL_GI: {
@@ -2909,10 +2905,6 @@ void RendererSceneCull::_scene_cull(CullData &cull_data, InstanceCullResult &cul
 					}
 
 					if (geometry_instance_pair_mask & (1 << RS::INSTANCE_LIGHT) && (idata.flags & InstanceData::FLAG_GEOM_LIGHTING_DIRTY)) {
-						InstanceLightData *light = static_cast<InstanceLightData *>(idata.instance->base_data);
-						if (light->bake_mode == RS::LIGHT_BAKE_STATIC_BAKED) {
-							continue;
-						}
 						InstanceGeometryData *geom = static_cast<InstanceGeometryData *>(idata.instance->base_data);
 						uint32_t idx = 0;
 

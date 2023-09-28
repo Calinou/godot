@@ -1001,6 +1001,9 @@ LightmapGI::BakeError LightmapGI::bake(Node *p_from_node, String p_image_data_pa
 				lightmapper->add_spot_light(light->get_bake_mode() == Light3D::BAKE_STATIC || light->get_bake_mode() == Light3D::BAKE_STATIC_BAKED, xf.origin, -xf.basis.get_column(Vector3::AXIS_Z).normalized(), linear_color, energy, indirect_energy, l->get_param(Light3D::PARAM_RANGE), l->get_param(Light3D::PARAM_ATTENUATION), l->get_param(Light3D::PARAM_SPOT_ANGLE), l->get_param(Light3D::PARAM_SPOT_ATTENUATION), l->get_param(Light3D::PARAM_SIZE), l->get_param(Light3D::PARAM_SHADOW_BLUR));
 			}
 		}
+		for (int i = 0; i < probes_found.size(); i++) {
+			lightmapper->add_probe(probes_found[i]);
+		}
 	}
 
 	Ref<Image> environment_image;
