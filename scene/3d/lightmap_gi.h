@@ -44,6 +44,7 @@ class LightmapGIData : public Resource {
 	RES_BASE_EXTENSION("lmbake")
 
 	Ref<TextureLayered> light_texture;
+	Ref<TextureLayered> shadowmask_texture;
 
 	bool uses_spherical_harmonics = false;
 	bool interior = false;
@@ -67,6 +68,8 @@ class LightmapGIData : public Resource {
 	Dictionary _get_probe_data() const;
 	void _set_light_textures_data(const Array &p_data);
 	Array _get_light_textures_data() const;
+	void _set_shadowmask_textures_data(const Array &p_data);
+	Array _get_shadowmask_textures_data() const;
 
 protected:
 	static void _bind_methods();
@@ -81,7 +84,9 @@ public:
 	void clear_users();
 
 	void set_light_texture(const Ref<TextureLayered> &p_light_texture);
+	void set_shadowmask_texture(const Ref<TextureLayered> &p_light_texture);
 	Ref<TextureLayered> get_light_texture() const;
+	Ref<TextureLayered> get_shadowmask_texture() const;
 
 	void set_uses_spherical_harmonics(bool p_enable);
 	bool is_using_spherical_harmonics() const;

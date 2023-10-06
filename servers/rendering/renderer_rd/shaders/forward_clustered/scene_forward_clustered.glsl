@@ -1290,7 +1290,7 @@ void fragment_shader(in SceneData scene_data) {
 			// shadowmasking. The alpha channels of the other three lightmaps
 			// are not used.
 			vec4 lightmap_sample = textureLod(sampler2DArray(lightmap_textures[ofs], SAMPLER_LINEAR_CLAMP), uvw + vec3(0.0, 0.0, 0.0), 0.0);
-			shadowmask = lightmap_sample.a;
+			shadowmask = textureLod(sampler2DArray(shadowmap_textures[ofs], SAMPLER_LINEAR_CLAMP), uvw + vec3(0.0, 0.0, 0.0), 0.0).r;
 
 			vec3 lm_light_l0 = lightmap_sample.rgb;
 			vec3 lm_light_l1n1 = textureLod(sampler2DArray(lightmap_textures[ofs], SAMPLER_LINEAR_CLAMP), uvw + vec3(0.0, 0.0, 1.0), 0.0).rgb;
@@ -1315,7 +1315,7 @@ void fragment_shader(in SceneData scene_data) {
 			uint idx = instances.data[instance_index].gi_offset >> 20;
 			vec4 lightmap_sample = textureLod(sampler2DArray(lightmap_textures[ofs], SAMPLER_LINEAR_CLAMP), uvw, 0.0);
 			ambient_light += lightmap_sample.rgb * lightmaps.data[idx].exposure_normalization;
-			shadowmask = lightmap_sample.a;
+			shadowmask = textureLod(sampler2DArray(shadowmap_textures[ofs], SAMPLER_LINEAR_CLAMP), uvw, 0.0).r;
 		}
 	}
 #else

@@ -185,6 +185,94 @@ Array LightmapGIData::_get_light_textures_data() const {
 	return ret;
 }
 
+void LightmapGIData::_set_shadowmask_textures_data(const Array &p_data) {
+	ERR_FAIL_COND(p_data.is_empty());
+
+	if (p_data.size() == 1) {
+		set_shadowmask_texture(p_data[0]);
+	} else {
+		Vector<Ref<Image>> images;
+		for (int i = 0; i < p_data.size(); i++) {
+			Ref<TextureLayered> texture = p_data[i];
+			ERR_FAIL_COND_MSG(texture.is_null(), vformat("Invalid TextureLayered at index %d.", i));
+			for (int j = 0; j < texture->get_layers(); j++) {
+				images.push_back(texture->get_layer_data(j));
+			}
+		}
+
+		Ref<Texture2DArray> combined_texture;
+		combined_texture.instantiate();
+
+		combined_texture->create_from_images(images);
+		set_shadowmask_texture(combined_texture);
+	}
+}
+
+Array LightmapGIData::_get_shadowmask_textures_data() const {
+	Array ret;
+	if (shadowmask_texture.is_null() || shadowmask_texture->get_layers() == 0) {
+		return ret;
+	}
+
+	Vector<Ref<Image>> images;
+	for (int i = 0; i < shadowmask_texture->get_layers(); i++) {
+		images.push_back(shadowmask_texture->get_layer_data(i));
+	}
+
+	int slice_count = images.size();
+	int slice_width = images[0]->get_width();
+	int slice_height = images[0]->get_height();
+
+	int slices_per_texture = Image::MAX_HEIGHT / slice_height;
+	int texture_count = Math::ceil(slice_count / (float)slices_per_texture);
+
+	ret.resize(texture_count);
+
+	String base_name = get_path().get_basename();
+
+	int last_count = slice_count % slices_per_texture;
+	for (int i = 0; i < texture_count; i++) {
+		int texture_slice_count = (i == texture_count - 1 && last_count != 0) ? last_count : slices_per_texture;
+
+		Ref<Image> texture_image = Image::create_empty(slice_width, slice_height * texture_slice_count, false, images[0]->get_format());
+
+		for (int j = 0; j < texture_slice_count; j++) {
+			texture_image->blit_rect(images[i * slices_per_texture + j], Rect2i(0, 0, slice_width, slice_height), Point2i(0, slice_height * j));
+		}
+
+		String texture_path = texture_count > 1 ? base_name + "_" + itos(i) + ".png" : base_name + ".png";
+
+		Ref<ConfigFile> config;
+		config.instantiate();
+
+		if (FileAccess::exists(texture_path + ".import")) {
+			config->load(texture_path + ".import");
+		}
+
+		config->set_value("remap", "importer", "2d_array_texture");
+		config->set_value("remap", "type", "CompressedTexture2DArray");
+		if (!config->has_section_key("params", "compress/mode")) {
+			// User may want another compression, so leave it be, but default to VRAM uncompressed.
+			config->set_value("params", "compress/mode", 3);
+		}
+		config->set_value("params", "compress/channel_pack", 1);
+		config->set_value("params", "mipmaps/generate", false);
+		config->set_value("params", "slices/horizontal", 1);
+		config->set_value("params", "slices/vertical", texture_slice_count);
+
+		config->save(texture_path + ".import");
+
+		Error err = texture_image->save_png(texture_path);
+		ERR_FAIL_COND_V(err, ret);
+		ResourceLoader::import(texture_path);
+		Ref<TextureLayered> t = ResourceLoader::load(texture_path); //if already loaded, it will be updated on refocus?
+		ERR_FAIL_COND_V(t.is_null(), ret);
+		ret[i] = t;
+	}
+
+	return ret;
+}
+
 RID LightmapGIData::get_rid() const {
 	return lightmap;
 }
@@ -200,6 +288,15 @@ void LightmapGIData::set_light_texture(const Ref<TextureLayered> &p_light_textur
 
 Ref<TextureLayered> LightmapGIData::get_light_texture() const {
 	return light_texture;
+}
+
+void LightmapGIData::set_shadowmask_texture(const Ref<TextureLayered> &p_shadowmask_texture) {
+	shadowmask_texture = p_shadowmask_texture;
+	RS::get_singleton()->lightmap_set_textures(lightmap, shadowmask_texture.is_valid() ? shadowmask_texture->get_rid() : RID(), uses_spherical_harmonics);
+}
+
+Ref<TextureLayered> LightmapGIData::get_shadowmask_texture() const {
+	return shadowmask_texture;
 }
 
 void LightmapGIData::set_uses_spherical_harmonics(bool p_enable) {
@@ -289,8 +386,14 @@ void LightmapGIData::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_light_texture", "light_texture"), &LightmapGIData::set_light_texture);
 	ClassDB::bind_method(D_METHOD("get_light_texture"), &LightmapGIData::get_light_texture);
 
+	ClassDB::bind_method(D_METHOD("set_shadowmask_texture", "shadowmask_texture"), &LightmapGIData::set_shadowmask_texture);
+	ClassDB::bind_method(D_METHOD("get_shadowmask_texture"), &LightmapGIData::get_shadowmask_texture);
+
 	ClassDB::bind_method(D_METHOD("_set_light_textures_data", "data"), &LightmapGIData::_set_light_textures_data);
 	ClassDB::bind_method(D_METHOD("_get_light_textures_data"), &LightmapGIData::_get_light_textures_data);
+
+	ClassDB::bind_method(D_METHOD("_set_shadowmask_textures_data", "data"), &LightmapGIData::_set_shadowmask_textures_data);
+	ClassDB::bind_method(D_METHOD("_get_shadowmask_textures_data"), &LightmapGIData::_get_shadowmask_textures_data);
 
 	ClassDB::bind_method(D_METHOD("set_uses_spherical_harmonics", "uses_spherical_harmonics"), &LightmapGIData::set_uses_spherical_harmonics);
 	ClassDB::bind_method(D_METHOD("is_using_spherical_harmonics"), &LightmapGIData::is_using_spherical_harmonics);
@@ -304,7 +407,9 @@ void LightmapGIData::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_get_probe_data"), &LightmapGIData::_get_probe_data);
 
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "light_texture", PROPERTY_HINT_RESOURCE_TYPE, "TextureLayered", PROPERTY_USAGE_EDITOR), "set_light_texture", "get_light_texture"); // property usage default but no save
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "shadowmask_texture", PROPERTY_HINT_RESOURCE_TYPE, "TextureLayered", PROPERTY_USAGE_EDITOR), "set_shadowmask_texture", "get_shadowmask_texture"); // property usage default but no save
 	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "light_textures", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL), "_set_light_textures_data", "_get_light_textures_data");
+	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "shadowmask_textures", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL), "_set_shadowmask_textures_data", "_get_shadowmask_textures_data");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "uses_spherical_harmonics", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL), "set_uses_spherical_harmonics", "is_using_spherical_harmonics");
 	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "user_data", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL), "_set_user_data", "_get_user_data");
 	ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "probe_data", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL), "_set_probe_data", "_get_probe_data");
