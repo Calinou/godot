@@ -728,6 +728,25 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 
 				dup->set_name(parent->validate_child_name(dup));
 
+				List<PropertyInfo> plist;
+				get_property_list(&plist);
+				for (const PropertyInfo &E : plist) {
+					const Resource *resource = Object::cast_to<Resource>(dup->get(E.name));
+					if (resource) {
+						if (Object::cast_to<Texture>(resource) ||
+								Object::cast_to<Material>(resource) ||
+								Object::cast_to<Mesh>(resource) ||
+								Object::cast_to<Script>(resource)) {
+							print_line("Not duplicating texture/material/mesh/script:", E.name);
+						} else if (!(E.usage & PROPERTY_USAGE_ALWAYS_DUPLICATE)) {
+							// `PROPERTY_USAGE_ALWAYS_DUPLICATE` is already handled in core,
+							// so don't duplicate properties with this usage again in the editor.
+							print_line("Duplicating", E.name);
+							dup->set(E.name, resource->duplicate());
+						}
+					}
+				}
+
 				undo_redo->add_do_method(add_below_node, "add_sibling", dup, true);
 
 				for (Node *F : owned) {
