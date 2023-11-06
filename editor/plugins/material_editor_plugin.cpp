@@ -313,6 +313,25 @@ void EditorInspectorPluginMaterial::_undo_redo_inspector_callback(Object *p_undo
 	if (base_material) {
 		Texture2D *texture = Object::cast_to<Texture2D>(p_new_value);
 		if (texture) {
+			if (p_property == "albedo_texture") {
+				if (base_material->get_texture(StandardMaterial3D::TEXTURE_ALBEDO).is_null()) {
+					const Ref<Texture2D> new_albedo_texture = p_new_value;
+					if (new_albedo_texture.is_valid()) {
+						print_line("Basename: ", new_albedo_texture->get_path().get_basename());
+						Ref<Texture2D> normal = ResourceLoader::load(new_albedo_texture->get_path().get_basename() + "_normal.png", "Texture2D");
+						print_line(normal);
+						print_line(normal->get_path());
+						undo_redo->add_do_property(p_edited, "normal_texture", normal);
+
+						bool valid = false;
+						Variant value = p_edited->get("normal_texture", &valid);
+						if (valid) {
+							undo_redo->add_undo_property(p_edited, "normal_texture", value);
+						}
+					}
+				}
+			}
+
 			if (p_property == "roughness_texture") {
 				if (base_material->get_texture(StandardMaterial3D::TEXTURE_ROUGHNESS).is_null()) {
 					undo_redo->add_do_property(p_edited, "roughness", 1.0);
@@ -335,6 +354,11 @@ void EditorInspectorPluginMaterial::_undo_redo_inspector_callback(Object *p_undo
 				}
 			}
 		}
+	}
+
+	BaseMaterial3D *orm_material = Object::cast_to<ORMMaterial3D>(p_edited);
+	if (orm_material) {
+		print_line("Is ORM material");
 	}
 }
 
