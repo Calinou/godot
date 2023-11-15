@@ -63,6 +63,16 @@ class SceneImportSettings : public ConfirmationDialog {
 		ACTION_CHOOSE_ANIMATION_SAVE_PATHS,
 	};
 
+	enum DrawOptions {
+		DRAW_OPTION_DEBUG_DISABLED,
+		DRAW_OPTION_DEBUG_WIREFRAME,
+		DRAW_OPTION_DEBUG_OVERDRAW,
+		DRAW_OPTION_DEBUG_LIGHTING,
+		DRAW_OPTION_DEBUG_UNSHADED,
+		DRAW_OPTION_DEBUG_NORMAL_BUFFER,
+		DRAW_OPTION_SSAO,
+	};
+
 	Node *scene = nullptr;
 
 	HSplitContainer *tree_split = nullptr;
@@ -75,6 +85,8 @@ class SceneImportSettings : public ConfirmationDialog {
 	EditorInspector *inspector = nullptr;
 
 	SubViewport *base_viewport = nullptr;
+
+	MenuButton *draw_options_menu = nullptr;
 
 	Camera3D *camera = nullptr;
 	Ref<CameraAttributesPractical> camera_attributes;
@@ -164,6 +176,7 @@ class SceneImportSettings : public ConfirmationDialog {
 	void _update_camera();
 	void _select(Tree *p_from, String p_type, String p_id);
 	void _inspector_property_edited(const String &p_name);
+	void _draw_options_menu_id_pressed(int p_id);
 	void _reset_bone_transforms();
 	void _play_animation();
 	void _stop_current_animation();

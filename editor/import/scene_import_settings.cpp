@@ -873,6 +873,25 @@ void SceneImportSettings::_inspector_property_edited(const String &p_name) {
 	}
 }
 
+void SceneImportSettings::_draw_options_menu_id_pressed(int p_id) {
+	switch (p_id) {
+		case DRAW_OPTION_DEBUG_DISABLED:
+			break;
+		case DRAW_OPTION_DEBUG_WIREFRAME:
+			break;
+		case DRAW_OPTION_DEBUG_OVERDRAW:
+			break;
+		case DRAW_OPTION_DEBUG_LIGHTING:
+			break;
+		case DRAW_OPTION_DEBUG_UNSHADED:
+			break;
+		case DRAW_OPTION_DEBUG_NORMAL_BUFFER:
+			break;
+		case DRAW_OPTION_SSAO:
+			break;
+	}
+}
+
 void SceneImportSettings::_reset_bone_transforms() {
 	for (Skeleton3D *skeleton : skeletons) {
 		skeleton->reset_bone_poses();
@@ -1509,6 +1528,11 @@ SceneImportSettings::SceneImportSettings() {
 
 	base_viewport = memnew(SubViewport);
 	vp_container->add_child(base_viewport);
+
+	MenuButton *draw_options_menu = memnew(MenuButton);
+	draw_options_menu->set_text(TTR("Normal"));
+	draw_options_menu->get_popup()->connect("id_pressed", callable_mp(this, &SceneImportSettings::_draw_options_menu_id_pressed));
+	base_viewport->add_child(draw_options_menu);
 
 	animation_preview = memnew(PanelContainer);
 	animation_preview->set_h_size_flags(Control::SIZE_EXPAND_FILL);
