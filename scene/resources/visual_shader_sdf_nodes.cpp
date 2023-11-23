@@ -36,6 +36,10 @@ String VisualShaderNodeSDFToScreenUV::get_caption() const {
 	return "SDFToScreenUV";
 }
 
+String VisualShaderNodeSDFToScreenUV::get_shortcut_notation() const {
+	return "STSUV";
+}
+
 int VisualShaderNodeSDFToScreenUV::get_input_port_count() const {
 	return 1;
 }
@@ -71,6 +75,10 @@ VisualShaderNodeSDFToScreenUV::VisualShaderNodeSDFToScreenUV() {
 
 String VisualShaderNodeScreenUVToSDF::get_caption() const {
 	return "ScreenUVToSDF";
+}
+
+String VisualShaderNodeScreenUVToSDF::get_shortcut_notation() const {
+	return "SUVTS";
 }
 
 int VisualShaderNodeScreenUVToSDF::get_input_port_count() const {
@@ -117,6 +125,10 @@ String VisualShaderNodeTextureSDF::get_caption() const {
 	return "TextureSDF";
 }
 
+String VisualShaderNodeTextureSDF::get_shortcut_notation() const {
+	return "TS";
+}
+
 int VisualShaderNodeTextureSDF::get_input_port_count() const {
 	return 1;
 }
@@ -152,6 +164,10 @@ VisualShaderNodeTextureSDF::VisualShaderNodeTextureSDF() {
 
 String VisualShaderNodeTextureSDFNormal::get_caption() const {
 	return "TextureSDFNormal";
+}
+
+String VisualShaderNodeTextureSDFNormal::get_shortcut_notation() const {
+	return "TSNorm";
 }
 
 int VisualShaderNodeTextureSDFNormal::get_input_port_count() const {
@@ -190,6 +206,11 @@ VisualShaderNodeTextureSDFNormal::VisualShaderNodeTextureSDFNormal() {
 String VisualShaderNodeSDFRaymarch::get_caption() const {
 	return "SDFRaymarch";
 }
+
+String VisualShaderNodeSDFRaymarch::get_shortcut_notation() const {
+	return "SRay";
+}
+
 
 int VisualShaderNodeSDFRaymarch::get_input_port_count() const {
 	return 2;

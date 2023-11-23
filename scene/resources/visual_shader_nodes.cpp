@@ -107,6 +107,10 @@ String VisualShaderNodeFloatConstant::get_caption() const {
 	return "FloatConstant";
 }
 
+String VisualShaderNodeFloatConstant::get_shortcut_notation() const {
+	return "FConst";
+}
+
 int VisualShaderNodeFloatConstant::get_input_port_count() const {
 	return 0;
 }
@@ -167,6 +171,10 @@ VisualShaderNodeFloatConstant::VisualShaderNodeFloatConstant() {
 
 String VisualShaderNodeIntConstant::get_caption() const {
 	return "IntConstant";
+}
+
+String VisualShaderNodeIntConstant::get_shortcut_notation() const {
+	return "IConst";
 }
 
 int VisualShaderNodeIntConstant::get_input_port_count() const {
@@ -231,6 +239,10 @@ String VisualShaderNodeUIntConstant::get_caption() const {
 	return "UIntConstant";
 }
 
+String VisualShaderNodeUIntConstant::get_shortcut_notation() const {
+	return "UIConst";
+}
+
 int VisualShaderNodeUIntConstant::get_input_port_count() const {
 	return 0;
 }
@@ -291,6 +303,10 @@ VisualShaderNodeUIntConstant::VisualShaderNodeUIntConstant() {
 
 String VisualShaderNodeBooleanConstant::get_caption() const {
 	return "BooleanConstant";
+}
+
+String VisualShaderNodeBooleanConstant::get_shortcut_notation() const {
+	return "BConst";
 }
 
 int VisualShaderNodeBooleanConstant::get_input_port_count() const {
@@ -355,6 +371,10 @@ String VisualShaderNodeColorConstant::get_caption() const {
 	return "ColorConstant";
 }
 
+String VisualShaderNodeColorConstant::get_shortcut_notation() const {
+	return "CConst";
+}
+
 int VisualShaderNodeColorConstant::get_input_port_count() const {
 	return 0;
 }
@@ -415,6 +435,10 @@ VisualShaderNodeColorConstant::VisualShaderNodeColorConstant() {
 
 String VisualShaderNodeVec2Constant::get_caption() const {
 	return "Vector2Constant";
+}
+
+String VisualShaderNodeVec2Constant::get_shortcut_notation() const {
+	return "V2Const";
 }
 
 int VisualShaderNodeVec2Constant::get_input_port_count() const {
@@ -479,6 +503,10 @@ String VisualShaderNodeVec3Constant::get_caption() const {
 	return "Vector3Constant";
 }
 
+String VisualShaderNodeVec3Constant::get_shortcut_notation() const {
+	return "V3Const";
+}
+
 int VisualShaderNodeVec3Constant::get_input_port_count() const {
 	return 0;
 }
@@ -541,6 +569,10 @@ String VisualShaderNodeVec4Constant::get_caption() const {
 	return "Vector4Constant";
 }
 
+String VisualShaderNodeVec4Constant::get_shortcut_notation() const {
+	return "V4Const";
+}
+
 int VisualShaderNodeVec4Constant::get_input_port_count() const {
 	return 0;
 }
@@ -601,6 +633,10 @@ VisualShaderNodeVec4Constant::VisualShaderNodeVec4Constant() {
 
 String VisualShaderNodeTransformConstant::get_caption() const {
 	return "TransformConstant";
+}
+
+String VisualShaderNodeTransformConstant::get_shortcut_notation() const {
+	return "TConst";
 }
 
 int VisualShaderNodeTransformConstant::get_input_port_count() const {
@@ -671,6 +707,10 @@ VisualShaderNodeTransformConstant::VisualShaderNodeTransformConstant() {
 
 String VisualShaderNodeTexture::get_caption() const {
 	return "Texture2D";
+}
+
+String VisualShaderNodeTexture::get_shortcut_notation() const {
+	return "T2D";
 }
 
 int VisualShaderNodeTexture::get_input_port_count() const {
@@ -1046,6 +1086,10 @@ String VisualShaderNodeCurveTexture::get_caption() const {
 	return "CurveTexture";
 }
 
+String VisualShaderNodeCurveTexture::get_shortcut_notation() const {
+	return "CTex";
+}
+
 int VisualShaderNodeCurveTexture::get_input_port_count() const {
 	return 1;
 }
@@ -1129,6 +1173,10 @@ VisualShaderNodeCurveTexture::VisualShaderNodeCurveTexture() {
 
 String VisualShaderNodeCurveXYZTexture::get_caption() const {
 	return "CurveXYZTexture";
+}
+
+String VisualShaderNodeCurveXYZTexture::get_shortcut_notation() const {
+	return "CXYZTex";
 }
 
 int VisualShaderNodeCurveXYZTexture::get_input_port_count() const {
@@ -1330,6 +1378,10 @@ String VisualShaderNodeTexture2DArray::get_caption() const {
 	return "Texture2DArray";
 }
 
+String VisualShaderNodeTexture2DArray::get_shortcut_notation() const {
+	return "T2Arr";
+}
+
 String VisualShaderNodeTexture2DArray::get_input_port_name(int p_port) const {
 	if (p_port == 2) {
 		return "sampler2DArray";
@@ -1387,6 +1439,10 @@ String VisualShaderNodeTexture3D::get_caption() const {
 	return "Texture3D";
 }
 
+String VisualShaderNodeTexture3D::get_shortcut_notation() const {
+	return "T3D";
+}
+
 String VisualShaderNodeTexture3D::get_input_port_name(int p_port) const {
 	if (p_port == 2) {
 		return "sampler3D";
@@ -1442,6 +1498,10 @@ VisualShaderNodeTexture3D::VisualShaderNodeTexture3D() {
 
 String VisualShaderNodeCubemap::get_caption() const {
 	return "Cubemap";
+}
+
+String VisualShaderNodeCubemap::get_shortcut_notation() const {
+	return "CMap";
 }
 
 int VisualShaderNodeCubemap::get_input_port_count() const {
@@ -1641,6 +1701,10 @@ String VisualShaderNodeLinearSceneDepth::get_caption() const {
 	return "LinearSceneDepth";
 }
 
+String VisualShaderNodeLinearSceneDepth::get_shortcut_notation() const {
+	return "LSDepth";
+}
+
 int VisualShaderNodeLinearSceneDepth::get_input_port_count() const {
 	return 0;
 }
@@ -1698,6 +1762,10 @@ VisualShaderNodeLinearSceneDepth::VisualShaderNodeLinearSceneDepth() {
 
 String VisualShaderNodeWorldPositionFromDepth::get_caption() const {
 	return "WorldPositionFromDepth";
+}
+
+String VisualShaderNodeWorldPositionFromDepth::get_shortcut_notation() const {
+	return "WPFDepth";
 }
 
 int VisualShaderNodeWorldPositionFromDepth::get_input_port_count() const {
@@ -1767,6 +1835,10 @@ String VisualShaderNodeScreenNormalWorldSpace::get_caption() const {
 	return "ScreenNormalWorldSpace";
 }
 
+String VisualShaderNodeScreenNormalWorldSpace::get_shortcut_notation() const {
+	return "SNWSpace";
+}
+
 int VisualShaderNodeScreenNormalWorldSpace::get_input_port_count() const {
 	return 1;
 }
@@ -1827,6 +1899,10 @@ VisualShaderNodeScreenNormalWorldSpace::VisualShaderNodeScreenNormalWorldSpace()
 
 String VisualShaderNodeFloatOp::get_caption() const {
 	return "FloatOp";
+}
+
+String VisualShaderNodeFloatOp::get_shortcut_notation() const {
+	return "FOp";
 }
 
 int VisualShaderNodeFloatOp::get_input_port_count() const {
@@ -1939,6 +2015,10 @@ VisualShaderNodeFloatOp::VisualShaderNodeFloatOp() {
 
 String VisualShaderNodeIntOp::get_caption() const {
 	return "IntOp";
+}
+
+String VisualShaderNodeIntOp::get_shortcut_notation() const {
+	return "IOp";
 }
 
 int VisualShaderNodeIntOp::get_input_port_count() const {
@@ -2062,6 +2142,10 @@ String VisualShaderNodeUIntOp::get_caption() const {
 	return "UIntOp";
 }
 
+String VisualShaderNodeUIntOp::get_shortcut_notation() const {
+	return "UIOp";
+}
+
 int VisualShaderNodeUIntOp::get_input_port_count() const {
 	return 2;
 }
@@ -2181,6 +2265,10 @@ VisualShaderNodeUIntOp::VisualShaderNodeUIntOp() {
 
 String VisualShaderNodeVectorOp::get_caption() const {
 	return "VectorOp";
+}
+
+String VisualShaderNodeVectorOp::get_shortcut_notation() const {
+	return "VOp";
 }
 
 int VisualShaderNodeVectorOp::get_input_port_count() const {
@@ -2355,6 +2443,10 @@ VisualShaderNodeVectorOp::VisualShaderNodeVectorOp() {
 
 String VisualShaderNodeColorOp::get_caption() const {
 	return "ColorOp";
+}
+
+String VisualShaderNodeColorOp::get_shortcut_notation() const {
+	return "COp";
 }
 
 int VisualShaderNodeColorOp::get_input_port_count() const {
@@ -2533,6 +2625,10 @@ String VisualShaderNodeTransformOp::get_caption() const {
 	return "TransformOp";
 }
 
+String VisualShaderNodeTransformOp::get_shortcut_notation() const {
+	return "TOp";
+}
+
 int VisualShaderNodeTransformOp::get_input_port_count() const {
 	return 2;
 }
@@ -2630,6 +2726,10 @@ String VisualShaderNodeTransformVecMult::get_caption() const {
 	return "TransformVectorMult";
 }
 
+String VisualShaderNodeTransformVecMult::get_shortcut_notation() const {
+	return "TVMult";
+}
+
 int VisualShaderNodeTransformVecMult::get_input_port_count() const {
 	return 2;
 }
@@ -2707,6 +2807,10 @@ VisualShaderNodeTransformVecMult::VisualShaderNodeTransformVecMult() {
 
 String VisualShaderNodeFloatFunc::get_caption() const {
 	return "FloatFunc";
+}
+
+String VisualShaderNodeFloatFunc::get_shortcut_notation() const {
+	return "FFunc";
 }
 
 int VisualShaderNodeFloatFunc::get_input_port_count() const {
@@ -2841,6 +2945,10 @@ String VisualShaderNodeIntFunc::get_caption() const {
 	return "IntFunc";
 }
 
+String VisualShaderNodeIntFunc::get_shortcut_notation() const {
+	return "IFunc";
+}
+
 int VisualShaderNodeIntFunc::get_input_port_count() const {
 	return 1;
 }
@@ -2918,6 +3026,10 @@ String VisualShaderNodeUIntFunc::get_caption() const {
 	return "UIntFunc";
 }
 
+String VisualShaderNodeUIntFunc::get_shortcut_notation() const {
+	return "UIFunc";
+}
+
 int VisualShaderNodeUIntFunc::get_input_port_count() const {
 	return 1;
 }
@@ -2989,6 +3101,10 @@ VisualShaderNodeUIntFunc::VisualShaderNodeUIntFunc() {
 
 String VisualShaderNodeVectorFunc::get_caption() const {
 	return "VectorFunc";
+}
+
+String VisualShaderNodeVectorFunc::get_shortcut_notation() const {
+	return "VFunc";
 }
 
 int VisualShaderNodeVectorFunc::get_input_port_count() const {
@@ -3178,6 +3294,10 @@ String VisualShaderNodeColorFunc::get_caption() const {
 	return "ColorFunc";
 }
 
+String VisualShaderNodeColorFunc::get_shortcut_notation() const {
+	return "CFunc";
+}
+
 int VisualShaderNodeColorFunc::get_input_port_count() const {
 	return 1;
 }
@@ -3292,6 +3412,10 @@ String VisualShaderNodeTransformFunc::get_caption() const {
 	return "TransformFunc";
 }
 
+String VisualShaderNodeTransformFunc::get_shortcut_notation() const {
+	return "TFunc";
+}
+
 int VisualShaderNodeTransformFunc::get_input_port_count() const {
 	return 1;
 }
@@ -3365,6 +3489,10 @@ VisualShaderNodeTransformFunc::VisualShaderNodeTransformFunc() {
 
 String VisualShaderNodeUVFunc::get_caption() const {
 	return "UVFunc";
+}
+
+String VisualShaderNodeUVFunc::get_shortcut_notation() const {
+	return "UFunc";
 }
 
 int VisualShaderNodeUVFunc::get_input_port_count() const {
@@ -3507,6 +3635,10 @@ String VisualShaderNodeUVPolarCoord::get_caption() const {
 	return "UVPolarCoord";
 }
 
+String VisualShaderNodeUVPolarCoord::get_shortcut_notation() const {
+	return "UPCoord";
+}
+
 int VisualShaderNodeUVPolarCoord::get_input_port_count() const {
 	return 4;
 }
@@ -3612,6 +3744,10 @@ String VisualShaderNodeDotProduct::get_caption() const {
 	return "DotProduct";
 }
 
+String VisualShaderNodeDotProduct::get_shortcut_notation() const {
+	return "DProd";
+}
+
 int VisualShaderNodeDotProduct::get_input_port_count() const {
 	return 2;
 }
@@ -3649,6 +3785,10 @@ VisualShaderNodeDotProduct::VisualShaderNodeDotProduct() {
 
 String VisualShaderNodeVectorLen::get_caption() const {
 	return "VectorLen";
+}
+
+String VisualShaderNodeVectorLen::get_shortcut_notation() const {
+	return "VLen";
 }
 
 int VisualShaderNodeVectorLen::get_input_port_count() const {
@@ -3707,6 +3847,10 @@ String VisualShaderNodeDeterminant::get_caption() const {
 	return "Determinant";
 }
 
+String VisualShaderNodeDeterminant::get_shortcut_notation() const {
+	return "Dtrm";
+}
+
 int VisualShaderNodeDeterminant::get_input_port_count() const {
 	return 1;
 }
@@ -3743,6 +3887,10 @@ VisualShaderNodeDeterminant::VisualShaderNodeDeterminant() {
 
 String VisualShaderNodeDerivativeFunc::get_caption() const {
 	return "DerivativeFunc";
+}
+
+String VisualShaderNodeDerivativeFunc::get_shortcut_notation() const {
+	return "DFunc";
 }
 
 int VisualShaderNodeDerivativeFunc::get_input_port_count() const {
@@ -3936,6 +4084,10 @@ String VisualShaderNodeClamp::get_caption() const {
 	return "Clamp";
 }
 
+String VisualShaderNodeClamp::get_shortcut_notation() const {
+	return "Cp";
+}
+
 int VisualShaderNodeClamp::get_input_port_count() const {
 	return 3;
 }
@@ -4075,6 +4227,10 @@ String VisualShaderNodeFaceForward::get_caption() const {
 	return "FaceForward";
 }
 
+String VisualShaderNodeFaceForward::get_shortcut_notation() const {
+	return "FForw";
+}
+
 int VisualShaderNodeFaceForward::get_input_port_count() const {
 	return 3;
 }
@@ -4144,6 +4300,10 @@ String VisualShaderNodeOuterProduct::get_caption() const {
 	return "OuterProduct";
 }
 
+String VisualShaderNodeOuterProduct::get_shortcut_notation() const {
+	return "OProd";
+}
+
 int VisualShaderNodeOuterProduct::get_input_port_count() const {
 	return 2;
 }
@@ -4188,6 +4348,10 @@ VisualShaderNodeOuterProduct::VisualShaderNodeOuterProduct() {
 
 String VisualShaderNodeStep::get_caption() const {
 	return "Step";
+}
+
+String VisualShaderNodeStep::get_shortcut_notation() const {
+	return "Sp";
 }
 
 int VisualShaderNodeStep::get_input_port_count() const {
@@ -4342,6 +4506,10 @@ VisualShaderNodeStep::VisualShaderNodeStep() {
 
 String VisualShaderNodeSmoothStep::get_caption() const {
 	return "SmoothStep";
+}
+
+String VisualShaderNodeSmoothStep::get_shortcut_notation() const {
+	return "Ss";
 }
 
 int VisualShaderNodeSmoothStep::get_input_port_count() const {
@@ -4508,6 +4676,10 @@ String VisualShaderNodeVectorDistance::get_caption() const {
 	return "Distance";
 }
 
+String VisualShaderNodeVectorDistance::get_shortcut_notation() const {
+	return "Dst";
+}
+
 int VisualShaderNodeVectorDistance::get_input_port_count() const {
 	return 2;
 }
@@ -4574,6 +4746,10 @@ String VisualShaderNodeVectorRefract::get_caption() const {
 	return "Refract";
 }
 
+String VisualShaderNodeVectorRefract::get_shortcut_notation() const {
+	return "Rfrt";
+}
+
 int VisualShaderNodeVectorRefract::get_input_port_count() const {
 	return 3;
 }
@@ -4637,6 +4813,10 @@ VisualShaderNodeVectorRefract::VisualShaderNodeVectorRefract() {
 
 String VisualShaderNodeMix::get_caption() const {
 	return "Mix";
+}
+
+String VisualShaderNodeMix::get_shortcut_notation() const {
+	return "Mx";
 }
 
 int VisualShaderNodeMix::get_input_port_count() const {
@@ -4797,6 +4977,10 @@ String VisualShaderNodeVectorCompose::get_caption() const {
 	return "VectorCompose";
 }
 
+String VisualShaderNodeVectorCompose::get_shortcut_notation() const {
+	return "VComp";
+}
+
 int VisualShaderNodeVectorCompose::get_input_port_count() const {
 	switch (op_type) {
 		case OP_TYPE_VECTOR_2D:
@@ -4928,6 +5112,10 @@ String VisualShaderNodeTransformCompose::get_caption() const {
 	return "TransformCompose";
 }
 
+String VisualShaderNodeTransformCompose::get_shortcut_notation() const {
+	return "TComp";
+}
+
 int VisualShaderNodeTransformCompose::get_input_port_count() const {
 	return 4;
 }
@@ -4974,6 +5162,10 @@ VisualShaderNodeTransformCompose::VisualShaderNodeTransformCompose() {
 ////////////// Vector Decompose
 String VisualShaderNodeVectorDecompose::get_caption() const {
 	return "VectorDecompose";
+}
+
+String VisualShaderNodeVectorDecompose::get_shortcut_notation() const {
+	return "VDecomp";
 }
 
 int VisualShaderNodeVectorDecompose::get_input_port_count() const {
@@ -5096,6 +5288,10 @@ String VisualShaderNodeTransformDecompose::get_caption() const {
 	return "TransformDecompose";
 }
 
+String VisualShaderNodeTransformDecompose::get_shortcut_notation() const {
+	return "TDecomp";
+}
+
 int VisualShaderNodeTransformDecompose::get_input_port_count() const {
 	return 1;
 }
@@ -5145,6 +5341,10 @@ VisualShaderNodeTransformDecompose::VisualShaderNodeTransformDecompose() {
 
 String VisualShaderNodeFloatParameter::get_caption() const {
 	return "FloatParameter";
+}
+
+String VisualShaderNodeFloatParameter::get_shortcut_notation() const {
+	return "FParam";
 }
 
 int VisualShaderNodeFloatParameter::get_input_port_count() const {
@@ -5338,6 +5538,10 @@ String VisualShaderNodeIntParameter::get_caption() const {
 	return "IntParameter";
 }
 
+String VisualShaderNodeIntParameter::get_shortcut_notation() const {
+	return "IParam";
+}
+
 int VisualShaderNodeIntParameter::get_input_port_count() const {
 	return 0;
 }
@@ -5529,6 +5733,10 @@ String VisualShaderNodeUIntParameter::get_caption() const {
 	return "UIntParameter";
 }
 
+String VisualShaderNodeUIntParameter::get_shortcut_notation() const {
+	return "UIParam";
+}
+
 int VisualShaderNodeUIntParameter::get_input_port_count() const {
 	return 0;
 }
@@ -5633,6 +5841,10 @@ VisualShaderNodeUIntParameter::VisualShaderNodeUIntParameter() {
 
 String VisualShaderNodeBooleanParameter::get_caption() const {
 	return "BooleanParameter";
+}
+
+String VisualShaderNodeBooleanParameter::get_shortcut_notation() const {
+	return "BParam";
 }
 
 int VisualShaderNodeBooleanParameter::get_input_port_count() const {
@@ -5745,6 +5957,10 @@ String VisualShaderNodeColorParameter::get_caption() const {
 	return "ColorParameter";
 }
 
+String VisualShaderNodeColorParameter::get_shortcut_notation() const {
+	return "CParam";
+}
+
 int VisualShaderNodeColorParameter::get_input_port_count() const {
 	return 0;
 }
@@ -5847,6 +6063,10 @@ String VisualShaderNodeVec2Parameter::get_caption() const {
 	return "Vector2Parameter";
 }
 
+String VisualShaderNodeVec2Parameter::get_shortcut_notation() const {
+	return "V2Param";
+}
+
 int VisualShaderNodeVec2Parameter::get_input_port_count() const {
 	return 0;
 }
@@ -5945,6 +6165,10 @@ VisualShaderNodeVec2Parameter::VisualShaderNodeVec2Parameter() {
 
 String VisualShaderNodeVec3Parameter::get_caption() const {
 	return "Vector3Parameter";
+}
+
+String VisualShaderNodeVec3Parameter::get_shortcut_notation() const {
+	return "V3Param";
 }
 
 int VisualShaderNodeVec3Parameter::get_input_port_count() const {
@@ -6047,6 +6271,10 @@ String VisualShaderNodeVec4Parameter::get_caption() const {
 	return "Vector4Parameter";
 }
 
+String VisualShaderNodeVec4Parameter::get_shortcut_notation() const {
+	return "V4Param";
+}
+
 int VisualShaderNodeVec4Parameter::get_input_port_count() const {
 	return 0;
 }
@@ -6145,6 +6373,10 @@ VisualShaderNodeVec4Parameter::VisualShaderNodeVec4Parameter() {
 
 String VisualShaderNodeTransformParameter::get_caption() const {
 	return "TransformParameter";
+}
+
+String VisualShaderNodeTransformParameter::get_shortcut_notation() const {
+	return "TParam";
 }
 
 int VisualShaderNodeTransformParameter::get_input_port_count() const {
@@ -6588,6 +6820,10 @@ String VisualShaderNodeTexture2DParameter::get_caption() const {
 	return "Texture2DParameter";
 }
 
+String VisualShaderNodeTexture2DParameter::get_shortcut_notation() const {
+	return "T2Param";
+}
+
 String VisualShaderNodeTexture2DParameter::get_output_port_name(int p_port) const {
 	switch (p_port) {
 		case 0:
@@ -6611,6 +6847,10 @@ VisualShaderNodeTexture2DParameter::VisualShaderNodeTexture2DParameter() {
 
 String VisualShaderNodeTextureParameterTriplanar::get_caption() const {
 	return "TextureParameterTriplanar";
+}
+
+String VisualShaderNodeTextureParameterTriplanar::get_shortcut_notation() const {
+	return "TriParam";
 }
 
 int VisualShaderNodeTextureParameterTriplanar::get_input_port_count() const {
@@ -6739,6 +6979,10 @@ String VisualShaderNodeTexture2DArrayParameter::get_caption() const {
 	return "Texture2DArrayParameter";
 }
 
+String VisualShaderNodeTexture2DArrayParameter::get_shortcut_notation() const {
+	return "T2AParam";
+}
+
 String VisualShaderNodeTexture2DArrayParameter::get_output_port_name(int p_port) const {
 	return "sampler2DArray";
 }
@@ -6759,6 +7003,10 @@ String VisualShaderNodeTexture3DParameter::get_caption() const {
 	return "Texture3DParameter";
 }
 
+String VisualShaderNodeTexture3DParameter::get_shortcut_notation() const {
+	return "T3Param";
+}
+
 String VisualShaderNodeTexture3DParameter::get_output_port_name(int p_port) const {
 	return "sampler3D";
 }
@@ -6777,6 +7025,10 @@ VisualShaderNodeTexture3DParameter::VisualShaderNodeTexture3DParameter() {
 
 String VisualShaderNodeCubemapParameter::get_caption() const {
 	return "CubemapParameter";
+}
+
+String VisualShaderNodeCubemapParameter::get_shortcut_notation() const {
+	return "CmParam";
 }
 
 String VisualShaderNodeCubemapParameter::get_output_port_name(int p_port) const {
@@ -7062,6 +7314,10 @@ String VisualShaderNodeFresnel::get_caption() const {
 	return "Fresnel";
 }
 
+String VisualShaderNodeFresnel::get_shortcut_notation() const {
+	return "Fnel";
+}
+
 int VisualShaderNodeFresnel::get_input_port_count() const {
 	return 4;
 }
@@ -7245,6 +7501,10 @@ VisualShaderNodeIs::VisualShaderNodeIs() {
 
 String VisualShaderNodeCompare::get_caption() const {
 	return "Compare";
+}
+
+String VisualShaderNodeCompare::get_shortcut_notation() const {
+	return "Cmp";
 }
 
 int VisualShaderNodeCompare::get_input_port_count() const {
@@ -7525,6 +7785,10 @@ String VisualShaderNodeMultiplyAdd::get_caption() const {
 	return "MultiplyAdd";
 }
 
+String VisualShaderNodeMultiplyAdd::get_shortcut_notation() const {
+	return "Mad";
+}
+
 int VisualShaderNodeMultiplyAdd::get_input_port_count() const {
 	return 3;
 }
@@ -7649,6 +7913,10 @@ VisualShaderNodeMultiplyAdd::VisualShaderNodeMultiplyAdd() {
 
 String VisualShaderNodeBillboard::get_caption() const {
 	return "GetBillboardMatrix";
+}
+
+String VisualShaderNodeBillboard::get_shortcut_notation() const {
+	return "GBMat";
 }
 
 int VisualShaderNodeBillboard::get_input_port_count() const {
@@ -7781,6 +8049,10 @@ String VisualShaderNodeDistanceFade::get_caption() const {
 	return "DistanceFade";
 }
 
+String VisualShaderNodeDistanceFade::get_shortcut_notation() const {
+	return "DFade";
+}
+
 int VisualShaderNodeDistanceFade::get_input_port_count() const {
 	return 2;
 }
@@ -7838,6 +8110,10 @@ VisualShaderNodeDistanceFade::VisualShaderNodeDistanceFade() {
 
 String VisualShaderNodeProximityFade::get_caption() const {
 	return "ProximityFade";
+}
+
+String VisualShaderNodeProximityFade::get_shortcut_notation() const {
+	return "PFade";
 }
 
 int VisualShaderNodeProximityFade::get_input_port_count() const {
@@ -7899,6 +8175,10 @@ VisualShaderNodeProximityFade::VisualShaderNodeProximityFade() {
 
 String VisualShaderNodeRandomRange::get_caption() const {
 	return "RandomRange";
+}
+
+String VisualShaderNodeRandomRange::get_shortcut_notation() const {
+	return "RRange";
 }
 
 int VisualShaderNodeRandomRange::get_input_port_count() const {
@@ -7981,6 +8261,10 @@ String VisualShaderNodeRemap::get_caption() const {
 	return "Remap";
 }
 
+String VisualShaderNodeRemap::get_shortcut_notation() const {
+	return "Rmap";
+}
+
 int VisualShaderNodeRemap::get_input_port_count() const {
 	return 5;
 }
@@ -8058,6 +8342,10 @@ VisualShaderNodeRemap::VisualShaderNodeRemap() {
 
 String VisualShaderNodeRotationByAxis::get_caption() const {
 	return "RotationByAxis";
+}
+
+String VisualShaderNodeRotationByAxis::get_shortcut_notation() const {
+	return "RBAxis";
 }
 
 int VisualShaderNodeRotationByAxis::get_input_port_count() const {

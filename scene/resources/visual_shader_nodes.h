@@ -113,6 +113,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -143,6 +144,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -173,6 +175,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -203,6 +206,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -233,6 +237,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -263,6 +268,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -293,6 +299,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -323,6 +330,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -353,6 +361,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -409,6 +418,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -454,6 +464,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -487,6 +498,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -557,6 +569,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual String get_input_port_name(int p_port) const override;
 
@@ -580,6 +593,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual String get_input_port_name(int p_port) const override;
 
@@ -621,6 +635,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -660,6 +675,7 @@ class VisualShaderNodeLinearSceneDepth : public VisualShaderNode {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -681,6 +697,7 @@ class VisualShaderNodeWorldPositionFromDepth : public VisualShaderNode {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -703,6 +720,7 @@ class VisualShaderNodeScreenNormalWorldSpace : public VisualShaderNode {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -749,6 +767,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -797,6 +816,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -845,6 +865,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -893,6 +914,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual String get_input_port_name(int p_port) const override;
@@ -941,6 +963,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -990,6 +1013,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -1034,6 +1058,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -1106,6 +1131,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -1150,6 +1176,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -1192,6 +1219,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -1267,6 +1295,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual String get_input_port_name(int p_port) const override;
@@ -1311,6 +1340,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -1353,6 +1383,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -1395,6 +1426,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -1428,6 +1460,7 @@ class VisualShaderNodeUVPolarCoord : public VisualShaderNode {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -1452,6 +1485,7 @@ class VisualShaderNodeDotProduct : public VisualShaderNode {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -1475,6 +1509,7 @@ class VisualShaderNodeVectorLen : public VisualShaderNodeVectorBase {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual String get_input_port_name(int p_port) const override;
@@ -1498,6 +1533,7 @@ class VisualShaderNodeDeterminant : public VisualShaderNode {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -1536,6 +1572,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -1597,6 +1634,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -1636,6 +1674,7 @@ class VisualShaderNodeFaceForward : public VisualShaderNodeVectorBase {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual String get_input_port_name(int p_port) const override;
@@ -1658,6 +1697,7 @@ class VisualShaderNodeOuterProduct : public VisualShaderNode {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -1697,6 +1737,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -1744,6 +1785,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -1775,6 +1817,7 @@ class VisualShaderNodeVectorDistance : public VisualShaderNodeVectorBase {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual String get_input_port_name(int p_port) const override;
@@ -1798,6 +1841,7 @@ class VisualShaderNodeVectorRefract : public VisualShaderNodeVectorBase {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual String get_input_port_name(int p_port) const override;
@@ -1836,6 +1880,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -1866,6 +1911,7 @@ class VisualShaderNodeVectorCompose : public VisualShaderNodeVectorBase {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -1887,6 +1933,7 @@ class VisualShaderNodeTransformCompose : public VisualShaderNode {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -1910,6 +1957,7 @@ class VisualShaderNodeVectorDecompose : public VisualShaderNodeVectorBase {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual String get_input_port_name(int p_port) const override;
@@ -1931,6 +1979,7 @@ class VisualShaderNodeTransformDecompose : public VisualShaderNode {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -1973,6 +2022,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -2040,6 +2090,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -2097,6 +2148,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -2140,6 +2192,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -2183,6 +2236,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -2225,6 +2279,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -2268,6 +2323,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -2311,6 +2367,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -2354,6 +2411,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -2489,6 +2547,7 @@ class VisualShaderNodeTexture2DParameter : public VisualShaderNodeTextureParamet
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 	virtual String get_output_port_name(int p_port) const override;
 
 	virtual String generate_global(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const override;
@@ -2503,6 +2562,7 @@ class VisualShaderNodeTextureParameterTriplanar : public VisualShaderNodeTexture
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -2529,6 +2589,7 @@ class VisualShaderNodeTexture2DArrayParameter : public VisualShaderNodeTexturePa
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 	virtual String get_output_port_name(int p_port) const override;
 
 	virtual String generate_global(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const override;
@@ -2543,6 +2604,7 @@ class VisualShaderNodeTexture3DParameter : public VisualShaderNodeTextureParamet
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 	virtual String get_output_port_name(int p_port) const override;
 
 	virtual String generate_global(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const override;
@@ -2557,6 +2619,7 @@ class VisualShaderNodeCubemapParameter : public VisualShaderNodeTextureParameter
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 	virtual String get_output_port_name(int p_port) const override;
 
 	virtual String generate_global(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const override;
@@ -2644,6 +2707,7 @@ class VisualShaderNodeFresnel : public VisualShaderNode {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -2749,6 +2813,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -2799,6 +2864,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -2841,6 +2907,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -2876,6 +2943,7 @@ class VisualShaderNodeDistanceFade : public VisualShaderNode {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -2896,6 +2964,7 @@ class VisualShaderNodeProximityFade : public VisualShaderNode {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -2917,6 +2986,7 @@ class VisualShaderNodeRandomRange : public VisualShaderNode {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -2937,6 +3007,7 @@ class VisualShaderNodeRemap : public VisualShaderNode {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -2956,6 +3027,7 @@ class VisualShaderNodeRotationByAxis : public VisualShaderNode {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;

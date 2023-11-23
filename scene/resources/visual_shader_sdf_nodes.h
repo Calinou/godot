@@ -38,6 +38,7 @@ class VisualShaderNodeSDFToScreenUV : public VisualShaderNode {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -57,6 +58,7 @@ class VisualShaderNodeScreenUVToSDF : public VisualShaderNode {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -77,6 +79,7 @@ class VisualShaderNodeTextureSDF : public VisualShaderNode {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -96,6 +99,7 @@ class VisualShaderNodeTextureSDFNormal : public VisualShaderNode {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -115,6 +119,7 @@ class VisualShaderNodeSDFRaymarch : public VisualShaderNode {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;

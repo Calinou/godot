@@ -65,6 +65,7 @@ class VisualShaderNodeParticleSphereEmitter : public VisualShaderNodeParticleEmi
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -81,6 +82,7 @@ class VisualShaderNodeParticleBoxEmitter : public VisualShaderNodeParticleEmitte
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -98,6 +100,7 @@ class VisualShaderNodeParticleRingEmitter : public VisualShaderNodeParticleEmitt
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -133,6 +136,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_output_port_count() const override;
 	virtual PortType get_output_port_type(int p_port) const override;
@@ -170,6 +174,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -195,6 +200,7 @@ class VisualShaderNodeParticleConeVelocity : public VisualShaderNode {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -231,6 +237,7 @@ protected:
 public:
 	Vector<StringName> get_editable_properties() const override;
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -275,6 +282,7 @@ protected:
 public:
 	Vector<StringName> get_editable_properties() const override;
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -302,6 +310,7 @@ class VisualShaderNodeParticleOutput : public VisualShaderNodeOutput {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -332,6 +341,7 @@ protected:
 public:
 	Vector<StringName> get_editable_properties() const override;
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;

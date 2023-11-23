@@ -100,6 +100,10 @@ String VisualShaderNodeParticleSphereEmitter::get_caption() const {
 	return "SphereEmitter";
 }
 
+String VisualShaderNodeParticleSphereEmitter::get_shortcut_notation() const {
+	return "SEm";
+}
+
 int VisualShaderNodeParticleSphereEmitter::get_input_port_count() const {
 	return 2;
 }
@@ -152,6 +156,10 @@ VisualShaderNodeParticleSphereEmitter::VisualShaderNodeParticleSphereEmitter() {
 
 String VisualShaderNodeParticleBoxEmitter::get_caption() const {
 	return "BoxEmitter";
+}
+
+String VisualShaderNodeParticleBoxEmitter::get_shortcut_notation() const {
+	return "BEm";
 }
 
 int VisualShaderNodeParticleBoxEmitter::get_input_port_count() const {
@@ -224,6 +232,10 @@ String VisualShaderNodeParticleRingEmitter::get_caption() const {
 	return "RingEmitter";
 }
 
+String VisualShaderNodeParticleRingEmitter::get_shortcut_notation() const {
+	return "REm";
+}
+
 int VisualShaderNodeParticleRingEmitter::get_input_port_count() const {
 	return 3;
 }
@@ -283,6 +295,10 @@ VisualShaderNodeParticleRingEmitter::VisualShaderNodeParticleRingEmitter() {
 
 String VisualShaderNodeParticleMeshEmitter::get_caption() const {
 	return "MeshEmitter";
+}
+
+String VisualShaderNodeParticleMeshEmitter::get_shortcut_notation() const {
+	return "MEm";
 }
 
 int VisualShaderNodeParticleMeshEmitter::get_output_port_count() const {
@@ -748,6 +764,10 @@ String VisualShaderNodeParticleMultiplyByAxisAngle::get_caption() const {
 	return "MultiplyByAxisAngle";
 }
 
+String VisualShaderNodeParticleMultiplyByAxisAngle::get_shortcut_notation() const {
+	return "MBAA";
+}
+
 int VisualShaderNodeParticleMultiplyByAxisAngle::get_input_port_count() const {
 	return 3;
 }
@@ -830,6 +850,10 @@ VisualShaderNodeParticleMultiplyByAxisAngle::VisualShaderNodeParticleMultiplyByA
 
 String VisualShaderNodeParticleConeVelocity::get_caption() const {
 	return "ConeVelocity";
+}
+
+String VisualShaderNodeParticleConeVelocity::get_shortcut_notation() const {
+	return "CVel";
 }
 
 int VisualShaderNodeParticleConeVelocity::get_input_port_count() const {
@@ -920,6 +944,10 @@ Vector<StringName> VisualShaderNodeParticleRandomness::get_editable_properties()
 
 String VisualShaderNodeParticleRandomness::get_caption() const {
 	return "ParticleRandomness";
+}
+
+String VisualShaderNodeParticleRandomness::get_shortcut_notation() const {
+	return "PR";
 }
 
 int VisualShaderNodeParticleRandomness::get_output_port_count() const {
@@ -1074,6 +1102,10 @@ String VisualShaderNodeParticleAccelerator::get_caption() const {
 	return "ParticleAccelerator";
 }
 
+String VisualShaderNodeParticleAccelerator::get_shortcut_notation() const {
+	return "PA";
+}
+
 int VisualShaderNodeParticleAccelerator::get_output_port_count() const {
 	return 1;
 }
@@ -1176,6 +1208,24 @@ String VisualShaderNodeParticleOutput::get_caption() const {
 			return "CustomStartOutput";
 		case VisualShader::TYPE_PROCESS_CUSTOM:
 			return "CustomProcessOutput";
+		default:
+			ERR_PRINT(vformat("Unexpected shader_type %d for VisualShaderNodeParticleOutput.", shader_type));
+			return "";
+	}
+}
+
+String VisualShaderNodeParticleOutput::get_shortcut_notation() const {
+	switch (shader_type) {
+		case VisualShader::TYPE_START:
+			return "SOut";
+		case VisualShader::TYPE_PROCESS:
+			return "POut";
+		case VisualShader::TYPE_COLLIDE:
+			return "COut";
+		case VisualShader::TYPE_START_CUSTOM:
+			return "CSOut";
+		case VisualShader::TYPE_PROCESS_CUSTOM:
+			return "CPOut";
 		default:
 			ERR_PRINT(vformat("Unexpected shader_type %d for VisualShaderNodeParticleOutput.", shader_type));
 			return "";
@@ -1456,6 +1506,10 @@ void VisualShaderNodeParticleEmit::_bind_methods() {
 
 String VisualShaderNodeParticleEmit::get_caption() const {
 	return "EmitParticle";
+}
+
+String VisualShaderNodeParticleEmit::get_shortcut_notation() const {
+	return "EmPart";
 }
 
 int VisualShaderNodeParticleEmit::get_input_port_count() const {

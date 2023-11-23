@@ -46,6 +46,10 @@ bool VisualShaderNode::is_simple_decl() const {
 	return simple_decl;
 }
 
+String VisualShaderNode::get_shortcut_notation() const {
+	return "";
+}
+
 int VisualShaderNode::get_default_input_port(PortType p_type) const {
 	return 0;
 }
@@ -548,6 +552,12 @@ String VisualShaderNodeCustom::get_caption() const {
 	return ret;
 }
 
+String VisualShaderNodeCustom::get_shortcut_notation() const {
+	String ret = "";
+	GDVIRTUAL_CALL(_get_shortcut_notation, ret);
+	return ret;
+}
+
 int VisualShaderNodeCustom::get_input_port_count() const {
 	return input_ports.size();
 }
@@ -753,6 +763,7 @@ int VisualShaderNodeCustom::get_option_index(int p_option) const {
 
 void VisualShaderNodeCustom::_bind_methods() {
 	GDVIRTUAL_BIND(_get_name);
+	GDVIRTUAL_BIND(_get_shortcut_notation);
 	GDVIRTUAL_BIND(_get_description);
 	GDVIRTUAL_BIND(_get_category);
 	GDVIRTUAL_BIND(_get_return_icon_type);
@@ -3226,6 +3237,10 @@ String VisualShaderNodeInput::get_caption() const {
 	return "Input";
 }
 
+String VisualShaderNodeInput::get_shortcut_notation() const {
+	return "It";
+}
+
 bool VisualShaderNodeInput::is_output_port_expandable(int p_port) const {
 	if (p_port == 0) {
 		switch (get_input_type_by_name(input_name)) {
@@ -3467,6 +3482,10 @@ bool VisualShaderNodeParameterRef::has_parameter(RID p_shader_rid, const String 
 
 String VisualShaderNodeParameterRef::get_caption() const {
 	return "ParameterRef";
+}
+
+String VisualShaderNodeParameterRef::get_shortcut_notation() const {
+	return "PRef";
 }
 
 int VisualShaderNodeParameterRef::get_input_port_count() const {
@@ -3896,6 +3915,10 @@ bool VisualShaderNodeOutput::is_port_separator(int p_index) const {
 
 String VisualShaderNodeOutput::get_caption() const {
 	return "Output";
+}
+
+String VisualShaderNodeOutput::get_shortcut_notation() const {
+	return "Ot";
 }
 
 String VisualShaderNodeOutput::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
@@ -4675,6 +4698,10 @@ String VisualShaderNodeExpression::get_caption() const {
 	return "Expression";
 }
 
+String VisualShaderNodeExpression::get_shortcut_notation() const {
+	return "Xp";
+}
+
 void VisualShaderNodeExpression::set_expression(const String &p_expression) {
 	expression = p_expression;
 	emit_changed();
@@ -4804,6 +4831,10 @@ VisualShaderNodeExpression::VisualShaderNodeExpression() {
 
 String VisualShaderNodeGlobalExpression::get_caption() const {
 	return "GlobalExpression";
+}
+
+String VisualShaderNodeGlobalExpression::get_shortcut_notation() const {
+	return "GXp";
 }
 
 String VisualShaderNodeGlobalExpression::generate_global(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const {
@@ -4978,6 +5009,10 @@ String VisualShaderNodeVaryingSetter::get_caption() const {
 	return "VaryingSetter";
 }
 
+String VisualShaderNodeVaryingSetter::get_shortcut_notation() const {
+	return "VSet";
+}
+
 int VisualShaderNodeVaryingSetter::get_input_port_count() const {
 	return 1;
 }
@@ -5018,6 +5053,10 @@ VisualShaderNodeVaryingSetter::VisualShaderNodeVaryingSetter() {
 
 String VisualShaderNodeVaryingGetter::get_caption() const {
 	return "VaryingGetter";
+}
+
+String VisualShaderNodeVaryingGetter::get_shortcut_notation() const {
+	return "VGet";
 }
 
 int VisualShaderNodeVaryingGetter::get_input_port_count() const {

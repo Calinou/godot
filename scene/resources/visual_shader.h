@@ -286,6 +286,7 @@ public:
 	bool is_simple_decl() const;
 
 	virtual String get_caption() const = 0;
+	virtual String get_shortcut_notation() const;
 
 	virtual int get_input_port_count() const = 0;
 	virtual PortType get_input_port_type(int p_port) const = 0;
@@ -379,6 +380,7 @@ class VisualShaderNodeCustom : public VisualShaderNode {
 
 protected:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -395,6 +397,7 @@ protected:
 	virtual void clear_default_input_values() override;
 
 	GDVIRTUAL0RC(String, _get_name)
+	GDVIRTUAL0RC(String, _get_shortcut_notation)
 	GDVIRTUAL0RC(String, _get_description)
 	GDVIRTUAL0RC(String, _get_category)
 	GDVIRTUAL0RC(PortType, _get_return_icon_type)
@@ -491,6 +494,7 @@ public:
 	virtual bool is_output_port_expandable(int p_port) const override;
 
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual String generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview = false) const override;
 
@@ -542,6 +546,7 @@ public:
 	virtual bool is_port_separator(int p_index) const override;
 
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual String generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview = false) const override;
 
@@ -630,6 +635,7 @@ public:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -792,6 +798,7 @@ protected:
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	void set_expression(const String &p_expression);
 	String get_expression() const;
@@ -806,6 +813,7 @@ class VisualShaderNodeGlobalExpression : public VisualShaderNodeExpression {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual String generate_global(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const override;
 
@@ -874,6 +882,7 @@ class VisualShaderNodeVaryingSetter : public VisualShaderNodeVarying {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
@@ -893,6 +902,7 @@ class VisualShaderNodeVaryingGetter : public VisualShaderNodeVarying {
 
 public:
 	virtual String get_caption() const override;
+	virtual String get_shortcut_notation() const override;
 
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
