@@ -137,6 +137,7 @@ public:
 
 	void set_as_translation_remapped(bool p_remapped);
 
+	virtual String to_string() override;
 	virtual RID get_rid() const; // some resources may offer conversion to RID
 
 #ifdef TOOLS_ENABLED

@@ -2410,7 +2410,7 @@ String Node::to_string() {
 		}
 	}
 
-	return (get_name() ? String(get_name()) + ":" : "") + Object::to_string();
+	return String(get_name()) + ":" + Object::to_string();
 }
 
 void Node::set_scene_instance_state(const Ref<SceneState> &p_state) {

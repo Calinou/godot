@@ -321,6 +321,18 @@ void Resource::_take_over_path(const String &p_path) {
 	set_path(p_path, true);
 }
 
+String Resource::to_string() {
+	if (get_script_instance()) {
+		bool valid;
+		String ret = get_script_instance()->to_string(&valid);
+		if (valid) {
+			return ret;
+		}
+	}
+
+	return name + "+" + Object::to_string();
+}
+
 RID Resource::get_rid() const {
 	if (get_script_instance()) {
 		Callable::CallError ce;
