@@ -1219,6 +1219,16 @@ void TileDataDefaultEditor::draw_over_tile(CanvasItem *p_canvas_item, Transform2
 			case Variant::VECTOR4:
 				text = vformat("%.2v", value);
 				break;
+			case Variant::OBJECT: {
+				Resource *resource = Object::cast_to<Resource>(value);
+				if (resource) {
+					// Display resource name if it's set.
+					text = resource->get_name();
+				}
+				if (text.is_empty()) {
+					text = value.stringify();
+				}
+			} break;
 			default:
 				text = value.stringify();
 				break;
