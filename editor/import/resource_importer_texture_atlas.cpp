@@ -80,7 +80,7 @@ String ResourceImporterTextureAtlas::get_preset_name(int p_idx) const {
 }
 
 void ResourceImporterTextureAtlas::get_import_options(const String &p_path, List<ImportOption> *r_options, int p_preset) const {
-	r_options->push_back(ImportOption(PropertyInfo(Variant::STRING, "atlas_file", PROPERTY_HINT_SAVE_FILE, "*.png"), ""));
+	r_options->push_back(ImportOption(PropertyInfo(Variant::STRING, "atlas_file", PROPERTY_HINT_SAVE_FILE, "*.png,*.webp"), ""));
 	r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "import_mode", PROPERTY_HINT_ENUM, "Region,Mesh2D", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), 0));
 	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "crop_to_region"), false));
 	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "trim_alpha_border_from_region"), true));
@@ -302,7 +302,11 @@ Error ResourceImporterTextureAtlas::import_group_file(const String &p_group_file
 
 	//save the atlas
 
-	new_atlas->save_png(p_group_file);
+	if (p_group_file.ends_with(".webp")) {
+		new_atlas->save_webp(p_group_file);
+	} else {
+		new_atlas->save_png(p_group_file);
+	}
 
 	//update cache if existing, else create
 	Ref<Texture2D> cache;

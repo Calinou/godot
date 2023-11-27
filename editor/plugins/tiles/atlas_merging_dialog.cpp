@@ -181,7 +181,11 @@ void AtlasMergingDialog::_merge_confirmed(String p_path) {
 	ERR_FAIL_COND(!merged.is_valid());
 
 	Ref<ImageTexture> output_image_texture = merged->get_texture();
-	output_image_texture->get_image()->save_png(p_path);
+	if (p_path.ends_with(".webp")) {
+		output_image_texture->get_image()->save_webp(p_path);
+	} else {
+		output_image_texture->get_image()->save_png(p_path);
+	}
 
 	ResourceLoader::import(p_path);
 
@@ -362,6 +366,7 @@ AtlasMergingDialog::AtlasMergingDialog() {
 	editor_file_dialog = memnew(EditorFileDialog);
 	editor_file_dialog->set_file_mode(EditorFileDialog::FILE_MODE_SAVE_FILE);
 	editor_file_dialog->add_filter("*.png");
+	editor_file_dialog->add_filter("*.webp");
 	editor_file_dialog->connect("file_selected", callable_mp(this, &AtlasMergingDialog::_merge_confirmed));
 	add_child(editor_file_dialog);
 }
