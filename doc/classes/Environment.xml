@@ -397,6 +397,9 @@
 			Use the Academy Color Encoding System tonemapper. ACES is slightly more expensive than other options, but it handles bright lighting in a more realistic fashion by desaturating it as it becomes brighter. ACES typically has a more contrasted output compared to [constant TONE_MAPPER_REINHARDT] and [constant TONE_MAPPER_FILMIC].
 			[b]Note:[/b] This tonemapping operator is called "ACES Fitted" in Godot 3.x.
 		</constant>
+		<constant name="TONE_MAPPER_PBR_NEUTRAL" value="4" enum="ToneMapper">
+			Use the Khronos PBR Neutral tonemapper. PBR Neutral handles bright lighting in a more realistic fashion by desaturating it as it becomes brighter. PBR Neutral aims to look similar to [constant TONE_MAPPER_LINEAR] while reducing the clipping of bright highlights. Unlike [constant TONE_MAPPER_ACES], original colors are preserved as much as possible. The whitepoint value is ignored with this tonemapper, as PBR Neutral does not offer a whitepoint adjustment.
+		</constant>
 		<constant name="GLOW_BLEND_MODE_ADDITIVE" value="0" enum="GlowBlendMode">
 			Additive glow blending mode. Mostly used for particles, glows (bloom), lens flare, bright sources.
 		</constant>

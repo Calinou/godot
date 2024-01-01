@@ -194,6 +194,10 @@ vec4 texture2D_bicubic(sampler2D tex, vec2 uv, int p_lod) {
 
 #endif // !USE_GLOW_FILTER_BICUBIC
 
+vec3 tonemap_reinhard(vec3 color, float white) {
+	return (white * color + color) / (color * white + white);
+}
+
 vec3 tonemap_filmic(vec3 color, float white) {
 	// exposure bias: input scale (color *= bias, white *= bias) to make the brightness consistent with other tonemappers
 	// also useful to scale the input to the range that the tonemapper is designed for (some require very high input values)
@@ -243,8 +247,26 @@ vec3 tonemap_aces(vec3 color, float white) {
 	return color_tonemapped / white_tonemapped;
 }
 
-vec3 tonemap_reinhard(vec3 color, float white) {
-	return (white * color + color) / (color * white + white);
+// Adapted from https://modelviewer.dev/examples/tone-mapping#commerce
+vec3 tonemap_pbr_neutral(vec3 color) {
+	const float start_compression = 0.8 - 0.04;
+	const float desaturation = 0.15;
+
+	float x = min(color.r, min(color.g, color.b));
+	float offset = x < 0.08 ? x - 6.25 * x * x : 0.04;
+	color -= offset;
+
+	float peak = max(color.r, max(color.g, color.b));
+	if (peak < start_compression) {
+		return color;
+	}
+
+	float d = 1.0 - start_compression;
+	float new_peak = 1.0 - d * d / (peak + d - start_compression);
+	color *= new_peak / peak;
+
+	float g = 1.0 - 1.0 / (desaturation * (peak - new_peak) + 1.0);
+	return mix(color, vec3(1.0, 1.0, 1.0), g);
 }
 
 vec3 linear_to_srgb(vec3 color) {
@@ -258,6 +280,7 @@ vec3 linear_to_srgb(vec3 color) {
 #define TONEMAPPER_REINHARD 1
 #define TONEMAPPER_FILMIC 2
 #define TONEMAPPER_ACES 3
+#define TONEMAPPER_PBR_NEUTRAL 4
 
 vec3 apply_tonemapping(vec3 color, float white) { // inputs are LINEAR, always outputs clamped [0;1] color
 	// Ensure color values passed to tonemappers are positive.
@@ -268,8 +291,10 @@ vec3 apply_tonemapping(vec3 color, float white) { // inputs are LINEAR, always o
 		return tonemap_reinhard(max(vec3(0.0f), color), white);
 	} else if (params.tonemapper == TONEMAPPER_FILMIC) {
 		return tonemap_filmic(max(vec3(0.0f), color), white);
-	} else { // TONEMAPPER_ACES
+	} else if (params.tonemapper == TONEMAPPER_ACES) {
 		return tonemap_aces(max(vec3(0.0f), color), white);
+	} else { // TONEMAPPER_PBR_NEUTRAL
+		return tonemap_pbr_neutral(max(vec3(0.0f), color));
 	}
 }
 
