@@ -266,7 +266,9 @@ class InputEventMouseMotion : public InputEventMouse {
 	Vector2 tilt;
 	float pressure = 0;
 	Vector2 relative;
+	Vector2 relative_unscaled;
 	Vector2 velocity;
+	Vector2 velocity_unscaled;
 	bool pen_inverted = false;
 
 protected:
@@ -285,8 +287,14 @@ public:
 	void set_relative(const Vector2 &p_relative);
 	Vector2 get_relative() const;
 
+	void set_relative_unscaled(const Vector2 &p_relative_unscaled);
+	Vector2 get_relative_unscaled() const;
+
 	void set_velocity(const Vector2 &p_velocity);
 	Vector2 get_velocity() const;
+
+	void set_velocity_unscaled(const Vector2 &p_velocity_unscaled);
+	Vector2 get_velocity_unscaled() const;
 
 	virtual Ref<InputEvent> xformed_by(const Transform2D &p_xform, const Vector2 &p_local_ofs = Vector2()) const override;
 	virtual String as_text() const override;
@@ -388,7 +396,9 @@ class InputEventScreenDrag : public InputEventFromWindow {
 	int index = 0;
 	Vector2 pos;
 	Vector2 relative;
+	Vector2 relative_unscaled;
 	Vector2 velocity;
+	Vector2 velocity_unscaled;
 	Vector2 tilt;
 	float pressure = 0;
 	bool pen_inverted = false;
@@ -415,8 +425,15 @@ public:
 	void set_relative(const Vector2 &p_relative);
 	Vector2 get_relative() const;
 
+	void set_relative_unscaled(const Vector2 &p_relative_unscaled);
+	Vector2 get_relative_unscaled() const;
+
 	void set_velocity(const Vector2 &p_velocity);
 	Vector2 get_velocity() const;
+
+
+	void set_velocity_unscaled(const Vector2 &p_velocity_unscaled);
+	Vector2 get_velocity_unscaled() const;
 
 	virtual Ref<InputEvent> xformed_by(const Transform2D &p_xform, const Vector2 &p_local_ofs = Vector2()) const override;
 	virtual String as_text() const override;

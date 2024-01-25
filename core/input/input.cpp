@@ -602,10 +602,12 @@ void Input::_parse_input_event_impl(const Ref<InputEvent> &p_event, bool p_is_em
 
 			drag_event->set_position(position);
 			drag_event->set_relative(relative);
+			drag_event->set_relative_unscaled(relative);
 			drag_event->set_tilt(mm->get_tilt());
 			drag_event->set_pen_inverted(mm->get_pen_inverted());
 			drag_event->set_pressure(mm->get_pressure());
 			drag_event->set_velocity(get_last_mouse_velocity());
+			drag_event->set_velocity_unscaled(get_last_mouse_velocity());
 			drag_event->set_device(InputEvent::DEVICE_ID_EMULATION);
 
 			_THREAD_SAFE_UNLOCK_
@@ -671,6 +673,7 @@ void Input::_parse_input_event_impl(const Ref<InputEvent> &p_event, bool p_is_em
 		VelocityTrack &track = touch_velocity_track[sd->get_index()];
 		track.update(sd->get_relative());
 		sd->set_velocity(track.velocity);
+		sd->set_velocity_unscaled(track.velocity);
 
 		if (emulate_mouse_from_touch && sd->get_index() == mouse_from_touch_index) {
 			Ref<InputEventMouseMotion> motion_event;
@@ -683,7 +686,9 @@ void Input::_parse_input_event_impl(const Ref<InputEvent> &p_event, bool p_is_em
 			motion_event->set_position(sd->get_position());
 			motion_event->set_global_position(sd->get_position());
 			motion_event->set_relative(sd->get_relative());
+			motion_event->set_relative_unscaled(sd->get_relative_unscaled());
 			motion_event->set_velocity(sd->get_velocity());
+			motion_event->set_velocity_unscaled(sd->get_velocity_unscaled());
 			motion_event->set_button_mask(mouse_button_mask);
 
 			_parse_input_event_impl(motion_event, true);

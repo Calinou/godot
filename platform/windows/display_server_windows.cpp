@@ -2703,6 +2703,7 @@ void DisplayServerWindows::_drag_event(WindowID p_window, float p_x, float p_y, 
 	event->set_index(idx);
 	event->set_position(Vector2(p_x, p_y));
 	event->set_relative(Vector2(p_x, p_y) - curr->get());
+	event->set_relative_unscaled(Vector2(p_x, p_y) - curr->get());
 
 	Input::get_singleton()->parse_input_event(event);
 
@@ -3182,9 +3183,11 @@ LRESULT DisplayServerWindows::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 				mm->set_position(c);
 				mm->set_global_position(c);
 				mm->set_velocity(Vector2(0, 0));
+				mm->set_velocity_unscaled(Vector2(0, 0));
 
 				if (raw->data.mouse.usFlags == MOUSE_MOVE_RELATIVE) {
 					mm->set_relative(Vector2(raw->data.mouse.lLastX, raw->data.mouse.lLastY));
+					mm->set_relativ_unscaled(Vector2(raw->data.mouse.lLastX, raw->data.mouse.lLastY));
 
 				} else if (raw->data.mouse.usFlags == MOUSE_MOVE_ABSOLUTE) {
 					int nScreenWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN);
@@ -3203,6 +3206,7 @@ LRESULT DisplayServerWindows::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 					ScreenToClient(hWnd, &coords);
 
 					mm->set_relative(Vector2(coords.x - old_x, coords.y - old_y));
+					mm->set_relative_unscaled(Vector2(coords.x - old_x, coords.y - old_y));
 					old_x = coords.x;
 					old_y = coords.y;
 				}
@@ -3293,6 +3297,7 @@ LRESULT DisplayServerWindows::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 					}
 
 					mm->set_velocity(Input::get_singleton()->get_last_mouse_velocity());
+					mm->set_velocity_unscaled(Input::get_singleton()->get_last_mouse_velocity());
 
 					if (old_invalid) {
 						old_x = mm->get_position().x;
@@ -3301,6 +3306,7 @@ LRESULT DisplayServerWindows::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 					}
 
 					mm->set_relative(Vector2(mm->get_position() - Vector2(old_x, old_y)));
+					mm->set_relative_unscaled(Vector2(mm->get_position() - Vector2(old_x, old_y)));
 					old_x = mm->get_position().x;
 					old_y = mm->get_position().y;
 					if (windows[window_id].window_has_focus || window_get_active_popup() == window_id) {
@@ -3440,6 +3446,7 @@ LRESULT DisplayServerWindows::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			}
 
 			mm->set_velocity(Input::get_singleton()->get_last_mouse_velocity());
+			mm->set_velocity_unscaled(Input::get_singleton()->get_last_mouse_velocity());
 
 			if (old_invalid) {
 				old_x = mm->get_position().x;
@@ -3448,6 +3455,7 @@ LRESULT DisplayServerWindows::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			}
 
 			mm->set_relative(Vector2(mm->get_position() - Vector2(old_x, old_y)));
+			mm->set_relative_unscaled(Vector2(mm->get_position() - Vector2(old_x, old_y)));
 			old_x = mm->get_position().x;
 			old_y = mm->get_position().y;
 			if (windows[window_id].window_has_focus || window_get_active_popup() == window_id) {
@@ -3559,6 +3567,7 @@ LRESULT DisplayServerWindows::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			}
 
 			mm->set_velocity(Input::get_singleton()->get_last_mouse_velocity());
+			mm->set_velocity_unscaled(Input::get_singleton()->get_last_mouse_velocity());
 
 			if (old_invalid) {
 				old_x = mm->get_position().x;
@@ -3567,6 +3576,7 @@ LRESULT DisplayServerWindows::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			}
 
 			mm->set_relative(Vector2(mm->get_position() - Vector2(old_x, old_y)));
+			mm->set_relative_unscaled(Vector2(mm->get_position() - Vector2(old_x, old_y)));
 			old_x = mm->get_position().x;
 			old_y = mm->get_position().y;
 

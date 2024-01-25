@@ -206,6 +206,7 @@ void AndroidInputHandler::process_touch_event(int p_event, int p_pointer, const 
 				ev->set_index(touch[i].id);
 				ev->set_position(p_points[idx].pos);
 				ev->set_relative(p_points[idx].pos - touch[i].pos);
+				ev->set_relative_unscaled(p_points[idx].pos - touch[i].pos);
 				Input::get_singleton()->parse_input_event(ev);
 				touch.write[i].pos = p_points[idx].pos;
 			}
@@ -305,6 +306,7 @@ void AndroidInputHandler::process_mouse_event(int p_event_action, int p_event_an
 			ev->set_position(p_event_pos);
 			ev->set_global_position(p_event_pos);
 			ev->set_relative(p_event_pos - hover_prev_pos);
+			ev->set_relative_unscaled(p_event_pos - hover_prev_pos);
 			Input::get_singleton()->parse_input_event(ev);
 			hover_prev_pos = p_event_pos;
 		} break;
@@ -341,10 +343,12 @@ void AndroidInputHandler::process_mouse_event(int p_event_action, int p_event_an
 				ev->set_position(hover_prev_pos);
 				ev->set_global_position(hover_prev_pos);
 				ev->set_relative(p_event_pos);
+				ev->set_relative_unscaled(p_event_pos);
 			} else {
 				ev->set_position(p_event_pos);
 				ev->set_global_position(p_event_pos);
 				ev->set_relative(p_event_pos - hover_prev_pos);
+				ev->set_relative_unscaled(p_event_pos - hover_prev_pos);
 				mouse_event_info.pos = p_event_pos;
 				hover_prev_pos = p_event_pos;
 			}

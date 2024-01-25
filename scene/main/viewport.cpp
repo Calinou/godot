@@ -1936,7 +1936,9 @@ void Viewport::_gui_input_event(Ref<InputEvent> p_event) {
 
 			mm->set_global_position(mpos);
 			mm->set_velocity(velocity);
+			mm->set_velocity_unscaled(velocity);
 			mm->set_relative(rel);
+			mm->set_relative_unscaled(rel);
 
 			// Nothing pressed.
 			if (mm->get_button_mask().is_empty()) {
@@ -2190,7 +2192,9 @@ void Viewport::_gui_input_event(Ref<InputEvent> p_event) {
 				drag_event = drag_event->xformed_by(Transform2D()); // Make a copy.
 
 				drag_event->set_velocity(velocity);
+				drag_event->set_velocity_unscaled(velocity);
 				drag_event->set_relative(rel);
+				drag_event->set_relative_unscaled(rel);
 				drag_event->set_position(pos);
 
 				stopped = _gui_call_input(over, drag_event);

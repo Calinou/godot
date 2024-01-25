@@ -326,7 +326,9 @@ void DisplayServerWeb::_mouse_move_callback(double p_x, double p_y, double p_rel
 	ev->set_global_position(pos);
 
 	ev->set_relative(Vector2(p_rel_x, p_rel_y));
+	ev->set_relative_unscaled(Vector2(p_rel_x, p_rel_y));
 	ev->set_velocity(Input::get_singleton()->get_last_mouse_velocity());
+	ev->set_velocity_unscaled(Input::get_singleton()->get_last_mouse_velocity());
 
 	Input::get_singleton()->parse_input_event(ev);
 }
@@ -705,6 +707,7 @@ void DisplayServerWeb::_touch_callback(int p_type, int p_count) {
 
 			Point2 &prev = ds->touches[i];
 			ev->set_relative(ev->get_position() - prev);
+			ev->set_relative_unscaled(ev->get_position() - prev);
 			prev = ev->get_position();
 
 			Input::get_singleton()->parse_input_event(ev);

@@ -24,12 +24,20 @@
 		</member>
 		<member name="relative" type="Vector2" setter="set_relative" getter="get_relative" default="Vector2(0, 0)">
 			The drag position relative to the previous position (position at the last frame).
+			[b]Note:[/b] [member relative] is automatically scaled according to the content scale factor, which is defined by the project's stretch mode settings. This means touch sensitivity will appear different depending on resolution when using [member relative] in a script that handles touch aiming. To avoid this, use [member relative_unscaled] instead.
+		</member>
+		<member name="relative_unscaled" type="Vector2" setter="set_relative_unscaled" getter="get_relative_unscaled" default="Vector2(0, 0)">
+			The drag position relative to the previous position (position at the last frame)., but not scaled according to the content scale factor or calls to [method InputEvent.xformed_by]. This should be preferred over [member relative] for touch aiming regardless of the project's stretch mode.
 		</member>
 		<member name="tilt" type="Vector2" setter="set_tilt" getter="get_tilt" default="Vector2(0, 0)">
 			Represents the angles of tilt of the pen. Positive X-coordinate value indicates a tilt to the right. Positive Y-coordinate value indicates a tilt toward the user. Ranges from [code]-1.0[/code] to [code]1.0[/code] for both axes.
 		</member>
 		<member name="velocity" type="Vector2" setter="set_velocity" getter="get_velocity" default="Vector2(0, 0)">
-			The drag velocity.
+			The drag velocity in pixels per second.
+			[b]Note:[/b] [member velocity] is automatically scaled according to the content scale factor, which is defined by the project's stretch mode settings. This means touch sensitivity will appear different depending on resolution when using [member velocity] in a script that handles touch aiming. To avoid this, use [member velocity_unscaled] instead.
+		</member>
+		<member name="velocity_unscaled" type="Vector2" setter="set_velocity_unscaled" getter="get_velocity_unscaled" default="Vector2(0, 0)">
+			The drag velocity in pixels per second, but not scaled according to the content scale factor or calls to [method InputEvent.xformed_by]. This should be preferred over [member velocity] for touch aiming regardless of the project's stretch mode.
 		</member>
 	</members>
 </class>

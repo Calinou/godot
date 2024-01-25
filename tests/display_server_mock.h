@@ -117,6 +117,7 @@ public:
 			Ref<InputEventMouseMotion> mm = p_event;
 			if (mm.is_valid()) {
 				mm->set_relative(mm->get_position() - mouse_position);
+				mm->set_relative_unscaled(mm->get_position() - mouse_position);
 				event = mm;
 			}
 			_set_mouse_position(me->get_position());

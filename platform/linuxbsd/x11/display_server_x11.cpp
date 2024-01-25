@@ -4505,6 +4505,7 @@ void DisplayServerX11::process_events() {
 							sd->set_index(index);
 							sd->set_position(pos);
 							sd->set_relative(pos - curr_pos_elem->value);
+							sd->set_relative_unscaled(pos - curr_pos_elem->value);
 							Input::get_singleton()->parse_input_event(sd);
 
 							curr_pos_elem->value = pos;
@@ -4926,8 +4927,10 @@ void DisplayServerX11::process_events() {
 				mm->set_position(pos);
 				mm->set_global_position(pos);
 				mm->set_velocity(Input::get_singleton()->get_last_mouse_velocity());
+				mm->set_velocity_unscaled(Input::get_singleton()->get_last_mouse_velocity());
 
 				mm->set_relative(rel);
+				mm->set_relative_unscaled(rel);
 
 				last_mouse_pos = pos;
 
@@ -4956,6 +4959,7 @@ void DisplayServerX11::process_events() {
 							mm->set_position(pos_focused);
 							mm->set_global_position(pos_focused);
 							mm->set_velocity(Input::get_singleton()->get_last_mouse_velocity());
+							mm->set_velocity_unscaled(Input::get_singleton()->get_last_mouse_velocity());
 							Input::get_singleton()->parse_input_event(mm);
 
 							break;
