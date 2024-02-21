@@ -596,6 +596,9 @@ void EditorData::instantiate_object_properties(Object *p_object) {
 			p_object->set(pi.name, prop);
 		}
 	}
+
+	print_line("Calling _instantiated_in_editor on", p_object);
+	p_object->call("_instantiated_in_editor");
 }
 
 int EditorData::add_edited_scene(int p_at_pos) {

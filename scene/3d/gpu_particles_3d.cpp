@@ -36,6 +36,11 @@
 #include "scene/resources/particle_process_material.h"
 #include "scene/scene_string_names.h"
 
+#ifdef TOOLS_ENABLED
+#include "scene/resources/material.h"
+#include "scene/resources/primitive_meshes.h"
+#endif
+
 AABB GPUParticles3D::get_aabb() const {
 	return AABB();
 }
@@ -790,6 +795,39 @@ void GPUParticles3D::_bind_methods() {
 	BIND_ENUM_CONSTANT(TRANSFORM_ALIGN_Y_TO_VELOCITY);
 	BIND_ENUM_CONSTANT(TRANSFORM_ALIGN_Z_BILLBOARD_Y_TO_VELOCITY);
 }
+
+#ifdef TOOLS_ENABLED
+void GPUParticles3D::_instantiated_in_editor() {
+	print_line("GPUParticles3D::_instantiated_in_editor()");
+	if (get_draw_pass_mesh(0) == nullptr) {
+		Ref<QuadMesh> quad_mesh = memnew(QuadMesh);
+		quad_mesh->set_size(Vector2(0.05, 0.05));
+
+		// Create material to display billboarded texture that follows the color and scale ramps
+		// defined in ParticleProcessMaterial.
+		Ref<StandardMaterial3D> material = memnew(StandardMaterial3D);
+		material->set_shading_mode(BaseMaterial3D::SHADING_MODE_UNSHADED);
+		material->set_transparency(BaseMaterial3D::TRANSPARENCY_ALPHA);
+		material->set_flag(BaseMaterial3D::FLAG_ALBEDO_FROM_VERTEX_COLOR, true);
+		material->set_flag(BaseMaterial3D::FLAG_BILLBOARD_KEEP_SCALE, true);
+		material->set_billboard_mode(BaseMaterial3D::BILLBOARD_PARTICLES);
+
+		// Assign a smooth circle texture.
+		Ref<GradientTexture2D> texture = memnew(GradientTexture2D);
+		texture->set_fill(GradientTexture2D::FILL_RADIAL);
+		texture->set_fill_from(Vector2(0.5, 0.5));
+		texture->set_fill_to(Vector2(0.5, 0.01));
+		Ref<Gradient> gradient = memnew(Gradient);
+		gradient->set_color(0, Color(1, 1, 1));
+		gradient->set_color(1, Color(1, 1, 1, 0));
+		texture->set_gradient(gradient);
+		material->set_texture(BaseMaterial3D::TEXTURE_ALBEDO, texture);
+		quad_mesh->set_material(material);
+
+		set_draw_pass_mesh(0, quad_mesh);
+	}
+}
+#endif
 
 GPUParticles3D::GPUParticles3D() {
 	particles = RS::get_singleton()->particles_create();

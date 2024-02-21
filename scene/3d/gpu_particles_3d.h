@@ -106,6 +106,9 @@ protected:
 	static void _bind_methods();
 	void _notification(int p_what);
 	void _validate_property(PropertyInfo &p_property) const;
+#ifdef TOOLS_ENABLED
+	void _instantiated_in_editor();
+#endif
 
 public:
 	AABB get_aabb() const override;

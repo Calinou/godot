@@ -1678,6 +1678,7 @@ void Object::_bind_methods() {
 	BIND_OBJ_CORE_METHOD(plget);
 
 	BIND_OBJ_CORE_METHOD(MethodInfo(Variant::NIL, "_validate_property", PropertyInfo(Variant::DICTIONARY, "property")));
+	BIND_OBJ_CORE_METHOD(MethodInfo(Variant::NIL, "_instantiated_in_editor"));
 
 	BIND_OBJ_CORE_METHOD(MethodInfo(Variant::BOOL, "_property_can_revert", PropertyInfo(Variant::STRING_NAME, "property")));
 	MethodInfo mipgr("_property_get_revert", PropertyInfo(Variant::STRING_NAME, "property"));
