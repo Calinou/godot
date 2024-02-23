@@ -1376,6 +1376,13 @@
 				Returns the [method Object.get_instance_id] of the [Window] the [param window_id] is attached to.
 			</description>
 		</method>
+		<method name="window_get_border_color" qualifiers="const">
+			<return type="Color" />
+			<param index="0" name="window_id" type="int" default="0" />
+			<description>
+				Returns the current border color of the [Window] specified by [param window_id].
+			</description>
+		</method>
 		<method name="window_get_current_screen" qualifiers="const">
 			<return type="int" />
 			<param index="0" name="window_id" type="int" default="0" />
@@ -1519,6 +1526,14 @@
 			<param index="0" name="window_id" type="int" default="0" />
 			<description>
 				Makes the window specified by [param window_id] request attention, which is materialized by the window title and taskbar entry blinking until the window is focused. This usually has no visible effect if the window is currently focused. The exact behavior varies depending on the operating system.
+			</description>
+		</method>
+		<method name="window_set_border_color">
+			<return type="void" />
+			<param index="0" name="color" type="Color" />
+			<param index="1" name="window_id" type="int" default="0" />
+			<description>
+				Sets the border color for the [Window] specified by [param window_id]. See [member Window.border_color].
 			</description>
 		</method>
 		<method name="window_set_current_screen">

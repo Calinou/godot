@@ -1419,6 +1419,7 @@ ProjectSettings::ProjectSettings() {
 
 	GLOBAL_DEF_BASIC("display/window/size/resizable", true);
 	GLOBAL_DEF_BASIC("display/window/size/borderless", false);
+	GLOBAL_DEF(PropertyInfo(Variant::COLOR, "display/window/size/border_color", PROPERTY_HINT_COLOR_NO_ALPHA), Color());
 	GLOBAL_DEF("display/window/size/always_on_top", false);
 	GLOBAL_DEF("display/window/size/transparent", false);
 	GLOBAL_DEF("display/window/size/extend_to_title", false);

@@ -117,6 +117,7 @@ private:
 	mutable Size2i min_size;
 	mutable Size2i max_size;
 	mutable Vector<Vector2> mpath;
+	mutable Color border_color;
 	mutable Mode mode = MODE_WINDOWED;
 	mutable bool flags[FLAG_MAX] = {};
 	bool visible = true;
@@ -361,6 +362,9 @@ public:
 
 	void set_mouse_passthrough_polygon(const Vector<Vector2> &p_region);
 	Vector<Vector2> get_mouse_passthrough_polygon() const;
+
+	void set_border_color(const Color &p_color);
+	Color get_border_color() const;
 
 	void set_wrap_controls(bool p_enable);
 	bool is_wrapping_controls() const;

@@ -2641,9 +2641,11 @@ Error Main::setup2() {
 		Color boot_bg_color = GLOBAL_DEF_BASIC("application/boot_splash/bg_color", boot_splash_bg_color);
 		DisplayServer::set_early_window_clear_color_override(true, boot_bg_color);
 
+		const Color border_color = GLOBAL_GET("display/window/size/border_color");
+
 		// rendering_driver now held in static global String in main and initialized in setup()
 		Error err;
-		display_server = DisplayServer::create(display_driver_idx, rendering_driver, window_mode, window_vsync_mode, window_flags, window_position, window_size, init_screen, err);
+		display_server = DisplayServer::create(display_driver_idx, rendering_driver, window_mode, window_vsync_mode, window_flags, window_position, window_size, init_screen, border_color, err);
 		if (err != OK || display_server == nullptr) {
 			// We can't use this display server, try other ones as fallback.
 			// Skip headless (always last registered) because that's not what users
@@ -2652,7 +2654,7 @@ Error Main::setup2() {
 				if (i == display_driver_idx) {
 					continue; // Don't try the same twice.
 				}
-				display_server = DisplayServer::create(i, rendering_driver, window_mode, window_vsync_mode, window_flags, window_position, window_size, init_screen, err);
+				display_server = DisplayServer::create(i, rendering_driver, window_mode, window_vsync_mode, window_flags, window_position, window_size, init_screen, border_color, err);
 				if (err == OK && display_server != nullptr) {
 					break;
 				}

@@ -560,6 +560,10 @@
 		<member name="auto_translate" type="bool" setter="set_auto_translate" getter="is_auto_translating" default="true" deprecated="Use [member Node.auto_translate_mode] instead.">
 			Toggles if any text should automatically change to its translated version depending on the current locale.
 		</member>
+		<member name="border_color" type="Color" setter="set_border_color" getter="get_border_color" default="Color(0, 0, 0, 1)">
+			The border color to display when in windowed or borderless fullscreen mode.
+			[b]Note:[/b] This property is implemented only on Windows.
+		</member>
 		<member name="borderless" type="bool" setter="set_flag" getter="get_flag" default="false">
 			If [code]true[/code], the window will have no borders.
 		</member>

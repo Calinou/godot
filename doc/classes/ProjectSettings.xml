@@ -812,6 +812,8 @@
 			Forces the main window to be always on top.
 			[b]Note:[/b] This setting is ignored on iOS, Android, and Web.
 		</member>
+		<member name="display/window/size/border_color" type="Color" setter="" getter="" default="Color(0, 0, 0, 1)">
+		</member>
 		<member name="display/window/size/borderless" type="bool" setter="" getter="" default="false">
 			Forces the main window to be borderless.
 			[b]Note:[/b] This setting is ignored on iOS, Android, and Web.

@@ -1589,6 +1589,20 @@ void DisplayServerWindows::_update_window_mouse_passthrough(WindowID p_window) {
 	}
 }
 
+Color DisplayServerWindows::window_get_border_color(WindowID p_window) const {
+	ERR_FAIL_COND_V(!windows.has(p_window), Color());
+	return windows[p_window].border_color;
+}
+
+void DisplayServerWindows::window_set_border_color(Color p_color, WindowID p_window) {
+	_THREAD_SAFE_METHOD_
+
+	ERR_FAIL_COND(!windows.has(p_window));
+
+	WindowData &wd = windows[p_window];
+	wd.border_color = p_color;
+}
+
 int DisplayServerWindows::window_get_current_screen(WindowID p_window) const {
 	_THREAD_SAFE_METHOD_
 
@@ -3393,7 +3407,7 @@ LRESULT DisplayServerWindows::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 		} break;
 		case WM_NCPAINT: {
 			if (RenderingServer::get_singleton() && (windows[window_id].borderless || (windows[window_id].fullscreen && windows[window_id].multiwindow_fs))) {
-				Color color = RenderingServer::get_singleton()->get_default_clear_color();
+				const Color color = windows[window_id].border_color;
 				HDC hdc = GetWindowDC(hWnd);
 				if (hdc) {
 					HPEN pen = CreatePen(PS_SOLID, 1, RGB(color.r * 255.f, color.g * 255.f, color.b * 255.f));
@@ -5138,7 +5152,7 @@ void DisplayServerWindows::tablet_set_current_driver(const String &p_driver) {
 	}
 }
 
-DisplayServerWindows::DisplayServerWindows(const String &p_rendering_driver, WindowMode p_mode, VSyncMode p_vsync_mode, uint32_t p_flags, const Vector2i *p_position, const Vector2i &p_resolution, int p_screen, Error &r_error) {
+DisplayServerWindows::DisplayServerWindows(const String &p_rendering_driver, WindowMode p_mode, VSyncMode p_vsync_mode, uint32_t p_flags, const Vector2i *p_position, const Vector2i &p_resolution, int p_screen, const Color &p_border_color, Error &r_error) {
 	KeyMappingWindows::initialize();
 
 	drop_events = false;
@@ -5434,8 +5448,8 @@ Vector<String> DisplayServerWindows::get_rendering_drivers_func() {
 	return drivers;
 }
 
-DisplayServer *DisplayServerWindows::create_func(const String &p_rendering_driver, WindowMode p_mode, VSyncMode p_vsync_mode, uint32_t p_flags, const Vector2i *p_position, const Vector2i &p_resolution, int p_screen, Error &r_error) {
-	DisplayServer *ds = memnew(DisplayServerWindows(p_rendering_driver, p_mode, p_vsync_mode, p_flags, p_position, p_resolution, p_screen, r_error));
+DisplayServer *DisplayServerWindows::create_func(const String &p_rendering_driver, WindowMode p_mode, VSyncMode p_vsync_mode, uint32_t p_flags, const Vector2i *p_position, const Vector2i &p_resolution, int p_screen, const Color &p_border_color, Error &r_error) {
+	DisplayServer *ds = memnew(DisplayServerWindows(p_rendering_driver, p_mode, p_vsync_mode, p_flags, p_position, p_resolution, p_screen, p_border_color, r_error));
 	if (r_error != OK) {
 		if (p_rendering_driver == "vulkan") {
 			String executable_name = OS::get_singleton()->get_executable_path().get_file();
