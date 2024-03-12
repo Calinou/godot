@@ -115,6 +115,7 @@ Dictionary Engine::get_version_info() const {
 	dict["hash"] = hash.is_empty() ? String("unknown") : hash;
 
 	dict["timestamp"] = VERSION_TIMESTAMP;
+	dict["dirty"] = VERSION_DIRTY;
 
 	String stringver = String(dict["major"]) + "." + String(dict["minor"]);
 	if ((int)dict["patch"] != 0) {

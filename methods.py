@@ -214,9 +214,18 @@ def get_version_info(module_version_string="", silent=False):
     version_info["git_hash"] = githash
     # Fallback to 0 as a timestamp (will be treated as "unknown" in the engine).
     version_info["git_timestamp"] = 0
+    version_info["git_dirty"] = "false"
 
-    # Get the UNIX timestamp of the build commit.
+    # Get the UNIX timestamp of the build commit and check whether there are unstaged or uncommitted changes.
     if os.path.exists(".git"):
+        try:
+            git_status_output = subprocess.check_output(["git", "status", "-s"]).decode("utf-8")
+            # If `git status -s` doesn't output anything, then there are no unstaged or uncommitted changes.
+            version_info["git_dirty"] = "true" if git_status_output != "" else "false"
+        except (subprocess.CalledProcessError, OSError):
+            # `git` not found in PATH.
+            pass
+
         try:
             version_info["git_timestamp"] = subprocess.check_output(
                 ["git", "log", "-1", "--pretty=format:%ct", githash]
@@ -263,6 +272,7 @@ def generate_version_header(module_version_string=""):
 #include "core/version.h"
 const char *const VERSION_HASH = "{git_hash}";
 const uint64_t VERSION_TIMESTAMP = {git_timestamp};
+const bool VERSION_DIRTY = {git_dirty};
 """.format(
                 **version_info
             )

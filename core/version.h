@@ -65,7 +65,11 @@
 // Describes the full configuration of that Godot version, including the version number,
 // the status (beta, stable, etc.) and potential module-specific features (e.g. mono).
 // Example: "3.1.4.stable.mono"
+#if VERSION_DIRTY
+#define VERSION_FULL_CONFIG VERSION_NUMBER "." VERSION_STATUS VERSION_MODULE_CONFIG "-dirty"
+#else
 #define VERSION_FULL_CONFIG VERSION_NUMBER "." VERSION_STATUS VERSION_MODULE_CONFIG
+#endif
 
 // Similar to VERSION_FULL_CONFIG, but also includes the (potentially custom) VERSION_BUILD
 // description (e.g. official, custom_build, etc.).
@@ -82,5 +86,11 @@ extern const char *const VERSION_HASH;
 // Git commit date UNIX timestamp (in seconds), generated at build time in `core/version_hash.gen.cpp`.
 // Set to 0 if unknown.
 extern const uint64_t VERSION_TIMESTAMP;
+
+// Whether the Git repository state is "dirty". `true` if there are unstaged or
+// uncommitted changes at build time, `false` otherwise. Generated at build time
+// in `core/version_hash.gen.cpp`.
+// Set to `false` if unknown.
+extern const bool VERSION_DIRTY;
 
 #endif // VERSION_H
