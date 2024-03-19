@@ -679,6 +679,26 @@ bool EditorResourcePicker::can_drop_data_fw(const Point2 &p_point, const Variant
 	return editable && _is_drop_valid(p_data);
 }
 
+Dictionary _get_material_from_texture(Ref<Texture2D> p_texture) const {
+	print_line(p_texture->get_path());
+	Dictionary suffixes;
+	suffixes["albedo"] = PackedStringArray({ "_albedo", "_base_color", "_basecolor", "_base", "_color", "_diffuse", "_c", "_d" });
+	Dictionary textures;
+	// TODO: Don't assume dropped texture is always albedo (use file name to guess)
+	textures["albedo"] = p_texture;
+
+	DirAccess da;
+	da.list_dir_begin();
+	String next = da.get_next();
+	while (!next.is_empty()) {
+		next = da.get_next();
+	}
+	da.list_dir_end();
+
+	print_line(p_texture->get_path().get_base_dir())
+			textures["roughness"] = "test2";
+}
+
 void EditorResourcePicker::drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) {
 	ERR_FAIL_COND(!_is_drop_valid(p_data));
 
