@@ -420,6 +420,7 @@ AcceptDialog::AcceptDialog() {
 	buttons_hbox->add_spacer();
 	ok_button = memnew(Button);
 	ok_button->set_text(ETR("OK"));
+	ok_button->set_theme_type_variation("PrimaryButton");
 	buttons_hbox->add_child(ok_button);
 	buttons_hbox->add_spacer();
 

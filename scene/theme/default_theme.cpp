@@ -381,6 +381,30 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	theme->set_stylebox("pressed", "FlatMenuButton", flat_button_pressed);
 	theme->set_stylebox("disabled", "FlatMenuButton", flat_button_normal);
 
+	theme->set_type_variation("PrimaryButton", "Button");
+
+	Ref<StyleBoxFlat> primary_button_normal = button_normal->duplicate();
+	primary_button_normal->set_bg_color(Color(0.8, 0.8, 0.8));
+	theme->set_stylebox("normal", "PrimaryButton", primary_button_normal);
+	theme->set_color("font_color", "PrimaryButton", Color(0.1, 0.1, 0.1));
+
+	Ref<StyleBoxFlat> primary_button_hover = primary_button_normal->duplicate();
+	primary_button_hover->set_bg_color(Color(0.9, 0.9, 0.9));
+	theme->set_stylebox("hover", "PrimaryButton", primary_button_hover);
+	theme->set_color("font_hover_color", "PrimaryButton", Color(0.15, 0.15, 0.15));
+
+	Ref<StyleBoxFlat> primary_button_pressed = primary_button_normal->duplicate();
+	primary_button_pressed->set_bg_color(Color(0.7, 0.7, 0.7));
+	theme->set_stylebox("pressed", "PrimaryButton", primary_button_pressed);
+	theme->set_color("font_pressed_color", "PrimaryButton", Color(0.1, 0.1, 0.1));
+	theme->set_color("font_hover_pressed_color", "PrimaryButton", Color(0.1, 0.1, 0.1));
+
+	Ref<StyleBoxFlat> primary_button_disabled = primary_button_normal->duplicate();
+	primary_button_disabled->set_bg_color(Color(1, 1, 1, 0.3));
+	theme->set_stylebox("disabled", "PrimaryButton", primary_button_disabled);
+	theme->set_color("font_disabled_color", "PrimaryButton", Color(0.5, 0.5, 0.5));
+	theme->set_color("font_outline_color", "PrimaryButton", Color(1, 1, 1));
+
 	// Label
 
 	theme->set_stylebox("normal", "Label", memnew(StyleBoxEmpty));

@@ -723,6 +723,37 @@ void EditorThemeManager::_populate_standard_styles(const Ref<EditorTheme> &p_the
 		p_theme->set_constant("h_separation", "Button", 4 * EDSCALE);
 		p_theme->set_constant("outline_size", "Button", 0);
 
+		// Primary button style (used in AcceptDialog and ConfirmationDialog to highlight the "OK" action).
+
+		p_theme->set_type_variation("PrimaryButton", "Button");
+		Ref<StyleBoxFlat> primary_button_style = p_config.button_style->duplicate();
+		primary_button_style->set_bg_color(p_config.accent_color);
+		p_theme->set_stylebox("normal", "PrimaryButton", primary_button_style);
+
+		Ref<StyleBoxFlat> primary_button_hover_style = p_config.button_style_hover->duplicate();
+		primary_button_hover_style->set_bg_color(p_config.accent_color.lightened(0.1));
+		p_theme->set_stylebox("hover", "PrimaryButton", primary_button_hover_style);
+
+		Ref<StyleBoxFlat> primary_button_pressed_style = p_config.button_style_focus->duplicate();
+		primary_button_pressed_style->set_bg_color(p_config.accent_color.darkened(0.1));
+		p_theme->set_stylebox("pressed", "PrimaryButton", primary_button_pressed_style);
+
+		Ref<StyleBoxFlat> primary_button_focus_style = p_config.button_style_focus->duplicate();
+		primary_button_focus_style->set_bg_color(p_config.accent_color.darkened(0.1));
+		p_theme->set_stylebox("focus", "PrimaryButton", primary_button_focus_style);
+
+		Ref<StyleBoxFlat> primary_button_disabled_style = p_config.button_style_disabled->duplicate();
+		primary_button_disabled_style->set_bg_color(p_config.accent_color);
+		p_theme->set_stylebox("disabled", "PrimaryButton", primary_button_disabled_style);
+
+		p_theme->set_color("font_color", "PrimaryButton", p_config.font_color.inverted());
+		p_theme->set_color("font_hover_color", "PrimaryButton", p_config.font_hover_color.inverted());
+		p_theme->set_color("font_hover_pressed_color", "PrimaryButton", p_config.font_hover_pressed_color.inverted());
+		p_theme->set_color("font_focus_color", "PrimaryButton", p_config.font_focus_color.inverted());
+		p_theme->set_color("font_pressed_color", "PrimaryButton", p_config.accent_color);
+		p_theme->set_color("font_disabled_color", "PrimaryButton", p_config.font_disabled_color.inverted());
+		p_theme->set_color("font_outline_color", "PrimaryButton", p_config.font_outline_color.inverted());
+
 		// MenuButton.
 
 		p_theme->set_stylebox("normal", "MenuButton", p_config.panel_container_style);
