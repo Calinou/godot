@@ -85,7 +85,7 @@
 			<return type="Dictionary" />
 			<param index="0" name="index" type="int" />
 			<description>
-				Virtual method to override the surface LODs for a custom class extending [Mesh].
+				Virtual method to override the surface LODs for a custom class extending [Mesh]. Dictionary keys are the LOD sizes (in 3D units), while values are arrays of indices. See the description of [method ImporterMesh.generate_lods] for more information on the expected data.
 			</description>
 		</method>
 		<method name="_surface_get_material" qualifiers="virtual const">
@@ -177,6 +177,13 @@
 			<param index="0" name="surf_idx" type="int" />
 			<description>
 				Returns the blend shape arrays for the requested surface.
+			</description>
+		</method>
+		<method name="surface_get_lods" qualifiers="const">
+			<return type="Dictionary" />
+			<param index="0" name="surf_idx" type="int" />
+			<description>
+				Returns the LOD meshes as a dictionary where keys are sizes (in 3D units) and values are indices. Returns an empty dictionary if the mesh does not have any LOD meshes generated. See the description of [method ImporterMesh.generate_lods] for more information on the returned data.
 			</description>
 		</method>
 		<method name="surface_get_material" qualifiers="const">
