@@ -911,6 +911,12 @@ vec3 encode24(vec3 v) {
 }
 #endif // MODE_RENDER_NORMAL_ROUGHNESS
 
+#ifdef LIGHT_OCCLUSION_CODE_USED
+float light_occlusion(vec3 light_direction, vec3 light_mask) {
+#CODE : LIGHT_OCCLUSION
+}
+#endif
+
 void fragment_shader(in SceneData scene_data) {
 	uint instance_index = instance_index_interp;
 
@@ -2044,6 +2050,10 @@ void fragment_shader(in SceneData scene_data) {
 #endif
 
 			float size_A = sc_use_light_soft_shadows ? directional_lights.data[i].size : 0.0;
+
+#ifdef LIGHT_OCCLUSION_CODE_USED
+			shadow *= light_occlusion(directional_lights.data[i].direction, directional_lights.data[i].mask);
+#endif
 
 			light_compute(normal, directional_lights.data[i].direction, normalize(view), size_A,
 #ifndef DEBUG_DRAW_PSSM_SPLITS

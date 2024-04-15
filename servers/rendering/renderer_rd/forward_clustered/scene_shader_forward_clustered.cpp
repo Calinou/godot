@@ -646,6 +646,10 @@ void SceneShaderForwardClustered::init(const String p_defines) {
 		actions.renames["DIFFUSE_LIGHT"] = "diffuse_light";
 		actions.renames["SPECULAR_LIGHT"] = "specular_light";
 
+		// For light occlusion.
+		actions.renames["LIGHT_DIRECTION"] = "light_direction";
+		actions.renames["LIGHT_MASK"] = "light_mask";
+
 		actions.usage_defines["NORMAL"] = "#define NORMAL_USED\n";
 		actions.usage_defines["TANGENT"] = "#define TANGENT_USED\n";
 		actions.usage_defines["BINORMAL"] = "@TANGENT";
