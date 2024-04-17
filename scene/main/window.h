@@ -220,6 +220,7 @@ private:
 
 	friend class Viewport; //friend back, can call the methods below
 
+	void _set_debug_shortcut(const String &p_name, const Array &p_defaults, Ref<Shortcut> &r_shortcut);
 	void _window_input(const Ref<InputEvent> &p_ev);
 	void _window_input_text(const String &p_text);
 	void _window_drop_files(const Vector<String> &p_files);
@@ -231,6 +232,9 @@ private:
 	void _update_mouse_over(Vector2 p_pos) override;
 	void _mouse_leave_viewport() override;
 
+	Ref<Shortcut> debugger_run_project_shortcut;
+	Ref<Shortcut> debugger_run_current_scene_shortcut;
+	Ref<Shortcut> debugger_run_specific_scene_shortcut;
 	Ref<Shortcut> debugger_stop_shortcut;
 
 	static int root_layout_direction;

@@ -47,6 +47,7 @@
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/gui/editor_file_dialog.h"
+#include "editor/gui/editor_run_bar.h"
 #include "editor/inspector_dock.h"
 #include "editor/plugins/canvas_item_editor_plugin.h"
 #include "editor/plugins/editor_debugger_plugin.h"
@@ -389,20 +390,24 @@ void ScriptEditorDebugger::_parse_message(const String &p_msg, uint64_t p_thread
 	} else if (p_msg == "set_pid") {
 		ERR_FAIL_COND(p_data.is_empty());
 		remote_pid = p_data[0];
+
 	} else if (p_msg == "scene:click_ctrl") {
 		ERR_FAIL_COND(p_data.size() < 2);
 		clicked_ctrl->set_text(p_data[0]);
 		clicked_ctrl_type->set_text(p_data[1]);
+
 	} else if (p_msg == "scene:scene_tree") {
 		scene_tree->nodes.clear();
 		scene_tree->deserialize(p_data);
 		emit_signal(SNAME("remote_tree_updated"));
 		_update_buttons_state();
+
 	} else if (p_msg == "scene:inspect_object") {
 		ObjectID id = inspector->add_object(p_data);
 		if (id.is_valid()) {
 			emit_signal(SNAME("remote_object_updated"), id);
 		}
+
 	} else if (p_msg == "servers:memory_usage") {
 		vmem_tree->clear();
 		TreeItem *root = vmem_tree->create_item();
@@ -428,8 +433,10 @@ void ScriptEditorDebugger::_parse_message(const String &p_msg, uint64_t p_thread
 
 		vmem_total->set_tooltip_text(TTR("Bytes:") + " " + itos(total));
 		vmem_total->set_text(String::humanize_size(total));
+
 	} else if (p_msg == "servers:drawn") {
 		can_request_idle_draw = true;
+
 	} else if (p_msg == "stack_dump") {
 		DebuggerMarshalls::ScriptStackDump stack;
 		stack.deserialize(p_data);
@@ -458,13 +465,16 @@ void ScriptEditorDebugger::_parse_message(const String &p_msg, uint64_t p_thread
 			}
 		}
 		emit_signal(SNAME("stack_dump"), stack_dump_info);
+
 	} else if (p_msg == "stack_frame_vars") {
 		inspector->clear_stack_variables();
 		ERR_FAIL_COND(p_data.size() != 1);
 		emit_signal(SNAME("stack_frame_vars"), p_data[0]);
+
 	} else if (p_msg == "stack_frame_var") {
 		inspector->add_stack_variable(p_data);
 		emit_signal(SNAME("stack_frame_var"), p_data);
+
 	} else if (p_msg == "output") {
 		ERR_FAIL_COND(p_data.size() != 2);
 
@@ -497,6 +507,7 @@ void ScriptEditorDebugger::_parse_message(const String &p_msg, uint64_t p_thread
 			EditorNode::get_log()->add_message(output_strings[i], msg_type);
 			emit_signal(SNAME("output"), output_strings[i], msg_type);
 		}
+
 	} else if (p_msg == "performance:profile_frame") {
 		Vector<float> frame_data;
 		frame_data.resize(p_data.size());
@@ -504,6 +515,7 @@ void ScriptEditorDebugger::_parse_message(const String &p_msg, uint64_t p_thread
 			frame_data.write[i] = p_data[i];
 		}
 		performance_profiler->add_profile_frame(frame_data);
+
 	} else if (p_msg == "visual:profile_frame") {
 		ServersDebugger::VisualProfilerFrame frame;
 		frame.deserialize(p_data);
@@ -522,6 +534,7 @@ void ScriptEditorDebugger::_parse_message(const String &p_msg, uint64_t p_thread
 			}
 		}
 		visual_profiler->add_frame_metric(metric);
+
 	} else if (p_msg == "error") {
 		DebuggerMarshalls::OutputError oe;
 		ERR_FAIL_COND_MSG(oe.deserialize(p_data) == false, "Failed to deserialize error message");
@@ -675,11 +688,13 @@ void ScriptEditorDebugger::_parse_message(const String &p_msg, uint64_t p_thread
 		} else {
 			error_count++;
 		}
+
 	} else if (p_msg == "servers:function_signature") {
 		// Cache a profiler signature.
 		ServersDebugger::ScriptFunctionSignature sig;
 		sig.deserialize(p_data);
 		profiler_signature[sig.id] = sig.name;
+
 	} else if (p_msg == "servers:profile_frame" || p_msg == "servers:profile_total") {
 		EditorProfiler::Metric metric;
 		ServersDebugger::ServersProfilerFrame frame;
@@ -794,9 +809,27 @@ void ScriptEditorDebugger::_parse_message(const String &p_msg, uint64_t p_thread
 		} else {
 			profiler->add_frame_metric(metric, true);
 		}
+
+	} else if (p_msg == "request_run_project") {
+		emit_signal(SNAME("run_project_requested"));
+		//_stop_and_notify("Project restart requested by user.");
+		EditorRunBar::get_singleton()->play_main_scene();
+
+	} else if (p_msg == "request_run_current_scene") {
+		emit_signal(SNAME("run_current_scene_requested"));
+		//_stop_and_notify("Current scene restart requested by user.");
+		EditorRunBar::get_singleton()->play_current_scene(true);
+
+	} else if (p_msg == "request_run_specific_scene") {
+		emit_signal(SNAME("run_specific_scene_requested"));
+		// TODO: Reload current main scene (read CLI arguments to figure it out?).
+		//_stop_and_notify("Specific sene restart requested by user.");
+		EditorRunBar::get_singleton()->play_custom_scene("");
+
 	} else if (p_msg == "request_quit") {
 		emit_signal(SNAME("stop_requested"));
-		_stop_and_notify();
+		_stop_and_notify("Project stop requested by user.");
+
 	} else if (p_msg == "performance:profile_names") {
 		Vector<StringName> monitors;
 		monitors.resize(p_data.size());
@@ -805,11 +838,13 @@ void ScriptEditorDebugger::_parse_message(const String &p_msg, uint64_t p_thread
 			monitors.set(i, p_data[i]);
 		}
 		performance_profiler->update_monitors(monitors);
+
 	} else if (p_msg == "filesystem:update_file") {
 		ERR_FAIL_COND(p_data.is_empty());
 		if (EditorFileSystem::get_singleton()) {
 			EditorFileSystem::get_singleton()->update_file(p_data[0]);
 		}
+
 	} else {
 		int colon_index = p_msg.find_char(':');
 		ERR_FAIL_COND_MSG(colon_index < 1, "Invalid message received");
@@ -935,7 +970,7 @@ void ScriptEditorDebugger::_notification(int p_what) {
 			while (peer.is_valid() && peer->has_message()) {
 				Array arr = peer->get_message();
 				if (arr.size() != 3 || arr[0].get_type() != Variant::STRING || arr[1].get_type() != Variant::INT || arr[2].get_type() != Variant::ARRAY) {
-					_stop_and_notify();
+					_stop_and_notify("Invalid message format received from peer.");
 					ERR_FAIL_MSG("Invalid message format received from peer");
 				}
 
@@ -946,7 +981,7 @@ void ScriptEditorDebugger::_notification(int p_what) {
 				}
 			}
 			if (!is_session_active()) {
-				_stop_and_notify();
+				_stop_and_notify("Peer disconnected.");
 				break;
 			};
 		} break;
@@ -1049,10 +1084,10 @@ void ScriptEditorDebugger::_update_buttons_state() {
 	thread_list_updating = false;
 }
 
-void ScriptEditorDebugger::_stop_and_notify() {
+void ScriptEditorDebugger::_stop_and_notify(const String &p_reason) {
 	stop();
 	emit_signal(SNAME("stopped"));
-	_set_reason_text(TTR("Debug session closed."), MESSAGE_WARNING);
+	_set_reason_text(vformat(TTR("Debug session closed: %s"), p_reason), MESSAGE_WARNING);
 }
 
 void ScriptEditorDebugger::stop() {

@@ -226,7 +226,7 @@ private:
 	void _export_csv();
 
 	void _clear_execution();
-	void _stop_and_notify();
+	void _stop_and_notify(const String &p_reason);
 
 	void _set_breakpoint(const String &p_path, const int &p_line, const bool &p_enabled);
 	void _clear_breakpoints();

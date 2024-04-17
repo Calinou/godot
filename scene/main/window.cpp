@@ -1578,35 +1578,72 @@ bool Window::_can_consume_input_events() const {
 	return exclusive_child == nullptr;
 }
 
+// Sets a shortcut that is effective when the editor debugger is active. This is
+// used to make some editor shortcuts work when the running project is focused
+// by binding the same shortcut, and having this shortcut send a debugger
+// message that is then interpreted by the editor.
+//
+// The custom shortcut is provided via environment variable when running from the editor
+// (see `EditorRun::_pass_debugger_shortcut()`).
+//
+// NOTE: `p_name` must match what's defined on the EditorRun side.
+void Window::_set_debug_shortcut(const String &p_name, const Array &p_defaults, Ref<Shortcut> &r_shortcut) {
+	if (r_shortcut.is_null()) {
+		String shortcut_str = OS::get_singleton()->get_environment(vformat("__GODOT_EDITOR_%s_SHORTCUT__", p_name.to_upper()));
+		if (!shortcut_str.is_empty()) {
+			Variant shortcut_var;
+
+			VariantParser::StreamString ss;
+			ss.s = shortcut_str;
+
+			String errs;
+			int line;
+			VariantParser::parse(&ss, shortcut_var, errs, line);
+			r_shortcut = shortcut_var;
+		}
+
+		if (r_shortcut.is_null()) {
+			// Define a default shortcut if it wasn't provided or is invalid.
+			r_shortcut.instantiate();
+			r_shortcut->set_events(p_defaults);
+			print_line(vformat("Window: Setting debug shortcut fallback: %s - %s - %s", p_name, p_defaults, r_shortcut));
+		} else {
+			print_line(vformat("Window: Setting debug shortcut from environment variable: %s - %s - %s", p_name, p_defaults, r_shortcut));
+		}
+	}
+}
+
 void Window::_window_input(const Ref<InputEvent> &p_ev) {
 	ERR_MAIN_THREAD_GUARD;
 	if (EngineDebugger::is_active()) {
-		// Quit from game window using the stop shortcut (F8 by default).
-		// The custom shortcut is provided via environment variable when running from the editor.
-		if (debugger_stop_shortcut.is_null()) {
-			String shortcut_str = OS::get_singleton()->get_environment("__GODOT_EDITOR_STOP_SHORTCUT__");
-			if (!shortcut_str.is_empty()) {
-				Variant shortcut_var;
+		// Set fallbacks to be equal to the default editor settings.
+#ifdef MACOS_ENABLED
+		_set_debug_shortcut("run_project", { (Variant)InputEventKey::create_reference(KeyModifierMask::META | Key::B) }, debugger_run_project_shortcut);
+		_set_debug_shortcut("run_current_scene", { (Variant)InputEventKey::create_reference(KeyModifierMask::META | Key::R) }, debugger_run_current_scene_shortcut);
+		_set_debug_shortcut("run_specific_scene", { (Variant)InputEventKey::create_reference(KeyModifierMask::META | KeyModifierMask::SHIFT | Key::R) }, debugger_run_specific_scene_shortcut);
+		_set_debug_shortcut("stop", { (Variant)InputEventKey::create_reference(KeyModifierMask::META | Key::PERIOD) }, debugger_stop_shortcut);
+#else
+		_set_debug_shortcut("run_project", { (Variant)InputEventKey::create_reference(Key::F5) }, debugger_run_project_shortcut);
+		_set_debug_shortcut("run_current_scene", { (Variant)InputEventKey::create_reference(Key::F6) }, debugger_run_current_scene_shortcut);
+		_set_debug_shortcut("run_specific_scene", { (Variant)InputEventKey::create_reference(KeyModifierMask::CTRL | KeyModifierMask::SHIFT | Key::F5) }, debugger_run_specific_scene_shortcut);
+		_set_debug_shortcut("stop", { (Variant)InputEventKey::create_reference(Key::F8) }, debugger_stop_shortcut);
+#endif
 
-				VariantParser::StreamString ss;
-				ss.s = shortcut_str;
-
-				String errs;
-				int line;
-				VariantParser::parse(&ss, shortcut_var, errs, line);
-				debugger_stop_shortcut = shortcut_var;
+		const Ref<InputEventKey> key = p_ev;
+		if (key.is_valid() && key->is_pressed() && !key->is_echo()) {
+			if (debugger_run_project_shortcut->matches_event(key)) {
+				print_line("Sending: request_run_project");
+				EngineDebugger::get_singleton()->send_message("request_run_project", Array());
+			} else if (debugger_run_current_scene_shortcut->matches_event(key)) {
+				print_line("Sending: request_run_current_scene");
+				EngineDebugger::get_singleton()->send_message("request_run_current_scene", Array());
+			} else if (debugger_run_specific_scene_shortcut->matches_event(key)) {
+				print_line("Sending: request_run_specific_scene");
+				EngineDebugger::get_singleton()->send_message("request_run_specific_scene", Array());
+			} else if (debugger_stop_shortcut->matches_event(key)) {
+				print_line("Sending: request_quit");
+				EngineDebugger::get_singleton()->send_message("request_quit", Array());
 			}
-
-			if (debugger_stop_shortcut.is_null()) {
-				// Define a default shortcut if it wasn't provided or is invalid.
-				debugger_stop_shortcut.instantiate();
-				debugger_stop_shortcut->set_events({ (Variant)InputEventKey::create_reference(Key::F8) });
-			}
-		}
-
-		Ref<InputEventKey> k = p_ev;
-		if (k.is_valid() && k->is_pressed() && !k->is_echo() && debugger_stop_shortcut->matches_event(k)) {
-			EngineDebugger::get_singleton()->send_message("request_quit", Array());
 		}
 	}
 

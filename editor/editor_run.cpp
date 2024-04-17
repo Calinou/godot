@@ -46,6 +46,22 @@ String EditorRun::get_running_scene() const {
 	return running_scene;
 }
 
+// Passes a shortcut to the running project using an environment variable. This is
+// used to make some editor shortcuts work when the running project is focused
+// by binding the same shortcut, and having this shortcut send a debugger
+// message that is then interpreted by the editor.
+//
+// The custom shortcut is handled in Window when the debugger is active
+// (see `Window::_set_debug_shortcut()`).
+//
+// NOTE: `p_name` must match what's defined on the Window side.
+void EditorRun::_pass_debugger_shortcut(const String &p_name, const Ref<Shortcut> &p_shortcut) {
+	print_line(vformat("Registering debugger shortcut: %s - %s", p_name, p_shortcut));
+	String shortcut;
+	VariantWriter::write_to_string(p_shortcut, shortcut);
+	OS::get_singleton()->set_environment(vformat("__GODOT_EDITOR_%s_SHORTCUT__", p_name.to_upper()), shortcut);
+}
+
 Error EditorRun::run(const String &p_scene, const String &p_write_movie) {
 	List<String> args;
 
@@ -223,10 +239,11 @@ Error EditorRun::run(const String &p_scene, const String &p_write_movie) {
 		args.push_back(p_scene);
 	}
 
-	// Pass the debugger stop shortcut to the running instance(s).
-	String shortcut;
-	VariantWriter::write_to_string(ED_GET_SHORTCUT("editor/stop_running_project"), shortcut);
-	OS::get_singleton()->set_environment("__GODOT_EDITOR_STOP_SHORTCUT__", shortcut);
+	// Pass the debugger shortcuts to the running instance(s).
+	_pass_debugger_shortcut("run_project", ED_GET_SHORTCUT("editor/run_project"));
+	_pass_debugger_shortcut("run_current_scene", ED_GET_SHORTCUT("editor/run_current_scene"));
+	_pass_debugger_shortcut("run_specific_scene", ED_GET_SHORTCUT("editor/run_specific_scene"));
+	_pass_debugger_shortcut("stop", ED_GET_SHORTCUT("editor/stop_running_project"));
 
 	String exec = OS::get_singleton()->get_executable_path();
 	int instance_count = RunInstancesDialog::get_singleton()->get_instance_count();

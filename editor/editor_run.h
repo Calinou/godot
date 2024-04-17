@@ -47,6 +47,8 @@ private:
 	Status status;
 	String running_scene;
 
+	void _pass_debugger_shortcut(const String &p_name, const Ref<Shortcut> &p_shortcut);
+
 public:
 	Status get_status() const;
 	String get_running_scene() const;
