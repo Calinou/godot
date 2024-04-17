@@ -43,6 +43,13 @@ void AcceptDialog::_input_from_window(const Ref<InputEvent> &p_event) {
 	if (close_on_escape && p_event->is_action_pressed(SNAME("ui_cancel"), false, true)) {
 		_cancel_pressed();
 	}
+
+	if (p_event->is_action_pressed("ui_confirmationdialog_ok")) {
+		_ok_pressed();
+	} else if (p_event->is_action_pressed("ui_confirmationdialog_cancel")) {
+		_cancel_pressed();
+	}
+
 	Window::_input_from_window(p_event);
 }
 
