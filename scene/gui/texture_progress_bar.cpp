@@ -504,14 +504,20 @@ void TextureProgressBar::_notification(int p_what) {
 									start = rad_init_angle / 360;
 								}
 
+								// FIXME: Fix point position at certain progress values.
 								float end = start + direction * val;
+								// FIXME: Calculate antialiased line offset better (relative to texture size) and offset it,
+								// so the progress doesn't appear higher than it really is.
+								float end2 = start + direction * (val + 0.01);
 								float from = MIN(start, end);
 								float to = MAX(start, end);
+								float to2 = MAX(start, end2);
 								pts.append(from);
 								for (float corner = Math::floor(from * 4 + 0.5) * 0.25 + 0.125; corner < to; corner += 0.25) {
 									pts.append(corner);
 								}
 								pts.append(to);
+								pts.append(to2);
 
 								Ref<AtlasTexture> atlas_progress = progress;
 								bool valid_atlas_progress = atlas_progress.is_valid() && atlas_progress->get_atlas().is_valid();
@@ -524,6 +530,7 @@ void TextureProgressBar::_notification(int p_what) {
 
 								Vector<Point2> uvs;
 								Vector<Point2> points;
+								Vector<Color> colors;
 								for (int i = 0; i < pts.size(); i++) {
 									Point2 uv = unit_val_to_uv(pts[i]);
 									if (uvs.find(uv) >= 0) {
@@ -535,6 +542,14 @@ void TextureProgressBar::_notification(int p_what) {
 										uv.y = Math::remap(uv.y, 0, 1, region_rect.position.y / atlas_size.y, (region_rect.position.y + region_rect.size.y) / atlas_size.y);
 									}
 									uvs.push_back(uv);
+
+									if (i == pts.size() - 1) {
+										// Last point; add antialiasing color.
+										// TODO: Change color to transparent white (green is used for debugging).
+										colors.push_back(Color(0.2, 6, 0.2));
+									} else {
+										colors.push_back(tint_progress);
+									}
 								}
 
 								Point2 center_point = get_relative_center();
@@ -544,9 +559,11 @@ void TextureProgressBar::_notification(int p_what) {
 									center_point.y = Math::remap(center_point.y, 0, 1, region_rect.position.y / atlas_size.y, (region_rect.position.y + region_rect.size.y) / atlas_size.y);
 								}
 								uvs.push_back(center_point);
-
-								Vector<Color> colors;
 								colors.push_back(tint_progress);
+
+								// TODO: Add antialiasing point for center point, so the feather width is consistent across the line from the edge to the center.
+
+								print_line(uvs.size(), "\t", points.size(), "\t", colors.size(), "\n");
 								draw_polygon(points, colors, uvs, progress);
 							}
 
