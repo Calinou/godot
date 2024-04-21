@@ -524,6 +524,21 @@ void OccluderInstance3D::_bake_surface(const Transform3D &p_transform, Array p_s
 	PackedVector3Array vertices = p_surface_arrays[Mesh::ARRAY_VERTEX];
 	PackedInt32Array indices = p_surface_arrays[Mesh::ARRAY_INDEX];
 
+	if (indices.size() == 0) {
+		// Automatically generate indices if missing, as these are required for mesh simplification.
+		Ref<SurfaceTool> surface_tool;
+		surface_tool.instantiate();
+
+		Array source_arrays;
+		source_arrays.resize(Mesh::ARRAY_MAX);
+		source_arrays[Mesh::ARRAY_VERTEX] = vertices;
+		surface_tool->create_from_triangle_arrays(source_arrays);
+		surface_tool->index();
+
+		const Array mesh_arrays = surface_tool->commit_to_arrays();
+		indices = mesh_arrays[Mesh::ARRAY_INDEX];
+	}
+
 	if (vertices.size() == 0 || indices.size() == 0) {
 		return;
 	}

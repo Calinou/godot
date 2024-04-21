@@ -60,7 +60,7 @@ void OccluderInstance3DEditorPlugin::_bake_select_file(const String &p_file) {
 
 			} break;
 			case OccluderInstance3D::BAKE_ERROR_NO_MESHES: {
-				EditorNode::get_singleton()->show_warning(TTR("No meshes to bake.\nMake sure there is at least one MeshInstance3D node in the scene whose visual layers are part of the OccluderInstance3D's Bake Mask property."));
+				EditorNode::get_singleton()->show_warning(TTR("No meshes to bake.\nMake sure there is at least one MeshInstance3D node with an opaque materal in the scene, and that the MeshInstance3D's visual layers are part of the OccluderInstance3D's Bake Mask property."));
 				break;
 			}
 			case OccluderInstance3D::BAKE_ERROR_CANT_SAVE: {
