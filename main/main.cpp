@@ -2944,6 +2944,7 @@ Error Main::setup2() {
 				}
 			}
 
+			id->set_use_accumulated_input(bool(GLOBAL_DEF("input_devices/buffering/use_accumulated_input", true)));
 			id->set_emulate_mouse_from_touch(bool(GLOBAL_DEF_BASIC("input_devices/pointing/emulate_mouse_from_touch", true)));
 		}
 
