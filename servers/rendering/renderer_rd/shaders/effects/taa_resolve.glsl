@@ -324,6 +324,8 @@ vec3 temporal_antialiasing(uvec2 pos_group_top_left, uvec2 pos_group, uvec2 pos_
 
 	// Get input color
 	vec3 color_input = load_color(pos_group);
+	// TODO: Don't make TAA a no-op. Motion blur works with TAA, but it's temporarily disabled to see the effect of motion blur on its own.
+	return color_input;
 
 	// Get history color (catmull-rom reduces a lot of the blurring that you get under motion)
 	vec3 color_history = sample_catmull_rom_9(tex_history, uv_reprojected, params.resolution).rgb;
@@ -371,6 +373,57 @@ vec3 temporal_antialiasing(uvec2 pos_group_top_left, uvec2 pos_group, uvec2 pos_
 	return color_resolved;
 }
 
+#define MOTION_BLUR_SAMPLES 8 // Good quality. FIXME: Adjusting sample count doesn't appear to change quality much.
+#define MOTION_BLUR_TARGET_FRAMETIME 0.016667 // 60 FPS.
+#define MOTION_BLUR_INTENSITY 0.5 // Quite intensive. FIXME: Reducing this doesn't appear to reduce intensity much, even at 0.
+#define MOTION_BLUR_MAX_LENGTH 8 // TODO: See if this needs to be changed.
+
+vec3 motion_blur(vec3 result, uvec2 pos_group_top_left, uvec2 pos_group, uvec2 pos_screen, vec2 uv, sampler2D tex_history) {
+	// Get the velocity of the current pixel, reprojected UV and input color.
+	vec2 velocity = imageLoad(velocity_buffer, ivec2(pos_screen)).xy;
+	vec2 uv_reprojected = uv + velocity;
+	vec3 color_input = load_color(pos_group);
+
+	// Full intensity at `MOTION_BLUR_TARGET_FRAMETIME`. Make intensity inversely proportional to frametime.
+	// TODO: Sample frametime to make this effective and make this optional, as framerate-independent
+	// motion blur can lead to excessive motion blur amounts at high FPS.
+	float frame_time_factor = MOTION_BLUR_TARGET_FRAMETIME / 0.016667;
+	// Multiply by display resolution to get velocity in pixels.
+	vec2 motion_pixels = -velocity * MOTION_BLUR_INTENSITY * frame_time_factor * params.resolution;
+	// Clamp length to range from 0 to max motion blur length.
+	motion_pixels *= clamp(MOTION_BLUR_MAX_LENGTH / length(motion_pixels), 0.0, 1.0);
+
+	// Distribute pixel velocity over sample count.
+	vec2 velocity_over_samples = motion_pixels / float(MOTION_BLUR_SAMPLES);
+	vec2 sample_pos = vec2(pos_screen) + velocity_over_samples;
+	float total_weight = 1.0;
+	vec3 final_color = result;
+
+	for (int sample_idx = 1; sample_idx < MOTION_BLUR_SAMPLES; sample_idx++) {
+		if (any(lessThan(sample_pos, vec2(0.0))) || any(greaterThan(sample_pos, params.resolution))) {
+			// Skip if out of the viewport's bounds.
+			continue;
+		}
+
+		// Get motion vectors at the new sample position.
+		vec2 this_velocity = imageLoad(velocity_buffer, ivec2(round(sample_pos))).xy;
+		// Weigh by vector similarity so that motion blur doesn't sample from static areas.
+		float sample_weight = clamp(dot(this_velocity, velocity) / dot(velocity, velocity), 0.0, 1.0);
+		total_weight += sample_weight;
+
+		// Sample the color buffer along the velocity vector.
+		vec3 current_color = textureLod(tex_history, uv_reprojected, 0.0).rgb;
+		//vec3 current_color = taa_history[round(sample_pos)].rgb;
+		final_color += current_color * sample_weight;
+
+		sample_pos += velocity_over_samples;
+	}
+
+	// Average all of the samples to get the final blur colour.
+	final_color /= total_weight;
+	return final_color;
+}
+
 void main() {
 #ifdef USE_SUBGROUPS
 	populate_group_shared_memory(gl_WorkGroupID.xy, gl_LocalInvocationIndex);
@@ -392,5 +445,8 @@ void main() {
 	const vec2 uv = (gl_GlobalInvocationID.xy + 0.5f) / params.resolution;
 
 	vec3 result = temporal_antialiasing(pos_group_top_left, pos_group, pos_screen, uv, history_buffer);
+
+	result = motion_blur(result, pos_group_top_left, pos_group, pos_screen, uv, history_buffer);
+
 	imageStore(output_buffer, ivec2(gl_GlobalInvocationID.xy), vec4(result, 1.0));
 }
