@@ -120,6 +120,7 @@
 #include "scene/resources/font.h"
 #include "scene/resources/gradient.h"
 #include "scene/resources/gradient_texture.h"
+#include "scene/resources/grid_texture.h"
 #include "scene/resources/image_texture.h"
 #include "scene/resources/immediate_mesh.h"
 #include "scene/resources/label_settings.h"
@@ -924,6 +925,7 @@ void register_scene_types() {
 	GDREGISTER_CLASS(CurveXYZTexture);
 	GDREGISTER_CLASS(GradientTexture1D);
 	GDREGISTER_CLASS(GradientTexture2D);
+	GDREGISTER_CLASS(GridTexture);
 	GDREGISTER_CLASS(AnimatedTexture);
 	GDREGISTER_CLASS(CameraTexture);
 	GDREGISTER_VIRTUAL_CLASS(TextureLayered);
