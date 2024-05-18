@@ -759,11 +759,13 @@ multiview_data;
 struct DirectionalLightData {
 	mediump vec3 direction;
 	mediump float energy;
+
 	mediump vec3 color;
 	mediump float size;
-	lowp uint unused;
+
 	lowp uint bake_mode;
 	mediump float shadow_opacity;
+	mediump float shadow_blur;
 	mediump float specular;
 };
 
@@ -796,8 +798,9 @@ struct LightData { // This structure needs to be as packed as possible.
 	mediump float specular_amount;
 	mediump float shadow_opacity;
 
-	lowp vec3 pad;
+	mediump float shadow_blur;
 	lowp uint bake_mode;
+	lowp vec2 pad;
 };
 
 #if !defined(DISABLE_LIGHT_OMNI) || defined(ADDITIVE_OMNI)
@@ -1946,7 +1949,7 @@ void main() {
 
 // Orthogonal shadows
 #if !defined(LIGHT_USE_PSSM2) && !defined(LIGHT_USE_PSSM4)
-	float directional_shadow = sample_shadow(directional_shadow_atlas, directional_shadows[directional_shadow_index].shadow_atlas_pixel_size, shadow_coord);
+	float directional_shadow = sample_shadow(directional_shadow_atlas, directional_shadows[directional_shadow_index].shadow_atlas_pixel_size * directional_lights[directional_shadow_index].shadow_blur, shadow_coord);
 #endif // !defined(LIGHT_USE_PSSM2) && !defined(LIGHT_USE_PSSM4)
 
 // PSSM2 shadows
@@ -1954,8 +1957,8 @@ void main() {
 	float depth_z = -vertex.z;
 	vec4 light_split_offsets = directional_shadows[directional_shadow_index].shadow_split_offsets;
 	//take advantage of prefetch
-	float shadow1 = sample_shadow(directional_shadow_atlas, directional_shadows[directional_shadow_index].shadow_atlas_pixel_size, shadow_coord);
-	float shadow2 = sample_shadow(directional_shadow_atlas, directional_shadows[directional_shadow_index].shadow_atlas_pixel_size, shadow_coord2);
+	float shadow1 = sample_shadow(directional_shadow_atlas, directional_shadows[directional_shadow_index].shadow_atlas_pixel_size * directional_lights[directional_shadow_index].shadow_blur, shadow_coord);
+	float shadow2 = sample_shadow(directional_shadow_atlas, directional_shadows[directional_shadow_index].shadow_atlas_pixel_size * directional_lights[directional_shadow_index].shadow_blur, shadow_coord2);
 	float directional_shadow = 1.0;
 
 	if (depth_z < light_split_offsets.y) {
@@ -1991,10 +1994,10 @@ void main() {
 	float depth_z = -vertex.z;
 	vec4 light_split_offsets = directional_shadows[directional_shadow_index].shadow_split_offsets;
 
-	float shadow1 = sample_shadow(directional_shadow_atlas, directional_shadows[directional_shadow_index].shadow_atlas_pixel_size, shadow_coord);
-	float shadow2 = sample_shadow(directional_shadow_atlas, directional_shadows[directional_shadow_index].shadow_atlas_pixel_size, shadow_coord2);
-	float shadow3 = sample_shadow(directional_shadow_atlas, directional_shadows[directional_shadow_index].shadow_atlas_pixel_size, shadow_coord3);
-	float shadow4 = sample_shadow(directional_shadow_atlas, directional_shadows[directional_shadow_index].shadow_atlas_pixel_size, shadow_coord4);
+	float shadow1 = sample_shadow(directional_shadow_atlas, directional_shadows[directional_shadow_index].shadow_atlas_pixel_size * directional_lights[directional_shadow_index].shadow_blur, shadow_coord);
+	float shadow2 = sample_shadow(directional_shadow_atlas, directional_shadows[directional_shadow_index].shadow_atlas_pixel_size * directional_lights[directional_shadow_index].shadow_blur, shadow_coord2);
+	float shadow3 = sample_shadow(directional_shadow_atlas, directional_shadows[directional_shadow_index].shadow_atlas_pixel_size * directional_lights[directional_shadow_index].shadow_blur, shadow_coord3);
+	float shadow4 = sample_shadow(directional_shadow_atlas, directional_shadows[directional_shadow_index].shadow_atlas_pixel_size * directional_lights[directional_shadow_index].shadow_blur, shadow_coord4);
 	float directional_shadow = 1.0;
 
 	if (depth_z < light_split_offsets.w) {
@@ -2098,7 +2101,7 @@ void main() {
 #ifdef ADDITIVE_SPOT
 	float spot_shadow = 1.0f;
 #ifndef SHADOWS_DISABLED
-	spot_shadow = sample_shadow(spot_shadow_texture, positional_shadows[positional_shadow_index].shadow_atlas_pixel_size, shadow_coord);
+	spot_shadow = sample_shadow(spot_shadow_texture, positional_shadows[positional_shadow_index].shadow_atlas_pixel_size * spot_lights[spot_light_index].shadow_blur, shadow_coord);
 	spot_shadow = mix(1.0, spot_shadow, spot_lights[spot_light_index].shadow_opacity);
 #endif // SHADOWS_DISABLED
 	light_process_spot(spot_light_index, vertex, view, normal, f0, roughness, metallic, spot_shadow, albedo, alpha,

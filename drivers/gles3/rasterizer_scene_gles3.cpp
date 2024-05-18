@@ -1698,6 +1698,7 @@ void RasterizerSceneGLES3::_setup_lights(const RenderDataGLES3 *p_render_data, b
 				light_data.shadow_opacity = (p_using_shadows && light_storage->light_has_shadow(base))
 						? light_storage->light_get_param(base, RS::LIGHT_PARAM_SHADOW_OPACITY)
 						: 0.0;
+				light_data.shadow_blur = light_storage->light_get_param(base, RS::LIGHT_PARAM_SHADOW_BLUR);
 
 				if (has_shadow) {
 					DirectionalShadowData &shadow_data = scene_state.directional_shadows[MAX_DIRECTIONAL_LIGHTS - 1 - r_directional_shadow_count];
@@ -1920,6 +1921,7 @@ void RasterizerSceneGLES3::_setup_lights(const RenderDataGLES3 *p_render_data, b
 			num_positional_shadows++;
 
 			light_data.shadow_opacity = light_storage->light_get_param(base, RS::LIGHT_PARAM_SHADOW_OPACITY) * shadow_opacity_fade;
+			light_data.shadow_blur = light_storage->light_get_param(base, RS::LIGHT_PARAM_SHADOW_BLUR);
 
 			float shadow_texel_size = light_storage->light_instance_get_shadow_texel_size(li->self, p_render_data->shadow_atlas);
 			shadow_data.shadow_atlas_pixel_size = shadow_texel_size;

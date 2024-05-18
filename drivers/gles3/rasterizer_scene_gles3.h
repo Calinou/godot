@@ -181,8 +181,9 @@ private:
 		float specular_amount;
 		float shadow_opacity;
 
-		float pad[3];
 		uint32_t bake_mode;
+		float shadow_blur;
+		float pad[2];
 	};
 	static_assert(sizeof(LightData) % 16 == 0, "LightData size must be a multiple of 16 bytes");
 
@@ -194,8 +195,11 @@ private:
 		float size;
 
 		uint32_t enabled; // For use by SkyShaders
+		float pad[3];
+
 		uint32_t bake_mode;
 		float shadow_opacity;
+		float shadow_blur;
 		float specular;
 	};
 	static_assert(sizeof(DirectionalLightData) % 16 == 0, "DirectionalLightData size must be a multiple of 16 bytes");
