@@ -1026,6 +1026,12 @@ uniform vec3 uv2_scale;
 uniform vec3 uv2_offset;
 )";
 
+	if (distance_fade == DISTANCE_FADE_PIXEL_DITHER || distance_fade == DISTANCE_FADE_OBJECT_DITHER) {
+		code += R"(
+varying flat int instance_id;
+)";
+	}
+
 	// Generate vertex shader.
 	code += R"(
 void vertex() {)";
@@ -1266,6 +1272,14 @@ void vertex() {)";
 		code += R"(
 	// Grow: Enabled
 	VERTEX += NORMAL * grow;
+	}
+)";
+	}
+
+	if (distance_fade == DISTANCE_FADE_PIXEL_DITHER || distance_fade == DISTANCE_FADE_OBJECT_DITHER) {
+		code += R"(
+	// Distance Fade: Pixel Dither or Object Dither
+	instance_id = INSTANCE_ID;
 )";
 	}
 
@@ -1649,7 +1663,7 @@ void fragment() {)";
 		const vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
 		float fade = clamp(smoothstep(distance_fade_min, distance_fade_max, fade_distance), 0.0, 1.0);
 		// Use a hard cap to prevent a few stray pixels from remaining when past the fade-out distance.
-		if (fade < 0.001 || fade < fract(magic.z * fract(dot(FRAGCOORD.xy, magic.xy)))) {
+		if (fade < 0.001 || fade < fract(magic.z * fract(dot(FRAGCOORD.xy + vec2(float(instance_id * 25), float(instance_id * -16)), magic.xy)))) {
 			discard;
 		}
 	}
