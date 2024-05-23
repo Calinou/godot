@@ -32,7 +32,7 @@
 
 #include "scene/resources/bit_map.h"
 
-Error CompressedTexture2D::_load_data(const String &p_path, int &r_width, int &r_height, Ref<Image> &image, bool &r_request_3d, bool &r_request_normal, bool &r_request_roughness, int &mipmap_limit, int p_size_limit) {
+Error CompressedTexture2D::_load_data(const String &p_path, int &r_width, int &r_height, Ref<Image> &image, bool &r_request_3d, bool &r_request_normal, bool &r_request_roughness, int &r_mipmap_limit, float &r_display_scale, int p_size_limit) {
 	alpha_cache.unref();
 
 	ERR_FAIL_COND_V(image.is_null(), ERR_INVALID_PARAMETER);
@@ -55,10 +55,10 @@ Error CompressedTexture2D::_load_data(const String &p_path, int &r_width, int &r
 	r_height = f->get_32();
 	uint32_t df = f->get_32(); //data format
 
-	//skip reserved
-	mipmap_limit = int(f->get_32());
-	//reserved
-	f->get_32();
+	r_mipmap_limit = int(f->get_32());
+	r_display_scale = f->get_float();
+
+	// Skip reserved fields.
 	f->get_32();
 	f->get_32();
 
@@ -134,8 +134,9 @@ Error CompressedTexture2D::load(const String &p_path) {
 	bool request_normal;
 	bool request_roughness;
 	int mipmap_limit;
+	float display_scale;
 
-	Error err = _load_data(p_path, lw, lh, image, request_3d, request_normal, request_roughness, mipmap_limit);
+	Error err = _load_data(p_path, lw, lh, image, request_3d, request_normal, request_roughness, mipmap_limit, display_scale);
 	if (err) {
 		return err;
 	}
@@ -147,7 +148,7 @@ Error CompressedTexture2D::load(const String &p_path) {
 		texture = RS::get_singleton()->texture_2d_create(image);
 	}
 	if (lw || lh) {
-		RS::get_singleton()->texture_set_size_override(texture, lw, lh);
+		RS::get_singleton()->texture_set_size_override(texture, lw * display_scale, lh * display_scale);
 	}
 
 	w = lw;

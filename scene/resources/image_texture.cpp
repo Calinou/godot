@@ -206,17 +206,6 @@ bool ImageTexture::is_pixel_opaque(int p_x, int p_y) const {
 	return true;
 }
 
-void ImageTexture::set_size_override(const Size2i &p_size) {
-	Size2i s = p_size;
-	if (s.x != 0) {
-		w = s.x;
-	}
-	if (s.y != 0) {
-		h = s.y;
-	}
-	RenderingServer::get_singleton()->texture_set_size_override(texture, w, h);
-}
-
 void ImageTexture::set_path(const String &p_path, bool p_take_over) {
 	if (texture.is_valid()) {
 		RenderingServer::get_singleton()->texture_set_path(texture, p_path);
@@ -231,7 +220,6 @@ void ImageTexture::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("set_image", "image"), &ImageTexture::set_image);
 	ClassDB::bind_method(D_METHOD("update", "image"), &ImageTexture::update);
-	ClassDB::bind_method(D_METHOD("set_size_override", "size"), &ImageTexture::set_size_override);
 }
 
 ImageTexture::ImageTexture() {}
