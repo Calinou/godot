@@ -61,6 +61,10 @@ private:
 	RID particles;
 
 	bool emitting = false;
+	bool emit_over_distance_enabled = false;
+	float emit_over_distance_min_distance = 0.1;
+	float emit_over_distance_max_distance_per_frame = 0.0;
+	float emit_over_distance_emission_radius = 0.0;
 	bool active = false;
 	bool signal_canceled = false;
 	bool one_shot = false;
@@ -93,6 +97,10 @@ private:
 
 	double time = 0.0;
 	double emission_time = 0.0;
+
+	// Used for emission over distance.
+	float distance_accum = 0.0;
+
 	double active_time = 0.0;
 	float interp_to_end_factor = 0;
 	Vector3 previous_velocity;
@@ -111,6 +119,10 @@ public:
 	AABB get_aabb() const override;
 
 	void set_emitting(bool p_emitting);
+	void set_emit_over_distance_enabled(bool p_enable);
+	void set_emit_over_distance_min_distance(float p_distance);
+	void set_emit_over_distance_max_distance_per_frame(float p_distance);
+	void set_emit_over_distance_emission_radius(float p_radius);
 	void set_amount(int p_amount);
 	void set_lifetime(double p_lifetime);
 	void set_one_shot(bool p_one_shot);
@@ -127,6 +139,10 @@ public:
 	void set_interp_to_end(float p_interp);
 
 	bool is_emitting() const;
+	bool is_emit_over_distance_enabled() const;
+	float get_emit_over_distance_min_distance() const;
+	float get_emit_over_distance_max_distance_per_frame() const;
+	float get_emit_over_distance_emission_radius() const;
 	int get_amount() const;
 
 	double get_lifetime() const;

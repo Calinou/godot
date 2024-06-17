@@ -64,8 +64,54 @@ void GPUParticles3D::set_emitting(bool p_emitting) {
 		set_process_internal(true);
 	}
 
+	if (p_emitting) {
+		// Emit Over Distance does not work if built-in emission is enabled.
+		set_emit_over_distance_enabled(false);
+	}
+
 	emitting = p_emitting;
 	RS::get_singleton()->particles_set_emitting(particles, p_emitting);
+}
+
+void GPUParticles3D::set_emit_over_distance_enabled(bool p_enable) {
+	if (p_enable == emit_over_distance_enabled) {
+		return;
+	}
+
+	if (p_enable) {
+		// Built-in emission must be disabled for emitting over distance to work.
+		set_emitting(false);
+
+		// Immediately re-enable internal process, as `set_emitting(false)` disables internal processing.
+		set_process_internal(true);
+	}
+
+	emit_over_distance_enabled = p_enable;
+}
+
+void GPUParticles3D::set_emit_over_distance_min_distance(float p_distance) {
+	ERR_FAIL_COND_MSG(p_distance <= 0, "Emit over distance minimum distance must be greater than 0.");
+	if (p_distance == emit_over_distance_max_distance_per_frame) {
+		return;
+	}
+
+	emit_over_distance_min_distance = p_distance;
+	update_configuration_warnings();
+
+}
+
+void GPUParticles3D::set_emit_over_distance_max_distance_per_frame(float p_distance) {
+	ERR_FAIL_COND_MSG(p_distance < 0, "Emit over distance maximum distance per frame must be greater than or equal to 0.");
+	if (p_distance == emit_over_distance_max_distance_per_frame) {
+		return;
+	}
+
+	emit_over_distance_max_distance_per_frame = p_distance;
+	update_configuration_warnings();
+}
+
+void GPUParticles3D::set_emit_over_distance_emission_radius(float p_radius) {
+	emit_over_distance_emission_radius = p_radius;
 }
 
 void GPUParticles3D::set_amount(int p_amount) {
@@ -145,6 +191,22 @@ void GPUParticles3D::set_collision_base_size(real_t p_size) {
 
 bool GPUParticles3D::is_emitting() const {
 	return emitting;
+}
+
+bool GPUParticles3D::is_emit_over_distance_enabled() const {
+	return emit_over_distance_enabled;
+}
+
+float GPUParticles3D::get_emit_over_distance_min_distance() const {
+	return emit_over_distance_min_distance;
+}
+
+float GPUParticles3D::get_emit_over_distance_max_distance_per_frame() const {
+	return emit_over_distance_max_distance_per_frame;
+}
+
+float GPUParticles3D::get_emit_over_distance_emission_radius() const {
+	return emit_over_distance_emission_radius;
 }
 
 int GPUParticles3D::get_amount() const {
@@ -393,6 +455,10 @@ PackedStringArray GPUParticles3D::get_configuration_warnings() const {
 		warnings.push_back(RTR("Particle sub-emitters are only available when using the Forward+ or Mobile rendering backends."));
 	}
 
+	if (!Math::is_zero_approx(emit_over_distance_max_distance_per_frame) && emit_over_distance_max_distance_per_frame <= emit_over_distance_min_distance) {
+		warnings.push_back(RTR("Emit over Distance Max Distance per Frame is greater than 0 but lower than the Emit over Distance Min Distance, so particle emission over distance will never occur."));
+	}
+
 	return warnings;
 }
 
@@ -459,6 +525,33 @@ void GPUParticles3D::_notification(int p_what) {
 		// Use internal process when emitting and one_shot is on so that when
 		// the shot ends the editor can properly update.
 		case NOTIFICATION_INTERNAL_PROCESS: {
+			if (emit_over_distance_enabled) {
+				distance_accum = distance_accum + previous_position.distance_to(get_global_position());
+
+				if (distance_accum >= emit_over_distance_min_distance) {
+					if (Math::is_zero_approx(emit_over_distance_max_distance_per_frame) || distance_accum <= emit_over_distance_max_distance_per_frame) {
+						// If the particle has moved a distance greater than `emit_over_distance_max_distance_per_frame` and this value is above 0.0,
+						// assume the particle to have teleported (and don't spawn more particles).
+						const int particles_to_emit = Math::round(distance_accum / emit_over_distance_min_distance);
+						for (int i = 0; i < particles_to_emit; i++) {
+							const Vector3 particle_position = previous_position.lerp(get_global_position(), float(i) / particles_to_emit);
+							Vector3 emission_shape;
+							if (!Math::is_zero_approx(emit_over_distance_emission_radius)) {
+								//const float s = Math::random(0, UINT32_MAX) * 2.0 - 1.0;
+								//const float t = Math::random(0, UINT32_MAX) * 2.0 * Math_PI;
+								//const float p = Math::random(0, UINT32_MAX);
+								//const float radius = emit_over_distance_emission_radius * Math::sqrt(1.0 - s * s);
+								emission_shape = Vector3(Math::randfn(0, 1), Math::randfn(0, 1), Math::randfn(0, 1)).normalized() * Math::randf() * emit_over_distance_emission_radius;
+								//emission_shape = Vector3(0.0, 0.0, 0.0).lerp(Vector3(radius * cos(t), radius * sin(t), emit_over_distance_emission_radius * s), p) - Vector3(0.5, 0.5, 0.5) * emit_over_distance_emission_radius;
+							}
+							emit_particle(Transform3D(Basis(), particle_position + emission_shape), Vector3(), Color(), Color(), GPUParticles3D::EMIT_FLAG_POSITION);
+						}
+					}
+
+					distance_accum = 0.0;
+				}
+			}
+
 			const Vector3 velocity = (get_global_position() - previous_position) / get_process_delta_time();
 
 			if (velocity != previous_velocity) {
@@ -666,6 +759,10 @@ float GPUParticles3D::get_amount_ratio() const {
 
 void GPUParticles3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_emitting", "emitting"), &GPUParticles3D::set_emitting);
+	ClassDB::bind_method(D_METHOD("set_emit_over_distance_enabled", "enable"), &GPUParticles3D::set_emit_over_distance_enabled);
+	ClassDB::bind_method(D_METHOD("set_emit_over_distance_min_distance", "distance"), &GPUParticles3D::set_emit_over_distance_min_distance);
+	ClassDB::bind_method(D_METHOD("set_emit_over_distance_max_distance_per_frame", "distance"), &GPUParticles3D::set_emit_over_distance_max_distance_per_frame);
+	ClassDB::bind_method(D_METHOD("set_emit_over_distance_emission_radius", "radius"), &GPUParticles3D::set_emit_over_distance_emission_radius);
 	ClassDB::bind_method(D_METHOD("set_amount", "amount"), &GPUParticles3D::set_amount);
 	ClassDB::bind_method(D_METHOD("set_lifetime", "secs"), &GPUParticles3D::set_lifetime);
 	ClassDB::bind_method(D_METHOD("set_one_shot", "enable"), &GPUParticles3D::set_one_shot);
@@ -683,6 +780,10 @@ void GPUParticles3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_interp_to_end", "interp"), &GPUParticles3D::set_interp_to_end);
 
 	ClassDB::bind_method(D_METHOD("is_emitting"), &GPUParticles3D::is_emitting);
+	ClassDB::bind_method(D_METHOD("is_emit_over_distance_enabled"), &GPUParticles3D::is_emit_over_distance_enabled);
+	ClassDB::bind_method(D_METHOD("get_emit_over_distance_min_distance"), &GPUParticles3D::get_emit_over_distance_min_distance);
+	ClassDB::bind_method(D_METHOD("get_emit_over_distance_max_distance_per_frame"), &GPUParticles3D::get_emit_over_distance_max_distance_per_frame);
+	ClassDB::bind_method(D_METHOD("get_emit_over_distance_emission_radius"), &GPUParticles3D::get_emit_over_distance_emission_radius);
 	ClassDB::bind_method(D_METHOD("get_amount"), &GPUParticles3D::get_amount);
 	ClassDB::bind_method(D_METHOD("get_lifetime"), &GPUParticles3D::get_lifetime);
 	ClassDB::bind_method(D_METHOD("get_one_shot"), &GPUParticles3D::get_one_shot);
@@ -741,6 +842,11 @@ void GPUParticles3D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "amount", PROPERTY_HINT_RANGE, "1,1000000,1,exp"), "set_amount", "get_amount");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "amount_ratio", PROPERTY_HINT_RANGE, "0,1,0.0001"), "set_amount_ratio", "get_amount_ratio");
 	ADD_PROPERTY(PropertyInfo(Variant::NODE_PATH, "sub_emitter", PROPERTY_HINT_NODE_PATH_VALID_TYPES, "GPUParticles3D"), "set_sub_emitter", "get_sub_emitter");
+	ADD_GROUP("Emit over Distance", "emit_over_distance");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "emit_over_distance_enabled"), "set_emit_over_distance_enabled", "is_emit_over_distance_enabled");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "emit_over_distance_min_distance", PROPERTY_HINT_RANGE, "0.0001,10,0.0001,or_greater"), "set_emit_over_distance_min_distance", "get_emit_over_distance_min_distance");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "emit_over_distance_max_distance_per_frame", PROPERTY_HINT_RANGE, "0.0,10,0.0001,or_greater"), "set_emit_over_distance_max_distance_per_frame", "get_emit_over_distance_max_distance_per_frame");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "emit_over_distance_emission_radius", PROPERTY_HINT_RANGE, "0,128,0.001,or_greater"), "set_emit_over_distance_emission_radius", "get_emit_over_distance_emission_radius");
 	ADD_GROUP("Time", "");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "lifetime", PROPERTY_HINT_RANGE, "0.01,600.0,0.01,or_greater,exp,suffix:s"), "set_lifetime", "get_lifetime");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "interp_to_end", PROPERTY_HINT_RANGE, "0.00,1.0,0.01"), "set_interp_to_end", "get_interp_to_end");

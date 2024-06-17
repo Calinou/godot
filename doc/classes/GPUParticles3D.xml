@@ -95,6 +95,23 @@
 		</member>
 		<member name="draw_skin" type="Skin" setter="set_skin" getter="get_skin">
 		</member>
+		<member name="emit_over_distance_emission_radius" type="float" setter="set_emit_over_distance_emission_radius" getter="get_emit_over_distance_emission_radius" default="0.0">
+			The spherical radius in which particles will be emitted when [member emit_over_distance_enabled] is [code]true[/code].
+			[b]Note:[/b] [ParticleProcessMaterial]'s emission shape properties and custom particle shaders' spawn positions are ignored when emission over distance is used.
+		</member>
+		<member name="emit_over_distance_enabled" type="bool" setter="set_emit_over_distance_enabled" getter="is_emit_over_distance_enabled" default="false">
+			If [code]true[/code], particles are emitted based on the distance traveled by the emitter. A particle is emitted every time the emitter has traveled by the distance specified in [member emit_over_distance_min_distance] units. This distance is cumulative: if the emitter continuously travels back and forth a small distance, it will eventually emit a particle as it reaches the minimum distance threshold.
+			[b]Note:[/b] [member emitting] is automatically set to [code]false[/code] when emission over distance is enabled, as it's not possible to use both at the same time.
+			[b]Note:[/b] [member amount] still limits the maximum number of particles that can be drawn at a time. If [member amount] is set too low given the emitter's movement speed and [member emit_over_distance_min_distance], some particles will not be emitted until older particles have expired.
+			[b]Note:[/b] [ParticleProcessMaterial]'s emission shape properties and custom particle shaders' spawn positions are ignored when emission over distance is used.
+		</member>
+		<member name="emit_over_distance_max_distance_per_frame" type="float" setter="set_emit_over_distance_max_distance_per_frame" getter="get_emit_over_distance_max_distance_per_frame" default="0.0">
+			If set to a value above [code]0.0[/code], particles will not spawn if the emitter has traveled a distance in units longer than [member emit_over_distance_max_distance_per_frame] in a single process frame. [member fixed_fps] does not affect this distance. Only effective if [member emit_over_distance_enabled] is [code]true[/code].
+			This can be used to prevent visible streaks when particles are teleported from a location to another. See also [member emit_over_distance_min_distance].
+		</member>
+		<member name="emit_over_distance_min_distance" type="float" setter="set_emit_over_distance_min_distance" getter="get_emit_over_distance_min_distance" default="0.1">
+			The minimum distance before a particle is emitted when [member emit_over_distance_enabled] is [code]true[/code]. Lower values will emit more particles over the same distance traveled by the emitter. See also [member emit_over_distance_max_distance_per_frame].
+		</member>
 		<member name="emitting" type="bool" setter="set_emitting" getter="is_emitting" default="true">
 			If [code]true[/code], particles are being emitted. [member emitting] can be used to start and stop particles from emitting. However, if [member one_shot] is [code]true[/code] setting [member emitting] to [code]true[/code] will not restart the emission cycle unless all active particles have finished processing. Use the [signal finished] signal to be notified once all active particles finish processing.
 			[b]Note:[/b] For [member one_shot] emitters, due to the particles being computed on the GPU, there may be a short period after receiving the [signal finished] signal during which setting this to [code]true[/code] will not restart the emission cycle.
