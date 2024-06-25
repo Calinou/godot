@@ -5314,26 +5314,6 @@ Node3DEditorViewport::Node3DEditorViewport(Node3DEditor *p_spatial_editor, int p
 	display_submenu->connect(SceneStringName(id_pressed), callable_mp(this, &Node3DEditorViewport::_menu_option));
 	view_menu->set_disable_shortcuts(true);
 
-	// TODO: Re-evaluate with new OpenGL3 renderer, and implement.
-	//if (OS::get_singleton()->get_current_video_driver() == OS::RENDERING_DRIVER_OPENGL3) {
-	if (false) {
-		// Alternate display modes only work when using the Vulkan renderer; make this explicit.
-		const int normal_idx = view_menu->get_popup()->get_item_index(VIEW_DISPLAY_NORMAL);
-		const int wireframe_idx = view_menu->get_popup()->get_item_index(VIEW_DISPLAY_WIREFRAME);
-		const int overdraw_idx = view_menu->get_popup()->get_item_index(VIEW_DISPLAY_OVERDRAW);
-		const int shadeless_idx = view_menu->get_popup()->get_item_index(VIEW_DISPLAY_UNSHADED);
-		const String unsupported_tooltip = TTR("Not available when using the OpenGL renderer.");
-
-		view_menu->get_popup()->set_item_disabled(normal_idx, true);
-		view_menu->get_popup()->set_item_tooltip(normal_idx, unsupported_tooltip);
-		view_menu->get_popup()->set_item_disabled(wireframe_idx, true);
-		view_menu->get_popup()->set_item_tooltip(wireframe_idx, unsupported_tooltip);
-		view_menu->get_popup()->set_item_disabled(overdraw_idx, true);
-		view_menu->get_popup()->set_item_tooltip(overdraw_idx, unsupported_tooltip);
-		view_menu->get_popup()->set_item_disabled(shadeless_idx, true);
-		view_menu->get_popup()->set_item_tooltip(shadeless_idx, unsupported_tooltip);
-	}
-
 	register_shortcut_action("spatial_editor/freelook_left", TTR("Freelook Left"), Key::A, true);
 	register_shortcut_action("spatial_editor/freelook_right", TTR("Freelook Right"), Key::D, true);
 	register_shortcut_action("spatial_editor/freelook_forward", TTR("Freelook Forward"), Key::W, true);
