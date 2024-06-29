@@ -268,9 +268,13 @@ float sample_directional_pcf_shadow(texture2D shadow, vec2 shadow_pixel_size, ve
 	vec2 pos = coord.xy;
 	float depth = coord.z;
 
+	// Higher values result in sharper shadow outlines (must be 1.0 or greater).
+	// TODO: Use derivatives to threshold hardness so that it's low enough to avoid aliasing at a distance.
+	const float HARDNESS = 2.0;
+
 	//if only one sample is taken, take it from the center
 	if (sc_directional_soft_shadow_samples() == 0) {
-		return textureProj(sampler2DShadow(shadow, shadow_sampler), vec4(pos, depth, 1.0));
+		return smoothstep(0.0, 1.0, 0.5 + textureProj(sampler2DShadow(shadow, shadow_sampler), vec4(pos, depth, 1.0)) * HARDNESS - HARDNESS * 0.5);
 	}
 
 	mat2 disk_rotation = mat2(1.0);
@@ -287,7 +291,7 @@ float sample_directional_pcf_shadow(texture2D shadow, vec2 shadow_pixel_size, ve
 		avg += textureProj(sampler2DShadow(shadow, shadow_sampler), vec4(pos + shadow_pixel_size * (disk_rotation * scene_data_block.data.directional_soft_shadow_kernel[i].xy), depth, 1.0));
 	}
 
-	return (avg * (1.0 / float(sc_directional_soft_shadow_samples()))) > 0.5 ? 1.0 : 0.0;
+	return smoothstep(0.0, 1.0, 0.5 + avg * (1.0 / float(sc_directional_soft_shadow_samples())) * HARDNESS - HARDNESS * 0.5);
 }
 
 float sample_pcf_shadow(texture2D shadow, vec2 shadow_pixel_size, vec3 coord, float taa_frame_count) {
