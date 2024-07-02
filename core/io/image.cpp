@@ -1817,7 +1817,7 @@ void Image::normalize() {
 	}
 }
 
-Error Image::generate_mipmaps(bool p_renormalize) {
+Error Image::generate_mipmaps(bool p_renormalize, uint32_t p_max_mipmaps) {
 	ERR_FAIL_COND_V_MSG(!_can_modify(format), ERR_UNAVAILABLE, "Cannot generate mipmaps in compressed or custom image formats.");
 
 	ERR_FAIL_COND_V_MSG(format == FORMAT_RGBA4444, ERR_UNAVAILABLE, "Cannot generate mipmaps from RGBA4444 format.");
@@ -1826,7 +1826,7 @@ Error Image::generate_mipmaps(bool p_renormalize) {
 
 	int mmcount;
 
-	int size = _get_dst_image_size(width, height, format, mmcount);
+	int size = _get_dst_image_size(width, height, format, mmcount, p_max_mipmaps);
 
 	data.resize(size);
 
@@ -1836,7 +1836,9 @@ Error Image::generate_mipmaps(bool p_renormalize) {
 	int prev_h = height;
 	int prev_w = width;
 
-	for (int i = 1; i <= mmcount; i++) {
+	print_line(vformat("Num mipmaps: %d, max mipmaps: %d", mmcount, p_max_mipmaps));
+
+	for (uint32_t i = 1; i <= MIN(uint32_t(mmcount), p_max_mipmaps); i++) {
 		int ofs, w, h;
 		_get_mipmap_offset_and_size(i, ofs, w, h);
 
@@ -1930,7 +1932,7 @@ Error Image::generate_mipmaps(bool p_renormalize) {
 	return OK;
 }
 
-Error Image::generate_mipmap_roughness(RoughnessChannel p_roughness_channel, const Ref<Image> &p_normal_map) {
+Error Image::generate_mipmap_roughness(RoughnessChannel p_roughness_channel, const Ref<Image> &p_normal_map, uint32_t p_max_mipmaps) {
 	LocalVector<double> normal_sat_vec; //summed area table
 	int normal_w = 0, normal_h = 0;
 
@@ -1988,11 +1990,13 @@ Error Image::generate_mipmap_roughness(RoughnessChannel p_roughness_channel, con
 
 	int mmcount;
 
-	_get_dst_image_size(width, height, format, mmcount);
+	_get_dst_image_size(width, height, format, mmcount, p_max_mipmaps);
 
 	uint8_t *base_ptr = data.ptrw();
 
-	for (int i = 1; i <= mmcount; i++) {
+	print_line(vformat("[Roughness] Num mipmaps: %d, max mipmaps: %d", mmcount, p_max_mipmaps));
+
+	for (uint32_t i = 1; i <= MIN(uint32_t(mmcount), p_max_mipmaps); i++) {
 		int ofs, w, h;
 		_get_mipmap_offset_and_size(i, ofs, w, h);
 		uint8_t *ptr = &base_ptr[ofs];
@@ -3441,7 +3445,7 @@ void Image::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("crop", "width", "height"), &Image::crop);
 	ClassDB::bind_method(D_METHOD("flip_x"), &Image::flip_x);
 	ClassDB::bind_method(D_METHOD("flip_y"), &Image::flip_y);
-	ClassDB::bind_method(D_METHOD("generate_mipmaps", "renormalize"), &Image::generate_mipmaps, DEFVAL(false));
+	ClassDB::bind_method(D_METHOD("generate_mipmaps", "renormalize", "max_mipmaps"), &Image::generate_mipmaps, DEFVAL(false), DEFVAL(-1));
 	ClassDB::bind_method(D_METHOD("clear_mipmaps"), &Image::clear_mipmaps);
 
 #ifndef DISABLE_DEPRECATED

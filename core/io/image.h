@@ -278,7 +278,7 @@ public:
 	/**
 	 * Generate a mipmap to an image (creates an image 1/4 the size, with averaging of 4->1)
 	 */
-	Error generate_mipmaps(bool p_renormalize = false);
+	Error generate_mipmaps(bool p_renormalize = false, uint32_t p_max_mipmaps = -1);
 
 	enum RoughnessChannel {
 		ROUGHNESS_CHANNEL_R,
@@ -288,7 +288,7 @@ public:
 		ROUGHNESS_CHANNEL_L,
 	};
 
-	Error generate_mipmap_roughness(RoughnessChannel p_roughness_channel, const Ref<Image> &p_normal_map);
+	Error generate_mipmap_roughness(RoughnessChannel p_roughness_channel, const Ref<Image> &p_normal_map, uint32_t p_max_mipmaps = -1);
 
 	void clear_mipmaps();
 	void normalize(); //for normal maps

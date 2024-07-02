@@ -391,7 +391,7 @@ void ResourceImporterTexture::_save_ctex(const Ref<Image> &p_image, const String
 	}
 
 	if (p_mipmaps && (!image->has_mipmaps() || p_force_normal)) {
-		image->generate_mipmaps(p_force_normal);
+		image->generate_mipmaps(p_force_normal, p_limit_mipmap);
 	}
 
 	if (!p_mipmaps) {
@@ -399,7 +399,7 @@ void ResourceImporterTexture::_save_ctex(const Ref<Image> &p_image, const String
 	}
 
 	if (image->has_mipmaps() && p_normal.is_valid()) {
-		image->generate_mipmap_roughness(p_roughness_channel, p_normal);
+		image->generate_mipmap_roughness(p_roughness_channel, p_normal, p_limit_mipmap);
 	}
 
 	Image::CompressSource csource = Image::COMPRESS_SOURCE_GENERIC;
