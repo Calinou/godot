@@ -1317,6 +1317,53 @@ vec4 triplanar_texture(sampler2D p_sampler, vec3 p_weights, vec3 p_triplanar_pos
 )";
 	}
 
+	code += R"(
+vec4 texture_ogss(sampler2D p_sampler, vec2 p_uv) {
+	// Get per-pixel partial derivatives.
+	vec2 dx = dFdx(p_uv) * 0.25;
+	vec2 dy = dFdy(p_uv) * 0.25;
+
+	// Supersample using 2×2 ordered grid.
+	vec4 samp = vec4(0.0);
+	// Sample one mipmap level higher than would otherwise be done to compensate for the supersampling.
+	const float MIPMAP_BIAS = -1.0;
+
+	samp += texture(p_sampler, p_uv + dx + dy, MIPMAP_BIAS);
+	samp += texture(p_sampler, p_uv - dx + dy, MIPMAP_BIAS);
+	samp += texture(p_sampler, p_uv + dx - dy, MIPMAP_BIAS);
+	samp += texture(p_sampler, p_uv - dx - dy, MIPMAP_BIAS);
+	return samp * 0.25;
+}
+)";
+
+	code += R"(
+vec4 texture_rgss(sampler2D p_sampler, vec2 p_uv) {
+	// Get per-pixel partial derivatives.
+	vec2 dx = dFdx(p_uv);
+	vec2 dy = dFdy(p_uv);
+
+	// Rotated grid UV offsets.
+	const vec2 UV_OFFSETS = vec2(0.125, 0.375);
+	vec2 offset_uv = vec2(0.0);
+
+	// Supersample using 2×2 rotated grid.
+	vec4 samp = vec4(0.0);
+	// Sample one mipmap level higher than would otherwise be done to compensate for the supersampling.
+	const float MIPMAP_BIAS = -1.0;
+
+	offset_uv.xy = p_uv + UV_OFFSETS.x * dx + UV_OFFSETS.y * dy;
+	samp += texture(p_sampler, offset_uv, MIPMAP_BIAS);
+	offset_uv.xy = p_uv - UV_OFFSETS.x * dx - UV_OFFSETS.y * dy;
+	samp += texture(p_sampler, offset_uv, MIPMAP_BIAS);
+	offset_uv.xy = p_uv + UV_OFFSETS.y * dx - UV_OFFSETS.x * dy;
+	samp += texture(p_sampler, offset_uv, MIPMAP_BIAS);
+	offset_uv.xy = p_uv - UV_OFFSETS.y * dx + UV_OFFSETS.x * dy;
+	samp += texture(p_sampler, offset_uv, MIPMAP_BIAS);
+
+	return samp * 0.25;
+}
+)";
+
 	// Generate fragment shader.
 	code += R"(
 void fragment() {)";
@@ -1435,7 +1482,7 @@ void fragment() {)";
 )";
 		} else {
 			code += R"(
-	vec4 albedo_tex = texture(texture_albedo, base_uv);
+	vec4 albedo_tex = texture_rgss(texture_albedo, base_uv);
 )";
 		}
 	}
