@@ -42,7 +42,9 @@
 #include "editor/export/editor_export_preset.h"
 #include "editor/progress_dialog.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/gui/check_box.h"
 #include "scene/gui/file_dialog.h"
+#include "scene/gui/flow_container.h"
 #include "scene/gui/link_button.h"
 #include "scene/gui/menu_button.h"
 #include "scene/gui/separator.h"
@@ -1034,6 +1036,50 @@ ExportTemplateManager::ExportTemplateManager() {
 	current_uninstall_button->connect(SceneStringName(pressed), callable_mp(this, &ExportTemplateManager::_uninstall_template).bind(GODOT_VERSION_FULL_CONFIG));
 
 	main_vb->add_child(memnew(HSeparator));
+
+	// Platform selection section (+ install from file in top-right corner).
+	HBoxContainer *select_platforms_hb = memnew(HBoxContainer);
+	select_platforms_hb->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	main_vb->add_child(select_platforms_hb);
+
+	install_platforms_hf = memnew(HFlowContainer);
+	install_platforms_hf->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	select_platforms_hb->add_child(install_platforms_hf);
+
+	CheckBox *install_platform_windows = memnew(CheckBox);
+	install_platform_windows->set_text("Windows");
+	install_platform_checkboxes.push_back(install_platform_windows);
+
+	CheckBox *install_platform_macos = memnew(CheckBox);
+	install_platform_macos->set_text("macOS");
+	install_platform_checkboxes.push_back(install_platform_macos);
+
+	CheckBox *install_platform_linuxbsd = memnew(CheckBox);
+	install_platform_linuxbsd->set_text("Linux/*BSD");
+	install_platform_checkboxes.push_back(install_platform_linuxbsd);
+
+	CheckBox *install_platform_android = memnew(CheckBox);
+	install_platform_android->set_text("Android");
+	install_platform_checkboxes.push_back(install_platform_android);
+
+	CheckBox *install_platform_ios = memnew(CheckBox);
+	install_platform_ios->set_text("iOS");
+	install_platform_checkboxes.push_back(install_platform_ios);
+
+	CheckBox *install_platform_web = memnew(CheckBox);
+	install_platform_web->set_text("Web");
+	install_platform_checkboxes.push_back(install_platform_web);
+
+	for (CheckBox *checkbox : install_platform_checkboxes) {
+		checkbox->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+		install_platforms_hf->add_child(checkbox);
+	}
+
+	install_file_button = memnew(Button);
+	install_file_button->set_text(TTR("Install from File"));
+	install_file_button->set_tooltip_text(TTR("Install templates from a local file (which may contain templates for one or multiple platforms)."));
+	select_platforms_hb->add_child(install_file_button);
+	install_file_button->connect(SceneStringName(pressed), callable_mp(this, &ExportTemplateManager::_install_file));
 
 	// Download and install section.
 	HBoxContainer *install_templates_hb = memnew(HBoxContainer);
