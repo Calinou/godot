@@ -37,7 +37,7 @@ class CheckBox;
 class EditorExportPreset;
 class ExportTemplateVersion;
 class FileDialog;
-class HFlowContainer;
+class GridContainer;
 class HTTPRequest;
 class MenuButton;
 class OptionButton;
@@ -64,7 +64,7 @@ class ExportTemplateManager : public AcceptDialog {
 	Button *current_uninstall_button = nullptr;
 
 	VBoxContainer *install_options_vb = nullptr;
-	HFlowContainer *install_platforms_hf = nullptr;
+	GridContainer *install_platforms_gc = nullptr;
 	Vector<CheckBox *> install_platform_checkboxes;
 	OptionButton *mirrors_list = nullptr;
 
