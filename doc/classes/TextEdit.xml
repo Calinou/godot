@@ -1253,6 +1253,7 @@
 		</member>
 		<member name="caret_blink" type="bool" setter="set_caret_blink_enabled" getter="is_caret_blink_enabled" default="false">
 			If [code]true[/code], makes the caret blink.
+			[b]Note:[/b] If low-processor mode is enabled ([member ProjectSettings.application/run/low_processor_mode]), caret blinking stops after 5 seconds of inactivity to save resources.
 		</member>
 		<member name="caret_blink_interval" type="float" setter="set_caret_blink_interval" getter="get_caret_blink_interval" default="0.65">
 			The interval at which the caret blinks (in seconds).

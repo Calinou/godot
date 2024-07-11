@@ -814,7 +814,25 @@ void LineEdit::_notification(int p_what) {
 
 		case NOTIFICATION_INTERNAL_PROCESS: {
 			if (caret_blink_enabled && caret_can_draw) {
-				caret_blink_timer += get_process_delta_time();
+				if (OS::get_singleton()->is_in_low_processor_usage_mode()) {
+					// Disable blinking if nothing has caused the caret blink to reset in the last 5 seconds
+					// (such as moving the caret or entering text).
+					// This prevents indefinite redrawing if the application is left idle for long periods of time.
+					low_processor_mode_caret_blink_timeout += get_process_delta_time();
+					constexpr float CARET_BLINK_TIMEOUT = 5.0f;
+					if (low_processor_mode_caret_blink_timeout >= CARET_BLINK_TIMEOUT) {
+						bool previous_draw_caret = draw_caret;
+						draw_caret = true;
+						if (!previous_draw_caret && is_visible_in_tree() && caret_can_draw) {
+							queue_redraw();
+						}
+					} else {
+						caret_blink_timer += get_process_delta_time();
+					}
+				} else {
+					low_processor_mode_caret_blink_timeout = 0.0f;
+					caret_blink_timer += get_process_delta_time();
+				}
 
 				if (caret_blink_timer >= caret_blink_interval) {
 					caret_blink_timer = 0.0;
@@ -1487,6 +1505,7 @@ void LineEdit::_reset_caret_blink_timer() {
 	if (caret_blink_enabled) {
 		draw_caret = true;
 		if (caret_can_draw) {
+			low_processor_mode_caret_blink_timeout = 0.0;
 			caret_blink_timer = 0.0;
 			queue_redraw();
 		}

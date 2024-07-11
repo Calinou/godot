@@ -575,6 +575,29 @@ void TextEdit::_notification(int p_what) {
 			}
 		} break;
 
+		case NOTIFICATION_INTERNAL_PROCESS: {
+			if (caret_blink_enabled) {
+				if (OS::get_singleton()->is_in_low_processor_usage_mode()) {
+					// Disable blinking if nothing has caused the caret blink to reset in the last 5 seconds
+					// (such as moving the caret or entering text).
+					// This prevents indefinite redrawing if the application is left idle for long periods of time.
+					low_processor_mode_caret_blink_timeout += get_process_delta_time();
+					constexpr float CARET_BLINK_TIMEOUT = 5.0f;
+					if (low_processor_mode_caret_blink_timeout >= CARET_BLINK_TIMEOUT) {
+						bool previous_draw_caret = draw_caret;
+						draw_caret = true;
+						if (!previous_draw_caret && is_visible_in_tree() && has_focus() && window_has_focus) {
+							// FIXME: Redrawing still occurs twice a second when the TextEdit is focused,
+							// even if the line below is commented (which breaks rendering).
+							queue_redraw();
+						}
+					}
+				} else {
+					low_processor_mode_caret_blink_timeout = 0.0f;
+				}
+			}
+		} break;
+
 		case NOTIFICATION_DRAW: {
 			if (first_draw) {
 				// Size may not be the final one, so attempts to ensure caret was visible may have failed.
@@ -1571,6 +1594,7 @@ void TextEdit::_notification(int p_what) {
 		case NOTIFICATION_FOCUS_ENTER: {
 			if (caret_blink_enabled) {
 				caret_blink_timer->start();
+				set_process_internal(true);
 			} else {
 				draw_caret = true;
 			}
@@ -1600,6 +1624,7 @@ void TextEdit::_notification(int p_what) {
 		case NOTIFICATION_FOCUS_EXIT: {
 			if (caret_blink_enabled) {
 				caret_blink_timer->stop();
+				set_process_internal(false);
 			}
 
 			apply_ime();
@@ -4492,8 +4517,10 @@ void TextEdit::set_caret_blink_enabled(const bool p_enabled) {
 	if (has_focus()) {
 		if (p_enabled) {
 			caret_blink_timer->start();
+			set_process_internal(true);
 		} else {
 			caret_blink_timer->stop();
+			set_process_internal(false);
 		}
 	}
 	draw_caret = true;
@@ -7505,6 +7532,7 @@ void TextEdit::_reset_caret_blink_timer() {
 	if (has_focus()) {
 		caret_blink_timer->stop();
 		caret_blink_timer->start();
+		low_processor_mode_caret_blink_timeout = 0.0f;
 		queue_redraw();
 	}
 }

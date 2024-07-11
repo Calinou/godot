@@ -176,6 +176,7 @@ private:
 	float caret_blink_interval = 0.65;
 	double caret_blink_timer = 0.0;
 	bool caret_can_draw = false;
+	float low_processor_mode_caret_blink_timeout = 0.0;
 
 	bool pending_select_all_on_focus = false;
 	bool select_all_on_focus = false;

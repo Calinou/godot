@@ -439,6 +439,7 @@ private:
 
 	bool caret_blink_enabled = false;
 	Timer *caret_blink_timer = nullptr;
+	float low_processor_mode_caret_blink_timeout = 0.0f;
 
 	bool move_caret_on_right_click = true;
 
