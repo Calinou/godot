@@ -1422,7 +1422,9 @@ void GridMapEditor::_update_cursor_instance() {
 		if (selected_palette >= 0 && node && node->get_mesh_library().is_valid()) {
 			Ref<Mesh> mesh = node->get_mesh_library()->get_item_mesh(selected_palette);
 			if (mesh.is_valid() && mesh->get_rid().is_valid()) {
-				cursor_instance = RenderingServer::get_singleton()->instance_create2(mesh->get_rid(), scenario);
+				cursor_instance = RenderingServer::get_singleton()->instance_create2(mesh->get_rid(), get_tree()->get_root()->get_world_3d()->get_scenario());
+				RenderingServer::get_singleton()->instance_set_transform(cursor_instance, cursor_transform);
+				RenderingServer::get_singleton()->instance_set_layer_mask(cursor_instance, node->get_mesh_library()->get_item_render_layers(selected_palette));
 				RSE::ShadowCastingSetting cast_shadows = (RSE::ShadowCastingSetting)node->get_mesh_library()->get_item_mesh_cast_shadow(selected_palette);
 				RS::get_singleton()->instance_geometry_set_cast_shadows_setting(cursor_instance, cast_shadows);
 			}

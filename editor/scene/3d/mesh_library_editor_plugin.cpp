@@ -154,6 +154,7 @@ void MeshLibraryEditor::_import_scene_parse_node(Ref<MeshLibrary> p_library, Has
 		}
 	}
 	p_library->set_item_mesh(item_id, item_mesh);
+	p_library->set_item_render_layers(item_id, mesh_instance_node->get_layer_mask());
 
 	GeometryInstance3D::ShadowCastingSetting gi3d_cast_shadows_setting = mesh_instance_node->get_cast_shadows_setting();
 	switch (gi3d_cast_shadows_setting) {
