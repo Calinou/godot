@@ -1401,6 +1401,14 @@ void fragment() {)";
 			code += R"(
 		float weight = after_depth / (after_depth - before_depth);
 		ofs = mix(ofs, prev_ofs, weight);
+
+		float xz_distance = length(ofs - base_uv) * 10.0; // This is wrong and should be in the same space as surface depth, not in uv space
+		base_uv=ofs;
+
+		float surface_depth = 1.0 - texture(texture_heightmap, base_uv).r;
+        float view_depth = sqrt(xz_distance * xz_distance + surface_depth * surface_depth);
+        vec3 offset_vertex = VERTEX - vec3(0, 0, 1) * view_depth * heightmap_scale * 0.01;
+        LIGHT_VERTEX = offset_vertex;
 )";
 
 		} else {
@@ -1415,7 +1423,8 @@ void fragment() {)";
 			code += "		vec2 ofs = base_uv - view_dir.xy * depth * heightmap_scale * 0.01;\n";
 		}
 
-		code += "		base_uv = ofs;\n";
+		code += R"(//base_uv = ofs;
+)";
 		if (features[FEATURE_DETAIL] && detail_uv == DETAIL_UV_2) {
 			code += "		base_uv2 -= ofs;\n";
 		}
