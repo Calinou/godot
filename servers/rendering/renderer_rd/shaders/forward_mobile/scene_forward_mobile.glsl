@@ -1291,10 +1291,46 @@ void main() {
 			vec3 n = normalize(lightmaps.data[ofs].normal_xform * normal);
 			float exposure_normalization = lightmaps.data[ofs].exposure_normalization;
 
-			ambient_light += lm_light_l0 * exposure_normalization;
-			ambient_light += lm_light_l1n1 * n.y * exposure_normalization;
-			ambient_light += lm_light_l1_0 * n.z * exposure_normalization;
-			ambient_light += lm_light_l1p1 * n.x * exposure_normalization;
+			vec3 sh_light = vec3(0.0);
+			sh_light += lm_light_l0 * exposure_normalization;
+			sh_light += lm_light_l1n1 * n.y * exposure_normalization;
+			sh_light += lm_light_l1_0 * n.z * exposure_normalization;
+			sh_light += lm_light_l1p1 * n.x * exposure_normalization;
+			ambient_light += sh_light;
+
+			// Fake specular light to create some direct light specular lobes for directional lightmaps.
+			// https://media.contentapi.ea.com/content/dam/eacom/frostbite/files/gdc2018-precomputedgiobalilluminationinfrostbite.pdf (slides 66-71)
+			vec3 lightmap_direction = (lm_light_l1n1 + lm_light_l1_0 + lm_light_l1p1) * 0.333333; // FIXME: Determine direction correctly.
+			float lightmap_direction_length = length(lightmap_direction); // Value in range [0..1].
+			vec3 L = lightmap_direction / lightmap_direction_length;
+			float adjusted_roughness = 1.0 - ((1.0 - roughness) * sqrt(lightmap_direction_length));
+
+			vec3 f0 = F0(metallic, specular, albedo);
+			uint orms = packUnorm4x8(vec4(ao, adjusted_roughness, metallic, specular));
+
+			// Discard diffuse light from this fake light, as we're only interested in its specular light output.
+			vec3 diffuse_light_discarded = diffuse_light;
+			light_compute(normal, L, view, 0.0, sh_light, false, 1.0, f0, orms, 50.0 /* Boosted specular amount for testing */, albedo, alpha,
+#ifdef LIGHT_BACKLIGHT_USED
+					backlight,
+#endif
+#ifdef LIGHT_TRANSMITTANCE_USED
+					transmittance_color,
+					transmittance_depth,
+					transmittance_boost,
+					transmittance_z,
+#endif
+#ifdef LIGHT_RIM_USED
+					rim, rim_tint,
+#endif
+#ifdef LIGHT_CLEARCOAT_USED
+					clearcoat, clearcoat_roughness, normalize(normal_interp),
+#endif
+#ifdef LIGHT_ANISOTROPY_USED
+					binormal, tangent, anisotropy,
+#endif
+					diffuse_light_discarded,
+					specular_light);
 		} else {
 			if (sc_use_lightmap_bicubic_filter) {
 				ambient_light += textureArray_bicubic(lightmap_textures[ofs], uvw, lightmaps.data[ofs].light_texture_size).rgb * lightmaps.data[ofs].exposure_normalization;
