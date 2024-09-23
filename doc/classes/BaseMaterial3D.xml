@@ -547,13 +547,16 @@
 			Represents the size of the [enum Transparency] enum.
 		</constant>
 		<constant name="SHADING_MODE_UNSHADED" value="0" enum="ShadingMode">
-			The object will not receive shadows. This is the fastest to render, but it disables all interactions with lights.
+			The object will not receive any lighting or shadows and will always appear with full brightness. This is the fastest to render, but it disables all interactions with lights.
+			[b]Note:[/b] Most advanced material features are not supported when using unshaded mode.
 		</constant>
 		<constant name="SHADING_MODE_PER_PIXEL" value="1" enum="ShadingMode">
 			The object will be shaded per pixel. Useful for realistic shading effects.
+			[b]Note:[/b] If [member ProjectSettings.rendering/shading/overrides/force_vertex_shading] is [code]true[/code], this will be rendered as [constant SHADING_MODE_PER_VERTEX] instead, which can be significantly faster in some scenarios.
 		</constant>
 		<constant name="SHADING_MODE_PER_VERTEX" value="2" enum="ShadingMode">
-			The object will be shaded per vertex. Useful when you want cheaper shaders and do not care about visual quality. Not implemented yet (this mode will act like [constant SHADING_MODE_PER_PIXEL]).
+			The object will be shaded per vertex. Useful when you want cheaper shaders and do not care about visual quality. This can be significantly faster to render than [constant SHADING_MODE_PER_PIXEL] if the material covers a lot of pixels on screen. Consider using vertex shading for lit particle effects that are close to the screen (such as smoke, rain, and snow).
+			[b]Note:[/b] Several advanced material features are not supported when using per-vertex shading.
 		</constant>
 		<constant name="SHADING_MODE_MAX" value="3" enum="ShadingMode">
 			Represents the size of the [enum ShadingMode] enum.
@@ -711,13 +714,14 @@
 			Represents the size of the [enum Flags] enum.
 		</constant>
 		<constant name="DIFFUSE_BURLEY" value="0" enum="DiffuseMode">
-			Default diffuse scattering algorithm.
+			Default diffuse scattering algorithm. More realistic than [constant DIFFUSE_LAMBERT], but slightly slower to render.
+			[b]Note:[/b] If [member ProjectSettings.rendering/shading/overrides/force_lambert_over_burley] is [code]true[/code], this will be rendered as [constant DIFFUSE_LAMBERT] instead, which is slightly faster.
 		</constant>
 		<constant name="DIFFUSE_LAMBERT" value="1" enum="DiffuseMode">
 			Diffuse scattering ignores roughness.
 		</constant>
 		<constant name="DIFFUSE_LAMBERT_WRAP" value="2" enum="DiffuseMode">
-			Extends Lambert to cover more than 90 degrees when roughness increases.
+			Extends Lambert to cover more than 90 degrees when roughness increases. This can be used as a faster but less realistic alternative to subsurface scattering ([member subsurf_scatter_enabled]).
 		</constant>
 		<constant name="DIFFUSE_TOON" value="3" enum="DiffuseMode">
 			Uses a hard cut for lighting, with smoothing affected by roughness.
