@@ -1118,6 +1118,21 @@ vec3 encode24(vec3 v) {
 }
 #endif // MODE_RENDER_NORMAL_ROUGHNESS
 
+float rand(vec2 n) {
+	return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);
+}
+
+float noise(vec2 p) {
+	vec2 ip = floor(p);
+	vec2 u = fract(p);
+	u = u * u * (3.0 - 2.0 * u);
+
+	float res = mix(
+			mix(rand(ip), rand(ip + vec2(1.0, 0.0)), u.x),
+			mix(rand(ip + vec2(0.0, 1.0)), rand(ip + vec2(1.0, 1.0)), u.x), u.y);
+	return res * res;
+}
+
 void fragment_shader(in SceneData scene_data) {
 	uint instance_index = instance_index_interp;
 
@@ -2190,6 +2205,62 @@ void fragment_shader(in SceneData scene_data) {
 						float shadow2 = sample_directional_pcf_shadow(directional_shadow_atlas, scene_data.directional_shadow_pixel_size * directional_lights.data[i].soft_shadow_scale * (blur_factor2 + (1.0 - blur_factor2) * float(directional_lights.data[i].blend_splits)), pssm_coord, scene_data.taa_frame_count);
 						shadow = mix(shadow, shadow2, pssm_blend);
 					}
+
+					vec3 local_v = (pssm_coord /* * vec4(vertex, 1.0)*/).xyz;
+					local_v = normalize(local_v);
+
+					vec4 atlas_rect = vec4(0.0, 0.0, 256.0, 256.0);
+
+					if (local_v.z >= 0.0) {
+						atlas_rect.y += atlas_rect.w;
+					}
+
+					local_v.z = 1.0 + abs(local_v.z);
+
+					local_v.xy /= local_v.z;
+					local_v.xy = local_v.xy * 0.5 + 0.5;
+					vec2 proj_uv = local_v.xy * atlas_rect.zw;
+
+					// if (sc_projector_use_mipmaps()) {
+					// 	vec2 proj_uv_ddx;
+					// 	vec2 proj_uv_ddy;
+					// 	{
+					// 		vec3 local_v_ddx = (pssm_coord * vec4(vertex + vertex_ddx, 1.0)).xyz;
+					// 		local_v_ddx = normalize(local_v_ddx);
+
+					// 		if (local_v_ddx.z >= 0.0) {
+					// 			local_v_ddx.z += 1.0;
+					// 		} else {
+					// 			local_v_ddx.z = 1.0 - local_v_ddx.z;
+					// 		}
+
+					// 		local_v_ddx.xy /= local_v_ddx.z;
+					// 		local_v_ddx.xy = local_v_ddx.xy * 0.5 + 0.5;
+
+					// 		proj_uv_ddx = local_v_ddx.xy * atlas_rect.zw - proj_uv;
+
+					// 		vec3 local_v_ddy = (pssm_coord * vec4(vertex + vertex_ddy, 1.0)).xyz;
+					// 		local_v_ddy = normalize(local_v_ddy);
+
+					// 		if (local_v_ddy.z >= 0.0) {
+					// 			local_v_ddy.z += 1.0;
+					// 		} else {
+					// 			local_v_ddy.z = 1.0 - local_v_ddy.z;
+					// 		}
+
+					// 		local_v_ddy.xy /= local_v_ddy.z;
+					// 		local_v_ddy.xy = local_v_ddy.xy * 0.5 + 0.5;
+
+					// 		proj_uv_ddy = local_v_ddy.xy * atlas_rect.zw - proj_uv;
+					// 	}
+
+					// 	vec4 proj = textureGrad(sampler2D(directional_shadow_projector, light_projector_sampler), proj_uv + atlas_rect.xy, proj_uv_ddx, proj_uv_ddy);
+					// 	color *= proj.rgb * proj.a;
+					// } else {
+					//vec4 proj = textureLod(sampler2D(directional_shadow_projector, light_projector_sampler), proj_uv + atlas_rect.xy, 0.0);
+					vec4 proj = vec4(noise(proj_uv + atlas_rect.xy));
+					shadow *= proj.r * proj.a;
+					// }
 				}
 
 				shadow = mix(shadow, 1.0, smoothstep(directional_lights.data[i].fade_from, directional_lights.data[i].fade_to, vertex.z)); //done with negative values for performance
