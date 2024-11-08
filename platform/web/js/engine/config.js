@@ -210,7 +210,11 @@ const InternalConfig = function (initConfig) { // eslint-disable-line no-unused-
 		 * @type {?function(...*)}
 		 */
 		onPrintError: function (var_args) {
-			console.error.apply(console, Array.from(arguments)); // eslint-disable-line no-console
+			if (arguments.length >= 1 && arguments[0].contains('WARNING:')) {
+				console.warn.apply(console, Array.from(arguments)); // eslint-disable-line no-console
+			} else {
+				console.error.apply(console, Array.from(arguments)); // eslint-disable-line no-console
+			}
 		},
 	};
 
@@ -243,6 +247,7 @@ const InternalConfig = function (initConfig) { // eslint-disable-line no-unused-
 		// Module config
 		this.unloadAfterInit = parse('unloadAfterInit', this.unloadAfterInit);
 		this.onPrintError = parse('onPrintError', this.onPrintError);
+		this.onPrintWarning = parse('onPrintWarning', this.onPrintWarning);
 		this.onPrint = parse('onPrint', this.onPrint);
 		this.onProgress = parse('onProgress', this.onProgress);
 
