@@ -1224,6 +1224,8 @@ Ref<Resource> ResourceFormatLoaderBinary::load(const String &p_path, const Strin
 	Error err;
 	Ref<FileAccess> f = FileAccess::open(p_path, FileAccess::READ, &err);
 
+	// TODO: Check if this is a better location to restart than `ResourceLoader::load()`
+	// if an imported texture resource is missing. This part is used for imported audio samples and 3D scenes.
 	ERR_FAIL_COND_V_MSG(err != OK, Ref<Resource>(), vformat("Cannot open file '%s'.", p_path));
 
 	ResourceLoaderBinary loader;

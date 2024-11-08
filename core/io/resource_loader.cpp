@@ -41,6 +41,8 @@
 #include "core/string/print_string.h"
 #include "core/string/translation_server.h"
 #include "core/variant/variant_parser.h"
+#include "scene/main/scene_tree.h"
+#include "servers/audio_server.h"
 #include "servers/rendering_server.h"
 
 #ifdef DEBUG_LOAD_THREADED
@@ -303,8 +305,30 @@ Ref<Resource> ResourceLoader::_load(const String &p_path, const String &p_origin
 		return res;
 	}
 
-	ERR_FAIL_COND_V_MSG(found, Ref<Resource>(),
-			vformat("Failed loading resource: %s. Make sure resources have been imported by opening the project in the editor at least once.", p_path));
+	if (found) {
+#ifdef TOOLS_ENABLED
+		List<String> args;
+		// Preserve the display and audio server that was used for this engine run. This is required for `--headless`
+		// and other manual CLI overrides to work across restarts.
+		args.push_back("--display-driver");
+		args.push_back(DisplayServer::get_singleton()->get_name());
+		args.push_back("--audio-driver");
+		args.push_back(AudioDriver::get_singleton()->get_name());
+		// Disable header, as it's already been printed when the project was started.
+		args.push_back("--no-header");
+		args.push_back("--import-and-run");
+		OS::get_singleton()->set_restart_on_exit(true, args);
+
+		SceneTree *scene_tree = Object::cast_to<SceneTree>(OS::get_singleton()->get_main_loop());
+		ERR_PRINT(vformat("Failed loading resource: %s. Reopening the project in the editor to import resources, then restart to run the project.", p_path));
+		if (scene_tree) {
+			scene_tree->quit(EXIT_FAILURE);
+		}
+		return Ref<Resource>();
+#else
+		ERR_FAIL_V_MSG(Ref<Resource>(), vformat("Failed loading resource: %s.", p_path));
+#endif
+	}
 
 #ifdef TOOLS_ENABLED
 	Ref<FileAccess> file_check = FileAccess::create(FileAccess::ACCESS_RESOURCES);

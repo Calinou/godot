@@ -38,6 +38,8 @@ Error CompressedTexture2D::_load_data(const String &p_path, int &r_width, int &r
 	ERR_FAIL_COND_V(image.is_null(), ERR_INVALID_PARAMETER);
 
 	Ref<FileAccess> f = FileAccess::open(p_path, FileAccess::READ);
+	// TODO: Check if this is a better location to restart than `ResourceLoader::load()`
+	// if an imported texture resource is missing. This part is used for imported textures.
 	ERR_FAIL_COND_V_MSG(f.is_null(), ERR_CANT_OPEN, vformat("Unable to open file: %s.", p_path));
 
 	uint8_t header[4];
