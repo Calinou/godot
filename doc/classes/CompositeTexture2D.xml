@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CompositeTexture2D" inherits="Texture2D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+		Blends two textures together using a predetermined blend mode.
+	</brief_description>
+	<description>
+		A [CompositeTexture2D] blends two textures together using a predetermined blend mode. This operation occurs on the CPU so it's slower than blending in a shader, but unlike a shader, it can be used anywhere a [Texture2D] (and subsequently an [Image]) can be displayed. This can be paired with [NoiseTexture2D] and [GradientTexture2D] to create more advanced procedural texture or VFX effects.
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="blend_factor" type="float" setter="set_blend_factor" getter="get_blend_factor" default="0.5">
+			The blend factor to use when overlaying [member texture_overlay] on top of [member texture_base]. A blend factor of [code]0.0[/code] is fully transparent while [code]1.0[/code] is fully opaque. Only effective if [member texture_base] and [member texture_overlay] are both specified.
+		</member>
+		<member name="blend_mode" type="int" setter="set_blend_mode" getter="get_blend_mode" enum="CompositeTexture2D.BlendMode" default="0">
+			The blend factor to use when overlaying [member texture_overlay] on top of [member texture_base]. Only effective if [member texture_base] and [member texture_overlay] are both specified.
+		</member>
+		<member name="generate_mipmaps" type="int" setter="set_generate_mipmaps" getter="get_generate_mipmaps" enum="CompositeTexture2D.GenerateMipmapsMode" default="0">
+			Whether to generate mipmaps for the resulting texture. Mipmaps prevent the texture from looking grainy when viewed at a distance and can improve performance by reducing texture sampling requirements, but they increase memory usage by roughly 33%. Generating mipmaps also slows down texture generation speed, so consider using [constant GENERATE_MIPMAPS_MODE_NEVER] instead if the viewing distance is fixed (e.g. in 2D).
+		</member>
+		<member name="resource_local_to_scene" type="bool" setter="set_local_to_scene" getter="is_local_to_scene" overrides="Resource" default="false" />
+		<member name="texture_base" type="Texture2D" setter="set_texture_base" getter="get_texture_base">
+			The texture to use as a base for blending. If this is the only texture specified, then it's rendered as-is with no blending.
+		</member>
+		<member name="texture_overlay" type="Texture2D" setter="set_texture_overlay" getter="get_texture_overlay">
+			The texture to apply as an overlay to [member texture_base]. If this is the only texture specified, then it's rendered as-is with no blending.
+		</member>
+	</members>
+	<constants>
+		<constant name="BLEND_MODE_MIX" value="0" enum="BlendMode">
+			Standard mix blending (straight alpha blending).
+		</constant>
+		<constant name="BLEND_MODE_ADD" value="1" enum="BlendMode">
+			Additive blending ([member texture_base] and [member texture_overlay]'s colors are added together).
+		</constant>
+		<constant name="BLEND_MODE_SUB" value="2" enum="BlendMode">
+			Subtractive blending ([member texture_overlay]'s colors are subtracted from [member texture_base]).
+		</constant>
+		<constant name="BLEND_MODE_MUL" value="3" enum="BlendMode">
+			Multiplicative blending ([member texture_overlay]'s colors are multiplied with [member texture_base]).
+		</constant>
+		<constant name="BLEND_MODE_PREMUL_ALPHA" value="4" enum="BlendMode">
+			Premultiplied alpha blending. The blend mode is equivalent to [constant BLEND_MODE_ADD] for [member texture_overlay]'s fully transparent pixels and equivalent to [constant BLEND_MODE_MIX] for [member texture_overlay]'s fully opaque pixels. Values in between will result in a mix of both.
+		</constant>
+		<constant name="GENERATE_MIPMAPS_MODE_AUTOMATIC" value="0" enum="GenerateMipmapsMode">
+			Generate mipmaps if either [member texture_base] or [member texture_overlay] have mipmaps available.
+		</constant>
+		<constant name="GENERATE_MIPMAPS_MODE_NEVER" value="1" enum="GenerateMipmapsMode">
+			Never generate mipmaps.
+		</constant>
+		<constant name="GENERATE_MIPMAPS_MODE_ALWAYS" value="2" enum="GenerateMipmapsMode">
+			Always generate mipmaps
+		</constant>
+	</constants>
+</class>

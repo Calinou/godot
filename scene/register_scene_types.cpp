@@ -113,6 +113,7 @@
 #include "scene/resources/bone_map.h"
 #include "scene/resources/camera_attributes.h"
 #include "scene/resources/camera_texture.h"
+#include "scene/resources/composite_texture.h"
 #include "scene/resources/compositor.h"
 #include "scene/resources/compressed_texture.h"
 #include "scene/resources/curve_texture.h"
@@ -929,6 +930,7 @@ void register_scene_types() {
 	GDREGISTER_CLASS(CurveXYZTexture);
 	GDREGISTER_CLASS(GradientTexture1D);
 	GDREGISTER_CLASS(GradientTexture2D);
+	GDREGISTER_CLASS(CompositeTexture2D);
 	GDREGISTER_CLASS(AnimatedTexture);
 	GDREGISTER_CLASS(CameraTexture);
 	GDREGISTER_CLASS(ExternalTexture);
