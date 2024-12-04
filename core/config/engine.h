@@ -55,6 +55,16 @@ public:
 private:
 	friend class Main;
 
+	bool capability_allow_all_filesystem_access = true;
+	PackedStringArray capability_allow_filesystem_access_paths;
+
+	bool capability_allow_all_network_access = true;
+	PackedStringArray capability_allow_network_access_addresses;
+
+	bool capability_allow_clipboard_access = true;
+
+	bool capability_allow_process_management = true;
+
 	uint64_t frames_drawn = 0;
 	uint32_t _frame_delay = 0;
 	uint64_t _frame_ticks = 0;
@@ -103,6 +113,22 @@ private:
 
 public:
 	static Engine *get_singleton();
+
+	void set_capability_allow_all_filesystem_access(bool p_allow);
+	bool is_capability_all_filesystem_access_allowed() const;
+	void set_capability_allow_filesystem_access_paths(PackedStringArray p_paths);
+	PackedStringArray get_capability_allow_filesystem_access_paths() const;
+
+	void set_capability_allow_all_network_access(bool p_allow);
+	bool is_capability_all_network_access_allowed() const;
+	void set_capability_allow_network_access_addresses(PackedStringArray p_addresses);
+	PackedStringArray get_capability_allow_network_access_addresses() const;
+
+	void set_capability_allow_clipboard_access(bool p_allow);
+	bool is_capability_clipboard_access_allowed() const;
+
+	void set_capability_allow_process_management(bool p_allow);
+	bool is_capability_process_management_allowed() const;
 
 	virtual void set_physics_ticks_per_second(int p_ips);
 	virtual int get_physics_ticks_per_second() const;

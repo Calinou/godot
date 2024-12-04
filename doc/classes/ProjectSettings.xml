@@ -261,6 +261,30 @@
 		<member name="application/boot_splash/use_filter" type="bool" setter="" getter="" default="true">
 			If [code]true[/code], applies linear filtering when scaling the image (recommended for high-resolution artwork). If [code]false[/code], uses nearest-neighbor interpolation (recommended for pixel art).
 		</member>
+		<member name="application/capabilities/allow_all_filesystem_access" type="bool" setter="" getter="" default="true">
+			If [code]true[/code], filesystem access using [FileAccess] and [DirAccess] is allowed. If [code]false[/code], all filesystem access from scripts is blocked unless it's performed in one of the paths listed in [method Engine.get_capability_allow_filesystem_access_paths]. This also affects [code]@tool[/code] scripts running in the editor, as well as editor plugins.
+			See also [method Engine.is_capability_all_filesystem_access_allowed].
+		</member>
+		<member name="application/capabilities/allow_all_network_access" type="bool" setter="" getter="" default="true">
+			If [code]true[/code], network access using [HTTPClient], [HTTPRequest], high-level multiplayer and low-level networking classes is allowed. If [code]false[/code], all network access from scripts is blocked unless it's performed in one of the addresses listed in [method Engine.get_capability_allow_network_access_addresses]. This also affects [code]@tool[/code] scripts running in the editor, as well as editor plugins.
+			See also [method Engine.is_capability_all_network_access_allowed].
+		</member>
+		<member name="application/capabilities/allow_clipboard_access" type="bool" setter="" getter="" default="true">
+			If [code]true[/code], clipboard access using [method DisplayServer.clipboard_get], [method DisplayServer.clipboard_set] and related methods is allowed. If [code]false[/code], all clipboard access from scripts is blocked. This also affects [code]@tool[/code] scripts running in the editor, as well as editor plugins.
+			See also [method Engine.is_capability_clipboard_access_allowed].
+		</member>
+		<member name="application/capabilities/allow_filesystem_access_paths" type="PackedStringArray" setter="" getter="" default="PackedStringArray()">
+			List of absolute paths where filesystem access is allowed if [method Engine.is_capability_all_filesystem_access_allowed] is [code]false[/code].
+			See also [method Engine.get_capability_allow_filesystem_access_paths].
+		</member>
+		<member name="application/capabilities/allow_network_access_addresses" type="PackedStringArray" setter="" getter="" default="PackedStringArray()">
+			List of outbound IP addresses and domain names where network access is allowed if [method Engine.is_capability_all_network_access_allowed] is [code]false[/code].
+			See also [method Engine.get_capability_allow_network_access_addresses].
+		</member>
+		<member name="application/capabilities/allow_process_management" type="bool" setter="" getter="" default="true">
+			If [code]true[/code], process management using [method OS.execute], [method OS.create_process] and related methods is allowed. If [code]false[/code], all process management from scripts is blocked. This also affects [code]@tool[/code] scripts running in the editor, as well as editor plugins.
+			See also [method Engine.is_capability_process_management_allowed].
+		</member>
 		<member name="application/config/auto_accept_quit" type="bool" setter="" getter="" default="true">
 			If [code]true[/code], the application automatically accepts quitting requests.
 		</member>

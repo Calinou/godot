@@ -291,6 +291,10 @@ String OS::get_executable_path() const {
 }
 
 Error OS::shell_open(const String &p_uri) {
+	if (!Engine::get_singleton()->is_capability_process_management_allowed()) {
+		ERR_FAIL_V_MSG(ERR_UNAUTHORIZED, "`OS.shell_open()` is not allowed as the Allow Process Management capability is disabled in the project settings.");
+	}
+
 	if (p_uri.begins_with("res://")) {
 		WARN_PRINT("Attempting to open an URL with the \"res://\" protocol. Use `ProjectSettings.globalize_path()` to convert a Godot-specific path to a system path before opening it with `OS.shell_open()`.");
 	} else if (p_uri.begins_with("user://")) {
@@ -300,6 +304,10 @@ Error OS::shell_open(const String &p_uri) {
 }
 
 Error OS::shell_show_in_file_manager(const String &p_path, bool p_open_folder) {
+	if (!Engine::get_singleton()->is_capability_process_management_allowed()) {
+		ERR_FAIL_V_MSG(ERR_UNAUTHORIZED, "`OS.shell_show_in_file_manager()` is not allowed as the Allow Process Management capability is disabled in the project settings.");
+	}
+
 	if (p_path.begins_with("res://")) {
 		WARN_PRINT("Attempting to explore file path with the \"res://\" protocol. Use `ProjectSettings.globalize_path()` to convert a Godot-specific path to a system path before opening it with `OS.shell_show_in_file_manager()`.");
 	} else if (p_path.begins_with("user://")) {
@@ -329,6 +337,10 @@ OS::StdHandleType OS::get_stderr_type() const {
 }
 
 int OS::execute(const String &p_path, const Vector<String> &p_arguments, Array r_output, bool p_read_stderr, bool p_open_console) {
+	if (!Engine::get_singleton()->is_capability_process_management_allowed()) {
+		ERR_FAIL_V_MSG(-1, "`OS.execute()` is not allowed as the Allow Process Management capability is disabled in the project settings.");
+	}
+
 	List<String> args;
 	for (const String &arg : p_arguments) {
 		args.push_back(arg);
@@ -347,6 +359,10 @@ int OS::execute(const String &p_path, const Vector<String> &p_arguments, Array r
 }
 
 Dictionary OS::execute_with_pipe(const String &p_path, const Vector<String> &p_arguments, bool p_blocking) {
+	if (!Engine::get_singleton()->is_capability_process_management_allowed()) {
+		ERR_FAIL_V_MSG(Dictionary(), "`OS.execute_with_pipe()` is not allowed as the Allow Process Management capability is disabled in the project settings.");
+	}
+
 	List<String> args;
 	for (const String &arg : p_arguments) {
 		args.push_back(arg);
@@ -355,6 +371,10 @@ Dictionary OS::execute_with_pipe(const String &p_path, const Vector<String> &p_a
 }
 
 int OS::create_instance(const Vector<String> &p_arguments) {
+	if (!Engine::get_singleton()->is_capability_process_management_allowed()) {
+		ERR_FAIL_V_MSG(-1, "`OS.create_instance()` is not allowed as the Allow Process Management capability is disabled in the project settings.");
+	}
+
 	List<String> args;
 	for (const String &arg : p_arguments) {
 		args.push_back(arg);
@@ -368,6 +388,10 @@ int OS::create_instance(const Vector<String> &p_arguments) {
 }
 
 int OS::create_process(const String &p_path, const Vector<String> &p_arguments, bool p_open_console) {
+	if (!Engine::get_singleton()->is_capability_process_management_allowed()) {
+		ERR_FAIL_V_MSG(-1, "`OS.create_process()` is not allowed as the Allow Process Management capability is disabled in the project settings.");
+	}
+
 	List<String> args;
 	for (const String &arg : p_arguments) {
 		args.push_back(arg);
@@ -381,6 +405,10 @@ int OS::create_process(const String &p_path, const Vector<String> &p_arguments, 
 }
 
 Error OS::kill(int p_pid) {
+	if (!Engine::get_singleton()->is_capability_process_management_allowed()) {
+		ERR_FAIL_V_MSG(ERR_UNAUTHORIZED, "`OS.kill()` is not allowed as the Allow Process Management capability is disabled in the project settings.");
+	}
+
 	return ::OS::get_singleton()->kill(p_pid);
 }
 
@@ -449,6 +477,10 @@ Vector<String> OS::get_cmdline_user_args() {
 }
 
 void OS::set_restart_on_exit(bool p_restart, const Vector<String> &p_restart_arguments) {
+	if (!Engine::get_singleton()->is_capability_process_management_allowed()) {
+		ERR_FAIL_MSG("`OS.set_restart_on_exit()` is not allowed as the Allow Process Management capability is disabled in the project settings.");
+	}
+
 	List<String> args_list;
 	for (const String &restart_argument : p_restart_arguments) {
 		args_list.push_back(restart_argument);
@@ -1747,6 +1779,54 @@ void ClassDB::_bind_methods() {
 
 ////// Engine //////
 
+void Engine::set_capability_allow_all_filesystem_access(bool p_allow) {
+	::Engine::get_singleton()->set_capability_allow_all_filesystem_access(p_allow);
+}
+
+bool Engine::is_capability_all_filesystem_access_allowed() const {
+	return ::Engine::get_singleton()->is_capability_all_filesystem_access_allowed();
+}
+
+void Engine::set_capability_allow_filesystem_access_paths(PackedStringArray p_paths) {
+	::Engine::get_singleton()->set_capability_allow_filesystem_access_paths(p_paths);
+}
+
+PackedStringArray Engine::get_capability_allow_filesystem_access_paths() const {
+	return ::Engine::get_singleton()->get_capability_allow_filesystem_access_paths();
+}
+
+void Engine::set_capability_allow_all_network_access(bool p_allow) {
+	::Engine::get_singleton()->set_capability_allow_all_network_access(p_allow);
+}
+
+bool Engine::is_capability_all_network_access_allowed() const {
+	return ::Engine::get_singleton()->is_capability_all_network_access_allowed();
+}
+
+void Engine::set_capability_allow_network_access_addresses(PackedStringArray p_addresses) {
+	::Engine::get_singleton()->set_capability_allow_network_access_addresses(p_addresses);
+}
+
+PackedStringArray Engine::get_capability_allow_network_access_addresses() const {
+	return ::Engine::get_singleton()->get_capability_allow_network_access_addresses();
+}
+
+void Engine::set_capability_allow_clipboard_access(bool p_allow) {
+	::Engine::get_singleton()->set_capability_allow_clipboard_access(p_allow);
+}
+
+bool Engine::is_capability_clipboard_access_allowed() const {
+	return ::Engine::get_singleton()->is_capability_clipboard_access_allowed();
+}
+
+void Engine::set_capability_allow_process_management(bool p_allow) {
+	::Engine::get_singleton()->set_capability_allow_process_management(p_allow);
+}
+
+bool Engine::is_capability_process_management_allowed() const {
+	return ::Engine::get_singleton()->is_capability_process_management_allowed();
+}
+
 void Engine::set_physics_ticks_per_second(int p_ips) {
 	::Engine::get_singleton()->set_physics_ticks_per_second(p_ips);
 }
@@ -1936,6 +2016,14 @@ void Engine::get_argument_options(const StringName &p_function, int p_idx, List<
 #endif
 
 void Engine::_bind_methods() {
+	// Only getter methods are bound for capabilities, as changing them at runtime is intentionally not supported
+	ClassDB::bind_method(D_METHOD("is_capability_all_filesystem_access_allowed"), &Engine::is_capability_all_filesystem_access_allowed);
+	ClassDB::bind_method(D_METHOD("get_capability_allow_filesystem_access_paths"), &Engine::get_capability_allow_filesystem_access_paths);
+	ClassDB::bind_method(D_METHOD("is_capability_all_network_access_allowed"), &Engine::is_capability_all_network_access_allowed);
+	ClassDB::bind_method(D_METHOD("get_capability_allow_network_access_addresses"), &Engine::get_capability_allow_network_access_addresses);
+	ClassDB::bind_method(D_METHOD("is_capability_clipboard_access_allowed"), &Engine::is_capability_clipboard_access_allowed);
+	ClassDB::bind_method(D_METHOD("is_capability_process_management_allowed"), &Engine::is_capability_process_management_allowed);
+
 	ClassDB::bind_method(D_METHOD("set_physics_ticks_per_second", "physics_ticks_per_second"), &Engine::set_physics_ticks_per_second);
 	ClassDB::bind_method(D_METHOD("get_physics_ticks_per_second"), &Engine::get_physics_ticks_per_second);
 	ClassDB::bind_method(D_METHOD("set_max_physics_steps_per_frame", "max_physics_steps"), &Engine::set_max_physics_steps_per_frame);

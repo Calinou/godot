@@ -536,6 +536,23 @@ protected:
 
 public:
 	static Engine *get_singleton() { return singleton; }
+
+	void set_capability_allow_all_filesystem_access(bool p_allow);
+	bool is_capability_all_filesystem_access_allowed() const;
+	void set_capability_allow_filesystem_access_paths(PackedStringArray p_paths);
+	PackedStringArray get_capability_allow_filesystem_access_paths() const;
+
+	void set_capability_allow_all_network_access(bool p_allow);
+	bool is_capability_all_network_access_allowed() const;
+	void set_capability_allow_network_access_addresses(PackedStringArray p_addresses);
+	PackedStringArray get_capability_allow_network_access_addresses() const;
+
+	void set_capability_allow_clipboard_access(bool p_allow);
+	bool is_capability_clipboard_access_allowed() const;
+
+	void set_capability_allow_process_management(bool p_allow);
+	bool is_capability_process_management_allowed() const;
+
 	void set_physics_ticks_per_second(int p_ips);
 	int get_physics_ticks_per_second() const;
 

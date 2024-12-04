@@ -38,6 +38,54 @@
 #include "core/version.h"
 #include "servers/rendering/rendering_device.h"
 
+void Engine::set_capability_allow_all_filesystem_access(bool p_allow) {
+	capability_allow_all_filesystem_access = p_allow;
+}
+
+bool Engine::is_capability_all_filesystem_access_allowed() const {
+	return capability_allow_all_filesystem_access;
+}
+
+void Engine::set_capability_allow_filesystem_access_paths(PackedStringArray p_paths) {
+	capability_allow_filesystem_access_paths = p_paths;
+}
+
+PackedStringArray Engine::get_capability_allow_filesystem_access_paths() const {
+	return capability_allow_filesystem_access_paths;
+}
+
+void Engine::set_capability_allow_all_network_access(bool p_allow) {
+	capability_allow_all_network_access = p_allow;
+}
+
+bool Engine::is_capability_all_network_access_allowed() const {
+	return capability_allow_all_network_access;
+}
+
+void Engine::set_capability_allow_network_access_addresses(PackedStringArray p_addresses) {
+	capability_allow_network_access_addresses = p_addresses;
+}
+
+PackedStringArray Engine::get_capability_allow_network_access_addresses() const {
+	return capability_allow_network_access_addresses;
+}
+
+void Engine::set_capability_allow_clipboard_access(bool p_allow) {
+	capability_allow_clipboard_access = p_allow;
+}
+
+bool Engine::is_capability_clipboard_access_allowed() const {
+	return capability_allow_clipboard_access;
+}
+
+void Engine::set_capability_allow_process_management(bool p_allow) {
+	capability_allow_process_management = p_allow;
+}
+
+bool Engine::is_capability_process_management_allowed() const {
+	return capability_allow_process_management;
+}
+
 void Engine::set_physics_ticks_per_second(int p_ips) {
 	ERR_FAIL_COND_MSG(p_ips <= 0, "Engine iterations per second must be greater than 0.");
 	ips = p_ips;

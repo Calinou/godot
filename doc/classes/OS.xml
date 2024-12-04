@@ -42,6 +42,7 @@
 				If the process is successfully created, this method returns the new process' ID, which you can use to monitor the process (and potentially terminate it with [method kill]). If the process cannot be created, this method returns [code]-1[/code].
 				See [method create_process] if you wish to run a different process.
 				[b]Note:[/b] This method is implemented on Android, Linux, macOS and Windows.
+				[b]Note:[/b] This method requires [member ProjectSettings.application/capabilities/allow_process_management] to be [code]true[/code]. Otherwise, its execution from the scripting API is prevented.
 			</description>
 		</method>
 		<method name="create_process">
@@ -65,6 +66,7 @@
 				See [method execute] if you wish to run an external command and retrieve the results.
 				[b]Note:[/b] This method is implemented on Android, Linux, macOS, and Windows.
 				[b]Note:[/b] On macOS, sandboxed applications are limited to run only embedded helper executables, specified during export or system .app bundle, system .app bundles will ignore arguments.
+				[b]Note:[/b] This method requires [member ProjectSettings.application/capabilities/allow_process_management] to be [code]true[/code]. Otherwise, its execution from the scripting API is prevented.
 			</description>
 		</method>
 		<method name="delay_msec" qualifiers="const">
@@ -126,6 +128,7 @@
 				[b]Note:[/b] To execute a Unix shell built-in command, specify shell executable name in [param path], [code]-c[/code] as the first argument, and the desired command as the second argument.
 				[b]Note:[/b] On macOS, sandboxed applications are limited to run only embedded helper executables, specified during export.
 				[b]Note:[/b] On Android, system commands such as [code]dumpsys[/code] can only be run on a rooted device.
+				[b]Note:[/b] This method requires [member ProjectSettings.application/capabilities/allow_process_management] to be [code]true[/code]. Otherwise, its execution from the scripting API is prevented.
 			</description>
 		</method>
 		<method name="execute_with_pipe">
@@ -145,6 +148,7 @@
 				[b]Note:[/b] To execute a PowerShell built-in command, specify [code]powershell.exe[/code] in [param path], [code]-Command[/code] as the first argument, and the desired command as the second argument.
 				[b]Note:[/b] To execute a Unix shell built-in command, specify shell executable name in [param path], [code]-c[/code] as the first argument, and the desired command as the second argument.
 				[b]Note:[/b] On macOS, sandboxed applications are limited to run only embedded helper executables, specified during export or system .app bundle, system .app bundles will ignore arguments.
+				[b]Note:[/b] This method requires [member ProjectSettings.application/capabilities/allow_process_management] to be [code]true[/code]. Otherwise, its execution from the scripting API is prevented.
 			</description>
 		</method>
 		<method name="find_keycode_from_string" qualifiers="const">
@@ -677,6 +681,7 @@
 				Kill (terminate) the process identified by the given process ID ([param pid]), such as the ID returned by [method execute] in non-blocking mode. See also [method crash].
 				[b]Note:[/b] This method can also be used to kill processes that were not spawned by the engine.
 				[b]Note:[/b] This method is implemented on Android, iOS, Linux, macOS and Windows.
+				[b]Note:[/b] This method requires [member ProjectSettings.application/capabilities/allow_process_management] to be [code]true[/code]. Otherwise, its execution from the scripting API is prevented.
 			</description>
 		</method>
 		<method name="move_to_trash" qualifiers="const">
@@ -771,6 +776,7 @@
 				This method can be used to apply setting changes that require a restart. See also [method is_restart_on_exit_set] and [method get_restart_on_exit_arguments].
 				[b]Note:[/b] This method is only effective on desktop platforms, and only when the project isn't started from the editor. It will have no effect on mobile and Web platforms, or when the project is started from the editor.
 				[b]Note:[/b] If the project process crashes or is [i]killed[/i] by the user (by sending [code]SIGKILL[/code] instead of the usual [code]SIGTERM[/code]), the project won't restart automatically.
+				[b]Note:[/b] This method requires [member ProjectSettings.application/capabilities/allow_process_management] to be [code]true[/code]. Otherwise, its execution from the scripting API is prevented.
 			</description>
 		</method>
 		<method name="set_thread_name">
@@ -799,6 +805,7 @@
 				Use [method ProjectSettings.globalize_path] to convert a [code]res://[/code] or [code]user://[/code] project path into a system path for use with this method.
 				[b]Note:[/b] Use [method String.uri_encode] to encode characters within URLs in a URL-safe, portable way. This is especially required for line breaks. Otherwise, [method shell_open] may not work correctly in a project exported to the Web platform.
 				[b]Note:[/b] This method is implemented on Android, iOS, Web, Linux, macOS and Windows.
+				[b]Note:[/b] This method requires [member ProjectSettings.application/capabilities/allow_process_management] to be [code]true[/code]. Otherwise, its execution from the scripting API is prevented with the method returning [constant ERR_UNAUTHORIZED].
 			</description>
 		</method>
 		<method name="shell_show_in_file_manager">
@@ -810,6 +817,7 @@
 				If [param open_folder] is [code]true[/code] and [param file_or_dir_path] is a valid directory path, the OS will open the file manager and navigate to the target folder without selecting anything.
 				Use [method ProjectSettings.globalize_path] to convert a [code]res://[/code] or [code]user://[/code] project path into a system path to use with this method.
 				[b]Note:[/b] This method is currently only implemented on Windows and macOS. On other platforms, it will fallback to [method shell_open] with a directory path of [param file_or_dir_path] prefixed with [code]file://[/code].
+				[b]Note:[/b] This method requires [member ProjectSettings.application/capabilities/allow_process_management] to be [code]true[/code]. Otherwise, its execution from the scripting API is prevented with the method returning [constant ERR_UNAUTHORIZED].
 			</description>
 		</method>
 		<method name="unset_environment" qualifiers="const">

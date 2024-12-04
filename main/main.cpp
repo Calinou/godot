@@ -1902,6 +1902,13 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 
 	OS::get_singleton()->set_cmdline(execpath, main_args, user_args);
 
+	Engine::get_singleton()->set_capability_allow_all_filesystem_access(GLOBAL_DEF("application/capabilities/allow_all_filesystem_access", true));
+	Engine::get_singleton()->set_capability_allow_filesystem_access_paths(GLOBAL_DEF("application/capabilities/allow_filesystem_access_paths", PackedStringArray()));
+	Engine::get_singleton()->set_capability_allow_all_network_access(GLOBAL_DEF("application/capabilities/allow_all_network_access", true));
+	Engine::get_singleton()->set_capability_allow_network_access_addresses(GLOBAL_DEF("application/capabilities/allow_network_access_addresses", PackedStringArray()));
+	Engine::get_singleton()->set_capability_allow_clipboard_access(GLOBAL_DEF("application/capabilities/allow_clipboard_access", true));
+	Engine::get_singleton()->set_capability_allow_process_management(GLOBAL_DEF("application/capabilities/allow_process_management", true));
+
 	Engine::get_singleton()->set_physics_ticks_per_second(GLOBAL_DEF_BASIC(PropertyInfo(Variant::INT, "physics/common/physics_ticks_per_second", PROPERTY_HINT_RANGE, "1,1000,1"), 60));
 	Engine::get_singleton()->set_max_physics_steps_per_frame(GLOBAL_DEF_BASIC(PropertyInfo(Variant::INT, "physics/common/max_physics_steps_per_frame", PROPERTY_HINT_RANGE, "1,100,1"), 8));
 	Engine::get_singleton()->set_physics_jitter_fix(GLOBAL_DEF("physics/common/physics_jitter_fix", 0.5));
