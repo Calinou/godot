@@ -17,12 +17,6 @@
 				[b]Note:[/b] This method is implemented on macOS, Linux (X11/Wayland), and Windows.
 			</description>
 		</method>
-		<method name="clipboard_get" qualifiers="const">
-			<return type="String" />
-			<description>
-				Returns the user's clipboard as a string if possible.
-			</description>
-		</method>
 		<method name="clipboard_get_image" qualifiers="const">
 			<return type="Image" />
 			<description>
@@ -47,13 +41,6 @@
 			<return type="bool" />
 			<description>
 				Returns [code]true[/code] if there is an image content on the user's clipboard.
-			</description>
-		</method>
-		<method name="clipboard_set">
-			<return type="void" />
-			<param index="0" name="clipboard" type="String" />
-			<description>
-				Sets the user's clipboard content to the given string.
 			</description>
 		</method>
 		<method name="clipboard_set_primary">

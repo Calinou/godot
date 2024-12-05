@@ -100,6 +100,7 @@ static core_bind::Engine *_engine = nullptr;
 static core_bind::special::ClassDB *_classdb = nullptr;
 static core_bind::Marshalls *_marshalls = nullptr;
 static core_bind::EngineDebugger *_engine_debugger = nullptr;
+static core_bind::DisplayServer *_display_server = nullptr;
 
 static IP *ip = nullptr;
 static Time *_time = nullptr;
@@ -293,6 +294,7 @@ void register_core_types() {
 	_classdb = memnew(core_bind::special::ClassDB);
 	_marshalls = memnew(core_bind::Marshalls);
 	_engine_debugger = memnew(core_bind::EngineDebugger);
+	_display_server = memnew(core_bind::DisplayServer);
 
 	GDREGISTER_NATIVE_STRUCT(ObjectID, "uint64_t id = 0");
 	GDREGISTER_NATIVE_STRUCT(AudioFrame, "float left;float right");
@@ -342,6 +344,7 @@ void register_core_singletons() {
 	GDREGISTER_CLASS(InputMap);
 	GDREGISTER_CLASS(Expression);
 	GDREGISTER_CLASS(core_bind::EngineDebugger);
+	GDREGISTER_CLASS(core_bind::DisplayServer);
 
 	Engine::get_singleton()->add_singleton(Engine::Singleton("IP", IP::get_singleton(), "IP"));
 	Engine::get_singleton()->add_singleton(Engine::Singleton("Geometry2D", core_bind::Geometry2D::get_singleton()));
@@ -354,6 +357,7 @@ void register_core_singletons() {
 	Engine::get_singleton()->add_singleton(Engine::Singleton("Input", Input::get_singleton()));
 	Engine::get_singleton()->add_singleton(Engine::Singleton("InputMap", InputMap::get_singleton()));
 	Engine::get_singleton()->add_singleton(Engine::Singleton("EngineDebugger", core_bind::EngineDebugger::get_singleton()));
+	Engine::get_singleton()->add_singleton(Engine::Singleton("DisplayServer", core_bind::DisplayServer::get_singleton()));
 	Engine::get_singleton()->add_singleton(Engine::Singleton("GDExtensionManager", GDExtensionManager::get_singleton()));
 	Engine::get_singleton()->add_singleton(Engine::Singleton("ResourceUID", ResourceUID::get_singleton()));
 	Engine::get_singleton()->add_singleton(Engine::Singleton("WorkerThreadPool", worker_thread_pool));
@@ -391,6 +395,7 @@ void unregister_core_types() {
 
 	memdelete(worker_thread_pool);
 
+	memdelete(_display_server);
 	memdelete(_engine_debugger);
 	memdelete(_marshalls);
 	memdelete(_classdb);

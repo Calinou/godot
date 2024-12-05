@@ -668,6 +668,23 @@ public:
 	~EngineDebugger();
 };
 
+class DisplayServer : public Object {
+	GDCLASS(DisplayServer, Object);
+
+public:
+	static DisplayServer *get_singleton() { return singleton; }
+
+protected:
+	static void _bind_methods();
+	static DisplayServer *singleton;
+
+public:
+	void clipboard_set(const String &p_text);
+	String clipboard_get() const;
+
+	DisplayServer() { singleton = this; }
+};
+
 } // namespace core_bind
 
 VARIANT_ENUM_CAST(core_bind::ResourceLoader::ThreadLoadStatus);

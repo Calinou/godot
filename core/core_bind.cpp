@@ -43,6 +43,7 @@
 #include "core/os/keyboard.h"
 #include "core/os/thread_safe.h"
 #include "core/variant/typed_array.h"
+#include "servers/display_server.h"
 
 namespace core_bind {
 
@@ -2269,5 +2270,21 @@ void EngineDebugger::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("remove_breakpoint", "line", "source"), &EngineDebugger::remove_breakpoint);
 	ClassDB::bind_method(D_METHOD("clear_breakpoints"), &EngineDebugger::clear_breakpoints);
 }
+
+// DisplayServer
+
+void DisplayServer::clipboard_set(const String &p_text) {
+	::DisplayServer::get_singleton()->clipboard_set(p_text);
+}
+
+String DisplayServer::clipboard_get() const {
+	return ::DisplayServer::get_singleton()->clipboard_get();
+}
+
+void DisplayServer::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("clipboard_set", "text"), &DisplayServer::clipboard_set);
+	ClassDB::bind_method(D_METHOD("clipboard_get"), &DisplayServer::clipboard_get);
+}
+
 
 } // namespace core_bind
