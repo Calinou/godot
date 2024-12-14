@@ -2587,16 +2587,17 @@ void Node3DEditorViewport::_nav_orbit(Ref<InputEventWithModifiers> p_event, cons
 
 	const real_t degrees_per_pixel = EDITOR_GET("editors/3d/navigation_feel/orbit_sensitivity");
 	const real_t radians_per_pixel = Math::deg_to_rad(degrees_per_pixel);
+	const float upside_down_multiplier = (cursor.x_rot < -Math_PI * 0.5 || cursor.x_rot > Math_PI * 0.5) ? -1.0 : 1.0;
 	const bool invert_y_axis = EDITOR_GET("editors/3d/navigation/invert_y_axis");
 	const bool invert_x_axis = EDITOR_GET("editors/3d/navigation/invert_x_axis");
 
 	if (invert_y_axis) {
-		cursor.x_rot -= p_relative.y * radians_per_pixel;
+		cursor.x_rot -= p_relative.y * radians_per_pixel * upside_down_multiplier;
 	} else {
-		cursor.x_rot += p_relative.y * radians_per_pixel;
+		cursor.x_rot += p_relative.y * radians_per_pixel * upside_down_multiplier;
 	}
-	// Clamp the Y rotation to roughly -90..90 degrees so the user can't look upside-down and end up disoriented.
-	cursor.x_rot = CLAMP(cursor.x_rot, -1.57, 1.57);
+	// Ensure the pitch angle doesn't grow out of control to avoid precision issues.
+	cursor.x_rot = Math::wrapf(cursor.x_rot, -Math_PI, Math_PI);
 
 	if (invert_x_axis) {
 		cursor.y_rot -= p_relative.x * radians_per_pixel;
@@ -2620,18 +2621,19 @@ void Node3DEditorViewport::_nav_look(Ref<InputEventWithModifiers> p_event, const
 	// Scale mouse sensitivity with camera FOV scale when zoomed in to make it easier to point at things.
 	const real_t degrees_per_pixel = real_t(EDITOR_GET("editors/3d/freelook/freelook_sensitivity")) * MIN(1.0, cursor.fov_scale);
 	const real_t radians_per_pixel = Math::deg_to_rad(degrees_per_pixel);
+	const float upside_down_multiplier = (cursor.x_rot < -Math_PI * 0.5 || cursor.x_rot > Math_PI * 0.5) ? -1.0 : 1.0;
 	const bool invert_y_axis = EDITOR_GET("editors/3d/navigation/invert_y_axis");
 
 	// Note: do NOT assume the camera has the "current" transform, because it is interpolated and may have "lag".
 	const Transform3D prev_camera_transform = to_camera_transform(cursor);
 
 	if (invert_y_axis) {
-		cursor.x_rot -= p_relative.y * radians_per_pixel;
+		cursor.x_rot -= p_relative.y * radians_per_pixel * upside_down_multiplier;
 	} else {
-		cursor.x_rot += p_relative.y * radians_per_pixel;
+		cursor.x_rot += p_relative.y * radians_per_pixel * upside_down_multiplier;
 	}
-	// Clamp the Y rotation to roughly -90..90 degrees so the user can't look upside-down and end up disoriented.
-	cursor.x_rot = CLAMP(cursor.x_rot, -1.57, 1.57);
+	// Ensure the pitch angle doesn't grow out of control to avoid precision issues.
+	cursor.x_rot = Math::wrapf(cursor.x_rot, -PI, PI);
 
 	cursor.y_rot += p_relative.x * radians_per_pixel;
 
