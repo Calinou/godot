@@ -1,0 +1,143 @@
+[gd_scene load_steps=11 format=3 uid="uid://ccjqi2bekc6pa"]
+
+[ext_resource type="Texture2D" uid="uid://yyd65tv82noi" path="res://textures/checkerboard_blurred.png" id="1_2j3xl"]
+[ext_resource type="Texture2D" uid="uid://blxoribjusn2q" path="res://textures/checkerboard_blurred_normal.png" id="2_by2fv"]
+
+[sub_resource type="Environment" id="Environment_pafnt"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_onewf"]
+size = Vector3(2, 2, 128)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ro363"]
+albedo_texture = ExtResource("1_2j3xl")
+normal_enabled = true
+normal_texture = ExtResource("2_by2fv")
+heightmap_enabled = true
+heightmap_deep_parallax = true
+heightmap_min_layers = 64
+heightmap_max_layers = 64
+heightmap_texture = ExtResource("1_2j3xl")
+uv1_scale = Vector3(3, 128, 1)
+texture_filter = 0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dqb1r"]
+albedo_texture = ExtResource("1_2j3xl")
+normal_enabled = true
+normal_texture = ExtResource("2_by2fv")
+heightmap_enabled = true
+heightmap_deep_parallax = true
+heightmap_min_layers = 64
+heightmap_max_layers = 64
+heightmap_texture = ExtResource("1_2j3xl")
+uv1_scale = Vector3(3, 128, 1)
+texture_filter = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dw7ye"]
+albedo_texture = ExtResource("1_2j3xl")
+normal_enabled = true
+normal_texture = ExtResource("2_by2fv")
+heightmap_enabled = true
+heightmap_deep_parallax = true
+heightmap_min_layers = 64
+heightmap_max_layers = 64
+heightmap_texture = ExtResource("1_2j3xl")
+uv1_scale = Vector3(3, 128, 1)
+texture_filter = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5he1t"]
+albedo_texture = ExtResource("1_2j3xl")
+normal_enabled = true
+normal_texture = ExtResource("2_by2fv")
+heightmap_enabled = true
+heightmap_deep_parallax = true
+heightmap_min_layers = 64
+heightmap_max_layers = 64
+heightmap_texture = ExtResource("1_2j3xl")
+uv1_scale = Vector3(3, 128, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_l6t66"]
+albedo_texture = ExtResource("1_2j3xl")
+normal_enabled = true
+normal_texture = ExtResource("2_by2fv")
+heightmap_enabled = true
+heightmap_deep_parallax = true
+heightmap_min_layers = 64
+heightmap_max_layers = 64
+heightmap_texture = ExtResource("1_2j3xl")
+uv1_scale = Vector3(3, 128, 1)
+texture_filter = 4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_x53p1"]
+albedo_texture = ExtResource("1_2j3xl")
+normal_enabled = true
+normal_texture = ExtResource("2_by2fv")
+heightmap_enabled = true
+heightmap_deep_parallax = true
+heightmap_min_layers = 64
+heightmap_max_layers = 64
+heightmap_texture = ExtResource("1_2j3xl")
+uv1_scale = Vector3(3, 128, 1)
+texture_filter = 5
+
+[node name="TestStandardMaterial3DSampling" type="WorldEnvironment"]
+environment = SubResource("Environment_pafnt")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+visible = false
+
+[node name="Nearest" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 0)
+mesh = SubResource("BoxMesh_onewf")
+surface_material_override/0 = SubResource("StandardMaterial3D_ro363")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Nearest"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 8)
+omni_range = 1.3
+
+[node name="Linear" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 0)
+mesh = SubResource("BoxMesh_onewf")
+surface_material_override/0 = SubResource("StandardMaterial3D_dqb1r")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Linear"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 8)
+omni_range = 1.3
+
+[node name="NearestMipmaps" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_onewf")
+surface_material_override/0 = SubResource("StandardMaterial3D_dw7ye")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="NearestMipmaps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 8)
+omni_range = 1.3
+
+[node name="LinearMipmaps" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+mesh = SubResource("BoxMesh_onewf")
+surface_material_override/0 = SubResource("StandardMaterial3D_5he1t")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="LinearMipmaps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 8)
+omni_range = 1.3
+
+[node name="NearestMipmapsAnisotropic" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+mesh = SubResource("BoxMesh_onewf")
+surface_material_override/0 = SubResource("StandardMaterial3D_l6t66")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="NearestMipmapsAnisotropic"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 8)
+omni_range = 1.3
+
+[node name="LinearMipmapsAnisotropic" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 0)
+mesh = SubResource("BoxMesh_onewf")
+surface_material_override/0 = SubResource("StandardMaterial3D_x53p1")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="LinearMipmapsAnisotropic"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 8)
+omni_range = 1.3
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 1, 1.5, 10)
+fov = 50.0

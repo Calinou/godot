@@ -1,0 +1,88 @@
+[gd_scene load_steps=4 format=3 uid="uid://cwf27lervtbn1"]
+
+[sub_resource type="Environment" id="Environment_yquj7"]
+
+[sub_resource type="PlaneMesh" id="1"]
+size = Vector2(512, 512)
+subdivide_width = 2
+subdivide_depth = 2
+
+[sub_resource type="CylinderMesh" id="2"]
+top_radius = 1.0
+bottom_radius = 1.0
+
+[node name="TestOmniLight" type="WorldEnvironment"]
+environment = SubResource("Environment_yquj7")
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+mesh = SubResource("1")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(0.155609, -0.436868, 0.885964, 0, 0.896889, 0.442256, -0.987819, -0.0688188, 0.139564, 1.60827, 2.09092, 1.61076)
+light_color = Color(1, 0.843137, 0, 1)
+light_cull_mask = 4294967293
+shadow_enabled = true
+shadow_blur = 2.0
+
+[node name="OmniLight3D2" type="OmniLight3D" parent="."]
+transform = Transform3D(-0.794923, -0.341441, 0.501513, 0, 0.826611, 0.562774, -0.606711, 0.447362, -0.657091, 1.61535, 3.08676, -2.78167)
+light_color = Color(1, 0, 0, 1)
+light_cull_mask = 4294967291
+shadow_enabled = true
+omni_attenuation = 0.0145786
+
+[node name="OmniLight3D3" type="OmniLight3D" parent="."]
+transform = Transform3D(-0.945791, -0.153712, 0.286098, 0, 0.880908, 0.473287, -0.324776, 0.447631, -0.833155, -4.16995, 0.903801, -1.52751)
+light_color = Color(0, 0.694118, 1, 1)
+light_cull_mask = 4294967287
+shadow_enabled = true
+
+[node name="OmniLight3D4" type="OmniLight3D" parent="."]
+transform = Transform3D(0.782043, 0.112016, -0.613075, 0, 0.983715, 0.179736, 0.623225, -0.140561, 0.769307, -5.46279, 2.7567, 5.22383)
+light_energy = 0.25
+light_cull_mask = 4294967279
+omni_range = 24.0
+
+[node name="OmniLight3DAttenuationZero" type="OmniLight3D" parent="."]
+transform = Transform3D(0.160575, 0.380064, -0.910915, 0, 0.922891, 0.385061, 0.987024, -0.0618312, 0.148193, -1.29404, 0.298127, 1.24594)
+light_color = Color(0.145098, 1, 0, 1)
+light_energy = 0.25
+light_cull_mask = 4294967263
+omni_range = 1.0
+omni_attenuation = 0.0
+
+[node name="OmniLight3DAttenuationNegative" type="OmniLight3D" parent="."]
+transform = Transform3D(0.782043, 0.112016, -0.613076, 0, 0.983715, 0.179736, 0.623225, -0.140561, 0.769307, 2.18999, 1.13885, -8.23295)
+light_color = Color(0.145098, 0.415686, 0, 1)
+light_energy = 0.01
+light_cull_mask = 4294967231
+omni_attenuation = -6.49805
+
+[node name="OmniLight3DNegative" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.11124, 1, 3.39555)
+light_color = Color(1, 0, 0, 1)
+light_negative = true
+light_cull_mask = 4294967167
+omni_range = 1.5
+omni_attenuation = 6.27667
+
+[node name="CylinderLayer2" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.354764, -0.934956, 0, 0.934956, -0.354764, 0, 0, 0, 1, 0.0763878, -5.96046e-08, 1.77622)
+layers = 2
+mesh = SubResource("2")
+
+[node name="CylinderLayer3" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -2.92049, -4.80405e-07, -2.17257)
+layers = 4
+mesh = SubResource("2")
+
+[node name="CylinderNoLayers" type="MeshInstance3D" parent="."]
+transform = Transform3D(-3.78552e-08, -0.866025, 0.5, 1, -4.37114e-08, 0, 2.18557e-08, 0.5, 0.866025, 1.90883, -5.96046e-08, -0.938239)
+layers = 0
+mesh = SubResource("2")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.782043, 0.112016, -0.613076, 0, 0.983715, 0.179736, 0.623225, -0.140561, 0.769307, -4.23664, 2.39723, 3.68522)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+visible = false

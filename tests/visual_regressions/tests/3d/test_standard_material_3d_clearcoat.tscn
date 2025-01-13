@@ -1,0 +1,42 @@
+[gd_scene load_steps=6 format=3 uid="uid://hoeojn6l7v68"]
+
+[sub_resource type="Environment" id="Environment_qs0ul"]
+
+[sub_resource type="SphereMesh" id="1"]
+radius = 1.0
+height = 2.0
+
+[sub_resource type="StandardMaterial3D" id="2"]
+albedo_color = Color(0.2, 0, 0.00392157, 1)
+clearcoat_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="3"]
+albedo_color = Color(0.2, 0, 0.00392157, 1)
+clearcoat_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="4"]
+albedo_color = Color(0.2, 0, 0.00392157, 1)
+clearcoat_enabled = true
+
+[node name="TestStandardMaterial3DClearcoat" type="WorldEnvironment"]
+environment = SubResource("Environment_qs0ul")
+
+[node name="SphereClearcoatGloss0" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+mesh = SubResource("1")
+surface_material_override/0 = SubResource("2")
+
+[node name="SphereClearcoatGloss0_5" type="MeshInstance3D" parent="."]
+mesh = SubResource("1")
+surface_material_override/0 = SubResource("3")
+
+[node name="SphereClearcoatGloss1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -1)
+mesh = SubResource("1")
+surface_material_override/0 = SubResource("4")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.488926, 0.587447, -0.644871, 0, 0.739256, 0.673425, 0.872325, -0.329255, 0.361441, 1.68294, 1.9177, 3.0806)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.828588, -0.0886391, 0.552797, 0.0304407, 0.993059, 0.113606, -0.55903, -0.0773052, 0.825536, 1.90113, 0.386591, 2.79496)

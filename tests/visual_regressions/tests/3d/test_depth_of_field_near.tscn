@@ -1,0 +1,46 @@
+[gd_scene load_steps=5 format=3 uid="uid://do06idbof5x7h"]
+
+[sub_resource type="Environment" id="Environment_cqdwv"]
+
+[sub_resource type="PlaneMesh" id="1"]
+size = Vector2(512, 512)
+subdivide_width = 2
+subdivide_depth = 2
+
+[sub_resource type="BoxMesh" id="2"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_264ca"]
+dof_blur_near_enabled = true
+dof_blur_near_distance = 5.0
+dof_blur_amount = 0.3
+
+[node name="TestDepthOfFieldNear" type="WorldEnvironment"]
+environment = SubResource("Environment_cqdwv")
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+mesh = SubResource("1")
+
+[node name="BoxNear" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0)
+mesh = SubResource("2")
+
+[node name="BoxMedium" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.39362, 1, 0.628183)
+mesh = SubResource("2")
+
+[node name="BoxFar" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1, -6)
+mesh = SubResource("2")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.856737, -0.0668544, 0.511403, 0, 0.991563, 0.129625, -0.515754, -0.111054, 0.849508, 0.918237, 1.78361, 3.8298)
+attributes = SubResource("CameraAttributesPractical_264ca")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.50645, -0.0878547, 0.857782, 0, 0.994796, 0.101888, -0.862269, -0.0516011, 0.503815, -5.08176, 1.78361, 3.8298)
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4255, 1.73704, 1.01011)
+light_color = Color(6, 4, 1, 1)
+omni_range = 0.1

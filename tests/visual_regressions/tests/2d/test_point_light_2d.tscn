@@ -1,0 +1,100 @@
+[gd_scene load_steps=5 format=3 uid="uid://5b6msmqtv1sc"]
+
+[ext_resource type="Texture2D" uid="uid://db8ilxuflejr4" path="res://textures/checkerboard_muted.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://c3cbwvc4nfv5d" path="res://textures/checkerboard_light.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://cfy8t7va2jmua" path="res://textures/godot_icon.png" id="3_p4ac0"]
+
+[sub_resource type="OccluderPolygon2D" id="1"]
+polygon = PackedVector2Array(-20, -109.6, -20, -106.5, -10.8, -89, 10.3, -89, 21.8, -111, 26.3, -111, 53, -102.5, 53, -101.5, 57, -100.6, 57, -73, 57.7, -73, 74.6, -59.1, 98, -72.4, 98, -68.7, 113, -51.8, 113, -49.5, 119.4, -38, 116.1, -38, 104, -20.3, 104, 66, 102.4, 66, 97.4, 81, 95.9, 81, 84.9, 93, 82.5, 93, 55.5, 106, 51.4, 106, 21.2, 112, -21.2, 112, -69, 101.6, -69, 100.1, -92, 87.2, -92, 85.6, -102, 71.6, -102, 68, -104, -19, -118.3, -43, -117.2, -45, -116, -45, -97, -71, -93.4, -71, -74.9, -59.8, -55, -74, -55, -77, -57.2, -101, -53.3, -101, -28, -109.4, -28, -111.6)
+
+[node name="TestPointLight2D" type="Node2D"]
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+position = Vector2(631, 249)
+shadow_enabled = true
+shadow_filter = 2
+shadow_filter_smooth = 2.0
+texture = ExtResource("3")
+height = 477.0
+
+[node name="PointLight2DSubtract" type="PointLight2D" parent="."]
+position = Vector2(391, 161)
+blend_mode = 1
+shadow_enabled = true
+shadow_filter = 2
+shadow_filter_smooth = 2.0
+texture = ExtResource("3")
+height = 477.0
+
+[node name="PointLight2DMix" type="PointLight2D" parent="."]
+position = Vector2(351, 353)
+color = Color(0.501961, 1, 0, 1)
+blend_mode = 2
+shadow_enabled = true
+shadow_filter = 2
+shadow_filter_smooth = 2.0
+texture = ExtResource("3")
+height = 477.0
+
+[node name="PointLight2DColoredShadow" type="PointLight2D" parent="."]
+position = Vector2(377, 577)
+shadow_enabled = true
+shadow_color = Color(1, 0, 0, 1)
+shadow_filter = 2
+shadow_filter_smooth = 2.0
+texture = ExtResource("3")
+height = 477.0
+
+[node name="Background" type="Sprite2D" parent="."]
+modulate = Color(0.109804, 0.247059, 0.466667, 1)
+scale = Vector2(2.5, 1.414)
+texture = ExtResource("2")
+centered = false
+region_rect = Rect2(0, 0, 512, 512)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(503.552, 239.224)
+texture = ExtResource("3_p4ac0")
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="Sprite2D"]
+z_index = -1
+occluder = SubResource("1")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(326.552, 432.224)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("3_p4ac0")
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="Sprite2D2"]
+z_index = -1
+occluder = SubResource("1")
+
+[node name="Sprite2D3" type="Sprite2D" parent="."]
+position = Vector2(460.552, 538.224)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("3_p4ac0")
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="Sprite2D3"]
+z_index = -1
+occluder = SubResource("1")
+
+[node name="Sprite2D4" type="Sprite2D" parent="."]
+position = Vector2(711.552, 237.224)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("3_p4ac0")
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="Sprite2D4"]
+z_index = -1
+occluder = SubResource("1")
+
+[node name="Sprite2D5" type="Sprite2D" parent="."]
+position = Vector2(224.552, 288.224)
+scale = Vector2(0.05, 0.05)
+texture = ExtResource("3_p4ac0")
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="Sprite2D5"]
+z_index = -1
+occluder = SubResource("1")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+offset = Vector2(640, 360)

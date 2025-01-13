@@ -1,0 +1,55 @@
+[gd_scene load_steps=9 format=3 uid="uid://bh32wej3v2ljf"]
+
+[sub_resource type="Environment" id="Environment_msn7n"]
+
+[sub_resource type="PlaneMesh" id="1"]
+size = Vector2(512, 512)
+subdivide_width = 2
+subdivide_depth = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tb1vf"]
+shading_mode = 0
+
+[sub_resource type="TextMesh" id="TextMesh_6iita"]
+material = SubResource("StandardMaterial3D_tb1vf")
+text = "Hello world!"
+pixel_size = 0.02
+curve_step = 10.0
+depth = 0.0
+
+[sub_resource type="Gradient" id="Gradient_tb1vf"]
+colors = PackedColorArray(100, 0, 0, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_6iita"]
+gradient = SubResource("Gradient_tb1vf")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6iita"]
+shading_mode = 0
+albedo_texture = SubResource("GradientTexture2D_6iita")
+
+[sub_resource type="TextMesh" id="TextMesh_phyh0"]
+material = SubResource("StandardMaterial3D_6iita")
+text = "Hello world!"
+pixel_size = 0.02
+depth = 0.25
+
+[node name="TestLabel3D" type="WorldEnvironment"]
+environment = SubResource("Environment_msn7n")
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+mesh = SubResource("1")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.781521, 0.161472, -0.602622, 0, 0.965926, 0.258819, 0.62388, -0.202272, 0.754891, -4.23664, 2.39723, 3.68522)
+fov = 25.0
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+visible = false
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 0, 1, 0)
+mesh = SubResource("TextMesh_6iita")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, -1.76799, 1, 0.482794)
+mesh = SubResource("TextMesh_phyh0")

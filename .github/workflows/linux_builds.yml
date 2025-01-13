@@ -226,6 +226,24 @@ jobs:
         with:
           bin: ${{ matrix.bin }}
 
+      # This is done in a non-sanitizer build as it crashes the engine otherwise.
+      - name: Test for visual regressions
+        if: matrix.build-mono
+        run: |
+          # Install Lavapipe for software Vulkan rendering.
+          sudo apt install -y mesa-vulkan-drivers
+          echo "Importing"
+          xvfb-run ${{ matrix.bin }} --headless --path tests/visual_regressions --import
+          echo "Running"
+          xvfb-run ${{ matrix.bin }} --audio-driver Dummy --path tests/visual_regressions --rendering-driver vulkan --rendering-method forward_plus -- --save-results
+          xvfb-run ${{ matrix.bin }} --audio-driver Dummy --path tests/visual_regressions --rendering-driver vulkan --rendering-method mobile -- --save-results
+          xvfb-run ${{ matrix.bin }} --audio-driver Dummy --path tests/visual_regressions --rendering-driver opengl3 --rendering-method gl_compatibility -- --save-results
+          echo ""
+          echo "Comparing visuals:"
+          echo "=================="
+          echo ""
+          (for img in tests/visual_regressions/results/*/*/*.png; do tests/visual_regressions/dssim $img ${img//results/results_master}; done) | sort
+
       # Test the project converter
       - name: Test project converter
         uses: ./.github/actions/godot-converter-test

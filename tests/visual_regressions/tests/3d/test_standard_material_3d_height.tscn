@@ -1,0 +1,61 @@
+[gd_scene load_steps=8 format=3 uid="uid://brn1k85ratwkh"]
+
+[ext_resource type="Texture2D" uid="uid://db8ilxuflejr4" path="res://textures/checkerboard_muted.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://bin347lkrqebg" path="res://textures/checkerboard_ao.png" id="2"]
+
+[sub_resource type="Environment" id="Environment_ru358"]
+
+[sub_resource type="SphereMesh" id="1"]
+radius = 1.0
+height = 2.0
+
+[sub_resource type="StandardMaterial3D" id="2"]
+albedo_texture = ExtResource("1")
+heightmap_enabled = true
+heightmap_texture = ExtResource("2")
+uv1_scale = Vector3(2, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="3"]
+albedo_texture = ExtResource("1")
+heightmap_enabled = true
+heightmap_deep_parallax = true
+heightmap_min_layers = 8
+heightmap_max_layers = 32
+heightmap_texture = ExtResource("2")
+uv1_scale = Vector3(2, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="4"]
+albedo_texture = ExtResource("1")
+heightmap_enabled = true
+heightmap_scale = 0.15
+heightmap_deep_parallax = true
+heightmap_min_layers = 64
+heightmap_max_layers = 64
+heightmap_texture = ExtResource("2")
+uv1_scale = Vector3(2, 1, 1)
+
+[node name="TestStandardMaterial3DHeight" type="WorldEnvironment"]
+environment = SubResource("Environment_ru358")
+
+[node name="SphereHeight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+mesh = SubResource("1")
+surface_material_override/0 = SubResource("2")
+
+[node name="SphereHeightDeepParallaxLow" type="MeshInstance3D" parent="."]
+mesh = SubResource("1")
+surface_material_override/0 = SubResource("3")
+
+[node name="SphereHeightDeepParallaxHigh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -1)
+mesh = SubResource("1")
+surface_material_override/0 = SubResource("4")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.917118, 0.219708, -0.3326, 0, 0.834388, 0.551178, 0.398616, -0.505496, 0.765232, 1.68294, 1.9177, 3.0806)
+
+[node name="DirectionalLight3D2" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.256356, -0.107844, 0.960548, -0.9295, -0.245114, -0.275589, 0.265165, -0.963477, -0.0374046, 3.45276, 1.38176, -0.991314)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.828588, -0.0886391, 0.552797, 0.0304407, 0.993059, 0.113606, -0.55903, -0.0773052, 0.825536, 1.90113, 0.386591, 2.79496)

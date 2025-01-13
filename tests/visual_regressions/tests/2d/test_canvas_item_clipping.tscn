@@ -1,0 +1,33 @@
+[gd_scene load_steps=4 format=3 uid="uid://dfhfe6dutjbkb"]
+
+[ext_resource type="Texture2D" uid="uid://db8ilxuflejr4" path="res://textures/checkerboard_muted.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://cfy8t7va2jmua" path="res://textures/godot_icon.png" id="2_cr618"]
+[ext_resource type="Texture2D" uid="uid://bin347lkrqebg" path="res://textures/checkerboard_ao.png" id="3"]
+
+[node name="TestCanvasItemClipping" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+offset = Vector2(640, 360)
+
+[node name="Background" type="Sprite2D" parent="."]
+scale = Vector2(2.5, 1.41)
+texture = ExtResource("2")
+centered = false
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+clip_children = 1
+position = Vector2(628, 347)
+texture = ExtResource("2_cr618")
+
+[node name="Checkerboard" type="Sprite2D" parent="Sprite2D"]
+modulate = Color(0.752941, 1, 0.760784, 1)
+position = Vector2(29, 2)
+scale = Vector2(0.445313, 0.480469)
+texture = ExtResource("3")
+
+[node name="CheckerboardRotated" type="Sprite2D" parent="Sprite2D"]
+modulate = Color(0.521569, 0.627451, 0.188235, 1)
+position = Vector2(103, -85)
+rotation = -0.785397
+scale = Vector2(0.445313, 0.480469)
+texture = ExtResource("3")

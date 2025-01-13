@@ -1,0 +1,54 @@
+[gd_scene load_steps=9 format=3 uid="uid://d0slvoft6ostf"]
+
+[sub_resource type="PhysicalSkyMaterial" id="8"]
+
+[sub_resource type="Sky" id="7"]
+sky_material = SubResource("8")
+
+[sub_resource type="Environment" id="1"]
+background_mode = 2
+sky = SubResource("7")
+fog_enabled = true
+fog_light_color = Color(0.643137, 0.623529, 0.517647, 1)
+fog_sun_scatter = 0.2
+fog_density = 0.05
+fog_height_density = 1.0
+
+[sub_resource type="StandardMaterial3D" id="2"]
+albedo_color = Color(0.00784314, 0, 1, 1)
+
+[sub_resource type="BoxMesh" id="3"]
+material = SubResource("2")
+size = Vector3(2, 2, 2)
+
+[sub_resource type="PlaneMesh" id="4"]
+size = Vector2(512, 512)
+
+[sub_resource type="StandardMaterial3D" id="5"]
+emission_enabled = true
+emission = Color(1, 0, 0, 1)
+
+[sub_resource type="SphereMesh" id="6"]
+material = SubResource("5")
+radius = 1.0
+height = 2.0
+
+[node name="TestFog" type="WorldEnvironment"]
+environment = SubResource("1")
+
+[node name="Box" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 0, 1, 0)
+mesh = SubResource("3")
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+mesh = SubResource("4")
+
+[node name="EmissiveSphere" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 1, 1)
+mesh = SubResource("6")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.65525, -0.082212, 0.750925, 0, 0.99406, 0.108831, -0.755412, -0.0713113, 0.651358, 1.86797, 1.49672, 2.72365)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.304655, 0.266494, -0.914421, 0, 0.96006, 0.279795, 0.952463, 0.0852409, -0.292487, 1.3937, 3.10477, 2.5885)

@@ -1,0 +1,126 @@
+[gd_scene load_steps=11 format=3 uid="uid://tnq64cfjbdh6"]
+
+[sub_resource type="Environment" id="3"]
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.0
+volumetric_fog_temporal_reprojection_enabled = false
+
+[sub_resource type="PlaneMesh" id="1"]
+size = Vector2(512, 512)
+subdivide_width = 2
+subdivide_depth = 2
+
+[sub_resource type="BoxMesh" id="2"]
+size = Vector3(2, 2, 8)
+
+[sub_resource type="BoxMesh" id="4"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="FogMaterial" id="FogMaterial_c4lmh"]
+density = 0.3
+
+[sub_resource type="FogMaterial" id="FogMaterial_bbru3"]
+density = 2.0
+albedo = Color(0.0705882, 0, 1, 1)
+
+[sub_resource type="FogMaterial" id="FogMaterial_y2prp"]
+density = 2.0
+albedo = Color(0.0705882, 0, 1, 1)
+emission = Color(0.529412, 0.156863, 0.14902, 1)
+
+[sub_resource type="FogMaterial" id="FogMaterial_q5ril"]
+
+[sub_resource type="FogMaterial" id="FogMaterial_dia38"]
+density = 10.0
+height_falloff = 6.27666
+
+[sub_resource type="FogMaterial" id="FogMaterial_mwhab"]
+albedo = Color(0, 0, 0, 1)
+emission = Color(1, 2, 4, 1)
+
+[node name="TestVolumetricFog" type="WorldEnvironment"]
+environment = SubResource("3")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.905215, -0.202104, 0.373817, 0, 0.879666, 0.475592, -0.424954, -0.430513, 0.796287, 3.14888, 3.87689, 7.13982)
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+mesh = SubResource("1")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.337951, -0.821197, 0.45981, 0, 0.488555, 0.872533, -0.941164, -0.294874, 0.165108, 1.67514, 4.49631, 4.49958)
+shadow_enabled = true
+
+[node name="Bar" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, -2)
+mesh = SubResource("2")
+
+[node name="Bar2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 5, -2)
+mesh = SubResource("2")
+
+[node name="Bar3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 7, 3)
+mesh = SubResource("2")
+
+[node name="Box" type="MeshInstance3D" parent="."]
+mesh = SubResource("4")
+
+[node name="Box2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -19)
+mesh = SubResource("4")
+
+[node name="Box3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0, -16)
+mesh = SubResource("4")
+
+[node name="Box4" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 8, -47)
+mesh = SubResource("4")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.491585, 1.14841)
+light_color = Color(0.431373, 1, 0, 1)
+light_energy = 40.0
+shadow_enabled = true
+
+[node name="SpotLight3D" type="SpotLight3D" parent="."]
+transform = Transform3D(0.939857, 0.298568, -0.165913, -0.101086, 0.707107, 0.699844, 0.326269, -0.640982, 0.69476, -3, 1.34666, 7.42146)
+light_color = Color(0, 0.858824, 1, 1)
+light_energy = 15.0
+spot_range = 4.7
+spot_attenuation = 0.574349
+spot_angle = 46.0
+spot_angle_attenuation = 1.1487
+
+[node name="FogVolumeLowDensity" type="FogVolume" parent="SpotLight3D"]
+transform = Transform3D(0.933777, 0.0773913, -0.349386, -0.175289, 0.950103, -0.258028, 0.311984, 0.302184, 0.90075, -0.340148, 0.86886, -1.38277)
+size = Vector3(4, 4, 4)
+shape = 0
+material = SubResource("FogMaterial_c4lmh")
+
+[node name="FogVolumeDenseBlueAlbedo" type="FogVolume" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25946, 0.713089, 3.72287)
+material = SubResource("FogMaterial_bbru3")
+
+[node name="FogVolumeDenseBlueAlbedoRedEmission" type="FogVolume" parent="."]
+transform = Transform3D(0.866025, 0.5, 0, -0.5, 0.866025, 0, 0, 0, 1, -0.0595204, 0.713089, 3.20433)
+material = SubResource("FogMaterial_y2prp")
+
+[node name="FogVolumeNewMaterial" type="FogVolume" parent="."]
+transform = Transform3D(0.230578, 0.637374, 0.735247, -0.553657, 0.707307, -0.439523, -0.800186, -0.30573, 0.515976, -2.80361, 2.77773, 2.8116)
+size = Vector3(8, 2, 2)
+shape = 0
+material = SubResource("FogMaterial_q5ril")
+
+[node name="FogVolumeFallbackMaterial" type="FogVolume" parent="."]
+transform = Transform3D(0.599752, -0.407903, 0.688413, 0, 0.860316, 0.509761, -0.800186, -0.30573, 0.515976, 3.53852, 2.77773, 2.8116)
+
+[node name="FogVolumeVeryDenseHeightFalloff" type="FogVolume" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+material = SubResource("FogMaterial_dia38")
+
+[node name="FogVolumeDensityMap" type="FogVolume" parent="."]
+transform = Transform3D(-0.965926, 8.44439e-08, 0.258819, -8.74228e-08, -1, -5.2108e-15, 0.258819, -2.26267e-08, 0.965926, 3, 2, -4)
+size = Vector3(8, 8, 2)
+material = SubResource("FogMaterial_mwhab")

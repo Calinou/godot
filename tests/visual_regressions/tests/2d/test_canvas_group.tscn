@@ -1,0 +1,55 @@
+[gd_scene load_steps=3 format=3 uid="uid://cjl1dih6swy3g"]
+
+[ext_resource type="Texture2D" uid="uid://db8ilxuflejr4" path="res://textures/checkerboard_muted.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://ce0liqungxah1" path="res://icon.png" id="2_c5id4"]
+
+[node name="TestCanvasGroup" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+offset = Vector2(640, 360)
+
+[node name="Background" type="Sprite2D" parent="."]
+scale = Vector2(2.5, 1.41)
+texture = ExtResource("2")
+centered = false
+
+[node name="CanvasGroup" type="CanvasGroup" parent="."]
+self_modulate = Color(1, 1, 1, 0.5)
+position = Vector2(8, 8)
+
+[node name="Sprite2DShadow" type="Sprite2D" parent="CanvasGroup"]
+modulate = Color(0, 0, 0, 0.752941)
+position = Vector2(569, 227)
+rotation = 0.261799
+texture = ExtResource("2_c5id4")
+
+[node name="Sprite2DShadow2" type="Sprite2D" parent="CanvasGroup"]
+modulate = Color(0, 0, 0, 0.752941)
+position = Vector2(689, 290)
+texture = ExtResource("2_c5id4")
+
+[node name="Sprite2DShadow3" type="Sprite2D" parent="CanvasGroup"]
+modulate = Color(0, 0, 0, 0.752941)
+position = Vector2(637, 444)
+texture = ExtResource("2_c5id4")
+
+[node name="Sprite2D" type="Sprite2D" parent="CanvasGroup"]
+position = Vector2(561, 219)
+rotation = 0.261799
+texture = ExtResource("2_c5id4")
+
+[node name="Sprite2DRed" type="Sprite2D" parent="CanvasGroup"]
+modulate = Color(0.698039, 0.0627451, 0.0627451, 1)
+position = Vector2(681, 282)
+texture = ExtResource("2_c5id4")
+
+[node name="Sprite2DGlow" type="Sprite2D" parent="CanvasGroup"]
+modulate = Color(20, 10, 0, 0.2)
+position = Vector2(629, 436)
+scale = Vector2(1.14844, 1.14844)
+texture = ExtResource("2_c5id4")
+
+[node name="Sprite2DBright" type="Sprite2D" parent="CanvasGroup"]
+modulate = Color(0.06, 0.7, 44, 1)
+position = Vector2(629, 436)
+texture = ExtResource("2_c5id4")

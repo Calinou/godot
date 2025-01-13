@@ -92,3 +92,28 @@ jobs:
           ${{ matrix.bin }} --version
           ${{ matrix.bin }} --help
           ${{ matrix.bin }} --test --force-colors
+
+      # NOTE: Metal/Vulkan are not supported due to the paravirtualized device only being Apple5.
+      # https://developer.apple.com/documentation/paravirtualizedgraphics
+      - name: Test for visual regressions
+        if: matrix.target == 'editor'
+        run: |
+          echo "Importing"
+          ${{ matrix.bin }} --headless --path tests/visual_regressions --import
+          echo "Running Vulkan Forward+"
+          ${{ matrix.bin }} --audio-driver Dummy --path tests/visual_regressions --rendering-driver vulkan --rendering-method forward_plus -- --save-results
+          echo "Running Vulkan Mobile"
+          ${{ matrix.bin }} --audio-driver Dummy --path tests/visual_regressions --rendering-driver vulkan --rendering-method mobile -- --save-results
+          echo "Running OpenGL"
+          ${{ matrix.bin }} --audio-driver Dummy --path tests/visual_regressions --rendering-driver opengl3 --rendering-method gl_compatibility -- --save-results
+          #echo "Running all"
+          #${{ matrix.bin }} --audio-driver Dummy --path tests/visual_regressions
+          curl -L https://github.com/kornelski/dssim/releases/download/3.2.3/dssim-3.2.3.zip -o /tmp/dssim.zip
+          unzip /tmp/dssim.zip
+          mv mac/dssim tests/visual_regressions/dssim
+          #chmod +x tests/visual_regressions/dssim
+          echo ""
+          echo "Comparing visuals:"
+          echo "=================="
+          echo ""
+          (for img in tests/visual_regressions/results/*/*/*.png; do tests/visual_regressions/dssim $img ${img//results/results_master}; done) | sort

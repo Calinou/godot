@@ -1,0 +1,92 @@
+[gd_scene load_steps=8 format=3 uid="uid://5810n2ggw5jd"]
+
+[ext_resource type="Texture2D" uid="uid://ce0liqungxah1" path="res://icon.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://db8ilxuflejr4" path="res://textures/checkerboard_muted.png" id="2"]
+
+[sub_resource type="CanvasItemMaterial" id="1"]
+
+[sub_resource type="CanvasItemMaterial" id="2"]
+blend_mode = 1
+
+[sub_resource type="CanvasItemMaterial" id="3"]
+blend_mode = 2
+
+[sub_resource type="CanvasItemMaterial" id="4"]
+blend_mode = 3
+
+[sub_resource type="CanvasItemMaterial" id="5"]
+blend_mode = 4
+
+[node name="TestCanvasItemMaterial" type="Node2D"]
+
+[node name="Background" type="Sprite2D" parent="."]
+scale = Vector2(2.5, 1.41)
+texture = ExtResource("2")
+centered = false
+
+[node name="MixLarge" type="Sprite2D" parent="."]
+material = SubResource("1")
+position = Vector2(571.817, 360.878)
+scale = Vector2(2, 2)
+texture = ExtResource("1")
+
+[node name="MixLarge2" type="Sprite2D" parent="."]
+material = SubResource("1")
+position = Vector2(707.817, 360.878)
+scale = Vector2(2, 2)
+texture = ExtResource("1")
+
+[node name="Mix" type="Sprite2D" parent="."]
+material = SubResource("1")
+position = Vector2(491, 307)
+texture = ExtResource("1")
+
+[node name="Additive" type="Sprite2D" parent="."]
+material = SubResource("2")
+position = Vector2(563, 307)
+texture = ExtResource("1")
+
+[node name="Subtractive" type="Sprite2D" parent="."]
+material = SubResource("3")
+position = Vector2(635, 307)
+texture = ExtResource("1")
+
+[node name="Mul" type="Sprite2D" parent="."]
+material = SubResource("4")
+position = Vector2(707, 307)
+texture = ExtResource("1")
+
+[node name="PremultAlpha" type="Sprite2D" parent="."]
+material = SubResource("5")
+position = Vector2(779, 307)
+texture = ExtResource("1")
+
+[node name="MixColored" type="Sprite2D" parent="."]
+modulate = Color(3, 2, 1, 0.4)
+material = SubResource("1")
+position = Vector2(491, 411)
+texture = ExtResource("1")
+
+[node name="AdditiveColored" type="Sprite2D" parent="."]
+modulate = Color(3, 2, 1, 0.4)
+material = SubResource("2")
+position = Vector2(563, 411)
+texture = ExtResource("1")
+
+[node name="SubtractiveColored" type="Sprite2D" parent="."]
+modulate = Color(3, 2, 1, 0.4)
+material = SubResource("3")
+position = Vector2(635, 411)
+texture = ExtResource("1")
+
+[node name="MulColored" type="Sprite2D" parent="."]
+modulate = Color(3, 2, 1, 0.4)
+material = SubResource("4")
+position = Vector2(707, 411)
+texture = ExtResource("1")
+
+[node name="PremultAlphaColored" type="Sprite2D" parent="."]
+modulate = Color(3, 2, 1, 0.4)
+material = SubResource("5")
+position = Vector2(779, 411)
+texture = ExtResource("1")

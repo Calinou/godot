@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://p8wcxfp0ljba"]
+
+[ext_resource type="Script" uid="uid://cce5keh70qyfg" path="res://tests/3d/test_debanding.gd" id="1_csbc2"]
+
+[sub_resource type="Environment" id="Environment_4x3sa"]
+
+[sub_resource type="PlaneMesh" id="2"]
+size = Vector2(512, 512)
+subdivide_width = 2
+subdivide_depth = 2
+
+[node name="TestDebanding" type="WorldEnvironment"]
+environment = SubResource("Environment_4x3sa")
+script = ExtResource("1_csbc2")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.529912, 0.307371, -0.79039, 0, 0.932006, 0.362443, 0.848053, -0.192063, 0.493881, -7.50016, 0.650325, -0.00600052)
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+mesh = SubResource("2")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.1625, -0.367198, 0.915838, 0, 0.928175, 0.372144, -0.986709, -0.0604734, 0.150829, 2.80776, 2.58225, 2.83678)
+light_energy = 0.05

@@ -1,0 +1,175 @@
+[gd_scene load_steps=11 format=3 uid="uid://cjgvrdj37aa6"]
+
+[sub_resource type="Environment" id="Environment_qmgd8"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_s5sq3"]
+albedo_color = Color(0.694118, 0.992157, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uuja3"]
+albedo_color = Color(0.682353, 1, 0.72549, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eisk2"]
+albedo_color = Color(1, 0.647059, 0.0941176, 1)
+
+[sub_resource type="Curve" id="Curve_1cmuo"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.378641, 0.963636), -22.4727, -22.4727, 0, 0, Vector2(0.490291, 0.5), 0.0, 0.0, 0, 0, Vector2(0.975728, 1), 0.0, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="TubeTrailMesh" id="TubeTrailMesh_ujgkj"]
+radius = 0.1
+curve = SubResource("Curve_1cmuo")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sntmh"]
+albedo_color = Color(0.811765, 0.639216, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vbxfj"]
+albedo_color = Color(1, 0.278431, 0.352941, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ln28k"]
+albedo_color = Color(0.333333, 1, 0, 1)
+
+[sub_resource type="Curve3D" id="Curve3D_mptyy"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -0.768869, 0.92992, -0.551338, 0, 0, 0, 0, 0, 0, 0.0550907, 0.916328, -0.705106, 0, 0, 0, 0, 0, 0, 0.0570055, 0.559883, 0.0946243, 0, 0, 0, 0, 0, 0, 0.242792, 0.00236171, 0.687454, 0, 0, 0, 0, 0, 0, 0.559588, -0.131204, -0.63886, 0, 0, 0, 0, 0, 0, -0.843816, 0.0730624, -0.521662, 0, 0, 0, 0, 0, 0, -0.768869, 0.92992, -0.551338),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0)
+}
+point_count = 7
+
+[node name="WorldEnvironment" type="WorldEnvironment"]
+environment = SubResource("Environment_qmgd8")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+visible = false
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+
+[node name="CSGBox3DInverted" type="CSGBox3D" parent="."]
+flip_faces = true
+size = Vector3(2, 2, 2)
+material = SubResource("StandardMaterial3D_s5sq3")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="CSGBox3DInverted"]
+transform = Transform3D(0.941666, 0.320276, -0.103383, -0.322001, 0.946739, 0, 0.0978765, 0.0332894, 0.994642, -0.562978, -1.07589, -0.625792)
+flip_faces = true
+size = Vector3(2, 2, 2)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="CSGBox3DInverted"]
+transform = Transform3D(0.808374, 0.274941, 0.520518, -0.322001, 0.946739, 0, -0.492795, -0.167608, 0.853851, -0.562978, -1.07589, -0.0254097)
+flip_faces = true
+material = SubResource("StandardMaterial3D_uuja3")
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="CSGBox3DInverted"]
+transform = Transform3D(0.808374, 0.274941, 0.520518, 0.211925, 0.689018, -0.693067, -0.549199, 0.670569, 0.498717, -0.562978, -1.07589, -0.0254097)
+flip_faces = true
+size = Vector3(2, 2, 2)
+material = SubResource("StandardMaterial3D_eisk2")
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="CSGBox3DInverted"]
+transform = Transform3D(0.808374, 0.274941, 0.520518, 0.473112, 0.222709, -0.852388, -0.350281, 0.935312, 0.0499546, -0.0274112, -1.07589, -0.110097)
+flip_faces = true
+size = Vector3(2, 2, 2)
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="CSGBox3DInverted"]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 1, 0, -0.915617)
+flip_faces = true
+radius = 0.25
+
+[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="CSGBox3DInverted"]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 0.870445, 0, 0.928887)
+operation = 2
+flip_faces = true
+radius = 0.25
+sides = 32
+
+[node name="CSGMesh3DTubeTrailMesh" type="CSGMesh3D" parent="CSGBox3DInverted"]
+transform = Transform3D(1, 0, 0, 0, 0.654675, -0.755911, 0, 0.755911, 0.654675, 1.00961, -0.420467, 0.22493)
+flip_faces = true
+mesh = SubResource("TubeTrailMesh_ujgkj")
+
+[node name="CSGSphere3D" type="CSGSphere3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.33109, -0.667407, 0)
+radius = 0.25
+
+[node name="CSGSphere3D2" type="CSGSphere3D" parent="CSGSphere3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.113148, 0.166454, 0)
+operation = 2
+radius = 0.25
+
+[node name="CSGSphere3DDetailed" type="CSGSphere3D" parent="."]
+transform = Transform3D(-0.0947338, 0, 0.995503, 0, 1, 0, -0.995503, 0, -0.0947338, 0.33109, -0.615231, 0.396624)
+radius = 0.25
+radial_segments = 40
+rings = 20
+material = SubResource("StandardMaterial3D_sntmh")
+
+[node name="CSGSphere3DDetailed2" type="CSGSphere3D" parent="CSGSphere3DDetailed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.113148, 0.166454, 0)
+operation = 2
+radius = 0.25
+radial_segments = 40
+rings = 20
+
+[node name="CSGPolygon3DDepth" type="CSGPolygon3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+polygon = PackedVector2Array(-0.684298, 0.200909, -0.796477, 0.160363, -0.328647, 0.376528, -0.286673, 0.389944, -0.256687, 0.370434, -0.238659, 0.326976, -0.21911, 0.273)
+depth = 0.5
+
+[node name="CSGPolygon3D2" type="CSGPolygon3D" parent="CSGPolygon3DDepth"]
+transform = Transform3D(0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 0, 0, 1, -0.303289, -0.123574, -0.0547956)
+polygon = PackedVector2Array(-0.684298, 0.200909, -0.796477, 0.160363, -0.328647, 0.376528, -0.286673, 0.389944, -0.256687, 0.370434, -0.238659, 0.326976, -0.21911, 0.273)
+depth = 0.5
+
+[node name="CSGBox3DCoplanar" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.792684, -0.211176, 0)
+size = Vector3(0.25, 0.25, 0.25)
+
+[node name="CSGBox3DCoplanarSub" type="CSGBox3D" parent="CSGBox3DCoplanar"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0868239, -0.0894193)
+operation = 2
+size = Vector3(0.25, 0.25, 0.25)
+
+[node name="CSGBox3DCoplanarSub2" type="CSGBox3D" parent="CSGBox3DCoplanar"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0446339, 0.0168881)
+operation = 2
+size = Vector3(0.25, 0.25, 0.25)
+
+[node name="CSGCombiner3D" type="CSGCombiner3D" parent="."]
+
+[node name="CSGTorus3D" type="CSGTorus3D" parent="CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.342907, -0.501153, -0.6)
+inner_radius = 0.2
+outer_radius = 0.3
+
+[node name="CSGTorus3DIntersection" type="CSGTorus3D" parent="CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, 0.856105, -0.516802, 0, 0.516802, 0.856105, 0.342907, -0.501153, -0.6)
+operation = 1
+inner_radius = 0.2
+outer_radius = 0.3
+material = SubResource("StandardMaterial3D_vbxfj")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.513917, 0.734962, -0.442404, 0, 0.515718, 0.856758, 0.85784, -0.440302, 0.265036, -0.717103, 0.913634, 0.523634)
+
+[node name="CSGPolygon3DSpin" type="CSGPolygon3D" parent="."]
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, -0.318654, -0.165365, 0)
+mode = 1
+spin_degrees = 221.1
+spin_sides = 8
+material = SubResource("StandardMaterial3D_ln28k")
+
+[node name="CSGPolygon3DPath" type="CSGPolygon3D" parent="."]
+polygon = PackedVector2Array(0, 0, 0, 0.1, 0.05, 0.05)
+mode = 2
+path_node = NodePath("../Path3D")
+path_interval_type = 0
+path_interval = 0.06
+path_simplify_angle = 0.0
+path_rotation = 2
+path_local = false
+path_continuous_u = true
+path_u_distance = 1.0
+path_joined = true
+smooth_faces = true
+
+[node name="Path3D" type="Path3D" parent="."]
+curve = SubResource("Curve3D_mptyy")

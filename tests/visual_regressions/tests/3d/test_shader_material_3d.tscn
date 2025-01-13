@@ -1,0 +1,41 @@
+[gd_scene load_steps=7 format=3 uid="uid://b87ecve275dcy"]
+
+[ext_resource type="Shader" uid="uid://dn7ni2ppvlk68" path="res://tests/3d/test_shader_material_3d.gdshader" id="1_oftk0"]
+[ext_resource type="Shader" uid="uid://4xl4s4sobkbv" path="res://tests/3d/test_shader_material_3d.tres" id="2_2eygo"]
+
+[sub_resource type="Environment" id="Environment_jenwk"]
+
+[sub_resource type="SphereMesh" id="1"]
+radius = 1.0
+height = 2.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3jv1e"]
+render_priority = 0
+shader = ExtResource("1_oftk0")
+shader_parameter/albedo = Color(1, 0.501961, 0.25098, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tawa0"]
+render_priority = 0
+shader = ExtResource("2_2eygo")
+
+[node name="TestShaderMaterial3D" type="WorldEnvironment"]
+environment = SubResource("Environment_jenwk")
+
+[node name="SphereShaderText" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 0)
+mesh = SubResource("1")
+surface_material_override/0 = SubResource("ShaderMaterial_3jv1e")
+
+[node name="SphereShaderVisual" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0)
+mesh = SubResource("1")
+surface_material_override/0 = SubResource("ShaderMaterial_tawa0")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.877583, -0.229849, 0.420735, 0, 0.877583, 0.479426, -0.479426, -0.420736, 0.770151, 1.68294, 1.9177, 3.0806)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.999295, 0.0191428, -0.0323071, 0, 0.860316, 0.509761, 0.0375526, -0.509401, 0.859709, -0.703999, 1.76793, 3.39803)
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, -1, 0)

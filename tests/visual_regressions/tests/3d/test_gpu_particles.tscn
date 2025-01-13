@@ -1,0 +1,56 @@
+[gd_scene load_steps=7 format=3 uid="uid://c4hn3eqmqvjw6"]
+
+[sub_resource type="Environment" id="Environment_2jdji"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticlesMaterial_mailk"]
+scale_min = 0.1
+scale_max = 0.1
+collision_mode = 1
+collision_friction = 0.05
+collision_bounce = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3vavx"]
+albedo_color = Color(0.278431, 0.709804, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_dig5j"]
+material = SubResource("StandardMaterial3D_3vavx")
+
+[sub_resource type="BoxMesh" id="BoxMesh_gh46k"]
+size = Vector3(160, 2, 160)
+
+[sub_resource type="SphereMesh" id="SphereMesh_0hvub"]
+radius = 1.0
+height = 2.0
+
+[node name="TestGPUParticles" type="WorldEnvironment"]
+environment = SubResource("Environment_2jdji")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.844348, -0.217055, 0.489861, 0, 0.914269, 0.405108, -0.535796, -0.342052, 0.771961, 2.2855, 1.89007, 3.60166)
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+transform = Transform3D(0.965926, -0.258819, 0, 0.258819, 0.965926, 0, 0, 0, 1, 0, 0, 0)
+amount = 200
+lifetime = 3.0
+preprocess = 3.0
+fixed_fps = 1000
+interpolate = false
+collision_base_size = 0.05
+process_material = SubResource("ParticlesMaterial_mailk")
+draw_pass_1 = SubResource("BoxMesh_dig5j")
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0)
+mesh = SubResource("BoxMesh_gh46k")
+
+[node name="GPUParticlesCollisionBox3D" type="GPUParticlesCollisionBox3D" parent="Ground"]
+size = Vector3(160, 2, 160)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.741945, 0.214382, -0.635262, 0, 0.947501, 0.319753, 0.670461, -0.237239, 0.702994, -0.0631762, 0.410221, 2.17378)
+
+[node name="Sphere" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, -1, -0.4)
+mesh = SubResource("SphereMesh_0hvub")
+
+[node name="GPUParticlesCollisionSphere3D" type="GPUParticlesCollisionSphere3D" parent="Sphere"]

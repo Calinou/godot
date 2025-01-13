@@ -1,0 +1,74 @@
+[gd_scene load_steps=5 format=3 uid="uid://cipnj7akr0hlf"]
+
+[ext_resource type="Texture2D" uid="uid://huw1i7xgbdn5" path="res://textures/checkerboard.png" id="1"]
+
+[sub_resource type="Environment" id="Environment_y05gg"]
+
+[sub_resource type="PlaneMesh" id="1"]
+size = Vector2(512, 512)
+subdivide_width = 2
+subdivide_depth = 2
+
+[sub_resource type="CapsuleMesh" id="2"]
+
+[node name="TestDecals" type="WorldEnvironment"]
+environment = SubResource("Environment_y05gg")
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+mesh = SubResource("1")
+
+[node name="Capsule" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.866025, 0.5, 0, -0.5, 0.866025, 0, 0, 0, 1, -2, 0, -1)
+mesh = SubResource("2")
+
+[node name="CapsuleLayer2" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.612372, -0.353553, 0.707107, -0.5, 0.866025, 0, -0.612372, -0.353553, -0.707107, 0, -1, -4)
+layers = 2
+mesh = SubResource("2")
+
+[node name="Capsule3" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.612372, -0.353553, 0.707107, -0.5, 0.866025, 0, -0.612372, -0.353553, -0.707107, 1, 1, -4)
+mesh = SubResource("2")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.711438, -0.524273, 0.467967, 0, 0.66591, 0.746032, -0.702749, -0.530756, 0.473754, 2.60846, 4.48696, 0.329263)
+
+[node name="DecalAlbedo" type="Decal" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.88967, 0.885115, -1.1641)
+size = Vector3(4, 2, 4)
+texture_albedo = ExtResource("1")
+upper_fade = 3.5138
+lower_fade = 0.713525
+
+[node name="DecalOrmOnly" type="Decal" parent="."]
+transform = Transform3D(-0.043604, 0.498095, -0.866025, -0.99619, -0.087208, 0, -0.0755244, 0.862726, 0.5, 1.5121, 0, -2.03495)
+texture_albedo = ExtResource("1")
+texture_orm = ExtResource("1")
+albedo_mix = 0.0
+upper_fade = 0.0
+lower_fade = 0.0
+
+[node name="DecalOrmOnlyLayer2" type="Decal" parent="."]
+transform = Transform3D(-0.043604, 0.498095, -0.866025, -0.99619, -0.087208, 0, -0.0755244, 0.862726, 0.5, -0.803861, 0, -4.92578)
+texture_albedo = ExtResource("1")
+texture_orm = ExtResource("1")
+albedo_mix = 0.0
+upper_fade = 0.0
+lower_fade = 0.0
+cull_mask = 1048574
+
+[node name="DecalEmission" type="Decal" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.190534, 0, -2.84789)
+texture_emission = ExtResource("1")
+normal_fade = 0.85
+
+[node name="DecalEmissionAlbedo" type="Decal" parent="."]
+transform = Transform3D(-0.087208, 0.99619, 0, -0.99619, -0.087208, 0, 0, 0, 1, 2.96145, 0, -3.69236)
+texture_albedo = ExtResource("1")
+texture_emission = ExtResource("1")
+emission_energy = 0.5
+modulate = Color(1, 0, 0, 1)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.447012, -0.615162, 0.649428, 0, 0.726, 0.687694, -0.894528, -0.307407, 0.32453, 0.874516, 3.85913, 1.26953)
+visible = false

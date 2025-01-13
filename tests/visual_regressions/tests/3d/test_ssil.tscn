@@ -1,0 +1,130 @@
+[gd_scene load_steps=15 format=3 uid="uid://bjf0nbnxxpade"]
+
+[sub_resource type="Environment" id="6"]
+ssil_enabled = true
+
+[sub_resource type="PlaneMesh" id="2"]
+size = Vector2(512, 512)
+subdivide_width = 2
+subdivide_depth = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bep80"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_oj0hp"]
+material = SubResource("StandardMaterial3D_bep80")
+size = Vector2(4, 4)
+subdivide_width = 2
+subdivide_depth = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1qnj7"]
+albedo_color = Color(0, 1, 0, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_yypqp"]
+material = SubResource("StandardMaterial3D_1qnj7")
+size = Vector2(4, 4)
+subdivide_width = 2
+subdivide_depth = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_42n2n"]
+albedo_color = Color(0, 0, 1, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_nwwkx"]
+material = SubResource("StandardMaterial3D_42n2n")
+size = Vector2(4, 4)
+subdivide_width = 2
+subdivide_depth = 2
+
+[sub_resource type="SphereMesh" id="3"]
+radius = 1.0
+height = 2.0
+
+[sub_resource type="BoxMesh" id="5"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4p1fq"]
+albedo_color = Color(1, 1, 0, 1)
+emission_enabled = true
+emission = Color(0, 1, 0, 1)
+emission_energy_multiplier = 50.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_swfk7"]
+material = SubResource("StandardMaterial3D_4p1fq")
+size = Vector3(2, 2, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2nqui"]
+shading_mode = 0
+albedo_color = Color(1, 1, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_px1rk"]
+material = SubResource("StandardMaterial3D_2nqui")
+size = Vector3(2, 2, 2)
+
+[node name="TestSSIL" type="WorldEnvironment"]
+environment = SubResource("6")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.877582, -0.229849, 0.420736, 0, 0.877582, 0.479426, -0.479426, -0.420736, 0.770151, 1.68294, 1.9177, 3.0806)
+light_energy = 1.5
+shadow_enabled = true
+directional_shadow_mode = 0
+directional_shadow_fade_start = 1.0
+directional_shadow_max_distance = 20.0
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.0828062, -0.349006, 0.933455, 0, 0.936672, 0.350209, -0.996566, -0.0289995, 0.0775622, 5.64684, 2.4369, 2.51232)
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+mesh = SubResource("2")
+
+[node name="GroundRed" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 0.01, 5.2)
+mesh = SubResource("PlaneMesh_oj0hp")
+
+[node name="GroundGreen" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 0.01, 1.2)
+mesh = SubResource("PlaneMesh_yypqp")
+
+[node name="GroundBlue" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 0.01, -2.8)
+mesh = SubResource("PlaneMesh_nwwkx")
+
+[node name="Sphere" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("3")
+
+[node name="Box" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1, 3)
+mesh = SubResource("5")
+
+[node name="Sphere2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -2.87501)
+mesh = SubResource("3")
+
+[node name="Box2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1, 0.12499)
+mesh = SubResource("5")
+
+[node name="BoxEmissiveGreen" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.920805, 0, 0.390024, -0.104708, 0.963289, 0.247205, -0.375706, -0.268466, 0.887001, 3.74568, -0.284317, 0.606511)
+mesh = SubResource("BoxMesh_swfk7")
+
+[node name="BoxUnshaded" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.920805, 0, 0.390024, -0.104708, 0.963289, 0.247205, -0.375706, -0.268466, 0.887001, 3.74568, -0.284317, 4.25883)
+mesh = SubResource("BoxMesh_px1rk")
+
+[node name="Sphere3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 4.72817)
+mesh = SubResource("3")
+
+[node name="Box3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1, 7.72817)
+mesh = SubResource("5")
+
+[node name="Sphere4" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.41349, 0.139296, 5.67087)
+mesh = SubResource("3")
+
+[node name="Box4" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.586509, 0.139296, 8.67087)
+mesh = SubResource("5")

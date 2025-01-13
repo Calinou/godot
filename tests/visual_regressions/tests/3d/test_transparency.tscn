@@ -1,0 +1,47 @@
+[gd_scene load_steps=4 format=3 uid="uid://7axny7xbb1f1"]
+
+[ext_resource type="Script" uid="uid://cmlke5f2t3nhd" path="res://tests/3d/test_standard_material_3d_distance_fade_pixel_alpha.gd" id="2_hmmkd"]
+
+[sub_resource type="Environment" id="Environment_vx1x1"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_vprbi"]
+size = Vector3(32, 2, 32)
+
+[node name="TestTransparency" type="WorldEnvironment"]
+environment = SubResource("Environment_vx1x1")
+script = ExtResource("2_hmmkd")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+visible = false
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, 0.5, -0.5, 11.5, 6, -11.5)
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0)
+mesh = SubResource("BoxMesh_vprbi")
+
+[node name="DirectionalLight3D2" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.107059, 0.637734, -0.76278, 0, 0.767189, 0.641421, 0.994253, -0.0686698, 0.0821345, -11.7061, 7.62534, 3.96163)
+shadow_enabled = true
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+light_color = Color(1, 0, 0.156863, 1)
+light_energy = 4.0
+shadow_enabled = true
+omni_range = 6.0
+
+[node name="SpotLight3D" type="SpotLight3D" parent="."]
+transform = Transform3D(0.947721, 0.227198, -0.224065, 0, 0.70218, 0.711999, 0.319099, -0.674777, 0.665471, 3.53349, 5.24236, -1.6787)
+light_color = Color(0.8, 1, 0, 1)
+light_energy = 16.0
+shadow_enabled = true
+spot_range = 100.0
+spot_angle = 25.0
+
+[node name="OmniLight3D2" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.59793, 1.31749, -10.3185)
+light_color = Color(0.537255, 0.67451, 1, 1)
+light_energy = 300.0
+shadow_enabled = true

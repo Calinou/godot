@@ -118,3 +118,40 @@ jobs:
           ${{ matrix.bin }} --version
           ${{ matrix.bin }} --help
           ${{ matrix.bin }} --test --force-colors
+
+      # FIXME: This appears to have no effect (i.e. it behaves as if Mesa3D wasn't set up).
+      # Due to this, Vulkan and OpenGL will both softlock.
+      # - name: Set up Mesa3D for OpenGL/Vulkan visual regression testing
+      #   if: matrix.target == 'editor' && matrix.compiler == 'clang'
+      #   uses: ssciwr/setup-mesa-dist-win@v2
+      #   with:
+      #     version: '24.3.2'
+      #     build-type: 'release-mingw'
+      #     deployment-choice: '2'
+
+      # Check visual regressions on the Clang editor build, as it compiles faster than MSVC (so we get results sooner).
+      - name: Test for visual regressions
+        if: matrix.target == 'editor' && matrix.compiler == 'clang'
+        run: |
+          echo "Importing"
+          ${{ matrix.bin }} --headless --path tests/visual_regressions --import
+          echo "Running"
+          ${{ matrix.bin }} --path tests/visual_regressions --rendering-driver d3d12 --rendering-method forward_plus -- --save-results
+          echo "Running 2"
+          ${{ matrix.bin }} --path tests/visual_regressions --rendering-driver d3d12 --rendering-method mobile -- --save-results
+          #echo "Running OpenGL"
+          #${{ matrix.bin }} --path tests/visual_regressions --rendering-driver opengl3 -- --save-results
+          #echo "Running Vulkan"
+          #${{ matrix.bin }} --path tests/visual_regressions --rendering-driver vulkan -- --save-results
+          #${{ matrix.bin }} --headless --path tests/visual_regressions
+          iwr https://github.com/kornelski/dssim/releases/download/3.2.3/dssim-3.2.3.zip -OutFile dssim.zip
+          Expand-Archive dssim.zip
+          Move-Item dssim/win/dssim.exe dssim.exe
+          echo ""
+          echo "Comparing visuals:"
+          echo "=================="
+          echo ""
+          ls tests/visual_regressions/results
+          foreach ($img in Get-ChildItem tests/visual_regressions/results/*/*/*.png) {
+            ./dssim.exe $img.FullName $img.FullName.replace("results", "results_master")
+          }

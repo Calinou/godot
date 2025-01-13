@@ -1,0 +1,56 @@
+[gd_scene load_steps=5 format=3 uid="uid://byvmpjolcs6g7"]
+
+[sub_resource type="Environment" id="1"]
+background_mode = 1
+background_color = Color(1, 1, 1, 1)
+ssao_enabled = true
+ssao_intensity = 4.0
+
+[sub_resource type="BoxMesh" id="2"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="PlaneMesh" id="4"]
+size = Vector2(512, 512)
+subdivide_width = 2
+subdivide_depth = 2
+
+[sub_resource type="SphereMesh" id="5"]
+radius = 1.0
+height = 2.0
+
+[node name="TestSSAO" type="WorldEnvironment"]
+environment = SubResource("1")
+
+[node name="Box" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4)
+mesh = SubResource("2")
+
+[node name="Box2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0738468, -0.344158, -5)
+mesh = SubResource("2")
+
+[node name="Box3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.294841, -0.40268, -5.2434)
+mesh = SubResource("2")
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+mesh = SubResource("4")
+
+[node name="Sphere" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -3)
+mesh = SubResource("5")
+
+[node name="Sphere2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -8)
+mesh = SubResource("5")
+
+[node name="Sphere3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.29284, 1.87306, -4.72154)
+mesh = SubResource("5")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.52172, 0.344924, -0.780279, 0, 0.914622, 0.404311, 0.853117, -0.210937, 0.477177, -2.77314, 1.8445, -2.27976)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0, -0.707107, 0.707107, 0, 0.707107, 0.707107, -1, 0, 0, 5.47682, 4.97366, 0.28703)
+light_color = Color(0.933333, 1, 0, 1)

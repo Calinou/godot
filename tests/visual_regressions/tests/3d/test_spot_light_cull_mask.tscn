@@ -1,0 +1,80 @@
+[gd_scene load_steps=5 format=3 uid="uid://dtvoae2k5flah"]
+
+[sub_resource type="Environment" id="Environment_xmxfk"]
+
+[sub_resource type="PlaneMesh" id="1"]
+size = Vector2(512, 512)
+subdivide_width = 2
+subdivide_depth = 2
+
+[sub_resource type="BoxMesh" id="2"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="CapsuleMesh" id="3"]
+radius = 0.2
+
+[node name="TestSpotLight" type="WorldEnvironment"]
+environment = SubResource("Environment_xmxfk")
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+mesh = SubResource("1")
+
+[node name="SpotLight3D" type="SpotLight3D" parent="."]
+transform = Transform3D(0.210508, -0.401483, 0.891346, 0, 0.911777, 0.410685, -0.977592, -0.0864526, 0.191936, 1.96893, 0.821214, 3.61047)
+light_color = Color(1, 0.976471, 0.415686, 1)
+light_energy = 4.0
+light_cull_mask = 4294967293
+shadow_enabled = true
+shadow_blur = 4.0
+
+[node name="SpotLight3D2" type="SpotLight3D" parent="."]
+transform = Transform3D(-0.823612, -0.185095, 0.5361, 0, 0.945246, 0.326358, -0.567154, 0.268793, -0.778516, 1.72628, 1.13215, -0.166436)
+light_color = Color(0, 0, 6, 1)
+light_cull_mask = 4294967291
+spot_range = 10.1
+spot_attenuation = 1.6245
+spot_angle = 3.1
+spot_angle_attenuation = 2.92817
+
+[node name="SpotLight3D3" type="SpotLight3D" parent="."]
+transform = Transform3D(-0.383518, 0.905802, -0.180104, 0, 0.195016, 0.9808, 0.923533, 0.376155, -0.0747921, -4.55068, 3.60389, -1.17974)
+light_color = Color(0, 1, 0.6, 1)
+light_cull_mask = 4294967287
+shadow_enabled = true
+
+[node name="SpotLight3D4" type="SpotLight3D" parent="."]
+transform = Transform3D(0.995482, -0.086982, 0.038084, 0, 0.401079, 0.916044, -0.094954, -0.911905, 0.399266, -6.57656, 5.23416, 4.12066)
+light_color = Color(1, 0, 0, 1)
+light_cull_mask = 4294967279
+shadow_enabled = true
+spot_range = 10.0
+spot_attenuation = 0.0272048
+spot_angle_attenuation = 0.0426888
+
+[node name="SpotLight3DNegative" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -0.5, 0.866025, 0, -0.866025, -0.5, -4.70603, 2.89444, 1.3899)
+light_negative = true
+light_cull_mask = 4294967263
+shadow_enabled = true
+spot_range = 15.0
+
+[node name="BoxLayer5" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1, 1)
+layers = 16
+mesh = SubResource("2")
+
+[node name="CapsuleNoLayers" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.2, 3)
+layers = 0
+mesh = SubResource("3")
+
+[node name="SpotLight3D5" type="SpotLight3D" parent="."]
+transform = Transform3D(-0.329964, -0.570139, 0.752373, 0, 0.797011, 0.603965, -0.943994, 0.199286, -0.262985, 4.22446, 6.10813, -1.76358)
+light_energy = 0.5
+spot_range = 120.0
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-0.329964, -0.570139, 0.752373, 0, 0.797011, 0.603965, -0.943994, 0.199287, -0.262985, 0.462594, 3.08831, -0.448656)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+visible = false
