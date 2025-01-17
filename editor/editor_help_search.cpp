@@ -983,10 +983,11 @@ String EditorHelpSearch::Runner::_match_keywords_in_all_terms(const String &p_ke
 }
 
 bool EditorHelpSearch::Runner::_match_string(const String &p_term, const String &p_string) const {
+	// Make the search style-insensitive (e.g. `moveandslide` matches `move_and_slide`).
 	if (search_flags & SEARCH_CASE_SENSITIVE) {
-		return p_string.contains(p_term);
+		return p_string.replace("_", "").contains(p_term.replace("_", ""));
 	} else {
-		return p_string.containsn(p_term);
+		return p_string.replace("_", "").containsn(p_term.replace("_", ""));
 	}
 }
 
@@ -1008,8 +1009,9 @@ void EditorHelpSearch::Runner::_match_item(TreeItem *p_item, const String &p_tex
 	float inverse_length = 1.0f / float(p_text.length());
 
 	// Favor types where search term is a substring close to the start of the type.
+	// Make the search style-insensitive (e.g. `moveandslide` matches `move_and_slide`).
 	float w = 0.5f;
-	int pos = p_text.findn(term);
+	int pos = p_text.findn(term.replace("_", ""));
 	float score = (pos > -1) ? 1.0f - w * MIN(1, 3 * pos * inverse_length) : MAX(0.0f, 0.9f - w);
 
 	// Favor shorter items: they resemble the search term more.
@@ -1168,11 +1170,12 @@ TreeItem *EditorHelpSearch::Runner::_create_class_item(TreeItem *p_parent, const
 		item->set_text(0, p_doc->name + "      - " + vformat(TTR("Matches the \"%s\" keyword."), p_matching_keyword));
 	}
 
+	// Make the search style-insensitive (e.g. `moveandslide` matches `move_and_slide`).
 	if (!term.is_empty()) {
-		_match_item(item, p_doc->name);
+		_match_item(item, p_doc->name.replace("_", ""));
 	}
 	for (const String &keyword : p_doc->keywords.split(",")) {
-		_match_item(item, keyword.strip_edges(), true);
+		_match_item(item, keyword.strip_edges().replace("_", ""), true);
 	}
 
 	return item;
@@ -1276,11 +1279,12 @@ TreeItem *EditorHelpSearch::Runner::_create_member_item(TreeItem *p_parent, cons
 	item->set_text(0, text);
 
 	// Don't match member items for short searches.
+	// Make the search style-insensitive (e.g. `moveandslide` matches `move_and_slide`).
 	if (term.length() > 1 || term == "@") {
-		_match_item(item, p_name);
+		_match_item(item, p_name.replace("_", ""));
 	}
 	for (const String &keyword : p_keywords.split(",")) {
-		_match_item(item, keyword.strip_edges(), true);
+		_match_item(item, keyword.strip_edges().replace("_", ""), true);
 	}
 
 	return item;
