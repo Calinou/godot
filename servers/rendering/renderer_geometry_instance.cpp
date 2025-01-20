@@ -134,6 +134,12 @@ void RenderGeometryInstanceBase::set_cast_double_sided_shadows(bool p_enable) {
 	_mark_dirty();
 }
 
+void RenderGeometryInstanceBase::set_ignore_in_render_info(bool p_ignore) {
+	data->ignore_in_render_info = p_ignore;
+
+	_mark_dirty();
+}
+
 Transform3D RenderGeometryInstanceBase::get_transform() {
 	return transform;
 }

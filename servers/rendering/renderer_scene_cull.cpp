@@ -1377,6 +1377,13 @@ void RendererSceneCull::instance_geometry_set_flag(RID p_instance, RS::InstanceF
 				}
 			}
 		} break;
+		case RS::INSTANCE_FLAG_IGNORE_IN_RENDER_INFO: {
+			if ((1 << instance->base_type) & RS::INSTANCE_GEOMETRY_MASK && instance->base_data) {
+				InstanceGeometryData *geom = static_cast<InstanceGeometryData *>(instance->base_data);
+				ERR_FAIL_NULL(geom->geometry_instance);
+				geom->geometry_instance->set_ignore_in_render_info(p_enabled);
+			}
+		}
 		default: {
 		}
 	}

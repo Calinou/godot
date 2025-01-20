@@ -650,6 +650,7 @@ public:
 		RenderGeometryInstance *geometry_instance = nullptr;
 		HashSet<Instance *> lights;
 		bool can_cast_shadows;
+		bool ignore_in_render_info;
 		bool material_is_animated;
 		uint32_t projector_count = 0;
 		uint32_t softshadow_count = 0;
@@ -661,6 +662,7 @@ public:
 
 		InstanceGeometryData() {
 			can_cast_shadows = true;
+			ignore_in_render_info = false;
 			material_is_animated = true;
 		}
 	};

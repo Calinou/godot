@@ -783,11 +783,9 @@ void RenderForwardClustered::_fill_instance_data(RenderListType p_render_list, i
 	scene_state.instance_data[p_render_list].resize(p_offset + element_total);
 	rl->element_info.resize(p_offset + element_total);
 
-	if (p_render_info) {
-		p_render_info[RS::VIEWPORT_RENDER_INFO_OBJECTS_IN_FRAME] += element_total;
-	}
 	uint64_t frame = RSG::rasterizer->get_frame_number();
 	uint32_t repeats = 0;
+	int ignored_total = 0;
 	GeometryInstanceSurfaceDataCache *prev_surface = nullptr;
 	for (uint32_t i = 0; i < element_total; i++) {
 		GeometryInstanceSurfaceDataCache *surface = rl->elements[i + p_offset];
@@ -849,6 +847,10 @@ void RenderForwardClustered::_fill_instance_data(RenderListType p_render_list, i
 
 		bool cant_repeat = instance_data.flags & INSTANCE_DATA_FLAG_MULTIMESH || inst->mesh_instance.is_valid();
 
+		if (inst->data->ignore_in_render_info) {
+			ignored_total += 1;
+		}
+
 		if (prev_surface != nullptr && !cant_repeat && prev_surface->sort.sort_key1 == surface->sort.sort_key1 && prev_surface->sort.sort_key2 == surface->sort.sort_key2 && inst->mirror == prev_surface->owner->mirror && repeats < RenderElementInfo::MAX_REPEATS) {
 			//this element is the same as the previous one, count repeats to draw it using instancing
 			repeats++;
@@ -859,7 +861,7 @@ void RenderForwardClustered::_fill_instance_data(RenderListType p_render_list, i
 				}
 			}
 			repeats = 1;
-			if (p_render_info) {
+			if (p_render_info && !inst->data->ignore_in_render_info) {
 				p_render_info[RS::VIEWPORT_RENDER_INFO_DRAW_CALLS_IN_FRAME]++;
 			}
 		}
@@ -877,6 +879,10 @@ void RenderForwardClustered::_fill_instance_data(RenderListType p_render_list, i
 		} else {
 			prev_surface = surface;
 		}
+	}
+
+	if (p_render_info) {
+		p_render_info[RS::VIEWPORT_RENDER_INFO_OBJECTS_IN_FRAME] += element_total - ignored_total;
 	}
 
 	if (repeats > 0) {
@@ -1076,7 +1082,7 @@ void RenderForwardClustered::_fill_render_list(RenderListType p_render_list, con
 			if (p_render_data->scene_data->screen_mesh_lod_threshold > 0.0 && mesh_storage->mesh_surface_has_lod(surf->surface)) {
 				uint32_t indices = 0;
 				surf->sort.lod_index = mesh_storage->mesh_surface_get_lod(surf->surface, inst->lod_model_scale * inst->lod_bias, lod_distance * p_render_data->scene_data->lod_distance_multiplier, p_render_data->scene_data->screen_mesh_lod_threshold, indices);
-				if (p_render_data->render_info) {
+				if (p_render_data->render_info && !inst->data->ignore_in_render_info) {
 					indices = _indices_to_primitives(surf->primitive, indices);
 					if (p_render_list == RENDER_LIST_OPAQUE) { //opaque
 						p_render_data->render_info->info[RS::VIEWPORT_RENDER_INFO_TYPE_VISIBLE][RS::VIEWPORT_RENDER_INFO_PRIMITIVES_IN_FRAME] += indices;
@@ -1086,7 +1092,7 @@ void RenderForwardClustered::_fill_render_list(RenderListType p_render_list, con
 				}
 			} else {
 				surf->sort.lod_index = 0;
-				if (p_render_data->render_info) {
+				if (p_render_data->render_info && !inst->data->ignore_in_render_info) {
 					// This does not include primitives rendered via indirect draw calls.
 					uint32_t to_draw = mesh_storage->mesh_surface_get_vertices_drawn_count(surf->surface);
 					to_draw = _indices_to_primitives(surf->primitive, to_draw);

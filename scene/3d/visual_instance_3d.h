@@ -116,6 +116,7 @@ public:
 
 private:
 	ShadowCastingSetting shadow_casting_setting = SHADOW_CASTING_SETTING_ON;
+	bool ignore_in_render_info = false;
 	Ref<Material> material_override;
 	Ref<Material> material_overlay;
 
@@ -151,6 +152,9 @@ protected:
 public:
 	void set_cast_shadows_setting(ShadowCastingSetting p_shadow_casting_setting);
 	ShadowCastingSetting get_cast_shadows_setting() const;
+
+	void set_ignore_in_render_info(bool p_enable);
+	bool is_ignoring_in_render_info() const;
 
 	void set_transparency(float p_transparency);
 	float get_transparency() const;

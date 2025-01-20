@@ -5604,7 +5604,10 @@
 		<constant name="INSTANCE_FLAG_IGNORE_OCCLUSION_CULLING" value="3" enum="InstanceFlags">
 			Always draw, even if the instance would be culled by occlusion culling. Does not affect view frustum culling.
 		</constant>
-		<constant name="INSTANCE_FLAG_MAX" value="4" enum="InstanceFlags">
+		<constant name="INSTANCE_FLAG_IGNORE_IN_RENDER_INFO" value="4" enum="InstanceFlags">
+			Do not count this instance towards the metrics reported by [method get_rendering_info] (specifically [constant RENDERING_INFO_TOTAL_OBJECTS_IN_FRAME], [constant RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME] and [constant RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME]).
+		</constant>
+		<constant name="INSTANCE_FLAG_MAX" value="5" enum="InstanceFlags">
 			Represents the size of the [enum InstanceFlags] enum.
 		</constant>
 		<constant name="SHADOW_CASTING_SETTING_OFF" value="0" enum="ShadowCastingSetting">

@@ -50,6 +50,9 @@
 			The global illumination mode to use for the whole geometry. To avoid inconsistent results, use a mode that matches the purpose of the mesh during gameplay (static/dynamic).
 			[b]Note:[/b] Lights' bake mode will also affect the global illumination rendering. See [member Light3D.light_bake_mode].
 		</member>
+		<member name="ignore_in_render_info" type="bool" setter="set_ignore_in_render_info" getter="is_ignoring_in_render_info" default="false">
+			If [code]true[/code], this GeometryInstance3D will not count towards the metrics reported by [method RenderingServer.get_rendering_info] (specifically [constant RenderingServer.RENDERING_INFO_TOTAL_OBJECTS_IN_FRAME], [constant RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME] and [constant RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME]). This can be used to make custom 3D debug drawing not affect those metrics.
+		</member>
 		<member name="ignore_occlusion_culling" type="bool" setter="set_ignore_occlusion_culling" getter="is_ignoring_occlusion_culling" default="false">
 			If [code]true[/code], disables occlusion culling for this instance. Useful for gizmos that must be rendered even when occlusion culling is in use.
 			[b]Note:[/b] [member ignore_occlusion_culling] does not affect frustum culling (which is what happens when an object is not visible given the camera's angle). To avoid frustum culling, set [member custom_aabb] to a very large AABB that covers your entire game world such as [code]AABB(-10000, -10000, -10000, 20000, 20000, 20000)[/code].
