@@ -36,11 +36,11 @@
 #include "core/object/object.h"
 #include "scene/3d/lightmap_probe.h"
 #include "scene/3d/mesh_instance_3d.h"
+#include "scene/3d/physics/static_body_3d.h"
 #include "scene/resources/camera_attributes.h"
 #include "scene/resources/environment.h"
 #include "scene/resources/image_texture.h"
 #include "scene/resources/sky.h"
-#include "scene/3d/physics_body_3d.h"
 #include "servers/physics_server_3d.h"
 
 #include "modules/modules_enabled.gen.h" // For lightmapper_rd.
@@ -796,30 +796,46 @@ void LightmapGI::_gen_new_positions_from_octree(const GenProbesOctree *p_cell, f
 				}
 			}
 
-			// check for collision with static geo, unless we're ignoring all layers
+			// Check for collision with static geometry, unless we're ignoring all layers.
+			// We use several raycasts instead of a single pointcast or shapecast so we can detect
+			// whether we are inside concave geometry.
+			// TODO: Perform this check on manually placed LightmapProbe nodes too for convenience.
 			if (probes_ignore_layer != -1) {
-				auto space_state = get_world_3d()->get_direct_space_state();
-				auto point_params = PhysicsDirectSpaceState3D::PointParameters();
-				point_params.position = real_pos;
-				point_params.collide_with_areas = false;
-				PhysicsDirectSpaceState3D::ShapeResult results[10];
-				int intersect_count = space_state->intersect_point(point_params, results, 10);
-				if (intersect_count > 0) {
-					for (int j = 0; j < intersect_count; j++) {
-						auto shape_result = results[j];
-						StaticBody3D *static_body = cast_to<StaticBody3D>(shape_result.collider);
+				PhysicsDirectSpaceState3D *space_state = get_world_3d()->get_direct_space_state();
+				bool is_inside = true;
+				constexpr int RAYCASTS_PER_PROBE = 512;
+				for (int j = 0; j <= RAYCASTS_PER_PROBE; j++) {
+					PhysicsDirectSpaceState3D::RayParameters ray_params = PhysicsDirectSpaceState3D::RayParameters();
+					// Perform raycasts in random directions outwards and check if all of them are hitting from inside.
+					// If one of them is detected as not hitting from inside, then we assume the probe is not fully inside solid geometry
+					// and we generate it.
+					ray_params.from = real_pos;
+					constexpr float RAYCAST_MAX_DISTANCE = 3.0;
+					ray_params.to = real_pos + Vector3(-0.5 + Math::randf(), -0.5 + Math::randf(), -0.5 + Math::randf()) * RAYCAST_MAX_DISTANCE;
+					ray_params.collide_with_areas = false;
+					ray_params.hit_from_inside = true;
+					PhysicsDirectSpaceState3D::RayResult result;
+					bool is_colliding = space_state->intersect_ray(ray_params, result);
+					if (is_colliding && !result.normal.is_zero_approx()) {
+						StaticBody3D *static_body = cast_to<StaticBody3D>(result.collider);
 						if (static_body) {
-							// if there are is no ignore layer, just continue
+							// If there is no ignore layer, just continue.
 							if (probes_ignore_layer == 0) {
-								exists = true;
+								is_inside = false;
+								break;
 							} else {
 								CollisionObject3D *collision_obj = cast_to<CollisionObject3D>(static_body);
-								if ((collision_obj->get_collision_layer() & (1 << (probes_ignore_layer - 1))) == 0) {
-									exists = true;
+								if ((collision_obj->get_collision_layer() & (1 << (probes_ignore_layer - 1))) != 0) {
+									is_inside = false;
+									break;
 								}
 							}
 						}
 					}
+				}
+
+				if (is_inside) {
+					exists = true;
 				}
 			}
 
