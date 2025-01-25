@@ -965,8 +965,14 @@ void EditorNode3DGizmoPlugin::create_icon_material(const String &p_name, const R
 		icon->set_billboard_mode(StandardMaterial3D::BILLBOARD_ENABLED);
 		icon->set_render_priority(StandardMaterial3D::RENDER_PRIORITY_MIN);
 
-		if (p_on_top && selected) {
-			icon->set_on_top_of_alpha();
+		if (selected || p_on_top) {
+			// Draw icon as a partial x-ray when selected.
+			Ref<StandardMaterial3D> icon_next_pass = icon->duplicate();
+			icon_next_pass->set_transparency(StandardMaterial3D::TRANSPARENCY_ALPHA);
+			icon_next_pass->set_flag(StandardMaterial3D::FLAG_DISABLE_DEPTH_TEST, true);
+			icon_next_pass->set_albedo(Color(1, 1, 1, 0.2));
+			icon_next_pass->set_render_priority(StandardMaterial3D::RENDER_PRIORITY_MIN + 1);
+			icon->set_next_pass(icon_next_pass);
 		}
 
 		icons.push_back(icon);
@@ -1015,11 +1021,24 @@ Ref<StandardMaterial3D> EditorNode3DGizmoPlugin::get_material(const String &p_na
 
 	Ref<StandardMaterial3D> mat = materials[p_name][index];
 
+	// Gizmo materials with a next pass are used for the partial x-ray effect, so consider them too.
 	bool on_top_mat = mat->get_flag(StandardMaterial3D::FLAG_DISABLE_DEPTH_TEST);
+	if (!on_top_mat) {
+		Ref<StandardMaterial3D> mat_next_pass = Object::cast_to<StandardMaterial3D>(mat->get_next_pass().ptr());
+		if (mat_next_pass.is_valid()) {
+			on_top_mat = mat_next_pass->get_flag(StandardMaterial3D::FLAG_DISABLE_DEPTH_TEST);
+		}
+	}
 
-	if (!on_top_mat && current_state == ON_TOP && p_gizmo->is_selected()) {
+	if (!on_top_mat && current_state == ON_TOP) {
+		// Draw gizmo as a partial x-ray if this gizmo is in x-ray mode, even if unselected.
 		mat = mat->duplicate();
-		mat->set_flag(StandardMaterial3D::FLAG_DISABLE_DEPTH_TEST, true);
+		Ref<StandardMaterial3D> mat_next_pass = mat->duplicate();
+		mat_next_pass->set_transparency(StandardMaterial3D::TRANSPARENCY_ALPHA);
+		mat_next_pass->set_flag(StandardMaterial3D::FLAG_DISABLE_DEPTH_TEST, true);
+		mat_next_pass->set_albedo(mat->get_albedo() * Color(1, 1, 1, 0.2));
+		mat_next_pass->set_render_priority(StandardMaterial3D::RENDER_PRIORITY_MIN + 1);
+		mat->set_next_pass(mat_next_pass);
 	}
 
 	return mat;
