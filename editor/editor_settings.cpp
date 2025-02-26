@@ -1085,12 +1085,12 @@ void EditorSettings::_load_godot2_text_editor_theme() {
 
 void EditorSettings::_load_default_visual_shader_editor_theme() {
 	// Connection type colors
-	_initial_set("editors/visual_editors/connection_colors/scalar_color", Color(0.55, 0.55, 0.55));
-	_initial_set("editors/visual_editors/connection_colors/vector2_color", Color(0.44, 0.43, 0.64));
-	_initial_set("editors/visual_editors/connection_colors/vector3_color", Color(0.337, 0.314, 0.71));
-	_initial_set("editors/visual_editors/connection_colors/vector4_color", Color(0.7, 0.65, 0.147));
-	_initial_set("editors/visual_editors/connection_colors/boolean_color", Color(0.243, 0.612, 0.349));
-	_initial_set("editors/visual_editors/connection_colors/transform_color", Color(0.71, 0.357, 0.64));
+	_initial_set("editors/visual_editors/connection_colors/scalar_color", Color(0.208, 0.831, 0.957));
+	_initial_set("editors/visual_editors/connection_colors/vector2_color", Color(0.675, 0.451, 0.945));
+	_initial_set("editors/visual_editors/connection_colors/vector3_color", Color(0.871, 0.400, 0.941));
+	_initial_set("editors/visual_editors/connection_colors/vector4_color", Color(0.941, 0.400, 0.741));
+	_initial_set("editors/visual_editors/connection_colors/boolean_color", Color(0.435, 0.569, 0.941));
+	_initial_set("editors/visual_editors/connection_colors/transform_color", Color(0.965, 0.561, 0.271));
 	_initial_set("editors/visual_editors/connection_colors/sampler_color", Color(0.659, 0.4, 0.137));
 
 	// Node category colors (used for the node headers)
