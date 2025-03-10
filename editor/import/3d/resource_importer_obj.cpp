@@ -30,13 +30,38 @@
 
 #include "resource_importer_obj.h"
 
+#include "core/config/project_settings.h"
 #include "core/io/file_access.h"
 #include "core/io/resource_saver.h"
+#include "editor/gui/editor_toaster.h"
 #include "scene/3d/importer_mesh_instance_3d.h"
 #include "scene/3d/node_3d.h"
 #include "scene/resources/3d/importer_mesh.h"
 #include "scene/resources/mesh.h"
 #include "scene/resources/surface_tool.h"
+
+static String _get_material_texture_path(const String &p_texture_path, const String &p_base_path, const String &p_material_name) {
+	String path;
+	if (p_texture_path.is_absolute_path()) {
+		path = p_texture_path;
+	} else {
+		path = p_base_path.path_join(p_texture_path);
+	}
+
+	// If the path doesn't begin with `res://` after being localized, this means it's located outside the project path.
+	// Therefore, the texture file can't be used by Godot.
+	if (!ProjectSettings::get_singleton()->localize_path(path).begins_with("res://")) {
+		EditorToaster::get_singleton()->popup_str(
+				vformat("%s: OBJ material library references texture path %s for material %s, which is outside the project path. Ignoring this texture.",
+						p_texture_path,
+						path,
+						p_material_name),
+				EditorToaster::SEVERITY_WARNING);
+		return "";
+	}
+
+	return path;
+}
 
 static Error _parse_material_library(const String &p_path, HashMap<String, Ref<StandardMaterial3D>> &material_map, List<String> *r_missing_deps) {
 	Ref<FileAccess> f = FileAccess::open(p_path, FileAccess::READ);
@@ -119,14 +144,8 @@ static Error _parse_material_library(const String &p_path, HashMap<String, Ref<S
 			//normal
 			ERR_FAIL_COND_V(current.is_null(), ERR_FILE_CORRUPT);
 
-			String p = l.replace("map_Kd", "").replace("\\", "/").strip_edges();
-			String path;
-			if (p.is_absolute_path()) {
-				path = p;
-			} else {
-				path = base_path.path_join(p);
-			}
-
+			const String p = l.replace("map_Kd", "").replace("\\", "/").strip_edges();
+			const String path = _get_material_texture_path(p, base_path, current_name);
 			Ref<Texture2D> texture = ResourceLoader::load(path);
 
 			if (texture.is_valid()) {
@@ -139,14 +158,8 @@ static Error _parse_material_library(const String &p_path, HashMap<String, Ref<S
 			//normal
 			ERR_FAIL_COND_V(current.is_null(), ERR_FILE_CORRUPT);
 
-			String p = l.replace("map_Ks", "").replace("\\", "/").strip_edges();
-			String path;
-			if (p.is_absolute_path()) {
-				path = p;
-			} else {
-				path = base_path.path_join(p);
-			}
-
+			const String p = l.replace("map_Ks", "").replace("\\", "/").strip_edges();
+			const String path = _get_material_texture_path(p, base_path, current_name);
 			Ref<Texture2D> texture = ResourceLoader::load(path);
 
 			if (texture.is_valid()) {
@@ -159,14 +172,8 @@ static Error _parse_material_library(const String &p_path, HashMap<String, Ref<S
 			//normal
 			ERR_FAIL_COND_V(current.is_null(), ERR_FILE_CORRUPT);
 
-			String p = l.replace("map_Ns", "").replace("\\", "/").strip_edges();
-			String path;
-			if (p.is_absolute_path()) {
-				path = p;
-			} else {
-				path = base_path.path_join(p);
-			}
-
+			const String p = l.replace("map_Ns", "").replace("\\", "/").strip_edges();
+			const String path = _get_material_texture_path(p, base_path, current_name);
 			Ref<Texture2D> texture = ResourceLoader::load(path);
 
 			if (texture.is_valid()) {
@@ -178,9 +185,8 @@ static Error _parse_material_library(const String &p_path, HashMap<String, Ref<S
 			//normal
 			ERR_FAIL_COND_V(current.is_null(), ERR_FILE_CORRUPT);
 
-			String p = l.replace("map_bump", "").replace("\\", "/").strip_edges();
-			String path = base_path.path_join(p);
-
+			const String p = l.replace("map_bump", "").replace("\\", "/").strip_edges();
+			const String path = _get_material_texture_path(p, base_path, current_name);
 			Ref<Texture2D> texture = ResourceLoader::load(path);
 
 			if (texture.is_valid()) {
