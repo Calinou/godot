@@ -101,6 +101,9 @@ void ImportDock::set_edit_path(const String &p_path) {
 	config.instantiate();
 	Error err = config->load(p_path + ".import");
 	if (err != OK) {
+		// Required to show the file path in the "Select a resource" dock message.
+		params->paths.clear();
+		params->paths.push_back(p_path);
 		clear();
 		return;
 	}
@@ -495,6 +498,13 @@ void ImportDock::_preset_selected(int p_idx) {
 }
 
 void ImportDock::clear() {
+	select_a_resource->show();
+	if (params->paths.size() == 1) {
+		select_a_resource->set_text(vformat(TTR("The file selected is not an imported resource, so it has no options to configure:\n%s"), params->paths[0]));
+	} else {
+		select_a_resource->set_text(TTR("Select a resource file in the filesystem or in the inspector to adjust import settings."));
+	}
+
 	imported->set_text("");
 	import->set_disabled(true);
 	import_as->clear();
@@ -505,7 +515,6 @@ void ImportDock::clear() {
 	params->update();
 	preset->get_popup()->clear();
 	content->hide();
-	select_a_resource->show();
 }
 
 static bool _find_owners(EditorFileSystemDirectory *efsd, const String &p_path) {
