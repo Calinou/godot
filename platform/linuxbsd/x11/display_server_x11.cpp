@@ -3523,6 +3523,12 @@ bool DisplayServerX11::color_picker(const Callable &p_callback) {
 	return portal_desktop->color_picker(xid, p_callback);
 }
 
+bool DisplayServerX11::keyboard_is_caps_lock_on() const {
+	unsigned n;
+	XkbGetIndicatorState(x11_display, XkbUseCoreKbd, &n);
+	return (n & XInternAtom(x11_display, "Caps Lock", False)) == 1;
+}
+
 DisplayServerX11::Property DisplayServerX11::_read_property(Display *p_display, Window p_window, Atom p_property) {
 	Atom actual_type = None;
 	int actual_format = 0;

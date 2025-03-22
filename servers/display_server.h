@@ -613,6 +613,7 @@ public:
 	virtual String keyboard_get_layout_name(int p_index) const;
 	virtual Key keyboard_get_keycode_from_physical(Key p_keycode) const;
 	virtual Key keyboard_get_label_from_physical(Key p_keycode) const;
+	virtual bool keyboard_is_caps_lock_on() const;
 	virtual void show_emoji_and_symbol_picker() const;
 	virtual bool color_picker(const Callable &p_callback);
 

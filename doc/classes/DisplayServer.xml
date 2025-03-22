@@ -1019,6 +1019,14 @@
 				[b]Note:[/b] This method is implemented on Linux (X11/Wayland), macOS and Windows.
 			</description>
 		</method>
+		<method name="keyboard_is_caps_lock_on" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns [code]true[/code] if Caps Lock is on, [code]false[/code] otherwise. This can be used to display a warning on password fields to avoid typos.
+				[b]Note:[/b] The Caps Lock state is different from the Caps Lock key being pressed/released. The value returned is generally synchronized with the Caps Lock keyboard's LED state. If the user has disabled Caps Lock at the system level, this method will usually always return [code]false[/code].
+				[b]Note:[/b] This method is implemented only on Windows and Linux (X11). On unsupported platforms, [method keyboard_is_caps_lock_on] always returns [code]false[/code].
+			</description>
+		</method>
 		<method name="keyboard_set_current_layout">
 			<return type="void" />
 			<param index="0" name="index" type="int" />

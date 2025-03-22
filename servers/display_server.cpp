@@ -752,6 +752,10 @@ bool DisplayServer::color_picker(const Callable &p_callback) {
 	return false;
 }
 
+bool DisplayServer::keyboard_is_caps_lock_on() const {
+	return false;
+}
+
 void DisplayServer::force_process_and_drop_events() {
 }
 
@@ -1057,6 +1061,7 @@ void DisplayServer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("keyboard_get_layout_name", "index"), &DisplayServer::keyboard_get_layout_name);
 	ClassDB::bind_method(D_METHOD("keyboard_get_keycode_from_physical", "keycode"), &DisplayServer::keyboard_get_keycode_from_physical);
 	ClassDB::bind_method(D_METHOD("keyboard_get_label_from_physical", "keycode"), &DisplayServer::keyboard_get_label_from_physical);
+	ClassDB::bind_method(D_METHOD("keyboard_is_caps_lock_on"), &DisplayServer::keyboard_is_caps_lock_on);
 
 	ClassDB::bind_method(D_METHOD("show_emoji_and_symbol_picker"), &DisplayServer::show_emoji_and_symbol_picker);
 	ClassDB::bind_method(D_METHOD("color_picker", "callback"), &DisplayServer::color_picker);

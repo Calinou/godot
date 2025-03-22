@@ -3557,6 +3557,10 @@ Key DisplayServerWindows::keyboard_get_label_from_physical(Key p_keycode) const 
 	return p_keycode;
 }
 
+bool DisplayServerWindows::keyboard_is_caps_lock_on() const {
+	return (GetKeyState(VK_CAPITAL) & 0x0001) != 0;
+}
+
 void DisplayServerWindows::show_emoji_and_symbol_picker() const {
 	// Send Win + Period shortcut, there's no non-WinRT public API.
 
