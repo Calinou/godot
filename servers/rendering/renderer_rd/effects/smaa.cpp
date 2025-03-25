@@ -123,11 +123,11 @@ SMAA::SMAA() {
 		tf.height = AREATEX_HEIGHT;
 		tf.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT;
 
-		Vector<uint8_t> png_bytes = CoreBind::Marshalls::get_singleton()->base64_to_raw(areaTexPNG);
-		Image png;
-		png.load_png_from_buffer(png_bytes);
+		const Vector<uint8_t> webp_bytes = CoreBind::Marshalls::get_singleton()->base64_to_raw(areaTexWebP);
+		Image webp;
+		webp.load_webp_from_buffer(webp_bytes);
 
-		smaa.area_tex = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<unsigned char>>{ png.get_data() });
+		smaa.area_tex = RD::get_singleton()->texture_create(tf, RD::TextureView(), Vector<Vector<unsigned char>>{ webp.get_data() });
 	}
 
 	{
