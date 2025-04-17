@@ -993,8 +993,10 @@ void EditorNode3DGizmoPlugin::create_handle_material(const String &p_name, bool 
 
 	handle_material->set_shading_mode(StandardMaterial3D::SHADING_MODE_UNSHADED);
 	handle_material->set_flag(StandardMaterial3D::FLAG_USE_POINT_SIZE, true);
+	handle_material->set_flag(StandardMaterial3D::FLAG_POINT_SIZE_RESOLUTION_INDEPENDENT, true);
 	Ref<Texture2D> handle_t = p_icon.is_valid() ? p_icon : EditorNode::get_singleton()->get_editor_theme()->get_icon(SNAME("Editor3DHandle"), EditorStringName(EditorIcons));
-	handle_material->set_point_size(handle_t->get_width());
+	// Compensate for resolution-independent point size by using a smaller icon scale.
+	handle_material->set_point_size(handle_t->get_width() * 0.5);
 	handle_material->set_texture(StandardMaterial3D::TEXTURE_ALBEDO, handle_t);
 	handle_material->set_albedo(Color(1, 1, 1));
 	handle_material->set_flag(StandardMaterial3D::FLAG_ALBEDO_FROM_VERTEX_COLOR, true);

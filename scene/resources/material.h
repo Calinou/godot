@@ -267,6 +267,7 @@ public:
 		FLAG_PARTICLE_TRAILS_MODE,
 		FLAG_ALBEDO_TEXTURE_MSDF,
 		FLAG_DISABLE_FOG,
+		FLAG_POINT_SIZE_RESOLUTION_INDEPENDENT,
 		FLAG_MAX
 	};
 
@@ -430,6 +431,7 @@ private:
 		StringName backlight;
 		StringName refraction;
 		StringName point_size;
+		StringName point_size_viewport_reference_height;
 		StringName uv1_scale;
 		StringName uv1_offset;
 		StringName uv2_scale;
@@ -504,6 +506,7 @@ private:
 	Color backlight;
 	float refraction = 0.0f;
 	float point_size = 0.0f;
+	int point_size_viewport_reference_height = 648;
 	float alpha_scissor_threshold = 0.0f;
 	float alpha_hash_scale = 0.0f;
 	float alpha_antialiasing_edge = 0.0f;
@@ -656,6 +659,9 @@ public:
 
 	void set_point_size(float p_point_size);
 	float get_point_size() const;
+
+	void set_point_size_viewport_reference_height(int p_height);
+	int get_point_size_viewport_reference_height() const;
 
 	void set_transparency(Transparency p_transparency);
 	Transparency get_transparency() const;

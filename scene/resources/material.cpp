@@ -982,6 +982,12 @@ uniform float metallic : hint_range(0.0, 1.0, 0.01);
 		code += "uniform sampler2D texture_orm : hint_roughness_g, " + texfilter_str + ";\n";
 	}
 
+	if (flags[FLAG_POINT_SIZE_RESOLUTION_INDEPENDENT]) {
+		code += R"(
+uniform int viewport_reference_height : hint_range(1, 16384, 1);
+)";
+	}
+
 	if (billboard_mode == BILLBOARD_PARTICLES) {
 		code += R"(
 uniform int particles_anim_h_frames : hint_range(1, 128);
@@ -1145,6 +1151,14 @@ void vertex() {)";
 		code += R"(
 	// Use Point Size: Enabled
 	POINT_SIZE = point_size;
+)";
+	}
+	if (flags[FLAG_POINT_SIZE_RESOLUTION_INDEPENDENT]) {
+		code += R"(
+	// Point Size Resolution Independent: Enabled
+	POINT_SIZE *= VIEWPORT_SIZE.y / 648.0;
+	// FIXME: Figure out why the uniform doesn't work correctly.
+	//POINT_SIZE *= VIEWPORT_SIZE.y / float(viewport_reference_height);
 )";
 	}
 
@@ -2465,7 +2479,7 @@ void BaseMaterial3D::_validate_property(PropertyInfo &p_property) const {
 		p_property.usage = PROPERTY_USAGE_NO_EDITOR;
 	}
 
-	if (p_property.name == "point_size" && !flags[FLAG_USE_POINT_SIZE]) {
+	if ((p_property.name == "point_size" || p_property.name == "point_size_resolution_independent" || p_property.name == "point_size_viewport_reference_height") && !flags[FLAG_USE_POINT_SIZE]) {
 		p_property.usage = PROPERTY_USAGE_NO_EDITOR;
 	}
 
@@ -2600,6 +2614,15 @@ void BaseMaterial3D::set_point_size(float p_point_size) {
 
 float BaseMaterial3D::get_point_size() const {
 	return point_size;
+}
+
+void BaseMaterial3D::set_point_size_viewport_reference_height(int p_height) {
+	point_size_viewport_reference_height = p_height;
+	_material_set_param(shader_names->point_size_viewport_reference_height, p_height);
+}
+
+int BaseMaterial3D::get_point_size_viewport_reference_height() const {
+	return point_size_viewport_reference_height;
 }
 
 void BaseMaterial3D::set_uv1_scale(const Vector3 &p_scale) {
@@ -3062,6 +3085,9 @@ void BaseMaterial3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_point_size", "point_size"), &BaseMaterial3D::set_point_size);
 	ClassDB::bind_method(D_METHOD("get_point_size"), &BaseMaterial3D::get_point_size);
 
+	ClassDB::bind_method(D_METHOD("set_point_size_viewport_reference_height", "height"), &BaseMaterial3D::set_point_size_viewport_reference_height);
+	ClassDB::bind_method(D_METHOD("get_point_size_viewport_reference_height"), &BaseMaterial3D::get_point_size_viewport_reference_height);
+
 	ClassDB::bind_method(D_METHOD("set_detail_uv", "detail_uv"), &BaseMaterial3D::set_detail_uv);
 	ClassDB::bind_method(D_METHOD("get_detail_uv"), &BaseMaterial3D::get_detail_uv);
 
@@ -3353,6 +3379,8 @@ void BaseMaterial3D::_bind_methods() {
 	ADD_PROPERTYI(PropertyInfo(Variant::BOOL, "fixed_size"), "set_flag", "get_flag", FLAG_FIXED_SIZE);
 	ADD_PROPERTYI(PropertyInfo(Variant::BOOL, "use_point_size"), "set_flag", "get_flag", FLAG_USE_POINT_SIZE);
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "point_size", PROPERTY_HINT_RANGE, "0.1,128,0.1,suffix:px"), "set_point_size", "get_point_size");
+	ADD_PROPERTYI(PropertyInfo(Variant::BOOL, "point_size_resolution_independent"), "set_flag", "get_flag", FLAG_POINT_SIZE_RESOLUTION_INDEPENDENT);
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "point_size_viewport_reference_height", PROPERTY_HINT_RANGE, "1,16384,1,suffix:px"), "set_point_size_viewport_reference_height", "get_point_size_viewport_reference_height");
 	ADD_PROPERTYI(PropertyInfo(Variant::BOOL, "use_particle_trails"), "set_flag", "get_flag", FLAG_PARTICLE_TRAILS_MODE);
 	ADD_GROUP("Proximity Fade", "proximity_fade_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "proximity_fade_enabled"), "set_proximity_fade_enabled", "is_proximity_fade_enabled");
@@ -3462,6 +3490,7 @@ void BaseMaterial3D::_bind_methods() {
 	BIND_ENUM_CONSTANT(FLAG_PARTICLE_TRAILS_MODE);
 	BIND_ENUM_CONSTANT(FLAG_ALBEDO_TEXTURE_MSDF);
 	BIND_ENUM_CONSTANT(FLAG_DISABLE_FOG);
+	BIND_ENUM_CONSTANT(FLAG_POINT_SIZE_RESOLUTION_INDEPENDENT);
 	BIND_ENUM_CONSTANT(FLAG_MAX);
 
 	BIND_ENUM_CONSTANT(DIFFUSE_BURLEY);
@@ -3517,6 +3546,7 @@ BaseMaterial3D::BaseMaterial3D(bool p_orm) :
 	set_transmittance_boost(0.0);
 	set_refraction(0.05);
 	set_point_size(1);
+	set_point_size_viewport_reference_height(648);
 	set_uv1_offset(Vector3(0, 0, 0));
 	set_uv1_scale(Vector3(1, 1, 1));
 	set_uv1_triplanar_blend_sharpness(1);

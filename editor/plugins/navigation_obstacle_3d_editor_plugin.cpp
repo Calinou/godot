@@ -801,11 +801,13 @@ NavigationObstacle3DEditorPlugin::NavigationObstacle3DEditorPlugin() {
 	handle_material->set_shading_mode(StandardMaterial3D::SHADING_MODE_UNSHADED);
 	handle_material->set_transparency(StandardMaterial3D::TRANSPARENCY_ALPHA);
 	handle_material->set_flag(StandardMaterial3D::FLAG_USE_POINT_SIZE, true);
+	handle_material->set_flag(StandardMaterial3D::FLAG_POINT_SIZE_RESOLUTION_INDEPENDENT, true);
 	handle_material->set_flag(StandardMaterial3D::FLAG_ALBEDO_FROM_VERTEX_COLOR, true);
 	handle_material->set_flag(StandardMaterial3D::FLAG_SRGB_VERTEX_COLOR, true);
 	handle_material->set_flag(StandardMaterial3D::FLAG_DISABLE_FOG, true);
 	Ref<Texture2D> handle = EditorNode::get_singleton()->get_editor_theme()->get_icon(SNAME("Editor3DHandle"), EditorStringName(EditorIcons));
-	handle_material->set_point_size(handle->get_width());
+	// Compensate for resolution-independent point size by using a smaller icon scale.
+	handle_material->set_point_size(handle->get_width() * 0.5);
 	handle_material->set_texture(StandardMaterial3D::TEXTURE_ALBEDO, handle);
 	handle_material->set_flag(StandardMaterial3D::FLAG_DISABLE_DEPTH_TEST, true);
 

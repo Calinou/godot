@@ -591,7 +591,9 @@ Ref<StandardMaterial3D> NavigationServer3D::get_debug_navigation_agent_path_poin
 	Ref<StandardMaterial3D> material = Ref<StandardMaterial3D>(memnew(StandardMaterial3D));
 	material->set_albedo(debug_navigation_agent_path_color);
 	material->set_flag(StandardMaterial3D::FLAG_USE_POINT_SIZE, true);
-	material->set_point_size(debug_navigation_agent_path_point_size);
+	material->set_flag(StandardMaterial3D::FLAG_POINT_SIZE_RESOLUTION_INDEPENDENT, true);
+	// Compensate for resolution-independent point size by using a smaller icon scale.
+	material->set_point_size(debug_navigation_agent_path_point_size * 0.5);
 	material->set_flag(StandardMaterial3D::FLAG_DISABLE_FOG, true);
 	if (debug_navigation_enable_agent_paths_xray) {
 		material->set_flag(StandardMaterial3D::FLAG_DISABLE_DEPTH_TEST, true);
