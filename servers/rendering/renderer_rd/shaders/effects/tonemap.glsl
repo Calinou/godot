@@ -865,12 +865,25 @@ void main() {
 		color.rgb = do_fxaa(color.rgb, exposure, uv_interp);
 	}
 
-	if (bool(params.flags & FLAG_USE_GLOW) && params.glow_mode == GLOW_MODE_MIX) {
-		vec3 glow = gather_glow(source_glow, uv_interp) * params.luminance_multiplier;
-		if (params.glow_map_strength > 0.001) {
-			glow = mix(glow, texture(glow_map, uv_interp).rgb * glow, params.glow_map_strength);
+	if (bool(params.flags & FLAG_USE_GLOW)) {
+		// Perform glow before tonemapping.
+		// As a rule of thumb, any processing that can generate Open Domain (higher than 1.0)
+		// values needs to be done before tonemapping.
+		if (params.glow_mode == GLOW_MODE_MIX) {
+			vec3 glow = gather_glow(source_glow, uv_interp) * params.luminance_multiplier;
+			if (params.glow_map_strength > 0.001) {
+				glow = mix(glow, texture(glow_map, uv_interp).rgb * glow, params.glow_map_strength);
+			}
+
+			color.rgb = mix(color.rgb, glow, params.glow_intensity);
+		} else {
+			vec3 glow = gather_glow(source_glow, uv_interp) * params.glow_intensity * params.luminance_multiplier;
+			if (params.glow_map_strength > 0.001) {
+				glow = mix(glow, texture(glow_map, uv_interp).rgb * glow, params.glow_map_strength);
+			}
+
+			color.rgb = apply_glow(color.rgb, glow);
 		}
-		color.rgb = mix(color.rgb, glow, params.glow_intensity);
 	}
 #endif
 
@@ -879,23 +892,6 @@ void main() {
 	if (bool(params.flags & FLAG_CONVERT_TO_SRGB)) {
 		color.rgb = linear_to_srgb(color.rgb); // Regular linear -> SRGB conversion.
 	}
-#ifndef SUBPASS
-	// Glow
-	if (bool(params.flags & FLAG_USE_GLOW) && params.glow_mode != GLOW_MODE_MIX) {
-		vec3 glow = gather_glow(source_glow, uv_interp) * params.glow_intensity * params.luminance_multiplier;
-		if (params.glow_map_strength > 0.001) {
-			glow = mix(glow, texture(glow_map, uv_interp).rgb * glow, params.glow_map_strength);
-		}
-
-		// high dynamic range -> SRGB
-		glow = apply_tonemapping(glow, params.white);
-		if (bool(params.flags & FLAG_CONVERT_TO_SRGB)) {
-			glow = linear_to_srgb(glow);
-		}
-
-		color.rgb = apply_glow(color.rgb, glow);
-	}
-#endif
 
 	// Additional effects
 
