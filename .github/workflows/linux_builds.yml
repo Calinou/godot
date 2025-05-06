@@ -215,6 +215,14 @@ jobs:
           ${{ matrix.bin }} --help
           ${{ matrix.bin }} --headless --test --force-colors
 
+      # Perform integration tests on an empty project
+      # (such as exporting the project or using MovieWriter)
+      - name: Integration tests
+        uses: ./.github/actions/godot-integration-test
+        if: matrix.proj-test
+        with:
+          bin: ${{ matrix.bin }}
+
       - name: .NET source generators tests
         if: matrix.build-mono
         run: |
