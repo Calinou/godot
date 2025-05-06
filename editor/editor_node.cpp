@@ -2229,6 +2229,12 @@ void EditorNode::_dialog_action(String p_file) {
 
 			project_run_bar->play_main_scene((bool)pick_main_scene->get_meta("from_native", false));
 		} break;
+		case SETTINGS_PICK_MOVIE_PATH: {
+			ProjectSettings::get_singleton()->set("editor/movie_writer/movie_file", p_file);
+			ProjectSettings::get_singleton()->save();
+
+			//project_run_bar->play_main_scene((bool)pick_main_scene->get_meta("from_native", false));
+		} break;
 		case SCENE_CLOSE:
 		case SCENE_TAB_CLOSE:
 		case SCENE_SAVE_SCENE:
@@ -3332,6 +3338,42 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 				file->set_current_path(scene->get_scene_file_path());
 			}
 			file->set_title(TTR("Pick a Main Scene"));
+			file->popup_file_dialog();
+
+		} break;
+		case SETTINGS_PICK_MOVIE_PATH: {
+			file->set_file_mode(EditorFileDialog::FILE_MODE_SAVE_FILE);
+			HashMap<StringName, PropertyInfo> custom_property_info = ProjectSettings::get_singleton()->get_custom_property_info();
+			String extensions;
+			if (custom_property_info.has("editor/movie_writer/movie_file")) {
+				extensions = custom_property_info["editor/movie_writer/movie_file"].hint_string;
+			}
+			print_line(extensions);
+
+			// TODO: Figure out getting recognized extensions for MovieWriter, including those provided by extensions.
+			// If this isn't possible, use a hardcoded list of AVI/PNG extensions (but allow using other file types nonetheless).
+			List<String> extensions2;
+			ResourceLoader::get_recognized_extensions_for_type("MovieWriter", &extensions2);
+			List<String> extensions3;
+			ResourceLoader::get_recognized_extensions_for_type("MovieWriterAVI", &extensions3);
+			List<String> extensions4;
+			ResourceLoader::get_recognized_extensions_for_type("MovieWriterPNGWAV", &extensions4);
+			for (const String &ext : extensions2) {
+				print_line("MovieWriter: ", ext);
+			}
+			for (const String &ext : extensions3) {
+				print_line("MovieWriterAVI: ", ext);
+			}
+			for (const String &ext : extensions4) {
+				print_line("MovieWriterPNGWAV: ", ext);
+			}
+
+			file->clear_filters();
+			// for (const String &extension : extensions) {
+			// 	file->add_filter("*." + extension, extension.to_upper());
+			// }
+
+			file->set_title(TTR("Pick a Movie Output Path"));
 			file->popup_file_dialog();
 
 		} break;
@@ -5000,6 +5042,15 @@ void EditorNode::_pick_main_scene_custom_action(const String &p_custom_action_na
 	}
 }
 
+void EditorNode::_pick_movie_path_custom_action(const String &p_custom_action_name) {
+	if (p_custom_action_name == "select_for_current") {
+		Node *scene = editor_data.get_edited_scene_root();
+		scene->set_meta("movie_file", "TODO");
+
+		pick_movie_path->hide();
+	}
+}
+
 Ref<Texture2D> EditorNode::_get_class_or_script_icon(const String &p_class, const String &p_script_path, const String &p_fallback, bool p_fallback_script_to_theme) {
 	ERR_FAIL_COND_V_MSG(p_class.is_empty(), nullptr, "Class name cannot be empty.");
 	EditorData &ed = EditorNode::get_editor_data();
@@ -5687,7 +5738,7 @@ bool EditorNode::ensure_main_scene(bool p_from_native) {
 
 	if (main_scene.is_empty()) {
 		current_menu_option = -1;
-		pick_main_scene->set_text(TTR("No main scene has ever been defined. Select one?\nYou can change it later in \"Project Settings\" under the 'application' category."));
+		pick_main_scene->set_text(TTR("No main scene has been defined. Select one?\nYou can change it later in the Project Settings in the \"Application\" category."));
 		pick_main_scene->popup_centered();
 
 		if (editor_data.get_edited_scene_root()) {
@@ -5702,19 +5753,24 @@ bool EditorNode::ensure_main_scene(bool p_from_native) {
 
 	if (!FileAccess::exists(main_scene)) {
 		current_menu_option = -1;
-		pick_main_scene->set_text(vformat(TTR("Selected scene '%s' does not exist. Select a valid one?\nYou can change it later in \"Project Settings\" under the 'application' category."), main_scene));
+		pick_main_scene->set_text(vformat(TTR("The selected scene \"%s\" does not exist. Select a valid one?\nYou can change it later in the Project Settings in the \"Application\" category."), main_scene));
 		pick_main_scene->popup_centered();
 		return false;
 	}
 
 	if (ResourceLoader::get_resource_type(main_scene) != "PackedScene") {
 		current_menu_option = -1;
-		pick_main_scene->set_text(vformat(TTR("Selected scene '%s' is not a scene file. Select a valid one?\nYou can change it later in \"Project Settings\" under the 'application' category."), main_scene));
+		pick_main_scene->set_text(vformat(TTR("The selected scene \"%s\" is not a scene file. Select a valid one?\nYou can change it later in the Project Settings in the \"Application\" category."), main_scene));
 		pick_main_scene->popup_centered();
 		return false;
 	}
 
 	return true;
+}
+
+bool EditorNode::ensure_movie_path() {
+	pick_movie_path->set_text(TTR("Movie Maker mode is enabled, but no movie file path has been specified.\nChoose to specify an output path for all scenes, or for the currently open scene only.\nYou can change the path for all scenes later in the Project Settings in the \"Movie Writer\" category.\nFor individual scenes, you can change the path later by modifying the \"movie_file\" metadata on the root node."));
+	pick_movie_path->popup_centered();
 }
 
 bool EditorNode::validate_custom_directory() {
@@ -5726,7 +5782,7 @@ bool EditorNode::validate_custom_directory() {
 		if (dir->change_dir(data_dir) != OK) {
 			dir->make_dir_recursive(data_dir);
 			if (dir->change_dir(data_dir) != OK) {
-				open_project_settings->set_text(vformat(TTR("User data dir '%s' is not valid. Change to a valid one?"), data_dir));
+				open_project_settings->set_text(vformat(TTR("The user data directory \"%s\" is not valid. Change to a valid one?"), data_dir));
 				open_project_settings->popup_centered();
 				return false;
 			}
@@ -8349,6 +8405,13 @@ EditorNode::EditorNode() {
 	pick_main_scene->connect(SceneStringName(confirmed), callable_mp(this, &EditorNode::_menu_option).bind(SETTINGS_PICK_MAIN_SCENE));
 	select_current_scene_button = pick_main_scene->add_button(TTR("Select Current"), true, "select_current");
 	pick_main_scene->connect("custom_action", callable_mp(this, &EditorNode::_pick_main_scene_custom_action));
+
+	pick_movie_path = memnew(ConfirmationDialog);
+	gui_base->add_child(pick_movie_path);
+	pick_movie_path->set_ok_button_text(TTR("Select for All Scenes"));
+	pick_movie_path->connect(SceneStringName(confirmed), callable_mp(this, &EditorNode::_menu_option).bind(SETTINGS_PICK_MOVIE_PATH));
+	select_current_scene_button = pick_movie_path->add_button(TTR("Select for Current Scene"), true, "select_for_current");
+	pick_movie_path->connect("custom_action", callable_mp(this, &EditorNode::_pick_movie_path_custom_action));
 
 	open_project_settings = memnew(ConfirmationDialog);
 	gui_base->add_child(open_project_settings);

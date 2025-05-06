@@ -215,6 +215,7 @@ public:
 		RESOURCE_SAVE,
 		RESOURCE_SAVE_AS,
 		SETTINGS_PICK_MAIN_SCENE,
+		SETTINGS_PICK_MOVIE_PATH,
 	};
 
 	struct ExecuteThreadArgs {
@@ -368,6 +369,7 @@ private:
 	ConfirmationDialog *save_confirmation = nullptr;
 	ConfirmationDialog *import_confirmation = nullptr;
 	ConfirmationDialog *pick_main_scene = nullptr;
+	ConfirmationDialog *pick_movie_path = nullptr;
 	ConfirmationDialog *open_project_settings = nullptr;
 	Button *select_current_scene_button = nullptr;
 	AcceptDialog *accept = nullptr;
@@ -672,6 +674,7 @@ private:
 	Ref<Texture2D> _get_editor_theme_native_menu_icon(const StringName &p_name, bool p_global_menu, bool p_dark_mode) const;
 
 	void _pick_main_scene_custom_action(const String &p_custom_action_name);
+	void _pick_movie_path_custom_action(const String &p_custom_action_name);
 
 	void _immediate_dialog_confirmed();
 
@@ -976,6 +979,7 @@ public:
 	Vector<Ref<EditorResourceConversionPlugin>> find_resource_conversion_plugin_for_type_name(const String &p_type);
 
 	bool ensure_main_scene(bool p_from_native);
+	bool ensure_movie_path();
 	bool validate_custom_directory();
 };
 
