@@ -909,19 +909,30 @@ CreateDialog::CreateDialog() {
 	search_hb->add_child(favorite);
 	vbc->add_margin_child(TTR("Search:"), search_hb);
 
+	VSplitContainer *vsc_description = memnew(VSplitContainer);
+	vsc_description->set_v_size_flags(Control::SIZE_EXPAND_FILL);
+	vbc->add_child(vsc_description);
+
 	search_options = memnew(Tree);
 	search_options->set_accessibility_name(TTRC("Matches"));
 	search_options->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED);
 	search_options->connect("item_activated", callable_mp(this, &CreateDialog::_confirmed));
 	search_options->connect("cell_selected", callable_mp(this, &CreateDialog::_item_selected));
 	search_options->connect("button_clicked", callable_mp(this, &CreateDialog::_script_button_clicked));
-	vbc->add_margin_child(TTR("Matches:"), search_options, true);
+	VBoxContainer *vbc_search_options = memnew(VBoxContainer);
+	//vbc_search_options->set_v_size_flags(Control::SIZE_EXPAND_FILL);
+	vbc_search_options->add_margin_child(TTR("Matches:"), search_options, true);
+	vsc_description->add_child(vbc_search_options);
 
 	help_bit = memnew(EditorHelpBit);
 	help_bit->set_accessibility_name(TTRC("Description"));
-	help_bit->set_content_height_limits(80 * EDSCALE, 80 * EDSCALE);
+	//help_bit->set_content_height_limits(80 * EDSCALE, 240 * EDSCALE);
 	help_bit->connect("request_hide", callable_mp(this, &CreateDialog::_hide_requested));
-	vbc->add_margin_child(TTR("Description:"), help_bit);
+	VBoxContainer *vbc_help_bit = memnew(VBoxContainer);
+	//vbc_help_bit->set_v_size_flags(Control::SIZE_EXPAND_FILL);
+	//help_bit->set_v_size_flags(Control::SIZE_EXPAND_FILL);
+	vbc_help_bit->add_margin_child(TTR("Description:"), help_bit);
+	vsc_description->add_child(vbc_help_bit);
 
 	register_text_enter(search_box);
 	set_hide_on_ok(false);
