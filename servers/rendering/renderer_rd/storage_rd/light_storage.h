@@ -66,6 +66,7 @@ private:
 		Color color = Color(1, 1, 1, 1);
 		RID projector;
 		bool shadow = false;
+		bool shadow_jitter = false;
 		bool negative = false;
 		bool reverse_cull = false;
 		RS::LightBakeMode bake_mode = RS::LIGHT_BAKE_DYNAMIC;
@@ -484,6 +485,7 @@ public:
 	virtual void light_set_color(RID p_light, const Color &p_color) override;
 	virtual void light_set_param(RID p_light, RS::LightParam p_param, float p_value) override;
 	virtual void light_set_shadow(RID p_light, bool p_enabled) override;
+	virtual void light_set_shadow_jitter_enabled(RID p_light, bool p_enabled) override;
 	virtual void light_set_projector(RID p_light, RID p_texture) override;
 	virtual void light_set_negative(RID p_light, bool p_enable) override;
 	virtual void light_set_cull_mask(RID p_light, uint32_t p_mask) override;
@@ -719,6 +721,14 @@ public:
 
 	_FORCE_INLINE_ Transform3D light_instance_get_shadow_transform(RID p_light_instance, int p_index) {
 		LightInstance *li = light_instance_owner.get_or_null(p_light_instance);
+		// Light *light = light_owner.get_or_null(li->light);
+
+		// Transform3D xform = li->shadow_transform[p_index].transform;
+		// if (light->shadow_jitter) {
+		// 	// Jitter every frame.
+		// 	xform = xform.rotated(Vector3(0, 1, 0), 0.01 * (-Math::PI + Math::TAU * Math::randf()));
+		// }
+		// return xform;
 		return li->shadow_transform[p_index].transform;
 	}
 	_FORCE_INLINE_ float light_instance_get_shadow_bias_scale(RID p_light_instance, int p_index) {

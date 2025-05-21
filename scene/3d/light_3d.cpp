@@ -64,6 +64,17 @@ bool Light3D::has_shadow() const {
 	return shadow;
 }
 
+void Light3D::set_shadow_jitter_enabled(bool p_enable) {
+	shadow_jitter = p_enable;
+	RS::get_singleton()->light_set_shadow_jitter_enabled(light, p_enable);
+
+	notify_property_list_changed();
+}
+
+bool Light3D::is_shadow_jitter_enabled() const {
+	return shadow_jitter;
+}
+
 void Light3D::set_negative(bool p_enable) {
 	negative = p_enable;
 	RS::get_singleton()->light_set_negative(light, p_enable);
@@ -353,6 +364,9 @@ void Light3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_shadow", "enabled"), &Light3D::set_shadow);
 	ClassDB::bind_method(D_METHOD("has_shadow"), &Light3D::has_shadow);
 
+	ClassDB::bind_method(D_METHOD("set_shadow_jitter_enabled", "enabled"), &Light3D::set_shadow_jitter_enabled);
+	ClassDB::bind_method(D_METHOD("is_shadow_jitter_enabled"), &Light3D::is_shadow_jitter_enabled);
+
 	ClassDB::bind_method(D_METHOD("set_negative", "enabled"), &Light3D::set_negative);
 	ClassDB::bind_method(D_METHOD("is_negative"), &Light3D::is_negative);
 
@@ -415,6 +429,7 @@ void Light3D::_bind_methods() {
 	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "shadow_transmittance_bias", PROPERTY_HINT_RANGE, "-16,16,0.001"), "set_param", "get_param", PARAM_TRANSMITTANCE_BIAS);
 	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "shadow_opacity", PROPERTY_HINT_RANGE, "0,1,0.01"), "set_param", "get_param", PARAM_SHADOW_OPACITY);
 	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "shadow_blur", PROPERTY_HINT_RANGE, "0,10,0.001"), "set_param", "get_param", PARAM_SHADOW_BLUR);
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "shadow_jitter"), "set_shadow_jitter_enabled", "is_shadow_jitter_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "shadow_caster_mask", PROPERTY_HINT_LAYERS_3D_RENDER), "set_shadow_caster_mask", "get_shadow_caster_mask");
 
 	ADD_GROUP("Distance Fade", "distance_fade_");

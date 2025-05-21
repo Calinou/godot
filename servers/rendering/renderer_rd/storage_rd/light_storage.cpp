@@ -229,6 +229,15 @@ void LightStorage::light_set_shadow(RID p_light, bool p_enabled) {
 	light->dependency.changed_notify(Dependency::DEPENDENCY_CHANGED_LIGHT);
 }
 
+void LightStorage::light_set_shadow_jitter_enabled(RID p_light, bool p_enabled) {
+	Light *light = light_owner.get_or_null(p_light);
+	ERR_FAIL_NULL(light);
+	light->shadow_jitter = p_enabled;
+
+	light->version++;
+	light->dependency.changed_notify(Dependency::DEPENDENCY_CHANGED_LIGHT);
+}
+
 void LightStorage::light_set_projector(RID p_light, RID p_texture) {
 	TextureStorage *texture_storage = TextureStorage::get_singleton();
 	Light *light = light_owner.get_or_null(p_light);
@@ -519,7 +528,21 @@ void LightStorage::light_instance_set_shadow_transform(RID p_light_instance, con
 	ERR_FAIL_INDEX(p_pass, 6);
 
 	light_instance->shadow_transform[p_pass].camera = p_projection;
-	light_instance->shadow_transform[p_pass].transform = p_transform;
+
+	Transform3D transform = p_transform;
+	Light *light = light_owner.get_or_null(light_instance->light);
+	if (light->shadow_jitter) {
+		// Jitter every frame. This is done on the shadow transform only so that the light projector isn't affected.
+		// FIXME: This works correctly for directional lights, but not for omni or spot lights
+		// (the shadow will flicker all over the place).
+		// If I use a lower rotation value, the center will look good but the shadowmap's edges will heavily flicker.
+		//
+		// GDScript equivalent (also affects the projector):
+		//
+		//    rotate_object_local(Vector3.FORWARD, randf_range(-PI, PI))
+		transform = transform.rotated_local(Vector3(0, 0, -1), (-Math::PI + Math::TAU * Math::randf()));
+	}
+	light_instance->shadow_transform[p_pass].transform = transform;
 	light_instance->shadow_transform[p_pass].farplane = p_far;
 	light_instance->shadow_transform[p_pass].split = p_split;
 	light_instance->shadow_transform[p_pass].bias_scale = p_bias_scale;

@@ -71,6 +71,7 @@ private:
 	Color color;
 	real_t param[PARAM_MAX] = {};
 	bool shadow = false;
+	bool shadow_jitter = false;
 	bool negative = false;
 	bool reverse_cull = false;
 	uint32_t cull_mask = 0;
@@ -111,6 +112,9 @@ public:
 
 	void set_shadow(bool p_enable);
 	bool has_shadow() const;
+
+	void set_shadow_jitter_enabled(bool p_enable);
+	bool is_shadow_jitter_enabled() const;
 
 	void set_negative(bool p_enable);
 	bool is_negative() const;
