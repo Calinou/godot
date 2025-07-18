@@ -474,7 +474,10 @@ void RendererSceneRenderRD::_render_buffers_post_process_and_tonemap(const Rende
 
 	RID render_target = rb->get_render_target();
 	RID color_texture = use_upscaled_texture ? rb->get_upscaled_texture() : rb->get_internal_texture();
-	Size2i color_size = use_upscaled_texture ? target_size : rb->get_internal_size();
+	// Use internal 3D resolution as a basis for post-processing, since it's where FXAA is performed.
+	// FXAA should be performed on the internal size to look correct, not the target viewport size.
+	print_line("Internal size: ", rb->get_internal_size(), ", Target size: ", target_size, ", Upscaled texture: ", use_upscaled_texture);
+	Size2i color_size = rb->get_internal_size();
 
 	bool dest_is_msaa_2d = rb->get_view_count() == 1 && texture_storage->render_target_get_msaa(render_target) != RS::VIEWPORT_MSAA_DISABLED;
 
@@ -788,10 +791,11 @@ void RendererSceneRenderRD::_post_process_subpass(RID p_source_texture, RID p_fr
 	Ref<RenderSceneBuffersRD> rb = p_render_data->render_buffers;
 	ERR_FAIL_COND(rb.is_null());
 
-	// FIXME: Our input it our internal_texture, shouldn't this be using internal_size ??
-	// Seeing we don't support FSR in our mobile renderer right now target_size = internal_size...
-	Size2i target_size = rb->get_target_size();
-	bool can_use_effects = target_size.x >= 8 && target_size.y >= 8 && debug_draw == RS::VIEWPORT_DEBUG_DRAW_DISABLED;
+	// Use internal 3D resolution as a basis for post-processing, since it's where FXAA is performed.
+	// FXAA should be performed on the internal size to look correct, not the target viewport size.
+	print_line("Subpass internal size: ", rb->get_internal_size());
+	Size2i internal_size = rb->get_internal_size();
+	bool can_use_effects = internal_size.x >= 8 && internal_size.y >= 8 && debug_draw == RS::VIEWPORT_DEBUG_DRAW_DISABLED;
 
 	RD::DrawListID draw_list = RD::get_singleton()->draw_list_switch_to_next_pass();
 
@@ -838,7 +842,7 @@ void RendererSceneRenderRD::_post_process_subpass(RID p_source_texture, RID p_fr
 	}
 
 	tonemap.use_debanding = rb->get_use_debanding();
-	tonemap.texture_size = Vector2i(target_size.x, target_size.y);
+	tonemap.texture_size = Vector2i(internal_size.x, internal_size.y);
 
 	tonemap.luminance_multiplier = _render_buffers_get_luminance_multiplier();
 	tonemap.view_count = rb->get_view_count();
