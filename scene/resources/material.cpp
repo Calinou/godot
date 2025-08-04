@@ -67,6 +67,14 @@ Ref<Material> Material::get_next_pass() const {
 	return next_pass;
 }
 
+void Material::set_render_pipeline(RenderPipeline p_pipeline) {
+	render_pipeline = p_pipeline;
+}
+
+Material::RenderPipeline Material::get_render_pipeline() const {
+	return render_pipeline;
+}
+
 void Material::set_render_priority(int p_priority) {
 	ERR_FAIL_COND(p_priority < RENDER_PRIORITY_MIN);
 	ERR_FAIL_COND(p_priority > RENDER_PRIORITY_MAX);
@@ -90,6 +98,9 @@ void Material::_validate_property(PropertyInfo &p_property) const {
 	if (!_can_do_next_pass() && p_property.name == "next_pass") {
 		p_property.usage = PROPERTY_USAGE_NONE;
 	} else if (!_can_use_render_priority() && p_property.name == "render_priority") {
+		p_property.usage = PROPERTY_USAGE_NONE;
+	}
+	if (p_property.name == "render_pipeline" && render_pipeline == RENDER_PIPELINE_NOT_APPLICABLE) {
 		p_property.usage = PROPERTY_USAGE_NONE;
 	}
 }
@@ -161,6 +172,9 @@ void Material::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_next_pass", "next_pass"), &Material::set_next_pass);
 	ClassDB::bind_method(D_METHOD("get_next_pass"), &Material::get_next_pass);
 
+	ClassDB::bind_method(D_METHOD("set_render_pipeline", "render_pipeline"), &Material::set_render_pipeline);
+	ClassDB::bind_method(D_METHOD("get_render_pipeline"), &Material::get_render_pipeline);
+
 	ClassDB::bind_method(D_METHOD("set_render_priority", "priority"), &Material::set_render_priority);
 	ClassDB::bind_method(D_METHOD("get_render_priority"), &Material::get_render_priority);
 
@@ -169,8 +183,15 @@ void Material::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("create_placeholder"), &Material::create_placeholder);
 
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "render_pipeline", PROPERTY_HINT_ENUM, "Opaque (Fast),Alpha Test (Average),Alpha Blend (Slow),N/A", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY), "set_render_pipeline", "get_render_pipeline");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "render_priority", PROPERTY_HINT_RANGE, itos(RENDER_PRIORITY_MIN) + "," + itos(RENDER_PRIORITY_MAX) + ",1"), "set_render_priority", "get_render_priority");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "next_pass", PROPERTY_HINT_RESOURCE_TYPE, Material::get_class_static()), "set_next_pass", "get_next_pass");
+
+	BIND_ENUM_CONSTANT(RENDER_PIPELINE_OPAQUE);
+	BIND_ENUM_CONSTANT(RENDER_PIPELINE_ALPHA_TEST);
+	BIND_ENUM_CONSTANT(RENDER_PIPELINE_ALPHA_BLEND);
+	BIND_ENUM_CONSTANT(RENDER_PIPELINE_NOT_APPLICABLE);
+	BIND_ENUM_CONSTANT(RENDER_PIPELINE_MAX);
 
 	BIND_CONSTANT(RENDER_PRIORITY_MAX);
 	BIND_CONSTANT(RENDER_PRIORITY_MIN);
@@ -179,6 +200,7 @@ void Material::_bind_methods() {
 	GDVIRTUAL_BIND(_get_shader_mode)
 	GDVIRTUAL_BIND(_can_do_next_pass)
 	GDVIRTUAL_BIND(_can_use_render_priority)
+	GDVIRTUAL_BIND(_update_render_pipeline)
 }
 
 Material::Material() {
@@ -2334,6 +2356,7 @@ void BaseMaterial3D::set_blend_mode(BlendMode p_mode) {
 
 	blend_mode = p_mode;
 	_queue_shader_change();
+	_update_render_pipeline();
 }
 
 BaseMaterial3D::BlendMode BaseMaterial3D::get_blend_mode() const {
@@ -2355,7 +2378,9 @@ void BaseMaterial3D::set_transparency(Transparency p_transparency) {
 	}
 
 	transparency = p_transparency;
+
 	_queue_shader_change();
+	_update_render_pipeline();
 	notify_property_list_changed();
 }
 
@@ -2397,6 +2422,7 @@ void BaseMaterial3D::set_depth_draw_mode(DepthDrawMode p_mode) {
 	}
 
 	depth_draw_mode = p_mode;
+	_update_render_pipeline();
 	_queue_shader_change();
 }
 
@@ -2482,6 +2508,10 @@ void BaseMaterial3D::set_flag(Flags p_flag, bool p_enabled) {
 		update_configuration_warning();
 	}
 
+	if (p_flag == FLAG_DISABLE_DEPTH_TEST) {
+		_update_render_pipeline();
+	}
+
 	_queue_shader_change();
 }
 
@@ -2498,6 +2528,10 @@ void BaseMaterial3D::set_feature(Feature p_feature, bool p_enabled) {
 
 	features[p_feature] = p_enabled;
 	_queue_shader_change();
+
+	if (p_feature == FEATURE_REFRACTION) {
+		_update_render_pipeline();
+	}
 }
 
 bool BaseMaterial3D::get_feature(Feature p_feature) const {
@@ -3047,6 +3081,7 @@ void BaseMaterial3D::set_on_top_of_alpha() {
 void BaseMaterial3D::set_proximity_fade_enabled(bool p_enable) {
 	proximity_fade_enabled = p_enable;
 	_queue_shader_change();
+	_update_render_pipeline();
 	notify_property_list_changed();
 }
 
@@ -3084,6 +3119,7 @@ float BaseMaterial3D::get_msdf_outline_size() const {
 void BaseMaterial3D::set_distance_fade(DistanceFadeMode p_mode) {
 	distance_fade = p_mode;
 	_queue_shader_change();
+	_update_render_pipeline();
 	notify_property_list_changed();
 }
 
@@ -3319,6 +3355,28 @@ RID BaseMaterial3D::get_shader_rid() const {
 
 Shader::Mode BaseMaterial3D::get_shader_mode() const {
 	return Shader::MODE_SPATIAL;
+}
+
+void BaseMaterial3D::_update_render_pipeline() {
+	if (
+			transparency == TRANSPARENCY_ALPHA ||
+			transparency == TRANSPARENCY_ALPHA_DEPTH_PRE_PASS ||
+			blend_mode != BLEND_MODE_MIX ||
+			depth_draw_mode == DEPTH_DRAW_DISABLED ||
+			flags[FLAG_DISABLE_DEPTH_TEST] ||
+			features[FEATURE_REFRACTION] ||
+			proximity_fade_enabled ||
+			distance_fade == DISTANCE_FADE_PIXEL_ALPHA) {
+		set_render_pipeline(RENDER_PIPELINE_ALPHA_BLEND);
+	} else if (
+			transparency == TRANSPARENCY_ALPHA_SCISSOR ||
+			transparency == TRANSPARENCY_ALPHA_HASH ||
+			distance_fade == DISTANCE_FADE_PIXEL_DITHER ||
+			distance_fade == DISTANCE_FADE_OBJECT_DITHER) {
+		set_render_pipeline(RENDER_PIPELINE_ALPHA_TEST);
+	} else {
+		set_render_pipeline(RENDER_PIPELINE_OPAQUE);
+	}
 }
 
 void BaseMaterial3D::_bind_methods() {
@@ -3972,6 +4030,8 @@ BaseMaterial3D::BaseMaterial3D(bool p_orm) :
 	set_fov_override(75.0);
 
 	set_stencil_mode(STENCIL_MODE_DISABLED);
+
+	_update_render_pipeline();
 
 	flags[FLAG_ALBEDO_TEXTURE_MSDF] = false;
 	flags[FLAG_USE_TEXTURE_REPEAT] = true;

@@ -40,8 +40,19 @@ class Material : public Resource {
 	RES_BASE_EXTENSION("material")
 	OBJ_SAVE_TYPE(Material);
 
+public:
+	enum RenderPipeline {
+		RENDER_PIPELINE_OPAQUE,
+		RENDER_PIPELINE_ALPHA_TEST,
+		RENDER_PIPELINE_ALPHA_BLEND,
+		RENDER_PIPELINE_NOT_APPLICABLE,
+		RENDER_PIPELINE_MAX,
+	};
+
+private:
 	mutable RID material;
 	Ref<Material> next_pass;
+	RenderPipeline render_pipeline = RENDER_PIPELINE_NOT_APPLICABLE;
 	int render_priority;
 
 	enum {
@@ -58,6 +69,7 @@ protected:
 	static void _bind_methods();
 	virtual bool _can_do_next_pass() const;
 	virtual bool _can_use_render_priority() const;
+	virtual void _update_render_pipeline() {}
 
 	void _validate_property(PropertyInfo &p_property) const;
 
@@ -68,6 +80,7 @@ protected:
 	GDVIRTUAL0RC_REQUIRED(Shader::Mode, _get_shader_mode)
 	GDVIRTUAL0RC(bool, _can_do_next_pass)
 	GDVIRTUAL0RC(bool, _can_use_render_priority)
+	GDVIRTUAL0RC(bool, _update_render_pipeline)
 public:
 	enum {
 		RENDER_PRIORITY_MAX = RSE::MATERIAL_RENDER_PRIORITY_MAX,
@@ -78,6 +91,9 @@ public:
 
 	void set_next_pass(const Ref<Material> &p_pass);
 	Ref<Material> get_next_pass() const;
+
+	void set_render_pipeline(RenderPipeline p_pipeline);
+	RenderPipeline get_render_pipeline() const;
 
 	void set_render_priority(int p_priority);
 	int get_render_priority() const;
@@ -91,6 +107,8 @@ public:
 	Material();
 	virtual ~Material();
 };
+
+VARIANT_ENUM_CAST(Material::RenderPipeline);
 
 class ShaderMaterial : public Material {
 	GDCLASS(ShaderMaterial, Material);
@@ -640,6 +658,7 @@ protected:
 	void _validate_property(PropertyInfo &p_property) const;
 	virtual bool _can_do_next_pass() const override { return true; }
 	virtual bool _can_use_render_priority() const override { return true; }
+	virtual void _update_render_pipeline() override;
 
 public:
 	void set_albedo(const Color &p_albedo);
