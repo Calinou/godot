@@ -5351,6 +5351,11 @@ bool EditorNode::is_object_of_custom_type(const Object *p_object, const StringNa
 // All tasks run sequentially, so we can just keep a single counter.
 static int progress_total_steps = 0;
 
+static String last_progress_task;
+static String last_progress_state;
+static int last_progress_step;
+static double last_progress_time;
+
 void EditorNode::progress_add_task(const String &p_task, const String &p_label, int p_steps, bool p_can_cancel) {
 	if (!singleton) {
 		return;
@@ -5366,8 +5371,16 @@ bool EditorNode::progress_task_step(const String &p_task, const String &p_state,
 	if (!singleton) {
 		return false;
 	} else if (singleton->cmdline_mode) {
-		const int percent = (p_step / float(progress_total_steps + 1)) * 100;
-		print_line_rich(vformat("[%4d%% ] [color=gray][b]%s[/b] | %s[/color]", percent, p_task, p_state));
+		double current_time = USEC_TO_SEC(OS::get_singleton()->get_ticks_usec());
+		double elapsed_time = current_time - last_progress_time;
+		if (last_progress_task != p_task || last_progress_state != p_state || last_progress_step != p_step || elapsed_time >= 1.0) {
+			const int percent = (p_step / float(progress_total_steps + 1)) * 100;
+			print_line_rich(vformat("[%4d%% ] [color=gray][b]%s[/b] | %s[/color]", percent, p_task, p_state));
+			last_progress_task = p_task;
+			last_progress_state = p_state;
+			last_progress_step = p_step;
+			last_progress_time = current_time;
+		}
 		return false;
 	} else if (singleton->progress_dialog) {
 		return singleton->progress_dialog->task_step(p_task, p_state, p_step, p_force_refresh);
