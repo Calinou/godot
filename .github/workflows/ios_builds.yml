@@ -9,6 +9,7 @@ env:
     module_text_server_fb_enabled=yes
     tests=no
     debug_symbols=no
+    generate_bundle=yes
 
 jobs:
   ios-template:
@@ -39,6 +40,13 @@ jobs:
       - name: Save Godot build cache
         uses: ./.github/actions/godot-cache-save
         continue-on-error: true
+
+      - name: Prepare artifact
+        # Remove binary that is now part of the export template .app bundle
+        # (using the `generate_bundle=yes` option above).
+        run: |
+          ls -l bin
+          rm ./bin/godot.ios.template_release.arm64
 
       - name: Upload artifact
         uses: ./.github/actions/upload-artifact

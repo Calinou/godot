@@ -39,6 +39,16 @@ String TestUtils::get_data_path(const String &p_file) {
 }
 
 String TestUtils::get_executable_dir() {
+#ifdef MACOS_ENABLED
+	DirAccess* dir_access = DirAccess::create(DirAccess::ACCESS_RESOURCES);
+	String bundle_dir = OS::get_singleton()->get_executable_path().get_base_dir().get_base_dir().get_base_dir().get_base_dir();
+	print_line(bundle_dir);
+	if (dir_access->is_bundle(bundle_dir)) {
+		print_line(bundle_dir.get_base_dir());
+		return bundle_dir.get_base_dir();
+	}
+#endif
+
 	return OS::get_singleton()->get_executable_path().get_base_dir();
 }
 
