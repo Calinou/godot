@@ -145,7 +145,7 @@ void RendererViewport::_configure_3d_render_buffers(Viewport *p_viewport) {
 				scaling_3d_mode = RS::VIEWPORT_SCALING_3D_MODE_OFF;
 			}
 
-			if (scaling_3d_mode != RS::VIEWPORT_SCALING_3D_MODE_OFF && scaling_3d_mode != RS::VIEWPORT_SCALING_3D_MODE_BILINEAR && OS::get_singleton()->get_current_rendering_method() == "gl_compatibility") {
+			if (scaling_3d_mode != RS::VIEWPORT_SCALING_3D_MODE_OFF && scaling_3d_mode != RS::VIEWPORT_SCALING_3D_MODE_BILINEAR && scaling_3d_mode != RS::VIEWPORT_SCALING_3D_MODE_NEAREST && OS::get_singleton()->get_current_rendering_method() == "gl_compatibility") {
 				scaling_3d_mode = RS::VIEWPORT_SCALING_3D_MODE_BILINEAR;
 				scaling_type = RS::scaling_3d_mode_type(scaling_3d_mode);
 				WARN_PRINT_ONCE("MetalFX and FSR upscaling are not supported in the Compatibility renderer. Falling back to bilinear scaling.");
