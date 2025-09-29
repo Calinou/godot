@@ -1195,7 +1195,51 @@ float sample_shadow(highp sampler2DShadow shadow, float shadow_pixel_size, vec4 
 
 	return avg;
 }
-#endif //!defined(ADDITIVE_OMNI)
+#endif // !defined(ADDITIVE_OMNI)
+
+#ifdef ADDITIVE_OMNI
+float sample_cube_shadow(highp samplerCubeShadow shadow, float shadow_pixel_size, vec4 pos) {
+	float avg = texture(shadow, pos);
+#ifdef SHADOW_MODE_PCF_13
+	pos /= pos.w;
+	avg += texture(shadow, vec4(pos.xy + vec2(shadow_pixel_size * 2.0, 0.0), pos.zw));
+	avg += texture(shadow, vec4(pos.xy + vec2(-shadow_pixel_size * 2.0, 0.0), pos.zw));
+	avg += texture(shadow, vec4(pos.xy + vec2(0.0, shadow_pixel_size * 2.0), pos.zw));
+	avg += texture(shadow, vec4(pos.xy + vec2(0.0, -shadow_pixel_size * 2.0), pos.zw));
+
+	// Early bail if distant samples are fully shaded (or none are shaded) to improve performance.
+	if (avg <= 0.000001) {
+		// None shaded at all.
+		return 0.0;
+	} else if (avg >= 4.999999) {
+		// All fully shaded.
+		return 1.0;
+	}
+
+	avg += texture(shadow, vec4(pos.xy + vec2(shadow_pixel_size, 0.0), pos.zw));
+	avg += texture(shadow, vec4(pos.xy + vec2(-shadow_pixel_size, 0.0), pos.zw));
+	avg += texture(shadow, vec4(pos.xy + vec2(0.0, shadow_pixel_size), pos.zw));
+	avg += texture(shadow, vec4(pos.xy + vec2(0.0, -shadow_pixel_size), pos.zw));
+	avg += texture(shadow, vec4(pos.xy + vec2(shadow_pixel_size, shadow_pixel_size), pos.zw));
+	avg += texture(shadow, vec4(pos.xy + vec2(-shadow_pixel_size, shadow_pixel_size), pos.zw));
+	avg += texture(shadow, vec4(pos.xy + vec2(shadow_pixel_size, -shadow_pixel_size), pos.zw));
+	avg += texture(shadow, vec4(pos.xy + vec2(-shadow_pixel_size, -shadow_pixel_size), pos.zw));
+	return avg * (1.0 / 13.0);
+#endif
+
+#ifdef SHADOW_MODE_PCF_5
+	pos /= pos.w;
+	avg += texture(shadow, vec4(pos.xy + vec2(shadow_pixel_size, 0.0), pos.zw));
+	avg += texture(shadow, vec4(pos.xy + vec2(-shadow_pixel_size, 0.0), pos.zw));
+	avg += texture(shadow, vec4(pos.xy + vec2(0.0, shadow_pixel_size), pos.zw));
+	avg += texture(shadow, vec4(pos.xy + vec2(0.0, -shadow_pixel_size), pos.zw));
+	return avg * (1.0 / 5.0);
+
+#endif
+
+	return avg;
+}
+#endif // ADDITIVE_OMNI
 #endif // USE_ADDITIVE_LIGHTING
 
 #endif // !MODE_RENDER_DEPTH
@@ -2539,7 +2583,8 @@ void main() {
 	float omni_shadow = 1.0f;
 #ifndef SHADOWS_DISABLED
 	vec3 light_ray = ((positional_shadows[positional_shadow_index].shadow_matrix * vec4(shadow_coord.xyz, 1.0))).xyz;
-	omni_shadow = texture(omni_shadow_texture, vec4(light_ray, 1.0 - length(light_ray) * omni_lights[omni_light_index].inv_radius));
+	//omni_shadow = texture(omni_shadow_texture, vec4(light_ray, 1.0 - length(light_ray) * omni_lights[omni_light_index].inv_radius));
+	omni_shadow = sample_cube_shadow(omni_shadow_texture, positional_shadows[positional_shadow_index].shadow_atlas_pixel_size, shadow_coord);
 	omni_shadow = mix(1.0, omni_shadow, omni_lights[omni_light_index].shadow_opacity);
 #endif // SHADOWS_DISABLED
 
