@@ -183,7 +183,7 @@ void ToneMapper::tonemapper(RID p_source_color, RID p_dst_framebuffer, const Ton
 	RD::get_singleton()->draw_list_end();
 }
 
-void ToneMapper::tonemapper(RD::DrawListID p_subpass_draw_list, RID p_source_color, RD::FramebufferFormatID p_dst_format_id, const TonemapSettings &p_settings, RS::CanvasItemTextureFilter p_filter_mode) {
+void ToneMapper::tonemapper(RD::DrawListID p_subpass_draw_list, RID p_source_color, RD::FramebufferFormatID p_dst_format_id, const TonemapSettings &p_settings) {
 	UniformSetCacheRD *uniform_set_cache = UniformSetCacheRD::get_singleton();
 	ERR_FAIL_NULL(uniform_set_cache);
 	MaterialStorage *material_storage = MaterialStorage::get_singleton();
@@ -224,11 +224,9 @@ void ToneMapper::tonemapper(RD::DrawListID p_subpass_draw_list, RID p_source_col
 	RID default_sampler = material_storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED);
 	RID default_mipmap_sampler = material_storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED);
 
-	RID viewport_scale_sampler = material_storage->sampler_rd_get_default(p_filter_mode, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED);
 	RD::Uniform u_source_color;
-	u_source_color.uniform_type = RD::UNIFORM_TYPE_SAMPLER_WITH_TEXTURE;
+	u_source_color.uniform_type = RD::UNIFORM_TYPE_INPUT_ATTACHMENT;
 	u_source_color.binding = 0;
-	u_source_color.append_id(viewport_scale_sampler);
 	u_source_color.append_id(p_source_color);
 
 	RD::Uniform u_exposure_texture;
