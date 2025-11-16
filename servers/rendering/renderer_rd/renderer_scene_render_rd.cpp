@@ -745,7 +745,6 @@ void RendererSceneRenderRD::_render_buffers_post_process_and_tonemap(const Rende
 
 		RID dest_fb;
 		RD::DataFormat dest_fb_format;
-		RD::DataFormat format_for_debanding;
 		RS::CanvasItemTextureFilter filter_mode = RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR;
 		if (spatial_upscaler != nullptr || use_smaa) {
 			// If we use a spatial upscaler to upscale or SMAA to antialias we need to write our result into an intermediate buffer.
