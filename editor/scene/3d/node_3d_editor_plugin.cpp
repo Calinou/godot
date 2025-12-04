@@ -4470,6 +4470,7 @@ void Node3DEditorViewport::_toggle_camera_preview(bool p_activate) {
 	_update_navigation_controls_visibility();
 
 	if (!p_activate) {
+		_toggle_2d_preview(false);
 		previewing->disconnect(SceneStringName(tree_exiting), callable_mp(this, &Node3DEditorViewport::_preview_exited_scene));
 		previewing->disconnect(CoreStringName(property_list_changed), callable_mp(this, &Node3DEditorViewport::_preview_camera_property_changed));
 		previewing = nullptr;
@@ -4480,11 +4481,32 @@ void Node3DEditorViewport::_toggle_camera_preview(bool p_activate) {
 		surface->queue_redraw();
 
 	} else {
+		_toggle_2d_preview(true);
 		previewing = preview;
 		previewing->connect(SceneStringName(tree_exiting), callable_mp(this, &Node3DEditorViewport::_preview_exited_scene));
 		previewing->connect(CoreStringName(property_list_changed), callable_mp(this, &Node3DEditorViewport::_preview_camera_property_changed));
 		RS::get_singleton()->viewport_attach_camera(viewport->get_viewport_rid(), preview->get_camera()); //replace
 		surface->queue_redraw();
+	}
+}
+
+void Node3DEditorViewport::_toggle_2d_preview(bool p_enable) {
+	if (p_enable) {
+		print_line("Enabling 2D preview");
+		print_tree_pretty();
+		//viewport_2d_preview->set_world_2d(get_tree()->get_root()->get_world_2d()); // infinite recursion :)
+		viewport_2d_preview->set_world_2d(EditorNode::get_singleton()->get_edited_scene()->get_viewport()->get_world_2d());
+		if (!texture_rect_2d_preview->get_texture().is_valid()) {
+			print_line("Setting viewport texture");
+			Ref<ViewportTexture> viewport_texture;
+			viewport_texture.instantiate();
+			viewport_texture->setup_local_to_scene();
+			viewport_texture->set_viewport_path_in_scene(viewport_2d_preview->get_path());
+			texture_rect_2d_preview->set_texture(viewport_texture);
+		}
+	} else {
+		print_line("Disabling 2D preview");
+		viewport_2d_preview->set_world_2d(Ref<World2D>());
 	}
 }
 
@@ -6067,7 +6089,22 @@ Node3DEditorViewport::Node3DEditorViewport(Node3DEditor *p_spatial_editor, int p
 	viewport = memnew(SubViewport);
 	viewport->set_disable_input(true);
 
+	viewport_2d_preview = memnew(SubViewport);
+	viewport_2d_preview->set_name("SubViewport2DPreview"); // FIXME: Remove
+	viewport_2d_preview->set_disable_input(true);
+	viewport_2d_preview->set_transparent_background(true);
+	viewport_2d_preview->set_size(Size2i(GLOBAL_GET("display/window/size/viewport_width"), GLOBAL_GET("display/window/size/viewport_height")));
+
+	texture_rect_2d_preview = memnew(TextureRect);
+	texture_rect_2d_preview->set_name("TextureRect2DPreview"); // FIXME: Remove
+	texture_rect_2d_preview->add_child(viewport_2d_preview);
+	texture_rect_2d_preview->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
+	texture_rect_2d_preview->set_anchors_and_offsets_preset(Control::PRESET_FULL_RECT);
+	texture_rect_2d_preview->set_expand_mode(TextureRect::EXPAND_IGNORE_SIZE);
+	texture_rect_2d_preview->set_stretch_mode(TextureRect::STRETCH_KEEP_ASPECT_CENTERED);
+
 	c->add_child(viewport);
+	viewport->add_child(texture_rect_2d_preview);
 	surface = memnew(Control);
 	SET_DRAG_FORWARDING_CD(surface, Node3DEditorViewport);
 	add_child(surface);

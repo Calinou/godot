@@ -254,6 +254,8 @@ private:
 
 	Control *surface = nullptr;
 	SubViewport *viewport = nullptr;
+	SubViewport *viewport_2d_preview = nullptr;
+	TextureRect *texture_rect_2d_preview = nullptr;
 	Camera3D *camera = nullptr;
 	bool transforming = false;
 	bool orthogonal;
@@ -504,6 +506,7 @@ private:
 	void _preview_camera_property_changed();
 	void _update_centered_labels();
 	void _toggle_camera_preview(bool);
+	void _toggle_2d_preview(bool p_enable);
 	void _toggle_cinema_preview(bool);
 	void _init_gizmo_instance(int p_idx);
 	void _finish_gizmo_instances();
