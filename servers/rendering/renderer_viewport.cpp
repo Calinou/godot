@@ -185,7 +185,7 @@ void RendererViewport::_configure_3d_render_buffers(Viewport *p_viewport) {
 				}
 			}
 
-			bool scaling_3d_is_not_nearest_or_bilinear = scaling_3d_mode != RS::VIEWPORT_SCALING_3D_MODE_OFF && ((scaling_3d_mode != RS::VIEWPORT_SCALING_3D_MODE_NEAREST) && (scaling_3d_mode != RS::VIEWPORT_SCALING_3D_MODE_BILINEAR));
+			bool scaling_3d_is_not_nearest_or_bilinear = scaling_3d_mode != RS::VIEWPORT_SCALING_3D_MODE_OFF && scaling_3d_mode != RS::VIEWPORT_SCALING_3D_MODE_NEAREST && scaling_3d_mode != RS::VIEWPORT_SCALING_3D_MODE_BILINEAR;
 			bool use_taa = p_viewport->use_taa;
 
 			if (scaling_3d_is_not_nearest_or_bilinear && (scaling_3d_scale >= (1.0 + EPSILON))) {
