@@ -813,7 +813,23 @@ void Control::set_anchor_and_offset(Side p_side, real_t p_anchor, real_t p_pos, 
 
 void Control::set_begin(const Point2 &p_point) {
 	ERR_MAIN_THREAD_GUARD;
-	ERR_FAIL_COND(!std::isfinite(p_point.x) || !std::isfinite(p_point.y));
+	ERR_FAIL_COND_MSG(
+			!std::isfinite(p_point.x),
+			vformat("Control \"%s\"'s X position cannot be infinite.",
+					is_inside_tree() ? String(get_path()) : String(get_name())));
+	ERR_FAIL_COND_MSG(
+			!std::isfinite(p_point.y),
+			vformat("Control \"%s\"'s Y position cannot be infinite.",
+					is_inside_tree() ? String(get_path()) : String(get_name())));
+	ERR_FAIL_COND_MSG(
+			Math::is_nan(p_point.x),
+			vformat("Control \"%s\"'s X position cannot be NaN.",
+					is_inside_tree() ? String(get_path()) : String(get_name())));
+	ERR_FAIL_COND_MSG(
+			Math::is_nan(p_point.y),
+			vformat("Control \"%s\"'s Y position cannot be NaN.",
+					is_inside_tree() ? String(get_path()) : String(get_name())));
+
 	if (data.offset[0] == p_point.x && data.offset[1] == p_point.y) {
 		return;
 	}
@@ -1484,7 +1500,22 @@ void Control::_set_size(const Size2 &p_size) {
 
 void Control::set_size(const Size2 &p_size, bool p_keep_offsets) {
 	ERR_MAIN_THREAD_GUARD;
-	ERR_FAIL_COND(!std::isfinite(p_size.x) || !std::isfinite(p_size.y));
+	ERR_FAIL_COND_MSG(
+			!std::isfinite(p_size.x),
+			vformat("Control \"%s\"'s X size cannot be infinite.",
+					is_inside_tree() ? String(get_path()) : String(get_name())));
+	ERR_FAIL_COND_MSG(
+			!std::isfinite(p_size.y),
+			vformat("Control \"%s\"'s Y size cannot be infinite.",
+					is_inside_tree() ? String(get_path()) : String(get_name())));
+	ERR_FAIL_COND_MSG(
+			Math::is_nan(p_size.x),
+			vformat("Control \"%s\"'s X size cannot be NaN.",
+					is_inside_tree() ? String(get_path()) : String(get_name())));
+	ERR_FAIL_COND_MSG(
+			Math::is_nan(p_size.y),
+			vformat("Control \"%s\"'s Y size cannot be NaN.",
+					is_inside_tree() ? String(get_path()) : String(get_name())));
 	Size2 new_size = p_size;
 	Size2 min = get_combined_minimum_size();
 	if (new_size.x < min.x) {

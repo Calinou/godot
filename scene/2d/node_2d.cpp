@@ -154,6 +154,22 @@ void Node2D::reparent(RequiredParam<Node> p_parent, bool p_keep_global_transform
 
 void Node2D::set_position(const Point2 &p_pos) {
 	ERR_THREAD_GUARD;
+	ERR_FAIL_COND_MSG(
+			!std::isfinite(p_pos.x),
+			vformat("Node2D \"%s\"'s X position cannot be infinite.",
+					is_inside_tree() ? String(get_path()) : String(get_name())));
+	ERR_FAIL_COND_MSG(
+			!std::isfinite(p_pos.y),
+			vformat("Node2D \"%s\"'s Y position cannot be infinite.",
+					is_inside_tree() ? String(get_path()) : String(get_name())));
+	ERR_FAIL_COND_MSG(
+			Math::is_nan(p_pos.x),
+			vformat("Node2D \"%s\"'s X position cannot be NaN.",
+					is_inside_tree() ? String(get_path()) : String(get_name())));
+	ERR_FAIL_COND_MSG(
+			Math::is_nan(p_pos.y),
+			vformat("Node2D \"%s\"'s Y position cannot be NaN.",
+					is_inside_tree() ? String(get_path()) : String(get_name())));
 	if (_is_xform_dirty()) {
 		_update_xform_values();
 	}
