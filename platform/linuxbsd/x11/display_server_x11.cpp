@@ -7037,7 +7037,16 @@ DisplayServerX11::DisplayServerX11(const String &p_rendering_driver, WindowMode 
 #endif // VULKAN_ENABLED
 
 	if (rendering_context) {
-		if (rendering_context->initialize() != OK) {
+		const Error context_err = rendering_context->initialize();
+		RenderingContextDriver::DeviceType type = RenderingContextDriver::DeviceType::DEVICE_TYPE_OTHER;
+		if (context_err == OK) {
+			if (Engine::get_singleton()->get_gpu_index() != -1) {
+				print_line("NOTE: `--gpu-index` overridden on the command line (this should skip the check later on).");
+			}
+			type = rendering_context->device_get(Engine::get_singleton()->get_gpu_index()).type;
+			print_line(type);
+		}
+		if (context_err != OK || type == RenderingContextDriver::DeviceType::DEVICE_TYPE_CPU) {
 			memdelete(rendering_context);
 			rendering_context = nullptr;
 #if defined(GLES3_ENABLED)
