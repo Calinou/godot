@@ -195,6 +195,7 @@ static void merge_methods(Vector<DocData::MethodDoc> &p_to, const Vector<DocData
 			to.deprecated_message = from.deprecated_message;
 			to.is_experimental = from.is_experimental;
 			to.experimental_message = from.experimental_message;
+			to.since = from.since;
 			to.keywords = from.keywords;
 		}
 	}
@@ -1154,6 +1155,9 @@ static Error _parse_methods(Ref<XMLParser> &parser, Vector<DocData::MethodDoc> &
 				if (parser->has_attribute("qualifiers")) {
 					method.qualifiers = parser->get_named_attribute_value("qualifiers");
 				}
+				if (parser->has_attribute("since")) {
+					method.since = parser->get_named_attribute_value("since");
+				}
 #ifndef DISABLE_DEPRECATED
 				if (parser->has_attribute("is_deprecated")) {
 					method.is_deprecated = parser->get_named_attribute_value("is_deprecated").to_lower() == "true";
@@ -1571,6 +1575,9 @@ static void _write_method_doc(Ref<FileAccess> f, const String &p_name, Vector<Do
 			String additional_attributes;
 			if (!m.qualifiers.is_empty()) {
 				additional_attributes += " qualifiers=\"" + m.qualifiers.xml_escape(true) + "\"";
+			}
+			if (!m.since.is_empty()) {
+				additional_attributes += " since=\"" + m.since.xml_escape(true) + "\"";
 			}
 			if (m.is_deprecated) {
 				additional_attributes += " deprecated=\"" + m.deprecated_message.xml_escape(true) + "\"";

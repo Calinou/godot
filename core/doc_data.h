@@ -101,6 +101,8 @@ public:
 		String return_enum;
 		bool return_is_bitfield = false;
 		String qualifiers;
+		// First Godot version where the method appeared (optional).
+		String since;
 		String description;
 		bool is_deprecated = false;
 		String deprecated_message;
@@ -159,6 +161,10 @@ public:
 
 			if (p_dict.has("qualifiers")) {
 				doc.qualifiers = p_dict["qualifiers"];
+			}
+
+			if (p_dict.has("since")) {
+				doc.since = p_dict["since"];
 			}
 
 			if (p_dict.has("description")) {
@@ -225,6 +231,10 @@ public:
 
 			if (!p_doc.qualifiers.is_empty()) {
 				dict["qualifiers"] = p_doc.qualifiers;
+			}
+
+			if (!p_doc.since.is_empty()) {
+				dict["since"] = p_doc.since;
 			}
 
 			if (!p_doc.description.is_empty()) {

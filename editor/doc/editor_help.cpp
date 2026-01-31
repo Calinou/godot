@@ -650,6 +650,16 @@ void EditorHelp::_add_method(const DocData::MethodDoc &p_method, bool p_overview
 		class_desc->pop(); // color
 	}
 
+	print_line(p_method.since);
+	if (true || !p_method.since.is_empty()) {
+		class_desc->add_text("  \t");
+		class_desc->push_color(theme_cache.qualifier_color);
+		class_desc->push_hint(vformat(TTR("This item was first added in Godot %s."), p_method.since));
+		class_desc->add_text(vformat(TTR("since %s"), p_method.since));
+		class_desc->pop(); // hint
+		class_desc->pop(); // color
+	}
+
 	if (p_overview) {
 		if (p_method.is_deprecated) {
 			class_desc->add_text(" ");

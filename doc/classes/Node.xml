@@ -106,7 +106,7 @@
 				[b]Note:[/b] Frame delta may be post-processed by [member OS.delta_smoothing] if this is enabled for the project.
 			</description>
 		</method>
-		<method name="_ready" qualifiers="virtual">
+		<method name="_ready" qualifiers="virtual" since="4.2">
 			<return type="void" />
 			<description>
 				Called when the node is "ready", i.e. when both the node and its children have entered the scene tree. If the node has children, their [method _ready] callbacks get triggered first, and the parent node will receive the ready notification afterwards.
