@@ -49,6 +49,7 @@ class ProjectUpgradeTool : public Object {
 public:
 	const String META_PROJECT_UPGRADE_TOOL = "project_upgrade_tool";
 	const String META_RUN_ON_RESTART = "run_on_restart";
+	const String META_RUN_FROM_CLI = "run_from_cli";
 	const StringName UPGRADE_FINISHED = "upgrade_finished";
 
 protected:

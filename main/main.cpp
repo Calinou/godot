@@ -207,6 +207,7 @@ static bool single_window = false;
 static bool editor = false;
 static bool project_manager = false;
 static bool cmdline_tool = false;
+static bool upgrade_project_files = false;
 static String locale;
 static String log_file;
 static bool show_help = false;
@@ -1645,6 +1646,12 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 				OS::get_singleton()->print("Missing comma-separated list of patches after --patches, aborting.\n");
 				goto error;
 			}
+		} else if (arg == "--upgrade-project-files") {
+			editor = true;
+			cmdline_tool = true;
+			upgrade_project_files = true;
+			wait_for_import = true;
+			// `quit_after = 1` is not needed, as upgrading project files already restarts the editor when performed.
 #ifndef DISABLE_DEPRECATED
 		} else if (arg == "--export") { // For users used to 3.x syntax.
 			OS::get_singleton()->print("The Godot 3 --export option was changed to more explicit --export-release / --export-debug / --export-pack options.\nSee the --help output for details.\n");
@@ -4617,6 +4624,10 @@ int Main::start() {
 					EditorDebuggerNode::get_singleton()->start(debug_server_uri);
 					EditorDebuggerNode::get_singleton()->set_keep_open(true);
 				}
+			}
+
+			if (upgrade_project_files) {
+				EditorNode::get_singleton()->set_upgrade_project_files(true);
 			}
 #endif
 		}

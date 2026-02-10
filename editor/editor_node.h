@@ -487,6 +487,8 @@ private:
 
 	ProjectUpgradeTool *project_upgrade_tool = nullptr;
 	bool run_project_upgrade_tool = false;
+	// `true` if an upgrade was requested from the command line, `false` otherwise.
+	bool upgrade_project_files_cli = false;
 
 	bool was_window_windowed_last = false;
 
@@ -739,6 +741,8 @@ public:
 	// Public for use with callable_mp.
 	void init_plugins();
 	void _on_plugin_ready(Object *p_script, const String &p_activate_name);
+
+	void set_upgrade_project_files(bool p_upgrade);
 
 	bool call_build();
 	void call_run_scene(const String &p_scene, Vector<String> &r_args);

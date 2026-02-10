@@ -946,6 +946,10 @@ void EditorNode::_notification(int p_what) {
 		} break;
 
 		case NOTIFICATION_READY: {
+			if (upgrade_project_files_cli) {
+				project_upgrade_tool->prepare_upgrade();
+			}
+
 			started_timestamp = Time::get_singleton()->get_unix_time_from_system();
 
 			// Store the default order of bottom docks. It can only be determined dynamically.
@@ -8109,6 +8113,10 @@ void EditorNode::_update_main_menu_type() {
 
 void EditorNode::_bottom_panel_resized() {
 	bottom_panel->set_bottom_panel_offset(center_split->get_split_offset());
+}
+
+void EditorNode::set_upgrade_project_files(bool p_upgrade) {
+	upgrade_project_files_cli = p_upgrade;
 }
 
 #ifdef ANDROID_ENABLED
