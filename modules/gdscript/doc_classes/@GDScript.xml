@@ -203,11 +203,10 @@
 		<method name="print_debug" qualifiers="vararg">
 			<return type="void" />
 			<description>
-				Like [method @GlobalScope.print], but includes the current stack frame when running with the debugger turned on.
+				Like [method @GlobalScope.print_rich], but includes the current stack frame when running with the debugger turned on.
 				The output in the console may look like the following:
 				[codeblock lang=text]
-				Test print
-				At: res://test.gd:15:_process()
+				Test print 	res://test.gd:15:_process()
 				[/codeblock]
 				See also [method print_stack], [method get_stack], and [method Engine.capture_script_backtraces].
 				[b]Note:[/b] By default, backtraces are only available in editor builds and debug builds. To enable them for release builds as well, you need to enable [member ProjectSettings.debug/settings/gdscript/always_track_call_stacks].

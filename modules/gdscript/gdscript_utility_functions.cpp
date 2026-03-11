@@ -354,10 +354,10 @@ struct GDScriptUtilityFunctionsDefinitions {
 
 		ScriptLanguage *script = GDScriptLanguage::get_singleton();
 		if (script->debug_get_stack_level_count() > 0) {
-			s += "\n   At: " + script->debug_get_stack_level_source(0) + ":" + itos(script->debug_get_stack_level_line(0)) + ":" + script->debug_get_stack_level_function(0) + "()";
+			s += " \t[color=gray][u]" + script->debug_get_stack_level_source(0) + "[/u]:" + itos(script->debug_get_stack_level_line(0)) + ":" + script->debug_get_stack_level_function(0) + "()";
 		}
 
-		print_line(s);
+		print_line_rich(s);
 		*r_ret = Variant();
 	}
 
