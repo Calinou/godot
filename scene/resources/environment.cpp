@@ -802,6 +802,13 @@ void Environment::set_fog_light_color(const Color &p_light_color) {
 Color Environment::get_fog_light_color() const {
 	return fog_light_color;
 }
+void Environment::set_fog_light_gradient(const Ref<Texture2D> &p_light_gradient) {
+	fog_light_gradient = p_light_gradient;
+	_update_fog();
+}
+Ref<Texture2D> Environment::get_fog_light_gradient() const {
+	return fog_light_gradient;
+}
 void Environment::set_fog_light_energy(float p_amount) {
 	fog_light_energy = p_amount;
 	_update_fog();
@@ -856,6 +863,12 @@ float Environment::get_fog_sky_affect() const {
 }
 
 void Environment::_update_fog() {
+	RID fog_light_gradient_rid;
+	if (fog_light_gradient.is_valid()) {
+		fog_light_gradient_rid = fog_light_gradient->get_rid();
+	} else {
+		fog_light_gradient_rid = RID();
+	}
 	RS::get_singleton()->environment_set_fog(
 			environment,
 			fog_enabled,
@@ -867,7 +880,8 @@ void Environment::_update_fog() {
 			fog_height_density,
 			fog_aerial_perspective,
 			fog_sky_affect,
-			RSE::EnvironmentFogMode(fog_mode));
+			RSE::EnvironmentFogMode(fog_mode),
+			fog_light_gradient_rid);
 }
 
 // Depth Fog
@@ -1488,6 +1502,8 @@ void Environment::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_fog_mode"), &Environment::get_fog_mode);
 	ClassDB::bind_method(D_METHOD("set_fog_light_color", "light_color"), &Environment::set_fog_light_color);
 	ClassDB::bind_method(D_METHOD("get_fog_light_color"), &Environment::get_fog_light_color);
+	ClassDB::bind_method(D_METHOD("set_fog_light_gradient", "gradient"), &Environment::set_fog_light_gradient);
+	ClassDB::bind_method(D_METHOD("get_fog_light_gradient"), &Environment::get_fog_light_gradient);
 	ClassDB::bind_method(D_METHOD("set_fog_light_energy", "light_energy"), &Environment::set_fog_light_energy);
 	ClassDB::bind_method(D_METHOD("get_fog_light_energy"), &Environment::get_fog_light_energy);
 	ClassDB::bind_method(D_METHOD("set_fog_sun_scatter", "sun_scatter"), &Environment::set_fog_sun_scatter);
@@ -1519,6 +1535,7 @@ void Environment::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "fog_enabled", PROPERTY_HINT_GROUP_ENABLE), "set_fog_enabled", "is_fog_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "fog_mode", PROPERTY_HINT_ENUM, "Exponential,Depth"), "set_fog_mode", "get_fog_mode");
 	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "fog_light_color", PROPERTY_HINT_COLOR_NO_ALPHA), "set_fog_light_color", "get_fog_light_color");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "fog_light_gradient", PROPERTY_HINT_RESOURCE_TYPE, Texture2D::get_class_static()), "set_fog_light_gradient", "get_fog_light_gradient");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "fog_light_energy", PROPERTY_HINT_RANGE, "0,16,0.01,or_greater"), "set_fog_light_energy", "get_fog_light_energy");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "fog_sun_scatter", PROPERTY_HINT_RANGE, "0,1,0.01,or_greater"), "set_fog_sun_scatter", "get_fog_sun_scatter");
 

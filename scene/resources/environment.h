@@ -182,6 +182,7 @@ private:
 	bool fog_enabled = false;
 	FogMode fog_mode = FOG_MODE_EXPONENTIAL;
 	Color fog_light_color = Color(0.518, 0.553, 0.608);
+	Ref<Texture2D> fog_light_gradient;
 	float fog_light_energy = 1.0;
 	float fog_sun_scatter = 0.0;
 	float fog_density = 0.01;
@@ -385,6 +386,8 @@ public:
 	FogMode get_fog_mode() const;
 	void set_fog_light_color(const Color &p_light_color);
 	Color get_fog_light_color() const;
+	void set_fog_light_gradient(const Ref<Texture2D> &p_light_gradient);
+	Ref<Texture2D> get_fog_light_gradient() const;
 	void set_fog_light_energy(float p_amount);
 	float get_fog_light_energy() const;
 	void set_fog_sun_scatter(float p_amount);

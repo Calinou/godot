@@ -451,15 +451,16 @@ layout(set = 1, binding = 32, std140) uniform VoxelGIs {
 voxel_gi_instances;
 
 layout(set = 1, binding = 33) uniform texture3D volumetric_fog_texture;
+layout(set = 1, binding = 34) uniform texture2D fog_light_gradient;
 
 #ifdef USE_MULTIVIEW
-layout(set = 1, binding = 34) uniform texture2DArray ssil_buffer;
-layout(set = 1, binding = 35) uniform texture2DArray ssr_buffer;
-layout(set = 1, binding = 36) uniform texture2DArray ssr_mip_level_buffer;
+layout(set = 1, binding = 35) uniform texture2DArray ssil_buffer;
+layout(set = 1, binding = 36) uniform texture2DArray ssr_buffer;
+layout(set = 1, binding = 37) uniform texture2DArray ssr_mip_level_buffer;
 #else
-layout(set = 1, binding = 34) uniform texture2D ssil_buffer;
-layout(set = 1, binding = 35) uniform texture2D ssr_buffer;
-layout(set = 1, binding = 36) uniform texture2D ssr_mip_level_buffer;
+layout(set = 1, binding = 35) uniform texture2D ssil_buffer;
+layout(set = 1, binding = 36) uniform texture2D ssr_buffer;
+layout(set = 1, binding = 37) uniform texture2D ssr_mip_level_buffer;
 #endif // USE_MULTIVIEW
 
 #endif

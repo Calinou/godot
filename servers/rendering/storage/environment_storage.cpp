@@ -345,7 +345,7 @@ RendererEnvironmentStorage::TonemapParameters RendererEnvironmentStorage::enviro
 
 // Fog
 
-void RendererEnvironmentStorage::environment_set_fog(RID p_env, bool p_enable, const Color &p_light_color, float p_light_energy, float p_sun_scatter, float p_density, float p_height, float p_height_density, float p_fog_aerial_perspective, float p_sky_affect, RSE::EnvironmentFogMode p_mode) {
+void RendererEnvironmentStorage::environment_set_fog(RID p_env, bool p_enable, const Color &p_light_color, float p_light_energy, float p_sun_scatter, float p_density, float p_height, float p_height_density, float p_fog_aerial_perspective, float p_sky_affect, RSE::EnvironmentFogMode p_mode, RID p_light_gradient) {
 	Environment *env = environment_owner.get_or_null(p_env);
 	ERR_FAIL_NULL(env);
 	env->fog_enabled = p_enable;
@@ -358,6 +358,7 @@ void RendererEnvironmentStorage::environment_set_fog(RID p_env, bool p_enable, c
 	env->fog_height_density = p_height_density;
 	env->fog_aerial_perspective = p_fog_aerial_perspective;
 	env->fog_sky_affect = p_sky_affect;
+	env->fog_light_gradient = p_light_gradient;
 }
 
 bool RendererEnvironmentStorage::environment_get_fog_enabled(RID p_env) const {
@@ -376,6 +377,12 @@ Color RendererEnvironmentStorage::environment_get_fog_light_color(RID p_env) con
 	Environment *env = environment_owner.get_or_null(p_env);
 	ERR_FAIL_NULL_V(env, Color(0.5, 0.6, 0.7));
 	return env->fog_light_color;
+}
+
+RID RendererEnvironmentStorage::environment_get_fog_light_gradient(RID p_env) const {
+	Environment *env = environment_owner.get_or_null(p_env);
+	ERR_FAIL_NULL_V(env, RID());
+	return env->fog_light_gradient;
 }
 
 float RendererEnvironmentStorage::environment_get_fog_light_energy(RID p_env) const {

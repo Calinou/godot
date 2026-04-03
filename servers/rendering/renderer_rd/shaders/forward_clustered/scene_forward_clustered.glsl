@@ -1100,7 +1100,17 @@ vec4 volumetric_fog_process(vec2 screen_uv, float z) {
 }
 
 vec4 fog_process(vec3 vertex) {
-	vec3 fog_color = scene_data_block.data.fog_light_color;
+	float fog_amount = 0.0;
+
+	if (sc_use_depth_fog()) {
+		float fog_z = smoothstep(scene_data_block.data.fog_depth_begin, scene_data_block.data.fog_depth_end, length(vertex));
+		float fog_quad_amount = pow(fog_z, scene_data_block.data.fog_depth_curve) * scene_data_block.data.fog_density;
+		fog_amount = fog_quad_amount;
+	} else {
+		fog_amount = 1 - exp(min(0.0, -length(vertex) * scene_data_block.data.fog_density));
+	}
+
+	vec3 fog_color = texture(scene_data_block.data.fog_light_gradient, vec2(1.0 - fog_amount, 0.0)).rgb * scene_data_block.data.fog_light_color;
 
 	if (scene_data_block.data.fog_aerial_perspective > 0.0) {
 		vec3 sky_fog_color = vec3(0.0);
@@ -1133,16 +1143,6 @@ vec4 fog_process(vec3 vertex) {
 			float light_amount = pow(max(dot(view, directional_lights.data[i].direction), 0.0), 8.0);
 			fog_color += light_color * light_amount * scene_data_block.data.fog_sun_scatter;
 		}
-	}
-
-	float fog_amount = 0.0;
-
-	if (sc_use_depth_fog()) {
-		float fog_z = smoothstep(scene_data_block.data.fog_depth_begin, scene_data_block.data.fog_depth_end, length(vertex));
-		float fog_quad_amount = pow(fog_z, scene_data_block.data.fog_depth_curve) * scene_data_block.data.fog_density;
-		fog_amount = fog_quad_amount;
-	} else {
-		fog_amount = 1 - exp(min(0.0, -length(vertex) * scene_data_block.data.fog_density));
 	}
 
 	if (abs(scene_data_block.data.fog_height_density) >= 0.0001) {
