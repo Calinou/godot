@@ -1202,6 +1202,45 @@ vec3 encode24(vec3 v) {
 }
 #endif // MODE_RENDER_NORMAL_ROUGHNESS
 
+#ifdef TONEMAP_DISABLED
+// Adapted from https://github.com/TheRealMJP/BakingLab/blob/master/BakingLab/ACES.hlsl
+// (MIT License).
+vec3 tonemap_aces(vec3 color) {
+	// These constants must match the those in the C++ code that calculates the parameters.
+	const float exposure_bias = 1.8f;
+	const float A = 0.0245786f;
+	const float B = 0.000090537f;
+	const float C = 0.983729f;
+	const float D = 0.432951f;
+	const float E = 0.238081f;
+
+	// Exposure bias baked into transform to save shader instructions. Equivalent to `color *= exposure_bias`
+	const mat3 rgb_to_rrt = mat3(
+			vec3(0.59719f * exposure_bias, 0.35458f * exposure_bias, 0.04823f * exposure_bias),
+			vec3(0.07600f * exposure_bias, 0.90834f * exposure_bias, 0.01566f * exposure_bias),
+			vec3(0.02840f * exposure_bias, 0.13383f * exposure_bias, 0.83777f * exposure_bias));
+
+	const mat3 odt_to_rgb = mat3(
+			vec3(1.60475f, -0.53108f, -0.07367f),
+			vec3(-0.10208f, 1.10813f, -0.00605f),
+			vec3(-0.00327f, -0.07276f, 1.07602f));
+
+	color *= rgb_to_rrt;
+	vec3 color_tonemapped = (color * (color + A) - B) / (color * (C * color + D) + E);
+	color_tonemapped *= odt_to_rgb;
+
+	// FIXME: Move to parameter.
+	const float WHITE = 6.0;
+	return color_tonemapped / WHITE;
+}
+
+vec3 apply_inverse_tonemapping(vec3 color) {
+	// FIXME: Perform inverse tonemapping (right now, this is just standard tonemapping performed a second time).
+	// Preferably without having to modify every tonemapper function, so that code can be reused later on.
+	return tonemap_aces(color);
+}
+#endif // TONEMAP_DISABLED
+
 void fragment_shader(in SceneData scene_data) {
 	uint instance_index = instance_index_interp;
 
@@ -3014,6 +3053,10 @@ void fragment_shader(in SceneData scene_data) {
 #if defined(PREMUL_ALPHA_USED) && !defined(MODE_RENDER_DEPTH)
 	frag_color.rgb *= premul_alpha;
 #endif //PREMUL_ALPHA_USED
+
+#ifdef TONEMAP_DISABLED
+	frag_color.rgb = apply_inverse_tonemapping(frag_color.rgb);
+#endif //TONEMAP_DISABLED
 
 #endif //MODE_SEPARATE_SPECULAR
 

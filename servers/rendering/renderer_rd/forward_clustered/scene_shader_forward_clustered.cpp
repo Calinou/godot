@@ -886,6 +886,7 @@ void SceneShaderForwardClustered::init(const String p_defines) {
 
 		actions.render_mode_defines["debug_shadow_splits"] = "#define DEBUG_DRAW_PSSM_SPLITS\n";
 		actions.render_mode_defines["fog_disabled"] = "#define FOG_DISABLED\n";
+		actions.render_mode_defines["tonemap_disabled"] = "#define TONEMAP_DISABLED\n";
 
 		actions.render_mode_defines["specular_occlusion_disabled"] = "#define SPECULAR_OCCLUSION_DISABLED\n";
 

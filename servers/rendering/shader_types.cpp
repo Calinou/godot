@@ -254,6 +254,7 @@ ShaderTypes::ShaderTypes() {
 		shader_modes[RSE::SHADER_SPATIAL].modes.push_back({ PNAME("alpha_to_coverage_and_one") });
 		shader_modes[RSE::SHADER_SPATIAL].modes.push_back({ PNAME("debug_shadow_splits") });
 		shader_modes[RSE::SHADER_SPATIAL].modes.push_back({ PNAME("fog_disabled") });
+		shader_modes[RSE::SHADER_SPATIAL].modes.push_back({ PNAME("tonemap_disabled") });
 		shader_modes[RSE::SHADER_SPATIAL].modes.push_back({ PNAME("specular_occlusion_disabled") });
 		shader_modes[RSE::SHADER_SPATIAL].stencil_modes.push_back({ PNAME("read") });
 		shader_modes[RSE::SHADER_SPATIAL].stencil_modes.push_back({ PNAME("write") });

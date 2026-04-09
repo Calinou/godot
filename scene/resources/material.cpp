@@ -898,6 +898,9 @@ void BaseMaterial3D::_update_shader() {
 	if (flags[FLAG_DISABLE_FOG]) {
 		code += ", fog_disabled";
 	}
+	if (flags[FLAG_DISABLE_TONEMAPPING]) {
+		code += ", tonemap_disabled";
+	}
 	if (flags[FLAG_DISABLE_SPECULAR_OCCLUSION]) {
 		code += ", specular_occlusion_disabled";
 	}
@@ -3024,7 +3027,7 @@ float BaseMaterial3D::get_fov_override() const {
 	return fov_override;
 }
 
-Ref<Material> BaseMaterial3D::get_material_for_2d(bool p_shaded, Transparency p_transparency, bool p_double_sided, bool p_billboard, bool p_billboard_y, bool p_msdf, bool p_no_depth, bool p_fixed_size, TextureFilter p_filter, AlphaAntiAliasing p_alpha_antialiasing_mode, bool p_texture_repeat, RID *r_shader_rid) {
+Ref<Material> BaseMaterial3D::get_material_for_2d(bool p_shaded, Transparency p_transparency, bool p_double_sided, bool p_billboard, bool p_billboard_y, bool p_msdf, bool p_no_depth, bool p_fixed_size, bool p_disable_tonemapping, TextureFilter p_filter, AlphaAntiAliasing p_alpha_antialiasing_mode, bool p_texture_repeat, RID *r_shader_rid) {
 	uint64_t key = 0;
 	key |= ((int8_t)p_shaded & 0x01) << 0;
 	key |= ((int8_t)p_transparency & 0x07) << 1; // Bits 1-3.
@@ -3034,9 +3037,10 @@ Ref<Material> BaseMaterial3D::get_material_for_2d(bool p_shaded, Transparency p_
 	key |= ((int8_t)p_msdf & 0x01) << 7;
 	key |= ((int8_t)p_no_depth & 0x01) << 8;
 	key |= ((int8_t)p_fixed_size & 0x01) << 9;
-	key |= ((int8_t)p_filter & 0x07) << 10; // Bits 10-12.
-	key |= ((int8_t)p_alpha_antialiasing_mode & 0x07) << 13; // Bits 13-15.
-	key |= ((int8_t)p_texture_repeat & 0x01) << 16;
+	key |= ((int8_t)p_disable_tonemapping & 0x01) << 10;
+	key |= ((int8_t)p_filter & 0x07) << 11; // Bits 11-13.
+	key |= ((int8_t)p_alpha_antialiasing_mode & 0x07) << 14; // Bits 14-16.
+	key |= ((int8_t)p_texture_repeat & 0x01) << 17;
 
 	if (materials_for_2d.has(key)) {
 		if (r_shader_rid) {
@@ -3056,6 +3060,7 @@ Ref<Material> BaseMaterial3D::get_material_for_2d(bool p_shaded, Transparency p_
 	material->set_flag(FLAG_ALBEDO_TEXTURE_MSDF, p_msdf);
 	material->set_flag(FLAG_DISABLE_DEPTH_TEST, p_no_depth);
 	material->set_flag(FLAG_FIXED_SIZE, p_fixed_size);
+	material->set_flag(FLAG_DISABLE_TONEMAPPING, p_disable_tonemapping);
 	material->set_flag(FLAG_USE_TEXTURE_REPEAT, p_texture_repeat);
 	material->set_alpha_antialiasing(p_alpha_antialiasing_mode);
 	material->set_texture_filter(p_filter);
@@ -3608,6 +3613,7 @@ void BaseMaterial3D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "specular_mode", PROPERTY_HINT_ENUM, "SchlickGGX,Toon,Disabled"), "set_specular_mode", "get_specular_mode");
 	ADD_PROPERTYI(PropertyInfo(Variant::BOOL, "disable_ambient_light"), "set_flag", "get_flag", FLAG_DISABLE_AMBIENT_LIGHT);
 	ADD_PROPERTYI(PropertyInfo(Variant::BOOL, "disable_fog"), "set_flag", "get_flag", FLAG_DISABLE_FOG);
+	ADD_PROPERTYI(PropertyInfo(Variant::BOOL, "disable_tonemapping"), "set_flag", "get_flag", FLAG_DISABLE_TONEMAPPING);
 	ADD_PROPERTYI(PropertyInfo(Variant::BOOL, "disable_specular_occlusion"), "set_flag", "get_flag", FLAG_DISABLE_SPECULAR_OCCLUSION);
 
 	ADD_GROUP("Vertex Color", "vertex_color");
@@ -3892,6 +3898,7 @@ void BaseMaterial3D::_bind_methods() {
 	BIND_ENUM_CONSTANT(FLAG_DISABLE_SPECULAR_OCCLUSION);
 	BIND_ENUM_CONSTANT(FLAG_USE_Z_CLIP_SCALE);
 	BIND_ENUM_CONSTANT(FLAG_USE_FOV_OVERRIDE);
+	BIND_ENUM_CONSTANT(FLAG_DISABLE_TONEMAPPING);
 	BIND_ENUM_CONSTANT(FLAG_MAX);
 
 	BIND_ENUM_CONSTANT(DIFFUSE_BURLEY);
