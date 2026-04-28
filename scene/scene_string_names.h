@@ -145,6 +145,7 @@ public:
 
 	const StringName panel = "panel";
 	const StringName item_selected = "item_selected";
+	const StringName item_activated = "item_activated";
 	const StringName confirmed = "confirmed";
 
 	const StringName text_changed = "text_changed";

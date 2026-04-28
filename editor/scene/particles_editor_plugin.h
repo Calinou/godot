@@ -34,7 +34,9 @@
 
 class CheckBox;
 class ConfirmationDialog;
+class EditorHelpBit;
 class HBoxContainer;
+class ItemList;
 class MenuButton;
 class OptionButton;
 class SceneTreeDialog;
@@ -46,11 +48,44 @@ class ParticlesEditorPlugin : public EditorPlugin {
 private:
 	enum {
 		MENU_OPTION_CONVERT,
-		MENU_RESTART
+		MENU_SETUP_PARTICLES,
+		MENU_RESTART,
 	};
+
+	enum SetupPreset {
+		SETUP_PRESET_POINT,
+		SETUP_PRESET_SMOKE,
+		SETUP_PRESET_EXPLOSION,
+		SETUP_PRESET_SPRINKLE,
+		SETUP_PRESET_GLITTER,
+		SETUP_PRESET_MAX,
+	};
+
+	PackedStringArray setup_preset_names = {
+		TTR("Point"),
+		TTR("Smoke"),
+		TTR("Explosion"),
+		TTR("Sprinkle"),
+		TTR("Glitter"),
+	};
+
+	PackedStringArray setup_preset_descriptions = {
+		TTR("A single point that stays in place."),
+		TTR("Smoke slowly emitting in all directions."),
+		TTR("An explosion that emits all particles at once, propelling particles upwards with gravity. Enable the Oneshot property for the explosion to occur only once."),
+		TTR("Particles quickly sprinkling upwards."),
+		TTR("Particles suspended in the air."),
+	};
+
+	SetupPreset setup_dialog_choice = SETUP_PRESET_POINT;
 
 	HBoxContainer *toolbar = nullptr;
 	MenuButton *menu = nullptr;
+
+	ConfirmationDialog *setup_dialog = nullptr;
+	ItemList *setup_dialog_choices = nullptr;
+	EditorHelpBit *setup_dialog_help_bit = nullptr;
+	CheckBox *setup_dialog_add_trails = nullptr;
 
 protected:
 	String handled_type;
@@ -62,6 +97,11 @@ protected:
 
 	bool need_show_lifetime_dialog(SpinBox *p_seconds);
 	virtual void _menu_callback(int p_idx);
+
+	void _setup_particles_item_selected(int p_idx);
+	void _setup_particles_item_activated(int p_idx);
+	void _setup_particles_hide_requested();
+	void _setup_particles_confirmed();
 
 	virtual void _add_menu_options(PopupMenu *p_menu) {}
 	virtual Node *_convert_particles() = 0;
