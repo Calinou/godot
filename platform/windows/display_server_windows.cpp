@@ -4398,61 +4398,20 @@ void DisplayServerWindows::process_events() {
 
 	process_raw_input();
 
-	MSG msg = {};
-	// Peek all messages except `WM_INPUT` if the window is focused.
-	auto peekNotInput = [&] {
-		if (!app_focused) {
-			return PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
-		}
-		BOOL ret = PeekMessage(&msg, NULL, 0, WM_INPUT - 1, PM_REMOVE);
-		// Avoid polling what we're polling further below in `peekKeysMouseButtons()`.
-		if (!ret) {
-			ret = PeekMessage(&msg, NULL, WM_INPUT + 3, WM_MOUSEMOVE, PM_REMOVE);
-		}
-		if (!ret) {
-			ret = PeekMessage(&msg, NULL, WM_MOUSELAST + 1, std::numeric_limits<UINT>::max(), PM_REMOVE);
-		}
-		return ret;
-	};
-
-	// Peek only keyboard and mouse button messages separately, with its own limit.
-	auto peekKeysMouseButtons = [&] {
-		BOOL ret = PeekMessage(&msg, NULL, WM_KEYFIRST, WM_KEYUP, PM_REMOVE);
-		if (!ret) {
-			// Do not process `WM_MOUSEMOVE` here.
-			ret = PeekMessage(&msg, NULL, WM_LBUTTONDOWN, WM_MOUSELAST, PM_REMOVE);
-		}
-		return ret;
-	};
-
-	// Only process a limited number of events per frame to avoid blocking for too long
-	// due to `PeekMessage()` being relatively slow.
-	// This is what avoids performance issues with high polling rate mice (2,000 Hz and above).
-	//
-	// In practice, when input accumulation is disabled:
-	//
-	// - In captured mouse mode, as many mouse events as possible will be processed
-	//   (this seems to perform fine).
-	// - In other mouse modes, up to 5 events per rendered frame will be processed.
-	//
+	// The message pump can drain the queue unthrottled: process_raw_input()
+	// already consumed the WM_INPUT flood through GetRawInputBuffer(), and
+	// legacy WM_MOUSEMOVE is coalesced by the OS, so high polling rate mice
+	// (2,000 Hz and above) no longer overwhelm PeekMessage().
 	// See <https://ph3at.github.io/posts/Windows-Input/> for more information.
-	int events_processed_this_frame = 0;
-	int events_processed_this_frame_kmb = 0;
-	constexpr int MAX_EVENTS_PER_FRAME = 1;
-	constexpr int MAX_EVENTS_PER_FRAME_KMB = 1;
-
-	while (events_processed_this_frame < MAX_EVENTS_PER_FRAME && peekNotInput()) {
+	//
+	// Capping events per frame here would split the WM_CHAR posted by
+	// TranslateMessage() from its WM_KEYDOWN across frames, which breaks the
+	// pairing logic in _process_key_events() and makes keys fire twice.
+	MSG msg = {};
+	while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE)) {
 		TranslateMessage(&msg);
 		DispatchMessageW(&msg);
-		events_processed_this_frame += 1;
 	}
-
-	if (events_processed_this_frame_kmb < MAX_EVENTS_PER_FRAME_KMB && peekKeysMouseButtons()) {
-		TranslateMessage(&msg);
-		DispatchMessageW(&msg);
-		events_processed_this_frame_kmb += 1;
-	}
-
 	_THREAD_SAFE_UNLOCK_
 
 	if (tts) {
