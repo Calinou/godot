@@ -552,6 +552,7 @@ class DisplayServerWindows : public DisplayServer {
 
 	void initialize_tts() const;
 	void process_raw_input();
+	void _process_raw_input_event(const RAWINPUT &p_raw, DisplayServerEnums::WindowID p_window_id);
 
 	struct ScreenHdrData {
 		bool hdr_supported = false;
