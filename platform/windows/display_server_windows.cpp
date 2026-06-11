@@ -4356,7 +4356,11 @@ void DisplayServerWindows::process_raw_input() {
 	// most a buffer's worth of events, and the remainder would otherwise sit in
 	// the queue as WM_INPUT messages (a growing backlog during fast mouse
 	// movement, or events consumed unread if the message pump dispatches them).
-	while (true) {
+	// Bound the passes: raw input arrives continuously at high polling rates
+	// (every 125 us at 8,000 Hz), so "until empty" alone could keep this loop
+	// fed for as long as the mouse is moving. The bound is far above any real
+	// per-frame arrival count; leftovers are read next frame.
+	for (int pass = 0; pass < 16; pass++) {
 		UINT n_buffer = 0;
 		// With a null buffer, this reports the byte size of the first pending
 		// message (the minimum required buffer), not a message count.
@@ -4398,17 +4402,48 @@ void DisplayServerWindows::process_events() {
 
 	process_raw_input();
 
-	// The message pump can drain the queue unthrottled: process_raw_input()
-	// already consumed the WM_INPUT flood through GetRawInputBuffer(), and
-	// legacy WM_MOUSEMOVE is coalesced by the OS, so high polling rate mice
-	// (2,000 Hz and above) no longer overwhelm PeekMessage().
+	// The pump throttles only what the hardware can flood, and drains the rest.
 	// See <https://ph3at.github.io/posts/Windows-Input/> for more information.
 	//
-	// Capping events per frame here would split the WM_CHAR posted by
-	// TranslateMessage() from its WM_KEYDOWN across frames, which breaks the
-	// pairing logic in _process_key_events() and makes keys fire twice.
+	// - WM_INPUT is never dispatched from here: pulling raw input through
+	//   PeekMessage() one message at a time is what collapses the pump at high
+	//   polling rates (2,000 Hz and above). It stays in the queue for the next
+	//   buffered read in process_raw_input().
+	// - WM_MOUSEMOVE and WM_NCMOUSEMOVE are synthesized on demand from the
+	//   hardware input stream, so while the mouse is moving the queue never
+	//   reads empty and an unbounded pump spins until the mouse stops. They are
+	//   dispatched at most once per frame each. No motion is lost: they carry
+	//   the latest (coalesced) cursor position, and the relative motion derived
+	//   from successive positions preserves the total delta. Captured mouse
+	//   mode gets its sub-frame motion from raw input.
+	// - Everything else (keys, characters, mouse buttons, wheel, system
+	//   messages) is discrete and low-rate, and is drained fully. Capping these
+	//   would split the WM_CHAR posted by TranslateMessage() from its
+	//   WM_KEYDOWN across frames, which breaks the pairing logic in
+	//   _process_key_events() and makes keys fire twice.
 	MSG msg = {};
-	while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE)) {
+	auto peek_discrete = [&] {
+		BOOL ret = PeekMessageW(&msg, nullptr, 0, WM_NCMOUSEMOVE - 1, PM_REMOVE);
+		if (!ret) {
+			ret = PeekMessageW(&msg, nullptr, WM_NCMOUSEMOVE + 1, WM_INPUT - 1, PM_REMOVE);
+		}
+		if (!ret) {
+			ret = PeekMessageW(&msg, nullptr, WM_INPUT + 1, WM_MOUSEMOVE - 1, PM_REMOVE);
+		}
+		if (!ret) {
+			ret = PeekMessageW(&msg, nullptr, WM_MOUSEMOVE + 1, std::numeric_limits<UINT>::max(), PM_REMOVE);
+		}
+		return ret;
+	};
+	while (peek_discrete()) {
+		TranslateMessage(&msg);
+		DispatchMessageW(&msg);
+	}
+	if (PeekMessageW(&msg, nullptr, WM_MOUSEMOVE, WM_MOUSEMOVE, PM_REMOVE)) {
+		TranslateMessage(&msg);
+		DispatchMessageW(&msg);
+	}
+	if (PeekMessageW(&msg, nullptr, WM_NCMOUSEMOVE, WM_NCMOUSEMOVE, PM_REMOVE)) {
 		TranslateMessage(&msg);
 		DispatchMessageW(&msg);
 	}
