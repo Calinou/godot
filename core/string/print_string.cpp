@@ -163,6 +163,10 @@ void __print_line_rich(const String &p_string) {
 			output += "    ";
 		} else if (tag == "/indent") {
 			output += "";
+		} else if (tag == "hr") {
+			// Draws a horizontal line using a block drawing character that looks contiguous in most terminals.
+			const String line_character = U"🭸";
+			output += "\n" + line_character.repeat(80) + "\n";
 		} else if (tag == "code") {
 			output += "\u001b[2m";
 		} else if (tag == "/code") {
