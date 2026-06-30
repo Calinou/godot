@@ -1220,6 +1220,7 @@ void EditorNode::_update_update_spinner() {
 
 void EditorNode::_execute_upgrades() {
 	if (run_project_upgrade_tool) {
+		print_line("Upgrading project files...");
 		run_project_upgrade_tool = false;
 		// Execute another scan to reimport the modified files.
 		project_upgrade_tool->connect(project_upgrade_tool->UPGRADE_FINISHED, callable_mp(EditorFileSystem::get_singleton(), &EditorFileSystem::scan), CONNECT_ONE_SHOT);
@@ -2603,8 +2604,12 @@ void EditorNode::try_autosave() {
 	editor_data.save_editor_external_data();
 }
 
-void EditorNode::restart_editor(bool p_goto_project_manager) {
-	_menu_option_confirm(p_goto_project_manager ? PROJECT_QUIT_TO_PROJECT_MANAGER : PROJECT_RELOAD_CURRENT_PROJECT, false);
+void EditorNode::restart_editor(bool p_goto_project_manager, bool p_upgrade_project_files) {
+	if (p_upgrade_project_files) {
+		_menu_option_confirm(p_goto_project_manager ? PROJECT_QUIT_TO_PROJECT_MANAGER : PROJECT_RELOAD_CURRENT_PROJECT, false);
+	} else {
+		_menu_option_confirm(p_goto_project_manager ? PROJECT_QUIT_TO_PROJECT_MANAGER : PROJECT_RELOAD_CURRENT_PROJECT, false);
+	}
 }
 
 void EditorNode::_save_all_scenes() {
@@ -4244,7 +4249,7 @@ void EditorNode::_discard_changes(const String &p_str) {
 			_restart_editor(true);
 		} break;
 		case PROJECT_RELOAD_CURRENT_PROJECT: {
-			_restart_editor();
+			_restart_editor(false, true);
 		} break;
 	}
 }
@@ -4956,6 +4961,18 @@ Error EditorNode::load_scene(const String &p_scene, bool p_ignore_broken_deps, b
 	if (p_update_tabs) {
 		scene_tabs->update_scene_tabs();
 	}
+
+	// This needs to be done here, after scenes are done loading.
+	// Otherwise, it's too early for the list of scenes/resources to be filled for the upgrade project tool to use.
+	List<String> cmdline_args = OS::get_singleton()->get_cmdline_args();
+	for (int i = 0; i < cmdline_args.size(); i++) {
+		if (cmdline_args.get(i) == "--upgrade-project-files") {
+			print_line("Restarting the editor to upgrade project files as requested on the command line.");
+			project_upgrade_tool->prepare_upgrade();
+			break;
+		}
+	}
+
 	return OK;
 }
 
@@ -6738,7 +6755,7 @@ bool EditorNode::_is_closing_editor() const {
 	return tab_closing_menu_option == SCENE_QUIT || tab_closing_menu_option == PROJECT_QUIT_TO_PROJECT_MANAGER || tab_closing_menu_option == PROJECT_RELOAD_CURRENT_PROJECT;
 }
 
-void EditorNode::_restart_editor(bool p_goto_project_manager) {
+void EditorNode::_restart_editor(bool p_goto_project_manager, bool p_upgrade_project_files) {
 	exiting = true;
 
 	if (project_run_bar->is_playing()) {
@@ -6776,6 +6793,13 @@ void EditorNode::_restart_editor(bool p_goto_project_manager) {
 		args.push_back(ProjectSettings::get_singleton()->get_resource_path());
 
 		args.push_back("-e");
+	}
+
+	if (p_upgrade_project_files) {
+		// Wait some frames for everything to reimport.
+		print_line("quitting soon");
+		args.push_back("--quit-after");
+		args.push_back("50");
 	}
 
 	if (!to_reopen.is_empty()) {

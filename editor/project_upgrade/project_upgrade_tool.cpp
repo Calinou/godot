@@ -35,6 +35,7 @@
 #include "core/io/resource_loader.h"
 #include "core/io/resource_saver.h"
 #include "core/object/callable_mp.h"
+#include "core/os/os.h"
 #include "editor/editor_node.h"
 #include "editor/file_system/editor_file_system.h"
 #include "editor/scene/editor_scene_tabs.h"
@@ -97,7 +98,7 @@ void ProjectUpgradeTool::prepare_upgrade() {
 	EditorSettings::get_singleton()->set_project_metadata(META_PROJECT_UPGRADE_TOOL, META_RESAVE_RESOURCES, resave_resources);
 
 	// Delay to avoid deadlocks, since this dialog can be triggered by loading a scene.
-	callable_mp(EditorNode::get_singleton(), &EditorNode::restart_editor).call_deferred(false);
+	callable_mp(EditorNode::get_singleton(), &EditorNode::restart_editor).call_deferred(false, true);
 }
 
 void ProjectUpgradeTool::begin_upgrade() {
