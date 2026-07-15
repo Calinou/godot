@@ -1973,7 +1973,7 @@ void ThemeModern::populate_editor_styles(const Ref<EditorTheme> &p_theme, Editor
 			p_theme->set_color("icon_hover_color", "FlatMenuButtonNoIconTint", p_config.dark_icon_and_font ? p_config.mono_color : p_config.mono_color_inv);
 			p_theme->set_color("icon_hover_pressed_color", "FlatMenuButtonNoIconTint", p_config.dark_icon_and_font ? p_config.mono_color : p_config.mono_color_inv);
 
-			// Variation for the AssetLib thumbnails.
+			// Variation for the AssetStore thumbnails.
 
 			p_theme->set_type_variation("ThumbnailButton", SceneStringName(FlatButton));
 			p_theme->set_color("icon_pressed_color", "ThumbnailButton", p_config.icon_normal_color);
@@ -2007,7 +2007,7 @@ void ThemeModern::populate_editor_styles(const Ref<EditorTheme> &p_theme, Editor
 			p_theme->set_color("icon_hover_pressed_color", "CheckBoxNoIconTint", p_config.dark_icon_and_font ? p_config.mono_color : p_config.mono_color_inv);
 		}
 
-		// Buttons styles that stand out against the panel background (e.g. AssetLib).
+		// Buttons styles that stand out against the panel background (e.g. AssetStore).
 		{
 			p_theme->set_type_variation("PanelBackgroundButton", "Button");
 
@@ -2054,31 +2054,31 @@ void ThemeModern::populate_editor_styles(const Ref<EditorTheme> &p_theme, Editor
 			p_theme->set_type_variation("NoBorderHorizontalBottom", "NoBorderHorizontal");
 			p_theme->set_constant("margin_bottom", "NoBorderHorizontalBottom", margin);
 
-			// Used in the asset library. Specifically, the ("bg", "AssetLib") stylebox.
+			// Used in the Asset Store. Specifically, the ("bg", "AssetStore") stylebox.
 
 			margin = -p_config.base_margin * EDSCALE;
 
-			p_theme->set_type_variation("NoBorderAssetLib", "MarginContainer");
-			p_theme->set_constant("margin_left", "NoBorderAssetLib", margin);
-			p_theme->set_constant("margin_right", "NoBorderAssetLib", margin);
-			p_theme->set_constant("margin_bottom", "NoBorderAssetLib", margin);
+			p_theme->set_type_variation("NoBorderAssetStore", "MarginContainer");
+			p_theme->set_constant("margin_left", "NoBorderAssetStore", margin);
+			p_theme->set_constant("margin_right", "NoBorderAssetStore", margin);
+			p_theme->set_constant("margin_bottom", "NoBorderAssetStore", margin);
 
-			p_theme->set_type_variation("NoBorderAssetLibHorizontal", "MarginContainer");
-			p_theme->set_constant("margin_left", "NoBorderAssetLibHorizontal", margin);
-			p_theme->set_constant("margin_right", "NoBorderAssetLibHorizontal", margin);
+			p_theme->set_type_variation("NoBorderAssetStoreHorizontal", "MarginContainer");
+			p_theme->set_constant("margin_left", "NoBorderAssetStoreHorizontal", margin);
+			p_theme->set_constant("margin_right", "NoBorderAssetStoreHorizontal", margin);
 
 			margin -= panel_margin;
 
 			// Same as above, but with the margins adapted for the project manager.
 
-			p_theme->set_type_variation("NoBorderAssetLibProjectManager", "MarginContainer");
-			p_theme->set_constant("margin_left", "NoBorderAssetLibProjectManager", margin);
-			p_theme->set_constant("margin_right", "NoBorderAssetLibProjectManager", margin);
-			p_theme->set_constant("margin_bottom", "NoBorderAssetLibProjectManager", margin);
+			p_theme->set_type_variation("NoBorderAssetStoreProjectManager", "MarginContainer");
+			p_theme->set_constant("margin_left", "NoBorderAssetStoreProjectManager", margin);
+			p_theme->set_constant("margin_right", "NoBorderAssetStoreProjectManager", margin);
+			p_theme->set_constant("margin_bottom", "NoBorderAssetStoreProjectManager", margin);
 
-			p_theme->set_type_variation("NoBorderAssetLibProjectManagerHorizontal", "MarginContainer");
-			p_theme->set_constant("margin_left", "NoBorderAssetLibProjectManagerHorizontal", margin);
-			p_theme->set_constant("margin_right", "NoBorderAssetLibProjectManagerHorizontal", margin);
+			p_theme->set_type_variation("NoBorderAssetStoreProjectManagerHorizontal", "MarginContainer");
+			p_theme->set_constant("margin_left", "NoBorderAssetStoreProjectManagerHorizontal", margin);
+			p_theme->set_constant("margin_right", "NoBorderAssetStoreProjectManagerHorizontal", margin);
 
 			int bottom_panel_margin = p_theme->get_stylebox(SNAME("BottomPanel"), EditorStringName(EditorStyles))->get_content_margin(SIDE_LEFT);
 
@@ -2801,16 +2801,16 @@ void ThemeModern::populate_editor_styles(const Ref<EditorTheme> &p_theme, Editor
 
 	// Asset Store.
 	{
-		Ref<StyleBoxFlat> assetlib_panel_style = p_config.base_style->duplicate();
-		assetlib_panel_style->set_bg_color(p_config.surface_low_color);
-		assetlib_panel_style->set_content_margin_all(p_config.base_margin * 2 * EDSCALE);
+		Ref<StyleBoxFlat> asset_store_panel_style = p_config.base_style->duplicate();
+		asset_store_panel_style->set_bg_color(p_config.surface_low_color);
+		asset_store_panel_style->set_content_margin_all(p_config.base_margin * 2 * EDSCALE);
 
-		p_theme->set_stylebox("bg", "AssetLib", EditorThemeManager::make_empty_stylebox(p_config.base_margin, p_config.base_margin, p_config.base_margin, p_config.base_margin));
-		p_theme->set_stylebox(SceneStringName(panel), "AssetLib", assetlib_panel_style);
-		p_theme->set_stylebox(SceneStringName(panel), "AssetLib", p_config.foreground_panel);
-		p_theme->set_stylebox("downloads", "AssetLib", p_theme->get_stylebox(SceneStringName(panel), SNAME("ScrollContainerSecondary")));
-		p_theme->set_color("faded_text", "AssetLib", p_config.font_disabled_color);
-		p_theme->set_icon("dismiss", "AssetLib", p_theme->get_icon(SNAME("Close"), EditorStringName(EditorIcons)));
+		p_theme->set_stylebox("bg", "AssetStore", EditorThemeManager::make_empty_stylebox(p_config.base_margin, p_config.base_margin, p_config.base_margin, p_config.base_margin));
+		p_theme->set_stylebox(SceneStringName(panel), "AssetStore", asset_store_panel_style);
+		p_theme->set_stylebox(SceneStringName(panel), "AssetStore", p_config.foreground_panel);
+		p_theme->set_stylebox("downloads", "AssetStore", p_theme->get_stylebox(SceneStringName(panel), SNAME("ScrollContainerSecondary")));
+		p_theme->set_color("faded_text", "AssetStore", p_config.font_disabled_color);
+		p_theme->set_icon("dismiss", "AssetStore", p_theme->get_icon(SNAME("Close"), EditorStringName(EditorIcons)));
 	}
 
 	// Debugger.

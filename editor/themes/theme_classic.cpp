@@ -1910,7 +1910,7 @@ void ThemeClassic::populate_editor_styles(const Ref<EditorTheme> &p_theme, Edito
 			p_theme->set_color("icon_hover_color", "FlatButtonNoIconTint", p_config.dark_icon_and_font ? p_config.mono_color : p_config.mono_color.inverted());
 			p_theme->set_color("icon_hover_pressed_color", "FlatButtonNoIconTint", p_config.dark_icon_and_font ? p_config.mono_color : p_config.mono_color.inverted());
 
-			// Variation for the AssetLib thumbnails.
+			// Variation for the AssetStore thumbnails.
 
 			p_theme->set_type_variation("ThumbnailButton", SceneStringName(FlatButton));
 			p_theme->set_color("icon_pressed_color", "ThumbnailButton", p_config.icon_normal_color);
@@ -1957,7 +1957,7 @@ void ThemeClassic::populate_editor_styles(const Ref<EditorTheme> &p_theme, Edito
 			p_theme->set_color("icon_hover_pressed_color", "CheckBoxNoIconTint", p_config.dark_icon_and_font ? p_config.mono_color : p_config.mono_color.inverted());
 		}
 
-		// Buttons styles that stand out against the panel background (e.g. AssetLib).
+		// Buttons styles that stand out against the panel background (e.g. AssetStore).
 		{
 			p_theme->set_type_variation("PanelBackgroundButton", "Button");
 
@@ -2460,11 +2460,11 @@ void ThemeClassic::populate_editor_styles(const Ref<EditorTheme> &p_theme, Edito
 	}
 
 	// Asset Store.
-	p_theme->set_stylebox("bg", "AssetLib", p_config.base_empty_style);
-	p_theme->set_stylebox(SceneStringName(panel), "AssetLib", p_config.content_panel_style);
-	p_theme->set_stylebox("downloads", "AssetLib", p_theme->get_stylebox(SceneStringName(panel), SNAME("Tree")));
-	p_theme->set_color("faded_text", "AssetLib", p_config.font_disabled_color);
-	p_theme->set_icon("dismiss", "AssetLib", p_theme->get_icon(SNAME("Close"), EditorStringName(EditorIcons)));
+	p_theme->set_stylebox("bg", "AssetStore", p_config.base_empty_style);
+	p_theme->set_stylebox(SceneStringName(panel), "AssetStore", p_config.content_panel_style);
+	p_theme->set_stylebox("downloads", "AssetStore", p_theme->get_stylebox(SceneStringName(panel), SNAME("Tree")));
+	p_theme->set_color("faded_text", "AssetStore", p_config.font_disabled_color);
+	p_theme->set_icon("dismiss", "AssetStore", p_theme->get_icon(SNAME("Close"), EditorStringName(EditorIcons)));
 
 	// Debugger.
 	Ref<StyleBoxFlat> debugger_panel_style = p_config.content_panel_style->duplicate();

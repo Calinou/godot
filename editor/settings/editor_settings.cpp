@@ -1291,7 +1291,7 @@ void EditorSettings::_handle_setting_compatibility() {
 	erase("run/output/always_close_output_on_stop");
 	erase("text_editor/theme/line_spacing"); // See GH-106137.
 	erase("interface/editors/show_scene_tree_root_selection");
-	erase("asset_library/available_urls"); // Workaround bugged settings treating the previous default as a modified value (see GH-118755).
+	erase("asset_store/available_urls"); // Workaround bugged settings treating the previous default as a modified value (see GH-118755).
 
 	// Handle renamed settings.
 	_rename_setting("interface/editor/editor_language", "interface/editor/localization/editor_language");

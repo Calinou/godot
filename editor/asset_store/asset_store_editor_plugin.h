@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  asset_library_editor_plugin.h                                         */
+/*  asset_store_editor_plugin.h                                           */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "editor/asset_library/editor_asset_installer.h"
+#include "editor/asset_store/editor_asset_installer.h"
 #include "editor/plugins/editor_plugin.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/grid_container.h"
@@ -54,8 +54,8 @@ class MenuButton;
 class TabContainer;
 class VSeparator;
 
-class EditorAssetLibraryItem : public MarginContainer {
-	GDCLASS(EditorAssetLibraryItem, MarginContainer);
+class EditorAssetStoreItem : public MarginContainer {
+	GDCLASS(EditorAssetStoreItem, MarginContainer);
 
 	MarginContainer *margin = nullptr;
 	Button *button = nullptr;
@@ -95,11 +95,11 @@ protected:
 public:
 	void configure(const String &p_title, const String &p_asset_id, const String &p_author, const String &p_author_id, bool p_verified, const String &p_license_type, const String &p_license_url, int p_rating);
 
-	EditorAssetLibraryItem(bool p_clickable = false);
+	EditorAssetStoreItem(bool p_clickable = false);
 };
 
-class EditorAssetLibraryZoomMode : public CanvasLayer {
-	GDCLASS(EditorAssetLibraryZoomMode, CanvasLayer);
+class EditorAssetStoreZoomMode : public CanvasLayer {
+	GDCLASS(EditorAssetStoreZoomMode, CanvasLayer);
 
 	Control *previews = nullptr;
 
@@ -108,13 +108,13 @@ class EditorAssetLibraryZoomMode : public CanvasLayer {
 public:
 	Control *remove_previews();
 
-	EditorAssetLibraryZoomMode(Control *p_previews);
+	EditorAssetStoreZoomMode(Control *p_previews);
 };
 
-class EditorAssetLibraryItemDescription : public ConfirmationDialog {
-	GDCLASS(EditorAssetLibraryItemDescription, ConfirmationDialog);
+class EditorAssetStoreItemDescription : public ConfirmationDialog {
+	GDCLASS(EditorAssetStoreItemDescription, ConfirmationDialog);
 
-	EditorAssetLibraryItem *item = nullptr;
+	EditorAssetStoreItem *item = nullptr;
 	HBoxContainer *root = nullptr;
 	TabContainer *tabs = nullptr;
 	RichTextLabel *description = nullptr;
@@ -134,7 +134,7 @@ class EditorAssetLibraryItemDescription : public ConfirmationDialog {
 	PanelContainer *previews_bg = nullptr;
 
 	Button *zoom_button = nullptr;
-	EditorAssetLibraryZoomMode *zoom_mode = nullptr;
+	EditorAssetStoreZoomMode *zoom_mode = nullptr;
 
 	struct Preview {
 		int id = 0;
@@ -198,11 +198,11 @@ public:
 
 	String get_title() { return title; }
 	Ref<Texture2D> get_preview_icon() { return icon; }
-	EditorAssetLibraryItemDescription();
+	EditorAssetStoreItemDescription();
 };
 
-class EditorAssetLibraryItemDownload : public MarginContainer {
-	GDCLASS(EditorAssetLibraryItemDownload, MarginContainer);
+class EditorAssetStoreItemDownload : public MarginContainer {
+	GDCLASS(EditorAssetStoreItemDownload, MarginContainer);
 
 	PanelContainer *panel = nullptr;
 	TextureRect *icon = nullptr;
@@ -245,11 +245,11 @@ public:
 	bool can_install() const;
 	void install();
 
-	EditorAssetLibraryItemDownload();
+	EditorAssetStoreItemDownload();
 };
 
-class EditorAssetLibrary : public PanelContainer {
-	GDCLASS(EditorAssetLibrary, PanelContainer);
+class EditorAssetStore : public PanelContainer {
+	GDCLASS(EditorAssetStore, PanelContainer);
 
 	String host;
 
@@ -369,7 +369,7 @@ class EditorAssetLibrary : public PanelContainer {
 	ScrollContainer *downloads_scroll = nullptr;
 	HBoxContainer *downloads_hb = nullptr;
 
-	EditorAssetLibraryItemDescription *description = nullptr;
+	EditorAssetStoreItemDescription *description = nullptr;
 
 	void _install_asset(const String &p_asset_id, const String &p_version, const String &p_download_url, const String &p_sha256);
 	void _tag_clicked(const String &p_tag);
@@ -383,7 +383,7 @@ class EditorAssetLibrary : public PanelContainer {
 	void _api_request(const String &p_request, RequestType p_request_type, bool p_is_parallel = false);
 	void _http_request_completed(int p_status, int p_code, const PackedStringArray &headers, const PackedByteArray &p_data, HTTPRequest *p_requester);
 	void _request_current_config();
-	EditorAssetLibraryItemDownload *_get_asset_in_progress(const String &p_asset_id) const;
+	EditorAssetStoreItemDownload *_get_asset_in_progress(const String &p_asset_id) const;
 
 	void _repository_changed(int p_repository_id);
 
@@ -392,8 +392,8 @@ class EditorAssetLibrary : public PanelContainer {
 	void _update_asset_items_columns();
 	void _update_downloads_section();
 
-	friend class EditorAssetLibraryItemDescription;
-	friend class EditorAssetLibraryItem;
+	friend class EditorAssetStoreItemDescription;
+	friend class EditorAssetStoreItem;
 
 protected:
 	static void _bind_methods();
@@ -401,13 +401,13 @@ protected:
 	virtual void shortcut_input(const Ref<InputEvent> &p_event) override;
 
 public:
-	EditorAssetLibrary(bool p_templates_only = false);
+	EditorAssetStore(bool p_templates_only = false);
 };
 
-class AssetLibraryEditorPlugin : public EditorPlugin {
-	GDCLASS(AssetLibraryEditorPlugin, EditorPlugin);
+class AssetStoreEditorPlugin : public EditorPlugin {
+	GDCLASS(AssetStoreEditorPlugin, EditorPlugin);
 
-	EditorAssetLibrary *addon_library = nullptr;
+	EditorAssetStore *addon_library = nullptr;
 
 public:
 	static bool is_available();
@@ -419,5 +419,5 @@ public:
 	virtual bool handles(Object *p_object) const override { return false; }
 	virtual void make_visible(bool p_visible) override;
 
-	AssetLibraryEditorPlugin();
+	AssetStoreEditorPlugin();
 };

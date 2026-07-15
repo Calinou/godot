@@ -50,7 +50,7 @@
 #include "core/string/translation_server.h"
 #include "core/version.h"
 #include "editor/animation/animation_player_editor_plugin.h"
-#include "editor/asset_library/asset_library_editor_plugin.h"
+#include "editor/asset_store/asset_store_editor_plugin.h"
 #include "editor/audio/audio_stream_preview.h"
 #include "editor/audio/editor_audio_buses.h"
 #include "editor/debugger/debugger_editor_plugin.h"
@@ -426,8 +426,8 @@ void EditorNode::shortcut_input(const Ref<InputEvent> &p_event) {
 			editor_main_screen->select(EditorMainScreen::EDITOR_GAME);
 		} else if (ED_IS_SHORTCUT("editor/editor_help", p_event)) {
 			emit_signal(SNAME("request_help_search"), "");
-		} else if (ED_IS_SHORTCUT("editor/editor_asset_store", p_event) && AssetLibraryEditorPlugin::is_available()) {
-			editor_main_screen->select(EditorMainScreen::EDITOR_ASSETLIB);
+		} else if (ED_IS_SHORTCUT("editor/editor_asset_store", p_event) && AssetStoreEditorPlugin::is_available()) {
+			editor_main_screen->select(EditorMainScreen::EDITOR_ASSET_STORE);
 		} else if (ED_IS_SHORTCUT("editor/editor_next", p_event)) {
 			editor_main_screen->select_next();
 		} else if (ED_IS_SHORTCUT("editor/editor_prev", p_event)) {
@@ -7900,8 +7900,8 @@ void EditorNode::_feature_profile_changed() {
 		if (!Engine::get_singleton()->is_recovery_mode_hint()) {
 			editor_main_screen->set_button_enabled(EditorMainScreen::EDITOR_GAME, !profile->is_feature_disabled(EditorFeatureProfile::FEATURE_GAME));
 		}
-		if (AssetLibraryEditorPlugin::is_available()) {
-			editor_main_screen->set_button_enabled(EditorMainScreen::EDITOR_ASSETLIB, !profile->is_feature_disabled(EditorFeatureProfile::FEATURE_ASSET_LIB));
+		if (AssetStoreEditorPlugin::is_available()) {
+			editor_main_screen->set_button_enabled(EditorMainScreen::EDITOR_ASSET_STORE, !profile->is_feature_disabled(EditorFeatureProfile::FEATURE_ASSET_LIB));
 		}
 	} else {
 		editor_dock_manager->set_dock_enabled(ImportDock::get_singleton(), true);
@@ -7914,8 +7914,8 @@ void EditorNode::_feature_profile_changed() {
 		if (!Engine::get_singleton()->is_recovery_mode_hint()) {
 			editor_main_screen->set_button_enabled(EditorMainScreen::EDITOR_GAME, true);
 		}
-		if (AssetLibraryEditorPlugin::is_available()) {
-			editor_main_screen->set_button_enabled(EditorMainScreen::EDITOR_ASSETLIB, true);
+		if (AssetStoreEditorPlugin::is_available()) {
+			editor_main_screen->set_button_enabled(EditorMainScreen::EDITOR_ASSET_STORE, true);
 		}
 	}
 
@@ -9465,8 +9465,8 @@ EditorNode::EditorNode() {
 	TextEditor::register_editor();
 	TextShaderEditor::register_editor();
 
-	if (AssetLibraryEditorPlugin::is_available()) {
-		add_editor_plugin(memnew(AssetLibraryEditorPlugin));
+	if (AssetStoreEditorPlugin::is_available()) {
+		add_editor_plugin(memnew(AssetStoreEditorPlugin));
 	} else {
 		print_verbose("Asset Store not available (due to using Web editor, or SSL support disabled).");
 	}

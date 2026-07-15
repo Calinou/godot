@@ -40,7 +40,7 @@
 #include "core/os/keyboard.h"
 #include "core/os/os.h"
 #include "core/version.h"
-#include "editor/asset_library/asset_library_editor_plugin.h"
+#include "editor/asset_store/asset_store_editor_plugin.h"
 #include "editor/doc/editor_help.h"
 #include "editor/editor_string_names.h"
 #include "editor/gui/editor_about.h"
@@ -249,7 +249,7 @@ void ProjectManager::_update_theme(bool p_skip_creation) {
 		title_bar_logo->set_button_icon(get_editor_theme_icon("TitleBarLogo"));
 
 		_set_main_view_icon(MAIN_VIEW_PROJECTS, get_editor_theme_icon("ProjectList"));
-		_set_main_view_icon(MAIN_VIEW_ASSETLIB, get_editor_theme_icon("AssetStore"));
+		_set_main_view_icon(MAIN_VIEW_ASSET_STORE, get_editor_theme_icon("AssetStore"));
 
 		// Project list.
 		{
@@ -258,7 +258,7 @@ void ProjectManager::_update_theme(bool p_skip_creation) {
 
 			empty_list_create_project->set_button_icon(get_editor_theme_icon("Add"));
 			empty_list_import_project->set_button_icon(get_editor_theme_icon("Load"));
-			empty_list_open_assetlib->set_button_icon(get_editor_theme_icon("AssetStore"));
+			empty_list_open_asset_store->set_button_icon(get_editor_theme_icon("AssetStore"));
 
 			empty_list_online_warning->add_theme_font_override(SceneStringName(font), get_theme_font("italic", EditorStringName(EditorFonts)));
 			empty_list_online_warning->add_theme_color_override(SceneStringName(font_color), get_theme_color("font_placeholder_color", EditorStringName(Editor)));
@@ -306,9 +306,9 @@ void ProjectManager::_update_theme(bool p_skip_creation) {
 		migration_guide_button->set_button_icon(get_editor_theme_icon("ExternalLink"));
 
 		// Asset store popup.
-		if (asset_library && EDITOR_GET("interface/theme/style") == "Classic") {
+		if (asset_store && EDITOR_GET("interface/theme/style") == "Classic") {
 			// Removes extra border margins.
-			asset_library->add_theme_style_override(SceneStringName(panel), memnew(StyleBoxEmpty));
+			asset_store->add_theme_style_override(SceneStringName(panel), memnew(StyleBoxEmpty));
 		}
 	}
 #ifdef ANDROID_ENABLED
@@ -393,7 +393,7 @@ void ProjectManager::_show_about() {
 	about_dialog->popup_centered(Size2(780, 500) * EDSCALE);
 }
 
-void ProjectManager::_open_asset_library_confirmed() {
+void ProjectManager::_open_asset_store_confirmed() {
 	const int network_mode = EDITOR_GET("network/connection/network_mode");
 	if (network_mode == EditorSettings::NETWORK_OFFLINE) {
 		EditorSettings::get_singleton()->set_setting("network/connection/network_mode", EditorSettings::NETWORK_ONLINE);
@@ -401,7 +401,7 @@ void ProjectManager::_open_asset_library_confirmed() {
 		EditorSettings::get_singleton()->save();
 	}
 
-	_select_main_view(MAIN_VIEW_ASSETLIB);
+	_select_main_view(MAIN_VIEW_ASSET_STORE);
 }
 
 void ProjectManager::_project_list_menu_option(int p_option) {
@@ -498,14 +498,14 @@ void ProjectManager::_update_list_placeholder() {
 		return;
 	}
 
-	empty_list_open_assetlib->set_visible(asset_library);
+	empty_list_open_asset_store->set_visible(asset_store);
 
 	const int network_mode = EDITOR_GET("network/connection/network_mode");
 	if (network_mode == EditorSettings::NETWORK_OFFLINE) {
-		empty_list_open_assetlib->set_text(TTRC("Go Online and Open Asset Store"));
+		empty_list_open_asset_store->set_text(TTRC("Go Online and Open Asset Store"));
 		empty_list_online_warning->set_visible(true);
 	} else {
-		empty_list_open_assetlib->set_text(TTRC("Open Asset Store"));
+		empty_list_open_asset_store->set_text(TTRC("Open Asset Store"));
 		empty_list_online_warning->set_visible(false);
 	}
 
@@ -1652,11 +1652,11 @@ ProjectManager::ProjectManager() {
 				empty_list_actions->add_child(empty_list_import_project);
 				empty_list_import_project->connect(SceneStringName(pressed), callable_mp(this, &ProjectManager::_import_project));
 
-				empty_list_open_assetlib = memnew(Button);
-				empty_list_open_assetlib->set_text(TTRC("Open Asset Store"));
-				empty_list_open_assetlib->set_theme_type_variation("PanelBackgroundButton");
-				empty_list_actions->add_child(empty_list_open_assetlib);
-				empty_list_open_assetlib->connect(SceneStringName(pressed), callable_mp(this, &ProjectManager::_open_asset_library_confirmed));
+				empty_list_open_asset_store = memnew(Button);
+				empty_list_open_asset_store->set_text(TTRC("Open Asset Store"));
+				empty_list_open_asset_store->set_theme_type_variation("PanelBackgroundButton");
+				empty_list_actions->add_child(empty_list_open_asset_store);
+				empty_list_open_asset_store->connect(SceneStringName(pressed), callable_mp(this, &ProjectManager::_open_asset_store_confirmed));
 
 				empty_list_online_warning = memnew(Label);
 				empty_list_online_warning->set_focus_mode(FOCUS_ACCESSIBILITY);
@@ -1751,17 +1751,17 @@ ProjectManager::ProjectManager() {
 	}
 
 	// Asset store view.
-	if (AssetLibraryEditorPlugin::is_available()) {
-		asset_library = memnew(EditorAssetLibrary(true));
-		asset_library->set_name("AssetLibraryTab");
-		_add_main_view(MAIN_VIEW_ASSETLIB, TTRC("Asset Store"), Ref<Texture2D>(), asset_library);
-		asset_library->connect("install_asset", callable_mp(this, &ProjectManager::_install_project));
+	if (AssetStoreEditorPlugin::is_available()) {
+		asset_store = memnew(EditorAssetStore(true));
+		asset_store->set_name("AssetStoreTab");
+		_add_main_view(MAIN_VIEW_ASSET_STORE, TTRC("Asset Store"), Ref<Texture2D>(), asset_store);
+		asset_store->connect("install_asset", callable_mp(this, &ProjectManager::_install_project));
 	} else {
-		VBoxContainer *asset_library_filler = memnew(VBoxContainer);
-		asset_library_filler->set_name("AssetLibraryTab");
-		Button *asset_library_toggle = _add_main_view(MAIN_VIEW_ASSETLIB, TTRC("Asset Store"), Ref<Texture2D>(), asset_library_filler);
-		asset_library_toggle->set_disabled(true);
-		asset_library_toggle->set_tooltip_text(TTRC("Asset Store not available (due to using Web editor, or because SSL support disabled)."));
+		VBoxContainer *asset_store_filler = memnew(VBoxContainer);
+		asset_store_filler->set_name("AssetStoreTab");
+		Button *asset_store_toggle = _add_main_view(MAIN_VIEW_ASSET_STORE, TTRC("Asset Store"), Ref<Texture2D>(), asset_store_filler);
+		asset_store_toggle->set_disabled(true);
+		asset_store_toggle->set_tooltip_text(TTRC("Asset Store not available (due to using Web editor, or because SSL support disabled)."));
 	}
 
 	// Footer bar.
