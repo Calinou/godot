@@ -3680,9 +3680,26 @@ void Node3DEditorViewport::_notification(int p_what) {
 			if (show_info) {
 				const String viewport_size = vformat(U"%d × %d", viewport->get_size().x * viewport->get_scaling_3d_scale(), viewport->get_size().y * viewport->get_scaling_3d_scale());
 				String text;
-				text += vformat(TTR("X: %s"), rtos(current_camera->get_position().x).pad_decimals(1)) + "\n";
-				text += vformat(TTR("Y: %s"), rtos(current_camera->get_position().y).pad_decimals(1)) + "\n";
-				text += vformat(TTR("Z: %s"), rtos(current_camera->get_position().z).pad_decimals(1)) + "\n";
+
+				const Vector3 camera_position = current_camera->get_position();
+				const double max_abs_coordinate = MAX(MAX(Math::abs(camera_position.x), Math::abs(camera_position.y)), Math::abs(camera_position.z));
+#ifdef REAL_T_IS_DOUBLE
+				// Double-precision floats use 52 bits for the mantissa.
+				const double MANTISSA = 52.0;
+#else
+				// Single-precision floats use 23 bits for the mantissa.
+				const double MANTISSA = 23.0;
+#endif
+				double precision = Math::pow(2.0, -MANTISSA);
+				if (max_abs_coordinate > 0.0) {
+					const double exponent = Math::floor(Math::log(max_abs_coordinate) / Math::log(2.0));
+					precision = Math::pow(2.0, exponent - MANTISSA);
+				}
+
+				text += vformat(TTR("X: %s"), rtos(camera_position.x).pad_decimals(1)) + "\n";
+				text += vformat(TTR("Y: %s"), rtos(camera_position.y).pad_decimals(1)) + "\n";
+				text += vformat(TTR("Z: %s"), rtos(camera_position.z).pad_decimals(1)) + "\n";
+				text += vformat(TTR("Precision: %s"), rtos(precision).pad_decimals(8)) + "\n";
 				text += "\n";
 				text += vformat(
 						TTR("Size: %s (%.1fMP)") + "\n",
